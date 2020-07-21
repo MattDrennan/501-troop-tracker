@@ -553,14 +553,17 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		// Query the database
 		$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costumeValSelect' . $_POST['trooperSelectEdit'] . ''])."', costume_backup = '".cleanInput($_POST['costumeVal' . $_POST['trooperSelectEdit'] . ''])."', status = '".cleanInput($_POST['statusVal' . $_POST['trooperSelectEdit'] . ''])."', reason = '".cleanInput($_POST['reasonVal' . $_POST['trooperSelectEdit'] . ''])."', attend = '".cleanInput($_POST['attendVal' . $_POST['trooperSelectEdit'] . ''])."', attended_costume = '".cleanInput($_POST['attendcostumeVal' . $_POST['trooperSelectEdit'] . ''])."' WHERE trooperid = '".cleanInput($_POST['trooperSelectEdit'])."' AND troopid = '".cleanInput($_POST['eventId'])."'") or die($conn->error);
 
-		// Attending On - Update multiple day events
+		// Attending On - Update multiple day events (Maybe fixed this?? Was changing all values to 4 (canceled) even on single day events. This will change all to 4 only when canceling now)
 		if(!isset($_POST['shiftcheckbox' . $_POST['trooperSelectEdit'] . '']))
 		{
-			// Change status
-			$conn->query("UPDATE event_sign_up SET status = '4' WHERE troopid = '".cleanInput($_POST['eventId'])."' AND trooperid = '".cleanInput($_POST['trooperSelectEdit'])."'") or die($conn->error);
+			if(cleanInput($_POST['statusVal' . $_POST['trooperSelectEdit'] . '']) == 4)
+			{
+				// Change status
+				$conn->query("UPDATE event_sign_up SET status = '4' WHERE troopid = '".cleanInput($_POST['eventId'])."' AND trooperid = '".cleanInput($_POST['trooperSelectEdit'])."'") or die($conn->error);
 
-			// Delete all from shift trooper when canceling
-			$conn->query("DELETE FROM shift_trooper WHERE troopid = '".cleanInput($_POST['eventId'])."' AND trooperid = '".cleanInput($_POST['trooperSelectEdit'])."'") or die($conn->error);
+				// Delete all from shift trooper when canceling
+				$conn->query("DELETE FROM shift_trooper WHERE troopid = '".cleanInput($_POST['eventId'])."' AND trooperid = '".cleanInput($_POST['trooperSelectEdit'])."'") or die($conn->error);
+			}
 		}
 		else
 		{
@@ -589,6 +592,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		/********************************************************/
 
 		// Attended On - Update multiple day events
+		// ?? May need to update this
 		if(!isset($_POST['shiftcheckbox2' . $_POST['trooperSelectEdit'] . '']))
 		{
 			// Delete all from shift trooper when canceling
@@ -956,7 +960,15 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 							// If no data
 							if($l == 0)
 							{
-								$data = "Canceled";
+								if(count($days) > 1)
+								{
+									$data = "Canceled";
+								}
+								else
+								{
+									$data = $date1;
+									$data = date('m-d-Y', strtotime($date1));
+								}
 							}
 
 							echo $data;

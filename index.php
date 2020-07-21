@@ -1732,25 +1732,29 @@ if(isset($_GET['action']) && $_GET['action'] == "forgotpassword")
 if(isset($_POST['submitSignUp']))
 {
 	// Query the database
-	$conn->query("INSERT INTO event_sign_up (trooperid, troopid, costume, status) VALUES ('".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['event'])."', '".cleanInput($_POST['costume'])."', '".cleanInput($_POST['status'])."')") or die($conn->error);
+	$conn->query("INSERT INTO event_sign_up (trooperid, troopid, costume, status, costume_backup) VALUES ('".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['event'])."', '".cleanInput($_POST['costume'])."', '".cleanInput($_POST['status'])."', '".cleanInput($_POST['backupcostume'])."')") or die($conn->error);
 
 	// If a shift is checked
-	if($_POST['shiftcheckbox'] != "")
+	// The isset prevents an notice error, where it would show if their wasn't a shift to select
+	if(isset($_POST['shiftcheckbox']))
 	{
-		// Query for shift boxes
-		$shift = "";
-
-		// Loop through check boxes to get data
-		foreach($_POST['shiftcheckbox'] as $key)
+		if($_POST['shiftcheckbox'] != "")
 		{
-			$shift = $shift . ',' . cleanInput($key);
+			// Query for shift boxes
+			$shift = "";
+
+			// Loop through check boxes to get data
+			foreach($_POST['shiftcheckbox'] as $key)
+			{
+				$shift = $shift . ',' . cleanInput($key);
+			}
+
+			// Cut first comma out
+			$shift = substr($shift, 1);
+
+			// Insert into database
+			$conn->query("INSERT INTO shift_trooper (troopid, trooperid, shift) VALUES ('".cleanInput($_POST['event'])."', ".cleanInput($_SESSION['id']).", '".$shift."')") or die($conn->error);
 		}
-
-		// Cut first comma out
-		$shift = substr($shift, 1);
-
-		// Insert into database
-		$conn->query("INSERT INTO shift_trooper (troopid, trooperid, shift) VALUES ('".cleanInput($_POST['event'])."', ".cleanInput($_SESSION['id']).", '".$shift."')") or die($conn->error);
 	}
 }
 

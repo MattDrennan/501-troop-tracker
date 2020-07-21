@@ -1,0 +1,7 @@
+**Changelog**
+
+_07/20/2020_
+
+-Fixed an issue where a notice error would show when you signed up for an event
+-Fixed a bug where the back up costume would not be submitted when signing up for an event
+-Fixed an issue where dates attending would show as canceled on single day events
