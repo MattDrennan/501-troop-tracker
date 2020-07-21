@@ -1,5 +1,12 @@
 **Changelog**
 
+_07/21/2020
+
+-Fixed an issue where it would show a date attended on a single day event, when they did not attend the event
+-Fixed an issue where it would not show a single day event attended date on the roster
+-Fixed an issue where it wouldn't display "There are no events to display." If there was no events.
+-Fixed an issue where trooper reason would not show on the command staff roster edit.
+
 _07/20/2020_
 
 -Fixed an issue where a notice error would show when you signed up for an event

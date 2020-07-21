@@ -1971,7 +1971,7 @@ if(isset($_GET['event']))
 
 					echo '
 					<tr>
-						<td><a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a></td>	<td>'.readTKNumber($db2->tkid).'</td>	<td>'.getCostume($db2->costume).'</td>	<td>'.getCostume($db2->costume_backup).'</td>	<td>'.getStatus($db2->status).'</td>';
+						<td><a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a></td>	<td>'.readTKNumber($db2->tkid).'</td>	<td>'.getCostume($db2->costume).'</td>	<td>'.getCostume($db2->costume_backup).'</td>	<td id="'.$db2->trooperId.'Status">'.getStatus($db2->status).'</td>';
 
 					// Query database for shift info
 					$query3 = "SELECT shift_trooper.shift, shift_trooper.troopid, shift_trooper.trooperid FROM shift_trooper WHERE shift_trooper.trooperid = '".$db2->trooperId."' AND shift_trooper.troopid = '".$db2->troopid."'";
@@ -2180,6 +2180,7 @@ if(isset($_GET['event']))
 
 									<form action="index.php" method="POST" name="cancelForm" id="cancelForm">
 										<input type="hidden" name="troopidC" id="troopidC" value="'.strip_tags(addslashes($_GET['event'])).'" />
+										<input type="hidden" name="myId" id="myId" value="'.strip_tags(addslashes($_SESSION['id'])).'" />
 										<p>Reason why you are canceling:</p>
 										<input type="text" name="cancelReason" id="cancelReason" />
 										<input type="submit" name="submitCancelTroop" id="submitCancelTroop" value="Cancel Troop" />
@@ -2441,7 +2442,7 @@ else
 				// Get number of troopers at event
 				$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".$db->id."'");
 
-				echo '<div style="border: 1px solid gray;">';
+				echo '<div style="border: 1px solid gray; margin-bottom: 10px;">';
 
 				// No squad set
 				if(!isset($_GET['squad']))
@@ -2471,29 +2472,29 @@ else
 					}
 				}
 
-				// If squad pressed
-				if(isset($_GET['squad']))
-				{
-					if($i2 == 0)
-					{
-						echo 'There are no events to display.';
-					}
-				}
-				else
-				{
-					// Home page, no events
-					if($i == 0)
-					{
-						echo 'There are no events to display.';
-					}			
-				}
-
-				echo '
-				</div>
-
-				<br /><br />';
+				echo '</div>';
 			}
 		}
+
+		// If squad pressed
+		if(isset($_GET['squad']))
+		{
+			if($i2 == 0)
+			{
+				echo 'There are no events to display.';
+			}
+		}
+		else
+		{
+			// Home page, no events
+			if($i == 0)
+			{
+				echo 'There are no events to display.';
+			}			
+		}
+
+		echo '
+		</div>';
 
 		if(loggedIn())
 		{

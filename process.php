@@ -678,8 +678,18 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		// If no data
 		if($l == 0)
 		{
-			$data = "Canceled";
-			$data2 = "";
+			// If multiple day
+			if(count($days) > 1)
+			{
+				$data = "Canceled";
+				$data2 = "";
+			}
+			else
+			{
+				// If single day
+				$data = $days[0];
+				$data2 = "";
+			}
 		}
 
 		// Send back data
@@ -857,7 +867,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 
 					<td>
 						<div name="reason1'.$db->trooperid.'" id="reason1'.$db->trooperid.'">'.$db->reason.'</div>
-						<div name="reason2'.$db->trooperid.'" id="reason2'.$db->trooperid.'" style="display:none;"><input type="text" id="reasonVal'.$db->trooperid.'" name="reasonVal'.$db->trooperid.'" /></div>
+						<div name="reason2'.$db->trooperid.'" id="reason2'.$db->trooperid.'" style="display:none;"><input type="text" id="reasonVal'.$db->trooperid.'" name="reasonVal'.$db->trooperid.'" value="'.$db->reason.'" /></div>
 					</td>
 
 					<td>
@@ -1081,35 +1091,50 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 							$l = 0;
 							$data = "";
 
-							if ($result3 = mysqli_query($conn, $query3))
+							if(count($days) > 1)
 							{
-								while ($db3 = mysqli_fetch_object($result3))
+								if ($result3 = mysqli_query($conn, $query3))
 								{
-									// Read the data, use substr to remove the -1 at the start
-									$shiftString = explode(",", substr($db3->attend, 3));
-
-									for($n = 0; $n <= count($shiftString) - 1; $n += 2)
+									while ($db3 = mysqli_fetch_object($result3))
 									{
-										$shiftGet = $conn->query("SELECT shifts.id, shifts.starttime, shifts.endtime FROM shifts WHERE shifts.id = '".$shiftString[$n]."'") or die($conn->error);
+										// Read the data, use substr to remove the -1 at the start
+										$shiftString = explode(",", substr($db3->attend, 3));
 
-										$shift = mysqli_fetch_array($shiftGet);
+										for($n = 0; $n <= count($shiftString) - 1; $n += 2)
+										{
+											$shiftGet = $conn->query("SELECT shifts.id, shifts.starttime, shifts.endtime FROM shifts WHERE shifts.id = '".$shiftString[$n]."'") or die($conn->error);
 
-										// Convert times
-										$readTime1 = date('h:i A', strtotime($shift[1]));
-										$readTime2 = date('h:i A', strtotime($shift[2]));
+											$shift = mysqli_fetch_array($shiftGet);
 
-										$data .= $days[$shiftString[$n + 1]] . '<br />' . $readTime1 . ' - ' . $readTime2 . '<br /><br />';
+											// Convert times
+											$readTime1 = date('h:i A', strtotime($shift[1]));
+											$readTime2 = date('h:i A', strtotime($shift[2]));
+
+											$data .= $days[$shiftString[$n + 1]] . '<br />' . $readTime1 . ' - ' . $readTime2 . '<br /><br />';
+										}
+
+										// Increment
+										$l++;
 									}
+								}
 
-									// Increment
-									$l++;
+								// If no data
+								if($l == 0)
+								{
+									$data = "";
 								}
 							}
-
-							// If no data
-							if($l == 0)
+							else
 							{
-								$data = "";
+								// If single day event and attended
+								if($db->attend == 1)
+								{
+									$data = $days[0];
+								}
+								else
+								{
+									$data = "";
+								}
 							}
 
 							echo $data;
@@ -1124,76 +1149,88 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 
 					$j = 0;
 
-					foreach ($days as $key => $value)
+					// If multiple day event
+					if(count($days) > 1)
 					{
-					    echo '<p><b>' . $value . '</b></p>';
-
-						$query3 = "SELECT shifts.id, shifts.starttime, shifts.endtime, shifts.troopid AS shiftTroop, shift_trooper.attend, shift_trooper.troopid, shift_trooper.shift, shift_trooper.trooperid FROM shifts LEFT JOIN shift_trooper ON shifts.troopid = shift_trooper.troopid WHERE shifts.troopid = '".$db->troopid."' AND shift_trooper.attend != '-1'";
-
-						if ($result3 = mysqli_query($conn, $query3))
+						foreach ($days as $key => $value)
 						{
-							while ($db3 = mysqli_fetch_object($result3))
+						    echo '<p><b>' . $value . '</b></p>';
+
+							$query3 = "SELECT shifts.id, shifts.starttime, shifts.endtime, shifts.troopid AS shiftTroop, shift_trooper.attend, shift_trooper.troopid, shift_trooper.shift, shift_trooper.trooperid FROM shifts LEFT JOIN shift_trooper ON shifts.troopid = shift_trooper.troopid WHERE shifts.troopid = '".$db->troopid."' AND shift_trooper.attend != '-1'";
+
+							if ($result3 = mysqli_query($conn, $query3))
 							{
-								// The dates
-								$readTime1 = date('h:i A', strtotime($db3->starttime));
-								$readTime2 = date('h:i A', strtotime($db3->endtime));
-
-								// Our string of choices from databases
-								//$shiftString = explode(",", $db3->shift);
-								$shiftString = explode(",", substr($db3->attend, 3));
-
-								// Was this choice picked?
-								$pickedChoice = false;
-
-								// loop through and see if checked
-								if(!is_null($db3->trooperid) && $db3->trooperid == $db->trooperid)
+								while ($db3 = mysqli_fetch_object($result3))
 								{
-									for($o = 0; $o <= count($shiftString) - 1; $o += 2)
+									// The dates
+									$readTime1 = date('h:i A', strtotime($db3->starttime));
+									$readTime2 = date('h:i A', strtotime($db3->endtime));
+
+									// Our string of choices from databases
+									//$shiftString = explode(",", $db3->shift);
+									$shiftString = explode(",", substr($db3->attend, 3));
+
+									// Was this choice picked?
+									$pickedChoice = false;
+
+									// loop through and see if checked
+									if(!is_null($db3->trooperid) && $db3->trooperid == $db->trooperid)
 									{
-										// Check the choice
-										if($key == $shiftString[$o + 1] && $shiftString[$o] == $db3->id)
+										for($o = 0; $o <= count($shiftString) - 1; $o += 2)
 										{
-											// This is a picked choice
-											$pickedChoice = true;
+											// Check the choice
+											if($key == $shiftString[$o + 1] && $shiftString[$o] == $db3->id)
+											{
+												// This is a picked choice
+												$pickedChoice = true;
+											}
 										}
 									}
-								}
 
-								// Alrerady existing elements to display
-								$alreadyExists = [];
+									// Alrerady existing elements to display
+									$alreadyExists = [];
 
-								// Ensure data is assigned to this ID
-								if($db3->trooperid == $db->trooperid)
-								{
-									// If picked
-									if($pickedChoice)
+									// Ensure data is assigned to this ID
+									if($db3->trooperid == $db->trooperid)
 									{
-										echo '
-										<input type="checkbox" name="shiftcheckbox2'.$db->trooperid.'[]" id="shiftcheckbox2" value="'. $db3->id .','.$key.'" CHECKED />'.$readTime1.' - '.$readTime2.'<br />';
+										// If picked
+										if($pickedChoice)
+										{
+											echo '
+											<input type="checkbox" name="shiftcheckbox2'.$db->trooperid.'[]" id="shiftcheckbox2" value="'. $db3->id .','.$key.'" CHECKED />'.$readTime1.' - '.$readTime2.'<br />';
+										}
+										else
+										{
+											// If not picked
+											echo '
+											<input type="checkbox" name="shiftcheckbox2'.$db->trooperid.'[]" id="shiftcheckbox2" value="'. $db3->id .','.$key.'" />'.$readTime1.' - '.$readTime2.'<br />';				
+										}
+
+										array_push($alreadyExists, $db3->id);
 									}
 									else
 									{
-										// If not picked
-										echo '
-										<input type="checkbox" name="shiftcheckbox2'.$db->trooperid.'[]" id="shiftcheckbox2" value="'. $db3->id .','.$key.'" />'.$readTime1.' - '.$readTime2.'<br />';				
+										// If not in array
+										if(!in_array($db3->id, $alreadyExists))
+										{
+											// If not picked
+											echo '
+											<input type="checkbox" name="shiftcheckbox2'.$db->trooperid.'[]" id="shiftcheckbox2" value="'. $db3->id .','.$key.'" />'.$readTime1.' - '.$readTime2.'<br />';			
+										}
 									}
 
-									array_push($alreadyExists, $db3->id);
+									// Increment
+									$j += 2;
 								}
-								else
-								{
-									// If not in array
-									if(!in_array($db3->id, $alreadyExists))
-									{
-										// If not picked
-										echo '
-										<input type="checkbox" name="shiftcheckbox2'.$db->trooperid.'[]" id="shiftcheckbox2" value="'. $db3->id .','.$key.'" />'.$readTime1.' - '.$readTime2.'<br />';			
-									}
-								}
-
-								// Increment
-								$j += 2;
 							}
+						}
+					}
+					else
+					{
+						// If a single day event, let's see if they actually attended before showing
+						if($db->attend == 1)
+						{
+							echo '<p><b>' . $days[0] . '</b></p>';
 						}
 					}
 

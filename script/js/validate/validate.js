@@ -522,7 +522,10 @@ $(function() {
     // Make sure the form is submitted to the destination defined
     // in the "action" attribute of the form when valid
     submitHandler: function(form) {
+
       var r = confirm("Are you sure you want to cancel this troop?");
+
+      var id = $("#myId").val();
 
       if (r == true)
       {
@@ -533,6 +536,8 @@ $(function() {
           success: function(data)
           {
             $("#signeduparea").html("<p><b>You have canceled this troop.</b></p>");
+            console.log(id);
+            $("#" + id + "Status").html("Canceled");
           }
         });
       }
