@@ -258,9 +258,23 @@ if(isset($_GET['profile']))
 				</tr>';
 			}
 
+			// If haven't attended the troop yet
+			if($db->attend == 0)
+			{
+				echo '
+				<tr>
+					<td><a href="index.php?event='.$db->troopid.'">'.$db->eventName.' (PENDING)</a></td>';
+			}
+			else
+			{
+				// If you had attended the troop
+				echo '
+				<tr>
+					<td><a href="index.php?event='.$db->troopid.'">'.$db->eventName.'</a></td>';
+			}
+
 			echo '
-			<tr>
-				<td><a href="index.php?event='.$db->troopid.'">'.$db->eventName.'</a></td>	<td>'.getCostume($db->costume).'</td>	<td>'.getCostume($db->attended_costume).'</td>
+				<td>'.getCostume($db->costume).'</td>	<td>'.getCostume($db->attended_costume).'</td>
 			</tr>';
 
 			$i++;
@@ -2426,8 +2440,17 @@ else
 
 		<div style="text-align: center;">';
 
-		// Query
-		$query = "SELECT * FROM events WHERE dateStart >= CURDATE() ORDER BY dateStart";
+		// Was a squad defined? (Prevents displays div when not needed)
+		if(isset($_GET['squad']))
+		{
+			// Query
+			$query = "SELECT * FROM events WHERE dateStart >= CURDATE() AND squad = '".cleanInput($_GET['squad'])."' ORDER BY dateStart";
+		}
+		else
+		{
+			// Query
+			$query = "SELECT * FROM events WHERE dateStart >= CURDATE() ORDER BY dateStart";
+		}
 
 		// Number of events loaded
 		$i = 0;
@@ -2698,6 +2721,10 @@ echo '
 <p class="tm-mb-0">
 Website created and maintained by Matthew Drennan (TK52233). If you encounter any issues with this site, please
 <a href="mailto:drennanmattheww@gmail.com" class="tm-contact-link">email</a> me here.
+</p>
+
+<p style="text-align: center;">
+<a href="https://github.com/MattDrennan/501-troop-tracker"><img src="images/github.png" alt="Help contribute on GitHub.com!" /><br />Help contribute on GitHub.com!</a>
 </p>
 </section>
 

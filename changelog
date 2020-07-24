@@ -1,5 +1,11 @@
 **Changelog**
 
+_07/24/2020_
+
+-Added GitHub.com link at the bottom of the page
+-Added "(PENDING)" to the troop tracker, where troops haven't been counted yet
+-Fixed bug where a div would display when a specific squad was requested and there were no events to display
+
 _07/21/2020
 
 -Fixed an issue where it would show a date attended on a single day event, when they did not attend the event
