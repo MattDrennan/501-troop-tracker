@@ -543,8 +543,15 @@ $(function() {
           data: $(form).serialize() + "&submitSignUp=1",
           success: function(data)
           {
+            // Get JSON Data
+            var json = JSON.parse(data);
+
+            // Put data in html
+            $("#signuparea").html(json.data);
+
+            // Do the rest...
             $("#signeduparea").show();
-            $("#signuparea").hide();
+            $("#rosterTableNoData").hide();
           }
         });
     }

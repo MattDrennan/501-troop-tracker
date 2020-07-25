@@ -537,7 +537,6 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 				if($shifts > 0)
 				{
 					$troopsAttended += $shifts;
-					echo 'test';
 				}
 				else
 				{
@@ -1741,36 +1740,6 @@ if(isset($_GET['action']) && $_GET['action'] == "forgotpassword")
 	}
 }
 
-// When we receive a submission for an event sign up...
-if(isset($_POST['submitSignUp']))
-{
-	// Query the database
-	$conn->query("INSERT INTO event_sign_up (trooperid, troopid, costume, status, costume_backup) VALUES ('".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['event'])."', '".cleanInput($_POST['costume'])."', '".cleanInput($_POST['status'])."', '".cleanInput($_POST['backupcostume'])."')") or die($conn->error);
-
-	// If a shift is checked
-	// The isset prevents an notice error, where it would show if their wasn't a shift to select
-	if(isset($_POST['shiftcheckbox']))
-	{
-		if($_POST['shiftcheckbox'] != "")
-		{
-			// Query for shift boxes
-			$shift = "";
-
-			// Loop through check boxes to get data
-			foreach($_POST['shiftcheckbox'] as $key)
-			{
-				$shift = $shift . ',' . cleanInput($key);
-			}
-
-			// Cut first comma out
-			$shift = substr($shift, 1);
-
-			// Insert into database
-			$conn->query("INSERT INTO shift_trooper (troopid, trooperid, shift) VALUES ('".cleanInput($_POST['event'])."', ".cleanInput($_SESSION['id']).", '".$shift."')") or die($conn->error);
-		}
-	}
-}
-
 if(isset($_POST['submitCancelTroop']))
 {
 	// Query the database
@@ -2058,6 +2027,7 @@ if(isset($_GET['event']))
 			if($i == 0)
 			{
 				echo '
+				<div id="rosterTableNoData" name="rosterTableNoData">
 				<b>No troopers have signed up for this event!</b>
 				<br />
 				<br />';
@@ -2069,6 +2039,12 @@ if(isset($_GET['event']))
 			}
 
 			echo '<hr />';
+
+			// For rosterTableNoData - If no data, this is for the AJAX of a submitted sign up form
+			if($i == 0)
+			{
+				echo '</div>';
+			}
 
 			// If logged in and assigned to event
 			if(loggedIn())
@@ -2219,7 +2195,7 @@ if(isset($_GET['event']))
 						}
 
 						echo '
-							<form action="index.php" method="POST" name="signupForm2" id="signupForm2">
+							<form action="process.php?do=signup" method="POST" name="signupForm2" id="signupForm2">
 								<input type="hidden" name="event" value="'.$_GET["event"].'" />
 								<p>What costume will you wear?</p>
 								<select name="costume">

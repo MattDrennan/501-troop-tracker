@@ -127,7 +127,7 @@ if($_GET['do'] == "modifysignup")
 			}
 
 			// Send back data
-			$array = array('success' => 'success', 'data' => $data, 'id' => $_SESSION['id'], 'status' => $_POST['status']);
+			$array = array('success' => 'success', 'data' => $data, 'id' => $_SESSION['id']);
 			echo json_encode($array);
 		}
 	}
@@ -1404,4 +1404,164 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		}
 	}
 }
+
+if(isset($_GET['do']) && $_GET['do'] == "signup")
+{
+	// When we receive a submission for an event sign up...
+	if(isset($_POST['submitSignUp']))
+	{
+		// Query the database
+		$conn->query("INSERT INTO event_sign_up (trooperid, troopid, costume, status, costume_backup) VALUES ('".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['event'])."', '".cleanInput($_POST['costume'])."', '".cleanInput($_POST['status'])."', '".cleanInput($_POST['backupcostume'])."')") or die($conn->error);
+
+		// If a shift is checked
+		// The isset prevents an notice error, where it would show if their wasn't a shift to select
+		if(isset($_POST['shiftcheckbox']))
+		{
+			if($_POST['shiftcheckbox'] != "")
+			{
+				// Query for shift boxes
+				$shift = "";
+
+				// Loop through check boxes to get data
+				foreach($_POST['shiftcheckbox'] as $key)
+				{
+					$shift = $shift . ',' . cleanInput($key);
+				}
+
+				// Cut first comma out
+				$shift = substr($shift, 1);
+
+				// Insert into database
+				$conn->query("INSERT INTO shift_trooper (troopid, trooperid, shift) VALUES ('".cleanInput($_POST['event'])."', ".cleanInput($_SESSION['id']).", '".$shift."')") or die($conn->error);
+			}
+		}
+
+		// Define data variable for below code
+		$data = "";
+
+		// Get data to send back - query the event data for the information
+
+		// Start Test Code
+
+		// Query database for event info
+		$query = "SELECT * FROM events WHERE id = '".cleanInput($_POST['event'])."'";
+		if ($result = mysqli_query($conn, $query))
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+
+				// Query database for roster info
+				$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attend, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".cleanInput($_POST['event'])."' ORDER BY status";
+				$i = 0;
+
+				if ($result2 = mysqli_query($conn, $query2))
+				{
+					while ($db2 = mysqli_fetch_object($result2))
+					{
+						// Use this for later to determine which select box to show...
+						$status = $db2->status;
+
+						// If no events to show...
+						if($i == 0)
+						{
+							$data .= '
+							<div style="overflow-x: auto;">
+							<table border="1">
+							<tr>
+								<th>Trooper Name</th>	<th>TKID</th>	<th>Costume</th>	<th>Backup Costume</th>	<th>Status</th>	<th>When</th>
+							</tr>';
+						}
+
+						$data .= '
+						<tr>
+							<td><a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a></td>	<td>'.readTKNumber($db2->tkid).'</td>	<td>'.getCostume($db2->costume).'</td>	<td>'.getCostume($db2->costume_backup).'</td>	<td id="'.$db2->trooperId.'Status">'.getStatus($db2->status).'</td>';
+
+						// Query database for shift info
+						$query3 = "SELECT shift_trooper.shift, shift_trooper.troopid, shift_trooper.trooperid FROM shift_trooper WHERE shift_trooper.trooperid = '".$db2->trooperId."' AND shift_trooper.troopid = '".$db2->troopid."'";
+
+
+						$date1 = date('Y-m-d H:i:s', strtotime($db->dateStart));
+						$date2 = date('Y-m-d H:i:s', strtotime($db->dateEnd));
+
+						$days = getDatesFromRange($date1, $date2);
+
+						$l = 0;
+
+						if ($result3 = mysqli_query($conn, $query3))
+						{
+							while ($db3 = mysqli_fetch_object($result3))
+							{
+								// Formatting
+								if($l == 0)
+								{
+									$data .= '<td id="when'.$db3->trooperid.'">';
+								}
+
+								$shiftString = explode(",", $db3->shift);
+
+								for($n = 0; $n <= count($shiftString) - 1; $n += 2)
+								{
+									$shiftGet = $conn->query("SELECT shifts.id, shifts.starttime, shifts.endtime FROM shifts WHERE shifts.id = '".$shiftString[$n]."'") or die($conn->error);
+
+									$shift = mysqli_fetch_array($shiftGet);
+
+									$readTime1 = date('h:i A', strtotime($shift[1]));
+									$readTime2 = date('h:i A', strtotime($shift[2]));
+
+									$data .= $days[$shiftString[$n + 1]] . '<br />' . $readTime1 . ' - ' . $readTime2 . '<br /><br />';
+								}
+
+								$l++;
+							}
+						}
+
+						// Formatting
+						if($l == 0)
+						{
+							// Format for multiple days
+							if(count($days) > 1)
+							{
+								$data .= '<td>Canceled</td>';
+							}
+							else
+							{
+								$data .= '
+								<td>'.$days[0].'</td>';
+							}
+						}
+						else
+						{
+							$data .= '</td>';
+						}
+
+						$data .= '
+						</tr>';
+
+						$i++;
+					}
+				}
+
+				if($i == 0)
+				{
+					$data .= '
+					<b>No troopers have signed up for this event!</b>
+					<br />
+					<br />';
+				}
+				else
+				{
+					$data .= '</table>
+					</div>';
+				}
+
+				// End Test Code
+
+				// Send back data
+				$array = array('success' => 'success', 'data' => $data, 'id' => $_SESSION['id']);
+				echo json_encode($array);
+			}
+		}
+	}
+}
+
 ?>
