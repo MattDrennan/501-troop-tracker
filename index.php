@@ -240,7 +240,7 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess")
 if(isset($_GET['profile']))
 {
 	// Get data
-	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, event_sign_up.attend, event_sign_up.attended_costume, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.tkid FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".cleanInput($_GET['profile'])."' ORDER BY events.dateEnd";
+	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, event_sign_up.attend, event_sign_up.attended_costume, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.tkid FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".cleanInput($_GET['profile'])."' AND events.closed = '1' ORDER BY events.dateEnd";
 	$i = 0;
 	if ($result = mysqli_query($conn, $query))
 	{
@@ -258,26 +258,64 @@ if(isset($_GET['profile']))
 				</tr>';
 			}
 
-			// If haven't attended the troop yet
-			if($db->attend == 0)
+			// If multiple days
+			$date1 = date('Y-m-d H:i:s', strtotime($db->dateStart));
+			$date2 = date('Y-m-d H:i:s', strtotime($db->dateEnd));
+
+			$days = getDatesFromRange($date1, $date2);
+
+			if($days > 1)
 			{
-				echo '
-				<tr>
-					<td><a href="index.php?event='.$db->troopid.'">'.$db->eventName.' (PENDING)</a></td>';
+				// Multiple day query
+				$query2 = "SELECT shift_trooper.shift, shift_trooper.troopid, shift_trooper.trooperid, shift_trooper.attend, shift_trooper.costume FROM shift_trooper WHERE shift_trooper.trooperid = '".cleanInput($_GET['profile'])."' AND shift_trooper.troopid = '".$db->eventId."'";
+
+				if ($result2 = mysqli_query($conn, $query2))
+				{
+					while ($db2 = mysqli_fetch_object($result2))
+					{
+
+						$shiftString = explode(",", substr($db2->attend, 3));
+						$shiftStringCostume = explode(",", substr($db2->costume, 3));
+						$l = 0;
+
+						for($n = 0; $n <= count($shiftString) - 1; $n += 2)
+						{
+							$shiftGet = $conn->query("SELECT shifts.id, shifts.starttime, shifts.endtime FROM shifts WHERE shifts.id = '".$shiftString[$n]."'") or die($conn->error);
+
+							$shift = mysqli_fetch_array($shiftGet);
+
+							// Convert times
+							$readTime1 = date('h:i A', strtotime($shift[1]));
+							$readTime2 = date('h:i A', strtotime($shift[2]));
+
+							echo '
+							<tr>
+								<td><a href="index.php?event='.$db->troopid.'">'.$db->eventName.' ['.$days[$shiftString[$n + 1]].' '.$readTime1.'-'.$readTime2.']</a></td>';
+
+							echo '
+								<td>'.getCostume($db->costume).'</td>	<td>'.getCostume($shiftStringCostume[$l + $n + 2]).'</td>
+							</tr>';
+
+							// Increment i, l
+							$i++;
+							$l++;
+						}
+					}
+				}
 			}
 			else
 			{
-				// If you had attended the troop
 				echo '
 				<tr>
 					<td><a href="index.php?event='.$db->troopid.'">'.$db->eventName.'</a></td>';
+
+				echo '
+					<td>'.getCostume($db->costume).'</td>	<td>'.getCostume($db->attended_costume).'</td>
+				</tr>';
+
+				// Increment i
+				$i++;
 			}
-
-			echo '
-				<td>'.getCostume($db->costume).'</td>	<td>'.getCostume($db->attended_costume).'</td>
-			</tr>';
-
-			$i++;
 		}
 	}
 
@@ -293,6 +331,12 @@ if(isset($_GET['profile']))
 		echo '
 		</table>
 		</div>
+
+		<br />
+
+		<b>Total Finished Troops:</b> ' . $i . '
+
+		<br />
 
 		<h2 class="tm-section-header">Awards</h2>
 		<ul>';
@@ -660,7 +704,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		<p><b>Wedding Troops:</b> '.$wedding_get->num_rows.'</p>
 		<p><b>Birthday Troops:</b> '.$birthday_get->num_rows.'</p>
 		<p><b>Other Troops:</b> '.$other_get->num_rows.'</p>
-		<p><b>Total Troops:</b> '.$i.'</p>';
+		<p><b>Total Finished Troops:</b> '.$i.'</p>';
 	}
 	else
 	{
@@ -2555,23 +2599,31 @@ else
 								// Check 2 - check did not attend data
 								$check2 = true;
 
-								// Loop through attend
-								for($j = 0; $j <= count($checkAttend) - 1; $j += 2)
+								// Do not loop through did not attend, if no data
+								if(count($checkAttend) > 1)
 								{
-									// Inside shift
-									if($checkAttend[$j] == $shiftString[$n] && $checkAttend[$j + 1] == $shiftString[$n + 1])
+									// Loop through attend
+									for($j = 0; $j <= count($checkAttend) - 1; $j += 2)
 									{
-										$check1 = false;
+										// Inside shift
+										if($checkAttend[$j] == $shiftString[$n] && $checkAttend[$j + 1] == $shiftString[$n + 1])
+										{
+											$check1 = false;
+										}
 									}
 								}
 
-								// Loop through did not attend
-								for($j = 0; $j <= count($checkAttend) - 1; $j += 2)
+								// Do not loop through did not attend, if no data
+								if(count($checkDidNotAttend) > 1)
 								{
-									// Inside shift
-									if($checkDidNotAttend[$j] == $shiftString[$n] && $checkDidNotAttend[$j + 1] == $shiftString[$n + 1])
+									// Loop through did not attend
+									for($j = 0; $j <= count($checkDidNotAttend) - 1; $j += 2)
 									{
-										$check2 = false;
+										// Inside shift
+										if($checkDidNotAttend[$j] == $shiftString[$n] && $checkDidNotAttend[$j + 1] == $shiftString[$n + 1])
+										{
+											$check2 = false;
+										}
 									}
 								}
 
