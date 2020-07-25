@@ -522,11 +522,9 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 
 				$shifts = mysqli_fetch_array($shift_get);
 
-				$shifts = substr($shifts['attend'], 3);
+				$shifts = explode(",", $shifts['attend']);
 
-				$shifts = explode(",", $shifts);
-
-				$shifts = count($shifts)/2;
+				$shifts = (count($shifts)) - 1;
 
 				// End conversion
 
@@ -539,6 +537,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 				if($shifts > 0)
 				{
 					$troopsAttended += $shifts;
+					echo 'test';
 				}
 				else
 				{
@@ -1804,7 +1803,7 @@ if(isset($_POST['submitConfirmList']))
 		for($i = 0; $i < $n; $i++)
 		{
 			// Query the database
-			$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costume'])."', attend = '1' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($list[$i])."'") or die($conn->error);
+			$conn->query("UPDATE event_sign_up SET attended_costume = '".cleanInput($_POST['costume'])."', attend = '1' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($list[$i])."'") or die($conn->error);
 		}
 	}
 
@@ -1973,6 +1972,10 @@ if(isset($_GET['event']))
 			{
 				while ($db2 = mysqli_fetch_object($result2))
 				{
+					// Use this for later to determine which select box to show...
+					$status = $db2->status;
+
+					// If no events to show...
 					if($i == 0)
 					{
 						echo '
@@ -2096,7 +2099,7 @@ if(isset($_GET['event']))
 							if(count($days) > 1)
 							{
 								echo '
-								<p>Make Adjustments:</p>
+								<h2>Make Adjustments:</h2>
 
 								<form action="process.php?do=modifysignup" name="modifysignup" id="modifysignup" method="POST">
 
@@ -2112,8 +2115,8 @@ if(isset($_GET['event']))
 									if($db->limitedEvent != 1)
 									{
 										echo '
-											<option value="0">I\'ll be there!</option>
-											<option value="1">Tentative</option>';
+											<option value="0" '.echoSelect($status, 0).'>I\'ll be there!</option>
+											<option value="1" '.echoSelect($status, 1).'>Tentative</option>';
 									}
 									else
 									{
@@ -2724,7 +2727,7 @@ Website created and maintained by Matthew Drennan (TK52233). If you encounter an
 </p>
 
 <p style="text-align: center;">
-<a href="https://github.com/MattDrennan/501-troop-tracker"><img src="images/github.png" alt="Help contribute on GitHub.com!" /><br />Help contribute on GitHub.com!</a>
+<a href="https://github.com/MattDrennan/501-troop-tracker" target="_blank"><img src="images/github.png" alt="Help contribute on GitHub.com!" /><br />Help contribute on GitHub.com!</a>
 </p>
 </section>
 
@@ -3694,7 +3697,7 @@ $(document).ready(function()
 				            	$("#confirmArea").html("");
 				            }
 
-				            alert(data);
+				            alert("Troops confirmation submitted!");
 			        	}
 					}
 				});
@@ -3737,7 +3740,7 @@ $(document).ready(function()
 			            	$("#confirmArea").html("");
 			            }
 
-			            alert(data);
+			            alert("Troops confirmation submitted!");
 			        }
 				}
 			});

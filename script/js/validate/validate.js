@@ -509,6 +509,47 @@ $(function() {
     }
   });
 
+  $("form[name='signupForm2']").validate({
+    // Specify validation rules
+    rules: {
+      // The key name on the left side is the name attribute
+      // of an input field. Validation rules are defined
+      // on the right side
+      costume: {
+        required: true,
+        digits: true
+      },
+      status: {
+        required: true,
+        range: [0, 5]
+      },
+      "shiftcheckbox[]": {
+        required: true,
+        minlength: 1
+      }
+    },
+    // Specify validation error messages
+    messages: {
+      costume: "Please choose a costume.",
+      status: "Please choose your status.",
+      "shiftcheckbox[]": "You must select a day and shift."
+    },
+    // Make sure the form is submitted to the destination defined
+    // in the "action" attribute of the form when valid
+    submitHandler: function(form) {
+        $.ajax({
+          type: "POST",
+          url: form.action,
+          data: $(form).serialize() + "&submitSignUp=1",
+          success: function(data)
+          {
+            $("#signeduparea").show();
+            $("#signuparea").hide();
+          }
+        });
+    }
+  });
+
   $("form[name='cancelForm']").validate({
     // Specify validation rules
     rules: {
@@ -536,7 +577,6 @@ $(function() {
           success: function(data)
           {
             $("#signeduparea").html("<p><b>You have canceled this troop.</b></p>");
-            console.log(id);
             $("#" + id + "Status").html("Canceled");
           }
         });

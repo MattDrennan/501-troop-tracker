@@ -5,6 +5,10 @@ _07/24/2020_
 -Added GitHub.com link at the bottom of the page
 -Added "(PENDING)" to the troop tracker, where troops haven't been counted yet
 -Fixed bug where a div would display when a specific squad was requested and there were no events to display
+-Fixed mistake where finishing an event marked it as "2" rather than "1", same with canceling an event.
+-Added troop confirmation message when approving troops
+-Fixed troop count with multiple shifts
+-Fixed a multiple day troop issue where it would not show the correct status while making an adjustment
 
 _07/21/2020
 
