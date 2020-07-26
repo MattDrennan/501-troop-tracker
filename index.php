@@ -2340,6 +2340,12 @@ else
 				// Get number of troopers at event
 				$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".$db->id."'");
 
+				// Get the number of days
+				$date1 = date('Y-m-d H:i:s', strtotime($db->dateStart));
+				$date2 = date('Y-m-d H:i:s', strtotime($db->dateEnd));
+
+				$days = getDatesFromRange($date1, $date2);
+
 				echo '<div style="border: 1px solid gray; margin-bottom: 10px;">';
 
 				// No squad set
@@ -2347,9 +2353,113 @@ else
 				{
 					echo '<a href="index.php?event=' . $db->id . '">' .date('M d, Y', strtotime($db->dateStart)). ' - '.date('M d, Y', strtotime($db->dateEnd)).''.'<br />' . $db->name . '</a>';
 
-					if($getNumOfTroopers->num_rows <= 1)
+					// If more than one day
+					if($days > 1)
 					{
-						echo '<br /><span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
+						// Multiple day query
+						$query2 = "SELECT shifts.starttime, shifts.endtime, shifts.id, shifts.troopid, shift_trooper.shift, shift_trooper.troopid FROM shifts LEFT JOIN shift_trooper ON shifts.troopid = shift_trooper.troopid WHERE shift_trooper.troopid = '".$db->id."'";
+
+						// Days and shifts that exist
+						$dayShiftArray = array();
+						$dayShiftPickedArray = array();
+
+						if ($result2 = mysqli_query($conn, $query2))
+						{
+							while ($db2 = mysqli_fetch_object($result2))
+							{
+								// Shift string
+								$shiftString = explode(",", $db2->shift);
+
+								for($n = 0; $n <= count($shiftString) - 1; $n += 2)
+								{
+									// Loop through days ($l)
+									for($l = 0; $l <= count($days) - 1; $l++)
+									{
+										// Populate days and shifts
+										if(!in_array($l . ',' . $db2->id, $dayShiftArray))
+										{
+											array_push($dayShiftArray, $l . ',' . $db2->id);
+										}
+
+										// If day ($l) equals day in string and also equals shift in string
+										if($l == $shiftString[$n + 1] && $shiftString[$n] == $db2->id)
+										{
+											// Loop through days and shifts
+											for($k = 0; $k <= count($dayShiftArray) - 1; $k++)
+											{
+												// Seperate day and shift
+												$kCheck = explode(",", $dayShiftArray[$k]);
+
+												// Check if day and shift exist
+												if($kCheck[0] == $l && $kCheck[1] == $db2->id)
+												{
+													array_push($dayShiftPickedArray, $kCheck[0] . ',' . $kCheck[1]);
+												}	
+											}
+										}
+									}
+								}
+							}
+						}
+
+						// Sort the array
+						sort($dayShiftArray);
+
+						// Display
+						echo '
+						<br /><span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS DATE/TIME:</b></span>
+
+						<ul>';
+
+						// Loop through all shifts
+						for($n = 0; $n <= count($dayShiftArray) - 1; $n++)
+						{
+							// Count how many troopers picked this shift
+							$isMoreThan = 0;
+
+							// Loop through picked shifts
+							for($j = 0; $j <= count($dayShiftPickedArray) - 1; $j++)
+							{
+								if($dayShiftArray[$n] == $dayShiftPickedArray[$j])
+								{
+									// Increment $isMoreThan
+									$isMoreThan++;
+								}
+							}
+
+							// If less than or equal to one trooper, show message
+							if($isMoreThan <= 1)
+							{
+								// Explode the value to get information
+								$dateNeed = explode(",", $dayShiftArray[$n]);
+
+								$shiftGet = $conn->query("SELECT shifts.id, shifts.starttime, shifts.endtime FROM shifts WHERE shifts.id = '".$dateNeed[1]."'") or die($conn->error);
+
+								$shift = mysqli_fetch_array($shiftGet);
+
+								// Convert times
+								$readTime1 = date('h:i A', strtotime($shift[1]));
+								$readTime2 = date('h:i A', strtotime($shift[2]));
+
+								echo '
+								<li>
+								'.$days[$dateNeed[0]].' - '.$readTime1.' - '.$readTime2.'
+								</li>';
+							}
+
+							$isMoreThan = 0;	
+						}
+
+						echo '
+						</ul>';
+					}
+					else
+					{
+						// If one day
+						if($getNumOfTroopers->num_rows <= 1)
+						{
+							echo '<br /><span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
+						}
 					}
 
 					$i++;
@@ -2361,9 +2471,113 @@ else
 					{
 						echo '<a href="index.php?event=' . $db->id . '">' .date('M d, Y', strtotime($db->dateStart)). ' - '.date('M d, Y', strtotime($db->dateEnd)).''.'<br />' . $db->name . '</a>';
 
-						if($getNumOfTroopers->num_rows <= 1)
+						// If more than one day
+						if($days > 1)
 						{
-							echo '<br /><span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
+							// Multiple day query
+							$query2 = "SELECT shifts.starttime, shifts.endtime, shifts.id, shifts.troopid, shift_trooper.shift, shift_trooper.troopid FROM shifts LEFT JOIN shift_trooper ON shifts.troopid = shift_trooper.troopid WHERE shift_trooper.troopid = '".$db->id."'";
+
+							// Days and shifts that exist
+							$dayShiftArray = array();
+							$dayShiftPickedArray = array();
+
+							if ($result2 = mysqli_query($conn, $query2))
+							{
+								while ($db2 = mysqli_fetch_object($result2))
+								{
+									// Shift string
+									$shiftString = explode(",", $db2->shift);
+
+									for($n = 0; $n <= count($shiftString) - 1; $n += 2)
+									{
+										// Loop through days ($l)
+										for($l = 0; $l <= count($days) - 1; $l++)
+										{
+											// Populate days and shifts
+											if(!in_array($l . ',' . $db2->id, $dayShiftArray))
+											{
+												array_push($dayShiftArray, $l . ',' . $db2->id);
+											}
+
+											// If day ($l) equals day in string and also equals shift in string
+											if($l == $shiftString[$n + 1] && $shiftString[$n] == $db2->id)
+											{
+												// Loop through days and shifts
+												for($k = 0; $k <= count($dayShiftArray) - 1; $k++)
+												{
+													// Seperate day and shift
+													$kCheck = explode(",", $dayShiftArray[$k]);
+
+													// Check if day and shift exist
+													if($kCheck[0] == $l && $kCheck[1] == $db2->id)
+													{
+														array_push($dayShiftPickedArray, $kCheck[0] . ',' . $kCheck[1]);
+													}	
+												}
+											}
+										}
+									}
+								}
+							}
+
+							// Sort the array
+							sort($dayShiftArray);
+
+							// Display
+							echo '
+							<br /><span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS DATE/TIME:</b></span>
+
+							<ul>';
+
+							// Loop through all shifts
+							for($n = 0; $n <= count($dayShiftArray) - 1; $n++)
+							{
+								// Count how many troopers picked this shift
+								$isMoreThan = 0;
+
+								// Loop through picked shifts
+								for($j = 0; $j <= count($dayShiftPickedArray) - 1; $j++)
+								{
+									if($dayShiftArray[$n] == $dayShiftPickedArray[$j])
+									{
+										// Increment $isMoreThan
+										$isMoreThan++;
+									}
+								}
+
+								// If less than or equal to one trooper, show message
+								if($isMoreThan <= 1)
+								{
+									// Explode the value to get information
+									$dateNeed = explode(",", $dayShiftArray[$n]);
+
+									$shiftGet = $conn->query("SELECT shifts.id, shifts.starttime, shifts.endtime FROM shifts WHERE shifts.id = '".$dateNeed[1]."'") or die($conn->error);
+
+									$shift = mysqli_fetch_array($shiftGet);
+
+									// Convert times
+									$readTime1 = date('h:i A', strtotime($shift[1]));
+									$readTime2 = date('h:i A', strtotime($shift[2]));
+
+									echo '
+									<li>
+									'.$days[$dateNeed[0]].' - '.$readTime1.' - '.$readTime2.'
+									</li>';
+								}
+
+								$isMoreThan = 0;	
+							}
+
+							echo '
+							</ul>';
+						}
+						else
+						{
+							// If one day
+							if($getNumOfTroopers->num_rows <= 1)
+							{
+								echo '<br /><span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
+							}
 						}
 
 						$i2++;
