@@ -1,9 +1,15 @@
 **Changelog**
 
+_07/26/2020_
+
+-Fixed a mistake where it only loaded TROOPER ID '1' for troop confirmations
+-Added AJAX support for when you attest to attending troops
+
 _07/25/2020_
 
 -When you submit a sign up form, the data loads on the page without a refresh
 -Added total troops to profile
+-Made several fixes to approving troops after completion
 
 _07/24/2020_
 

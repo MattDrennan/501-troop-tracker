@@ -1564,4 +1564,290 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 	}
 }
 
+if(isset($_GET['do']) && $_GET['do'] == "confirmList")
+{
+	// Confirm from confirm list
+	if(isset($_POST['submitConfirmList']))
+	{
+		// Create arrays
+		$list = [];
+		$list2 = [];
+
+		// If set to avoid error
+		if(isset($_POST['confirmList']))
+		{
+			$list = $_POST['confirmList'];
+		}
+
+		// If set to avoid error
+		if(isset($_POST['confirmShift']))
+		{
+			$list2 = $_POST['confirmShift'];
+		}
+
+		if(!empty($list)) 
+		{
+			$n = count($list);
+
+			for($i = 0; $i < $n; $i++)
+			{
+				// Query the database
+				$conn->query("UPDATE event_sign_up SET attended_costume = '".cleanInput($_POST['costume'])."', attend = '1' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($list[$i])."'") or die($conn->error);
+			}
+		}
+
+		if(!empty($list2)) 
+		{
+			// Get array count
+			$n = count($list2);
+
+			for($i = 0; $i < $n; $i++)
+			{
+				// Make the value readable
+				$arraySplit = explode(",", $list2[$i]);
+
+				// Query the shift database
+				$conn->query("UPDATE shift_trooper SET costume = CONCAT(costume, ',".$arraySplit[0].",".$arraySplit[1].",".cleanInput($_POST['costume'])."'), attend = CONCAT(attend, ',".$arraySplit[0].",".$arraySplit[1]."') WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($arraySplit[2])."'") or die($conn->error);
+
+				// Load shift trooper to get data
+				$shiftGet = $conn->query("SELECT * FROM shift_trooper WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($arraySplit[2])."'") or die($conn->error);
+				$shift = mysqli_fetch_array($shiftGet);
+
+				// Count values in shift
+				$shiftCount = floor(count(explode(",", $shift['shift']))/2);
+				$attendCount = floor(count(explode(",", substr($shift['attend'], 3)))/2);
+				$didNotCount = floor(count(explode(",", substr($shift['didNotAttend'], 3)))/2);
+
+				// Process the data / Did they attend the troop in a multi-troop?
+				// Add all troops together
+				$allTroops = $attendCount + $didNotCount;
+
+				// All troops accounted for
+				if($allTroops == $shiftCount)
+				{
+					if($attendCount == 0)
+					{
+						// Query the event sign up database to say did not attend
+						$conn->query("UPDATE event_sign_up SET attend = '2' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($arraySplit[2])."'") or die($conn->error);
+					}
+					else
+					{
+						// Query the event sign up database to say did not attend
+						$conn->query("UPDATE event_sign_up SET attend = '1' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($arraySplit[2])."'") or die($conn->error);
+					}
+				}
+			}
+		}
+	}
+
+	// Delete from confirm list
+	if(isset($_POST['submitConfirmListDelete']))
+	{
+		// Create arrays
+		$list = [];
+		$list2 = [];
+
+		// If set to avoid error
+		if(isset($_POST['confirmList']))
+		{
+			$list = $_POST['confirmList'];
+		}
+
+		// If set to avoid error
+		if(isset($_POST['confirmShift']))
+		{
+			$list2 = $_POST['confirmShift'];
+		}
+
+		if(!empty($list)) 
+		{
+			$n = count($list);
+
+			for($i = 0; $i < $n; $i++)
+			{
+				// Query the database
+				$conn->query("UPDATE event_sign_up SET attend = '2' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($list[$i])."'") or die($conn->error);
+			}
+		}
+
+		if(!empty($list2)) 
+		{
+			// Get array count
+			$n = count($list2);
+
+			for($i = 0; $i < $n; $i++)
+			{
+				// Make the value readable
+				$arraySplit = explode(",", $list2[$i]);
+
+				// Query the shift database add did not attend to database
+				$conn->query("UPDATE shift_trooper SET didNotAttend = CONCAT(didNotAttend, ',".$arraySplit[0].",".$arraySplit[1]."') WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($arraySplit[2])."'") or die($conn->error);
+
+				// Load shift trooper to get data
+				$shiftGet = $conn->query("SELECT * FROM shift_trooper WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($arraySplit[2])."'") or die($conn->error);
+				$shift = mysqli_fetch_array($shiftGet);
+
+				// Count values in shift
+				$shiftCount = floor(count(explode(",", $shift['shift']))/2);
+				$attendCount = floor(count(explode(",", substr($shift['attend'], 3)))/2);
+				$didNotCount = floor(count(explode(",", substr($shift['didNotAttend'], 3)))/2);
+
+				// Process the data / Did they attend the troop in a multi-troop?
+				// Add all troops together
+				$allTroops = $attendCount + $didNotCount;
+
+				// All troops accounted for
+				if($allTroops == $shiftCount)
+				{
+					if($attendCount == 0)
+					{
+						// Query the event sign up database to say did not attend
+						$conn->query("UPDATE event_sign_up SET attend = '2' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($arraySplit[2])."'") or die($conn->error);
+					}
+					else
+					{
+						// Query the event sign up database to say did not attend
+						$conn->query("UPDATE event_sign_up SET attend = '1' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($arraySplit[2])."'") or die($conn->error);
+					}
+				}
+			}
+		}
+	}
+
+	// Send back AJAX data
+
+	// What we are going to send back
+	$dataMain = "";
+
+	// Load events that need confirmation
+	$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND attend = 0 AND events.closed = 1";
+
+	if ($result = mysqli_query($conn, $query))
+	{
+		// Number of results total
+		$i = 0;
+
+		// Number of results within shift_trooper
+		$l = 0;
+
+		// Count how many have data from user
+		$m = 0;
+
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Load shifts if applicable
+			// Query database for shift info
+			$query3 = "SELECT shift_trooper.id, shift_trooper.shift, shift_trooper.troopid, shift_trooper.trooperid, shift_trooper.attend, shift_trooper.didNotAttend FROM shift_trooper WHERE shift_trooper.trooperid = '".$_SESSION['id']."' AND shift_trooper.troopid = '".$db->eventId."'";
+
+
+			$date1 = date('Y-m-d H:i:s', strtotime($db->dateStart));
+			$date2 = date('Y-m-d H:i:s', strtotime($db->dateEnd));
+
+			$days = getDatesFromRange($date1, $date2);
+
+			$data = "";
+
+			if($result3 = mysqli_query($conn, $query3))
+			{
+				while ($db3 = mysqli_fetch_object($result3))
+				{
+					// Array of shifts
+					$shiftString = explode(",", $db3->shift);
+
+					for($n = 0; $n <= count($shiftString) - 1; $n += 2)
+					{
+						$shiftGet = $conn->query("SELECT shifts.id, shifts.starttime, shifts.endtime FROM shifts WHERE shifts.id = '".$shiftString[$n]."'") or die($conn->error);
+
+						$shift = mysqli_fetch_array($shiftGet);
+
+						// The dates
+						$readTime1 = date('h:i A', strtotime($shift[1]));
+						$readTime2 = date('h:i A', strtotime($shift[2]));
+
+						// This may be able to be deleted - keep this until further notice - 07/26/2020
+						//$data .= '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . $days[$shiftString[$n + 1]] . '<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="confirmShift[]" id="confirmShift_'.$shift[0].'" value="'.$shift[0].','.str_replace(" ", "", $shiftString[$n + 1]).','.$db->eventId.'" /> ' . $readTime1 . ' - ' . $readTime2 . '<br /><br />';
+
+						$checkAttend = explode(",", substr($db3->attend, 3));
+						$checkDidNotAttend = explode(",", substr($db3->didNotAttend, 3));
+
+						// Check 1 - check attend data
+						$check1 = true;
+						// Check 2 - check did not attend data
+						$check2 = true;
+
+						// Do not loop through did not attend, if no data
+						if(count($checkAttend) > 1)
+						{
+							// Loop through attend
+							for($j = 0; $j <= count($checkAttend) - 1; $j += 2)
+							{
+								// Inside shift
+								if($checkAttend[$j] == $shiftString[$n] && $checkAttend[$j + 1] == $shiftString[$n + 1])
+								{
+									$check1 = false;
+								}
+							}
+						}
+
+						// Do not loop through did not attend, if no data
+						if(count($checkDidNotAttend) > 1)
+						{
+							// Loop through did not attend
+							for($j = 0; $j <= count($checkDidNotAttend) - 1; $j += 2)
+							{
+								// Inside shift
+								if($checkDidNotAttend[$j] == $shiftString[$n] && $checkDidNotAttend[$j + 1] == $shiftString[$n + 1])
+								{
+									$check2 = false;
+								}
+							}
+						}
+
+						if($check1 && $check2)
+						{
+							$data .= '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . $days[$shiftString[$n + 1]] . '<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="confirmShift[]" id="confirmShift_'.$shift[0].'" value="'.$shift[0].','.str_replace(" ", "", $shiftString[$n + 1]).','.$db->eventId.'" /> ' . $readTime1 . ' - ' . $readTime2 . '<br /><br />';
+
+							$m++;
+						}
+					}
+
+					$l++;
+				}
+			}
+
+			// If a shift exists to attest to
+			$i++;
+
+			// If a multiple day troop
+			if($l > 0)
+			{
+				// If has data
+				if($m > 0)
+				{
+					$dataMain .= '
+					<div name="confirmListBox_'.$db->eventId.'" id="confirmListBox_'.$db->eventId.'">'.$db->name.'<br /><br />' . $data;
+				}
+			}
+			else
+			{
+				// If not a multiple day troop
+				$dataMain .= '
+				<div name="confirmListBox_'.$db->eventId.'" id="confirmListBox_'.$db->eventId.'">
+					<input type="checkbox" name="confirmList[]" id="confirmList_'.$db->eventId.'" value="'.$db->eventId.'" /> '.$db->name.'<br /><br />';
+			}
+
+			// End load shifts
+
+			$dataMain .= '
+			</div>';
+		}
+	}
+
+	// Send back data
+	$array = array('success' => 'success', 'data' => $dataMain, 'id' => $_SESSION['id']);
+	echo json_encode($array);
+
+	// End send back AJAX data
+}
+
 ?>
