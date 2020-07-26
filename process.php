@@ -1410,6 +1410,16 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 	// When we receive a submission for an event sign up...
 	if(isset($_POST['submitSignUp']))
 	{
+		// Prevent bug of getting signed up twice
+		$eventCheck = inEvent(cleanInput($_SESSION['id']), cleanInput($_POST['event']));
+
+		if($eventCheck['inTroop'] == 1)
+		{
+			die("YOU ARE ALREADY IN THIS TROOP!");
+		}
+		
+		// End prevent bug of getting signed up twice
+
 		// Query the database
 		$conn->query("INSERT INTO event_sign_up (trooperid, troopid, costume, status, costume_backup) VALUES ('".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['event'])."', '".cleanInput($_POST['costume'])."', '".cleanInput($_POST['status'])."', '".cleanInput($_POST['backupcostume'])."')") or die($conn->error);
 

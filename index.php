@@ -2354,7 +2354,7 @@ else
 					echo '<a href="index.php?event=' . $db->id . '">' .date('M d, Y', strtotime($db->dateStart)). ' - '.date('M d, Y', strtotime($db->dateEnd)).''.'<br />' . $db->name . '</a>';
 
 					// If more than one day
-					if($days > 1)
+					if(count($days) > 1)
 					{
 						// Multiple day query
 						$query2 = "SELECT shifts.starttime, shifts.endtime, shifts.id, shifts.troopid, shift_trooper.shift, shift_trooper.troopid FROM shifts LEFT JOIN shift_trooper ON shifts.troopid = shift_trooper.troopid WHERE shift_trooper.troopid = '".$db->id."'";
@@ -2472,7 +2472,7 @@ else
 						echo '<a href="index.php?event=' . $db->id . '">' .date('M d, Y', strtotime($db->dateStart)). ' - '.date('M d, Y', strtotime($db->dateEnd)).''.'<br />' . $db->name . '</a>';
 
 						// If more than one day
-						if($days > 1)
+						if(count($days) > 1)
 						{
 							// Multiple day query
 							$query2 = "SELECT shifts.starttime, shifts.endtime, shifts.id, shifts.troopid, shift_trooper.shift, shift_trooper.troopid FROM shifts LEFT JOIN shift_trooper ON shifts.troopid = shift_trooper.troopid WHERE shift_trooper.troopid = '".$db->id."'";
