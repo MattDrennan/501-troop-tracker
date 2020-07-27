@@ -4,6 +4,11 @@ _07/26/2020_
 
 -Fixed a mistake where it only loaded TROOPER ID '1' for troop confirmations
 -Added AJAX support for when you attest to attending troops
+-Fixed a bug where a user could sign up more than once
+-Added "Not Picked" status for hand picked events
+-After approving an event as attend, the status will be changed to reflect that
+-Multiple day events can no longer be hand picked
+-Multiple day events can no longer span backwards
 
 _07/25/2020_
 

@@ -324,17 +324,21 @@ function getStatus($value)
 	{
 		$returnValue = "Tentative";
 	}
-	if($value == 3)
+	else if($value == 3)
 	{
 		$returnValue = "Attended";
 	}
-	if($value == 4)
+	else if($value == 4)
 	{
 		$returnValue = "Canceled";
 	}
-	if($value == 5)
+	else if($value == 5)
 	{
 		$returnValue = "Pending";
+	}
+	else if($value == 6)
+	{
+		$returnValue = "Not Picked";
 	}
 
 	return $returnValue;

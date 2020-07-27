@@ -126,6 +126,15 @@ $(function() {
               $("#limitMando").val("9999");
               $("#limitDroid").val("9999");
               $("#referred").val("");
+
+              // Clear shift boxes
+              $("#time1a").val("option");
+              $("#time1b").val("option");
+              $("#time2a").val("option");
+              $("#time2b").val("option");
+              $("#time3a").val("option");
+              $("#time3b").val("option");
+              $("#shiftsetup").hide();
             }
 
             // Alert to success

@@ -861,6 +861,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 								<option value="3" '.echoSelect(3, $db->status).'>Attended</option>
 								<option value="4" '.echoSelect(4, $db->status).'>Canceled</option>
 								<option value="5" '.echoSelect(5, $db->status).'>Pending</option>
+								<option value="6" '.echoSelect(6, $db->status).'>Not Picked</option>
 							</select>
 						</div>
 					</td>
@@ -1417,7 +1418,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 		{
 			die("YOU ARE ALREADY IN THIS TROOP!");
 		}
-		
+
 		// End prevent bug of getting signed up twice
 
 		// Query the database
@@ -1602,7 +1603,7 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmList")
 			for($i = 0; $i < $n; $i++)
 			{
 				// Query the database
-				$conn->query("UPDATE event_sign_up SET attended_costume = '".cleanInput($_POST['costume'])."', attend = '1' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($list[$i])."'") or die($conn->error);
+				$conn->query("UPDATE event_sign_up SET attended_costume = '".cleanInput($_POST['costume'])."', attend = '1', status = '3' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($list[$i])."'") or die($conn->error);
 			}
 		}
 
@@ -1638,12 +1639,12 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmList")
 					if($attendCount == 0)
 					{
 						// Query the event sign up database to say did not attend
-						$conn->query("UPDATE event_sign_up SET attend = '2' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($arraySplit[2])."'") or die($conn->error);
+						$conn->query("UPDATE event_sign_up SET attend = '2', status = '4' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($arraySplit[2])."'") or die($conn->error);
 					}
 					else
 					{
 						// Query the event sign up database to say did not attend
-						$conn->query("UPDATE event_sign_up SET attend = '1' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($arraySplit[2])."'") or die($conn->error);
+						$conn->query("UPDATE event_sign_up SET attend = '1', status = '3' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($arraySplit[2])."'") or die($conn->error);
 					}
 				}
 			}
@@ -1676,7 +1677,7 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmList")
 			for($i = 0; $i < $n; $i++)
 			{
 				// Query the database
-				$conn->query("UPDATE event_sign_up SET attend = '2' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($list[$i])."'") or die($conn->error);
+				$conn->query("UPDATE event_sign_up SET attend = '2', status = '4' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($list[$i])."'") or die($conn->error);
 			}
 		}
 
@@ -1712,12 +1713,12 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmList")
 					if($attendCount == 0)
 					{
 						// Query the event sign up database to say did not attend
-						$conn->query("UPDATE event_sign_up SET attend = '2' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($arraySplit[2])."'") or die($conn->error);
+						$conn->query("UPDATE event_sign_up SET attend = '2', status = '4' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($arraySplit[2])."'") or die($conn->error);
 					}
 					else
 					{
 						// Query the event sign up database to say did not attend
-						$conn->query("UPDATE event_sign_up SET attend = '1' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($arraySplit[2])."'") or die($conn->error);
+						$conn->query("UPDATE event_sign_up SET attend = '1', status = '3' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($arraySplit[2])."'") or die($conn->error);
 					}
 				}
 			}

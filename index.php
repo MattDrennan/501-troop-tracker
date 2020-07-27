@@ -3425,6 +3425,24 @@ $(document).ready(function()
 		var diff = new Date(end - start);
 		var days = diff/1000/60/60/24;
 
+		// If days is a negative number, reset back
+		if(days < 0)
+		{
+			$("#datepicker").val("");
+		}
+
+		// Lock hand picked events
+		if(days >= 1)
+		{
+			$("#limitedEvent").val(0);
+			$("#limitedEvent").prop("disabled", true);
+		}
+		else
+		{
+			$("#limitedEvent").val("null");
+			$("#limitedEvent").prop("disabled", false);
+		}
+
 		if(end != "")
 		{
 			if(days > 0)
@@ -3454,6 +3472,24 @@ $(document).ready(function()
 		var end = Date.parse($("#datepicker2").val());
 		var diff = new Date(end - start);
 		var days = diff/1000/60/60/24;
+
+		// If days is a negative number, reset back
+		if(days < 0)
+		{
+			$("#datepicker").val("");
+		}
+
+		// Lock hand picked events
+		if(days >= 1)
+		{
+			$("#limitedEvent").val(0);
+			$("#limitedEvent").prop("disabled", true);
+		}
+		else
+		{
+			$("#limitedEvent").val("null");
+			$("#limitedEvent").prop("disabled", false);
+		}
 
 		if(end != "")
 		{
