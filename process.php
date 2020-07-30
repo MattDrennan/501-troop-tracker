@@ -136,26 +136,63 @@ if($_GET['do'] == "modifysignup")
 // Approve troopers
 if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin())
 {
-	// User submitted for deletion...
+	// Award submitted for deletion...
 	if(isset($_POST['submitDeleteAward']))
 	{
 		// Query the database
 		$conn->query("DELETE FROM awards WHERE id = '".cleanInput($_POST['awardID'])."'");
+
+		// Delete from the other database
+		$conn->query("DELETE FROM award_troopers WHERE awardid = '".cleanInput($_POST['awardID'])."'");
+	}
+
+	// Add award...
+	if(isset($_POST['submitAddAward']))
+	{
+		$message = "Award added";
+
+		// Check if has value
+		if(cleanInput($_POST['awardName']) == "")
+		{
+			$message = "Award must have a name.";
+		}
+		else
+		{
+			// Query the database
+			$conn->query("INSERT INTO awards (title, icon) VALUES ('".cleanInput($_POST['awardName'])."', '".cleanInput($_POST['awardImage'])."')");
+		}
+
+		$array = array(array('message' => $message));
+		echo json_encode($array);
 	}
 
 	if(isset($_POST['submitAward']))
 	{
-		if(cleanInput($_POST['awardtitle'] != ""))
+		// Check how many rewards
+		$result = mysqli_query($conn, "SELECT count(*) FROM award_troopers WHERE trooperid = '".cleanInput($_POST['userIDAward'])."' AND awardid = '".cleanInput($_POST['awardIDAssign'])."'");
+		$num_rows = mysqli_fetch_row($result)[0];
+
+		$message = "The award was awarded successfully!";
+
+		// If no duplicates
+		if($num_rows == 0)
 		{
 			// Query the database
-			$conn->query("INSERT INTO awards (trooperid, title) VALUES ('".cleanInput($_POST['userIDAward'])."', '".cleanInput($_POST['awardtitle'])."')");
-
-			$result = mysqli_query($conn, "SELECT id, title FROM awards WHERE trooperid = '".cleanInput($_POST['userIDAward'])."' ORDER BY id DESC LIMIT 1");
-			$row = mysqli_fetch_assoc($result);
-
-			$array = array(array('id' => $row['id'], 'title' => $row['title']));
-			echo json_encode($array);
+			$conn->query("INSERT INTO award_troopers (trooperid, awardid) VALUES ('".cleanInput($_POST['userIDAward'])."', '".cleanInput($_POST['awardIDAssign'])."')");
 		}
+		else
+		{
+			$message = "Trooper already has this award!";
+		}
+
+		$array = array(array('message' => $message));
+		echo json_encode($array);
+	}
+
+	if(isset($_POST['submitEditAward']))
+	{
+		// Query the database
+		$conn->query("UPDATE awards SET title = '".cleanInput($_POST['editAwardTitle'])."', icon = '".cleanInput($_POST['editAwardImage'])."' WHERE id = '".cleanInput($_POST['awardIDEdit'])."'");
 	}
 }
 
@@ -712,6 +749,15 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 	{
 		// Query the database
 		$conn->query("DELETE FROM events WHERE id = '".cleanInput($_POST['eventId'])."'");
+
+		// Delete from sign ups - event_sign_up
+		$conn->query("DELETE FROM event_sign_up WHERE troopid = '".cleanInput($_POST['eventId'])."'");
+
+		// Delete from sign ups - shift trooper
+		$conn->query("DELETE FROM shift_trooper WHERE troopid = '".cleanInput($_POST['eventId'])."'");
+
+		// Delete from sign ups - shifts
+		$conn->query("DELETE FROM shifts WHERE troopid = '".cleanInput($_POST['eventId'])."'");
 	}
 
 	// Event submitted for cancelation...
@@ -719,6 +765,12 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 	{
 		// Query the database
 		$conn->query("UPDATE events SET closed = '2' WHERE id = '".cleanInput($_POST['eventId'])."'");
+
+		// Delete from sign ups - event_sign_up
+		$conn->query("DELETE FROM event_sign_up WHERE troopid = '".cleanInput($_POST['eventId'])."'");
+
+		// Delete from sign ups - shift trooper
+		$conn->query("DELETE FROM shift_trooper WHERE troopid = '".cleanInput($_POST['eventId'])."'");
 	}
 
 	// Event submitted for completion...
@@ -1391,6 +1443,28 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			// Convert date
 			$date1 = date('Y-m-d H:i:s', strtotime($_POST['dateStart']));
 			$date2 = date('Y-m-d H:i:s', strtotime($_POST['dateEnd']));
+
+			// Load event info - we are going to check to see if the dates have changed
+			$query = "SELECT * FROM events WHERE id = '".cleanInput($_POST['eventId'])."'";
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					// Convert date database values
+					$date1DB = date('Y-m-d H:i:s', strtotime($db->dateStart));
+					$date2DB = date('Y-m-d H:i:s', strtotime($db->dateEnd));
+
+					if($date1 != $date1DB || $date2 != $date2DB)
+					{
+						// If dates have been changed, remove users
+						// Delete from sign ups - event_sign_up
+						$conn->query("DELETE FROM event_sign_up WHERE troopid = '".cleanInput($_POST['eventId'])."'");
+
+						// Delete from sign ups - shift trooper
+						$conn->query("DELETE FROM shift_trooper WHERE troopid = '".cleanInput($_POST['eventId'])."'");
+					}
+				}
+			}
 
 			// Query the database
 			$conn->query("UPDATE events SET name = '".cleanInput($_POST['eventName'])."', venue =  '".cleanInput($_POST['eventVenue'])."', dateStart = '".cleanInput($date1)."', dateEnd = '".cleanInput($date2)."', website = '".cleanInput($_POST['website'])."', numberOfAttend = '".cleanInput($_POST['numberOfAttend'])."', requestedNumber = '".cleanInput($_POST['requestedNumber'])."', requestedCharacter = '".cleanInput($_POST['requestedCharacter'])."', secureChanging = '".cleanInput($_POST['secure'])."', blasters = '".cleanInput($_POST['blasters'])."', lightsabers = '".cleanInput($_POST['lightsabers'])."', parking = '".cleanInput($_POST['parking'])."', mobility = '".cleanInput($_POST['mobility'])."', amenities = '".cleanInput($_POST['amenities'])."', referred = '".cleanInput($_POST['referred'])."', comments = '".cleanInput($_POST['comments'])."', location = '".cleanInput($_POST['location'])."', label = '".cleanInput($_POST['label'])."', limitedEvent = '".cleanInput($_POST['limitedEvent'])."', limitTo = '".cleanInput($_POST['era'])."', limitRebels = '".cleanInput($_POST['limitRebels'])."', limit501st = '".cleanInput($_POST['limit501st'])."', limitMando = '".cleanInput($_POST['limitMando'])."', limitDroid = '".cleanInput($_POST['limitDroid'])."' WHERE id = '".cleanInput($_POST['eventIdE'])."'") or die($conn->error);

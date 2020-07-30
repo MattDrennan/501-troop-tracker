@@ -1,5 +1,13 @@
 **Changelog**
 
+_07/30/2020_
+
+-When an event is canceled or deleted, all users are removed from sign ups
+-When an event date is changed, all users are removed from sign ups
+-You can no longer change a date in the edit screen
+-Revamped award system / Added command staff tools for award system
+-Fixed a bug with profiles
+
 _07/26/2020_
 
 -Fixed a mistake where it only loaded TROOPER ID '1' for troop confirmations
@@ -9,6 +17,7 @@ _07/26/2020_
 -After approving an event as attend, the status will be changed to reflect that
 -Multiple day events can no longer be hand picked
 -Multiple day events can no longer span backwards
+-You can only see open troops on the front page now
 
 _07/25/2020_
 

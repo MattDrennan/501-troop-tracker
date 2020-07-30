@@ -264,7 +264,7 @@ if(isset($_GET['profile']))
 
 			$days = getDatesFromRange($date1, $date2);
 
-			if($days > 1)
+			if(count($days) > 1)
 			{
 				// Multiple day query
 				$query2 = "SELECT shift_trooper.shift, shift_trooper.troopid, shift_trooper.trooperid, shift_trooper.attend, shift_trooper.costume FROM shift_trooper WHERE shift_trooper.trooperid = '".cleanInput($_GET['profile'])."' AND shift_trooper.troopid = '".$db->eventId."'";
@@ -321,7 +321,7 @@ if(isset($_GET['profile']))
 
 	if($i == 0)
 	{
-		echo '<b>Nothing to show yet!</b>';
+		echo '<br /><b>Nothing to show yet!</b>';
 	}
 	else
 	{
@@ -408,12 +408,21 @@ if(isset($_GET['profile']))
 		}
 
 		// Get data from custom awards
-		$query2 = "SELECT * FROM awards WHERE trooperid = '".cleanInput($_GET['profile'])."'";
+		$query2 = "SELECT * FROM awards_troopers WHERE trooperid = '".cleanInput($_GET['profile'])."'";
 		if ($result2 = mysqli_query($conn, $query2))
 		{
 			while ($db2 = mysqli_fetch_object($result2))
 			{
-				echo '<li>'.$db2->title.'</li>';
+				// If has icon...
+				if($db2->icon == "")
+				{
+					echo '<li>'.$db2->title.'</li>';
+				}
+				else
+				{
+					echo '<li><img src="images/icons/'.$db2->icon.'" alt="'.$db2->title.'" /> '.$db2->title.'</li>';
+				}
+
 				$j++;
 			}
 		}
@@ -756,6 +765,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		// Assign an award to users
 		if(isset($_GET['do']) && $_GET['do'] == "assignawards")
 		{
+			echo '<h3>Assign Awards</h3>';
+
 			// Get data
 			$query = "SELECT * FROM troopers WHERE approved = 1 ORDER BY tkid";
 
@@ -773,8 +784,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						$getId = $db->id;
 
 						echo '
-						<h3>Assign Awards</h3>
-
 						<form action="process.php?do=assignawards" method="POST" name="awardUser" id="awardUser">
 
 						<select name="userIDAward" id="userIDAward">';
@@ -797,17 +806,116 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				echo '
 				</select>
 
-				<br /><br />
+				<br /><br />';
 
-				<input type="text" name="awardtitle" id="awardtitle" />
+				// Get data
+				$query2 = "SELECT * FROM awards ORDER BY title";
 
-				<input type="submit" name="award" id="award" value="Award!" />
+				// Amount of awards
+				$j = 0;
 
+				if ($result2 = mysqli_query($conn, $query2))
+				{
+					while ($db = mysqli_fetch_object($result2))
+					{
+						// Formatting
+						if($j == 0)
+						{
+							$getId = $db->id;
+
+							echo '<select id="awardIDAssign" name="awardIDAssign">';
+						}
+
+						echo '<option value="'.$db->id.'">'.$db->title.'</option>';
+
+						// Increment $j
+						$j++;
+					}
+				}
+
+				// If awards exist
+				if($j > 0)
+				{
+					echo '
+					</select>
+
+					<input type="submit" name="award" id="award" value="Assign!" />';
+				}
+				else
+				{
+					echo 'No awards to display.';
+				}
+			}
+
+			echo '</form>';
+
+			echo '<br /><hr /><br /><h3>Create Award</h3>
+
+			<form action="process.php?do=assignawards" method="POST" name="addAward" id="addAward">
+				<b>Award Name:</b></br />
+				<input type="text" name="awardName" id="awardName" />
+				<b>Award Image (example.png):</b></br />
+				<input type="text" name="awardImage" id="awardImage" />
+				<input type="submit" name="submitAwardAdd" id="submitAwardAdd" value="Add Award" />
+			</form>';
+
+			echo '<br /><hr /><br /><h3>Edit Award</h3>';
+
+			// Get data
+			$query = "SELECT * FROM awards ORDER BY title";
+
+			$i = 0;
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					// Formatting
+					if($i == 0)
+					{
+						echo '
+						<form action="process.php?do=assignawards" method="POST" name="awardEdit" id="awardEdit">
+
+						<select name="awardIDEdit" id="awardIDEdit">
+
+							<option value="0" SELECTED>Please select an award...</option>';
+					}
+
+					echo '<option value="'.$db->id.'" awardTitle="'.$db->title.'" awardID="'.$db->id.'" awardImage="'.$db->icon.'">'.$db->title.'</option>';
+
+					// Increment
+					$i++;
+				}
+			}
+
+			if($i == 0)
+			{
+				echo 'No awards to display.';
+			}
+			else
+			{
+				echo '
+				</select>
+
+				<div id="editAwardList" name="editAwardList" style="display: none;">
+
+				<b>Award Title:</b><br />
+				<input type="text" name="editAwardTitle" id="editAwardTitle" />
+
+				<br /><b>Award Image:</b><br />
+				<input type="text" name="editAwardImage" id="editAwardImage" />
+
+				<br />
+
+				<input type="submit" name="submitEditAward" id="submitEditAward" value="Edit Award" />
+
+				</div>
 				</form>';
 			}
 
+			echo '<br /><hr /><br /><h3>Delete Award</h3>';
+
 			// Get data
-			$query = "SELECT * FROM awards WHERE trooperid = '".$getId."' ORDER BY awarded";
+			$query = "SELECT * FROM awards ORDER BY title";
 
 			$i = 0;
 			if ($result = mysqli_query($conn, $query))
@@ -906,11 +1014,13 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<p>Location:</p>
 						<input type="text" name="location" id="location" />
 
+						<div style="display:none;">
 						<p>Date/Time Start:</p>
 						<input type="text" name="dateStart" id="datepicker" />
 
 						<p>Date/Time End:</p>
 						<input type="text" name="dateEnd" id="datepicker2" />
+						</div>
 
 						<p>Website:</p>
 						<input type="text" name="website" id="website" />
@@ -2319,12 +2429,12 @@ else
 		if(isset($_GET['squad']))
 		{
 			// Query
-			$query = "SELECT * FROM events WHERE dateStart >= CURDATE() AND squad = '".cleanInput($_GET['squad'])."' ORDER BY dateStart";
+			$query = "SELECT * FROM events WHERE dateStart >= CURDATE() AND squad = '".cleanInput($_GET['squad'])."' AND closed = '0' ORDER BY dateStart";
 		}
 		else
 		{
 			// Query
-			$query = "SELECT * FROM events WHERE dateStart >= CURDATE() ORDER BY dateStart";
+			$query = "SELECT * FROM events WHERE dateStart >= CURDATE() AND closed = '0' ORDER BY dateStart";
 		}
 
 		// Number of events loaded
@@ -2929,6 +3039,8 @@ $(document).ready(function()
 			data: form.serialize() + "&submitEdit=1",
 			success: function(data)
 			{
+				var json = JSON.parse(data);
+
 				if($("#rosterInfo").is(":hidden"))
 				{
 					//$("#submitRoster").val("Close");
@@ -2947,7 +3059,6 @@ $(document).ready(function()
 					$("#submitEdit").val("Close");
 					$("#editEventInfo").show();
 
-					var json = JSON.parse(data);
 					$("#eventIdE").val(json.id);
 					$("#eventName").val(json.name);
 					$("#eventVenue").val(json.venue);
@@ -3658,34 +3769,84 @@ $(document).ready(function()
 		});
 	});
 
-	$("#userIDAward").on("change", function()
+	// Award Edit Select Change
+	$("#awardIDEdit").on("change", function()
 	{
-		$("#awardID").empty();
+		// If click please select, hide list
+		if($("#awardIDEdit :selected").val() == 0)
+		{
+			$("#editAwardList").hide();
+		}
+		else
+		{
+			$("#editAwardList").show();
+		}
 
-		// Only used for approving area
-		$.ajax({
-			type: "POST",
-			url: "process.php?do=getawards",
-			data: "id=" + $("#userIDAward").val() + "&getawards=1",
-			dataType: "json",
-			success: function(data)
-			{
-				$.each(data, function(i, val)
-				{
-					$("#awardID").append("<option value=" + data[i].id + ">" + data[i].title + "</option>");
-				});
-				$("#awardUserDelete").show();
-			}
-		});
-
-		$("#awardUserDelete").show();
-
-  		// Show message if empty
-  		if($("#awardID").has("option").length <= 0)
-  		{
-  			$("#awardUserDelete").hide();
-  		}
+		$("#editAwardTitle").val($("#awardIDEdit :selected").attr("awardTitle"));
+		$("#editAwardImage").val($("#awardIDEdit :selected").attr("awardImage"));
 	});
+
+	$("#submitEditAward").button().click(function(e)
+	{
+		e.preventDefault();
+
+		var form = $("#awardEdit");
+		var url = form.attr("action");
+
+		var r = confirm("Are you sure you want to edit this award?");
+
+		if (r == true)
+		{
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitEditAward=1",
+				success: function(data)
+				{
+					$("#awardIDEdit :selected").text($("#editAwardTitle").val());
+					$("#awardIDEdit :selected").attr("awardTitle", $("#editAwardTitle").val());
+					$("#awardIDEdit :selected").attr("awardImage", $("#editAwardImage").val());
+
+					$("#editAwardList").hide();
+
+					$("#awardIDEdit").val(0);
+
+					// Alert to success
+			  		alert("The award was edited successfully!");
+				}
+			});
+		}
+	})
+
+	$("#submitAwardAdd").button().click(function(e)
+	{
+		e.preventDefault();
+
+		var form = $("#addAward");
+		var url = form.attr("action");
+
+		var r = confirm("Are you sure you want to add this award?");
+
+		if (r == true)
+		{
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitAddAward=1",
+				success: function(data)
+				{
+					var json = JSON.parse(data);
+
+					// Clear form
+					$("#awardName").val("");
+					$("#awardImage").val("");
+
+					// Alert to success
+			  		alert(json[0].message);
+				}
+			});
+		}
+	})
 
 	$("#award").button().click(function(e)
 	{
@@ -3702,16 +3863,12 @@ $(document).ready(function()
 				type: "POST",
 				url: url,
 				data: form.serialize() + "&submitAward=1",
-				dataType: "json",
 				success: function(data)
 				{
-					$.each(data, function(i, val)
-					{
-						$("#awardID").append("<option value=" + data[i].id + ">" + data[i].title + "</option>");
-						$("#awardUserDelete").show();
-					});
+					var json = JSON.parse(data);
+
 					// Alert to success
-			  		alert("The award was awarded successfully!");
+			  		alert(json[0].message);
 				}
 			});
 		}
