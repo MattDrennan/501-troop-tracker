@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: May 06, 2020 at 11:16 PM
+-- Generation Time: Jul 30, 2020 at 06:51 PM
 -- Server version: 5.7.25
 -- PHP Version: 7.3.1
 
@@ -22,8 +22,20 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `awards` (
   `id` int(100) UNSIGNED NOT NULL,
-  `trooperid` int(100) NOT NULL,
   `title` varchar(100) NOT NULL,
+  `icon` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `award_troopers`
+--
+
+CREATE TABLE `award_troopers` (
+  `id` int(11) NOT NULL,
+  `trooperid` int(11) NOT NULL,
+  `awardid` int(11) NOT NULL,
   `awarded` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -118,11 +130,11 @@ CREATE TABLE `event_sign_up` (
   `trooperid` int(100) NOT NULL,
   `troopid` int(100) NOT NULL,
   `costume` varchar(50) NOT NULL,
-  `costume_backup` varchar(50) NOT NULL,
+  `costume_backup` varchar(50) NOT NULL DEFAULT '-1',
   `reason` text,
-  `status` int(2) NOT NULL,
+  `status` int(2) NOT NULL DEFAULT '0',
   `attend` int(2) NOT NULL DEFAULT '0',
-  `attended_costume` varchar(100) NOT NULL,
+  `attended_costume` varchar(100) NOT NULL DEFAULT '-1',
   `signuptime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -150,7 +162,7 @@ CREATE TABLE `shift_trooper` (
   `troopid` int(11) NOT NULL,
   `trooperid` int(11) NOT NULL,
   `shift` varchar(1000) NOT NULL,
-  `status` int(11) NOT NULL,
+  `status` int(11) NOT NULL DEFAULT '0',
   `attend` varchar(1000) DEFAULT '-1',
   `didNotAttend` varchar(1000) NOT NULL DEFAULT '-1',
   `costume` varchar(1000) NOT NULL DEFAULT '-1'
@@ -185,6 +197,12 @@ CREATE TABLE `troopers` (
 -- Indexes for table `awards`
 --
 ALTER TABLE `awards`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `award_troopers`
+--
+ALTER TABLE `award_troopers`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -244,6 +262,12 @@ ALTER TABLE `troopers`
 --
 ALTER TABLE `awards`
   MODIFY `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `award_troopers`
+--
+ALTER TABLE `award_troopers`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `comments`
