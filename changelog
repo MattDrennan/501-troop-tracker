@@ -1,5 +1,10 @@
 **Changelog**
 
+_07/31/2020_
+
+-Updated SQL
+-Implemented limits on troops
+
 _07/30/2020_
 
 -When an event is canceled or deleted, all users are removed from sign ups

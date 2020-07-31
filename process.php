@@ -1043,7 +1043,6 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 
 						<div id="dateAttending'.$db->trooperid.'Edit" style="display: none;">';
 
-
 					$j = 0;
 
 					foreach ($days as $key => $value)
@@ -1494,6 +1493,51 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 		}
 
 		// End prevent bug of getting signed up twice
+
+		// Check to see if this event is full
+
+		// If multiple day event
+		if(isset($_POST['shiftcheckbox']))
+		{
+			// Loop through check boxes to get data
+			foreach($_POST['shiftcheckbox'] as $key)
+			{
+				// Convert to readable
+				$shift = explode(",", $key);
+
+				// Run through isEventFull
+				if(isEventFull(cleanInput($_POST['event']), cleanInput($_POST['costume']), $shift[0], $shift[1]))
+				{
+					// Message to users
+					$data = "This event is full for the costume type selected.";
+
+					// Send back data
+					$array = array('success' => 'failed', 'data' => $data, 'id' => $_SESSION['id']);
+					echo json_encode($array);
+
+					// DO NOT CONTINUE
+					die("");
+				}
+			}
+		}
+		else
+		{
+			// If single day event
+			if(isEventFull(cleanInput($_POST['event']), cleanInput($_POST['costume'])))
+			{
+				// Message to users
+				$data = "This event is full for the costume type selected.";
+
+				// Send back data
+				$array = array('success' => 'failed', 'data' => $data, 'id' => $_SESSION['id']);
+				echo json_encode($array);
+
+				// DO NOT CONTINUE
+				die("");
+			}
+		}
+
+		// End of check to see if this event is full
 
 		// Query the database
 		$conn->query("INSERT INTO event_sign_up (trooperid, troopid, costume, status, costume_backup) VALUES ('".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['event'])."', '".cleanInput($_POST['costume'])."', '".cleanInput($_POST['status'])."', '".cleanInput($_POST['backupcostume'])."')") or die($conn->error);

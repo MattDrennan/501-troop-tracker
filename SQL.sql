@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Jul 30, 2020 at 06:51 PM
+-- Generation Time: Jul 31, 2020 at 03:13 PM
 -- Server version: 5.7.25
 -- PHP Version: 7.3.1
 
@@ -63,7 +63,8 @@ CREATE TABLE `comments` (
 CREATE TABLE `costumes` (
   `id` int(100) UNSIGNED NOT NULL,
   `costume` varchar(50) NOT NULL,
-  `era` int(2) NOT NULL
+  `era` int(2) NOT NULL,
+  `club` int(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------

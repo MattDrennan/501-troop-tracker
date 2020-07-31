@@ -555,12 +555,19 @@ $(function() {
             // Get JSON Data
             var json = JSON.parse(data);
 
-            // Put data in html
-            $("#signuparea").html(json.data);
+            if(json.success == "failed")
+            {
+              alert(json.data);
+            }
+            else
+            {
+              // Put data in html
+              $("#signuparea").html(json.data);
 
-            // Do the rest...
-            $("#signeduparea").show();
-            $("#rosterTableNoData").hide();
+              // Do the rest...
+              $("#signeduparea").show();
+              $("#rosterTableNoData").hide();
+            }
           }
         });
     }

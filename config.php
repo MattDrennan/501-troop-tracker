@@ -571,6 +571,187 @@ function sendEmail($SendTo, $Name, $Subject, $Message)
 	// END MAIL
 }
 
+// Check to see if the event is full ($eventID = ID of the event, $costumeID = costume they are going to wear, $shiftDay = day of the shift if multiple day, $shift = shift of the multiple day event)
+function isEventFull($eventID, $costumeID, $shiftDay = -1, $shift = -1)
+{
+	global $conn;
+
+	// Variables
+	$i = 0;	// 501st
+	$rl = 0;	// Rebel Legion
+	$droidb = 0;	// Droid builders
+	$mandos = 0;	// Mandos
+	$other = 0;	// Others
+	$eventFull = false;	// Is the event full?
+
+	// Query database for event info
+	$query = "SELECT * FROM events WHERE id = '".$eventID."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Query database for roster info
+			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attend, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".$eventID."' AND status != '4'";
+
+			if ($result2 = mysqli_query($conn, $query2))
+			{
+				while ($db2 = mysqli_fetch_object($result2))
+				{
+					// Query database for shift info
+					$query3 = "SELECT shift_trooper.shift, shift_trooper.troopid, shift_trooper.trooperid FROM shift_trooper WHERE shift_trooper.troopid = '".$db2->troopid."'";
+
+					$date1 = date('Y-m-d H:i:s', strtotime($db->dateStart));
+					$date2 = date('Y-m-d H:i:s', strtotime($db->dateEnd));
+
+					$days = getDatesFromRange($date1, $date2);
+
+					// If more than one day...
+					if(count($days) > 1)
+					{
+						if ($result3 = mysqli_query($conn, $query3))
+						{
+							while ($db3 = mysqli_fetch_object($result3))
+							{
+								// Our string of shifts from the database
+								$shiftString = explode(",", $db3->shift);
+
+								// Loop through string
+								for($o = 0; $o <= count($shiftString) - 1; $o += 2)
+								{
+									// Check the day and shift match
+									if($shift == $shiftString[$o + 1] && $shiftString[$o] == $shiftDay)
+									{
+										// Query costume database to add to club counts
+										$query4 = "SELECT * FROM costumes WHERE id = '".$db2->costume."'";
+										if ($result4 = mysqli_query($conn, $query4))
+										{
+											while ($db4 = mysqli_fetch_object($result4))
+											{
+												// 501st
+												if($db4->club == 0)
+												{
+													$i++;
+												}
+												// Rebel Legion
+												else if($db4->club == 1)
+												{
+													$rl++;
+												}
+												// Droid Builders
+												else if($db4->club == 2)
+												{
+													$droidb++;
+												}
+												// Mandos
+												else if($db4->club == 3)
+												{
+													$mandos++;
+												}
+												// Other
+												else if($db4->club == 4)
+												{
+													$other++;
+												}					
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+					else
+					{
+						// If not more than one day...
+						// Query costume database to add to club counts
+						$query4 = "SELECT * FROM costumes WHERE id = '".$db2->costume."'";
+						if ($result4 = mysqli_query($conn, $query4))
+						{
+							while ($db4 = mysqli_fetch_object($result4))
+							{
+								// 501st
+								if($db4->club == 0)
+								{
+									$i++;
+								}
+								// Rebel Legion
+								else if($db4->club == 1)
+								{
+									$rl++;
+								}
+								// Droid Builders
+								else if($db4->club == 2)
+								{
+									$droidb++;
+								}
+								// Mandos
+								else if($db4->club == 3)
+								{
+									$mandos++;
+								}
+								// Other
+								else if($db4->club == 4)
+								{
+									$other++;
+								}					
+							}
+						}
+					}
+				}
+			}
+
+			// Final checks
+			// Query costume database to get information on the users costume
+			$query4 = "SELECT * FROM costumes WHERE id = '".$costumeID."'";
+			if ($result4 = mysqli_query($conn, $query4))
+			{
+				while ($db4 = mysqli_fetch_object($result4))
+				{
+					// 501st
+					if($db4->club == 0)
+					{
+						if(($i + 1) > $db->limit501st)
+						{
+							$eventFull = true;
+						}
+					}
+					// Rebel Legion
+					else if($db4->club == 1)
+					{
+						if(($rl + 1) > $db->limitRebels)
+						{
+							$eventFull = true;
+						}
+					}
+					// Droid Builders
+					else if($db4->club == 2)
+					{
+						if(($droidb + 1) > $db->limitDroid)
+						{
+							$eventFull = true;
+						}
+					}
+					// Mandos
+					else if($db4->club == 3)
+					{
+						if(($mandos + 1) > $db->limitMando)
+						{
+							$eventFull = true;
+						}
+					}
+					// Other
+					else if(($other + 1) > ($db->limit501st + $db->limitRebels + $db->limitDroid + $db->limitMando))
+					{
+						$eventFull = true;
+					}							
+				}
+			}
+		}
+	}
+
+	// Return
+	return $eventFull;
+}
+
 // If logged in, update active status
 if(loggedIn())
 {
