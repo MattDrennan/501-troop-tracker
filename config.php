@@ -11,8 +11,8 @@ session_start();
 // DB Info
 $dbServer = "localhost";
 $dbUser = "root";
-$dbPassword = "root";
-$dbName = "501";
+$dbPassword = "";
+$dbName = "troop";
 
 // Connect to server
 $conn = new mysqli($dbServer, $dbUser, $dbPassword, $dbName);
@@ -571,8 +571,8 @@ function sendEmail($SendTo, $Name, $Subject, $Message)
 	// END MAIL
 }
 
-// Check to see if the event is full ($eventID = ID of the event, $costumeID = costume they are going to wear, $shiftDay = day of the shift if multiple day, $shift = shift of the multiple day event)
-function isEventFull($eventID, $costumeID, $shiftDay = -1, $shift = -1)
+// Check to see if the event is full ($eventID = ID of the event, $costumeID = costume they are going to wear)
+function isEventFull($eventID, $costumeID)
 {
 	global $conn;
 
@@ -597,103 +597,37 @@ function isEventFull($eventID, $costumeID, $shiftDay = -1, $shift = -1)
 			{
 				while ($db2 = mysqli_fetch_object($result2))
 				{
-					// Query database for shift info
-					$query3 = "SELECT shift_trooper.shift, shift_trooper.troopid, shift_trooper.trooperid FROM shift_trooper WHERE shift_trooper.troopid = '".$db2->troopid."'";
-
-					$date1 = date('Y-m-d H:i:s', strtotime($db->dateStart));
-					$date2 = date('Y-m-d H:i:s', strtotime($db->dateEnd));
-
-					$days = getDatesFromRange($date1, $date2);
-
-					// If more than one day...
-					if(count($days) > 1)
+					// Query costume database to add to club counts
+					$query4 = "SELECT * FROM costumes WHERE id = '".$db2->costume."'";
+					if ($result4 = mysqli_query($conn, $query4))
 					{
-						if ($result3 = mysqli_query($conn, $query3))
+						while ($db4 = mysqli_fetch_object($result4))
 						{
-							while ($db3 = mysqli_fetch_object($result3))
+							// 501st
+							if($db4->club == 0)
 							{
-								// Our string of shifts from the database
-								$shiftString = explode(",", $db3->shift);
-
-								// Loop through string
-								for($o = 0; $o <= count($shiftString) - 1; $o += 2)
-								{
-									// Check the day and shift match
-									if($shift == $shiftString[$o + 1] && $shiftString[$o] == $shiftDay)
-									{
-										// Query costume database to add to club counts
-										$query4 = "SELECT * FROM costumes WHERE id = '".$db2->costume."'";
-										if ($result4 = mysqli_query($conn, $query4))
-										{
-											while ($db4 = mysqli_fetch_object($result4))
-											{
-												// 501st
-												if($db4->club == 0)
-												{
-													$i++;
-												}
-												// Rebel Legion
-												else if($db4->club == 1)
-												{
-													$rl++;
-												}
-												// Droid Builders
-												else if($db4->club == 2)
-												{
-													$droidb++;
-												}
-												// Mandos
-												else if($db4->club == 3)
-												{
-													$mandos++;
-												}
-												// Other
-												else if($db4->club == 4)
-												{
-													$other++;
-												}					
-											}
-										}
-									}
-								}
+								$i++;
 							}
-						}
-					}
-					else
-					{
-						// If not more than one day...
-						// Query costume database to add to club counts
-						$query4 = "SELECT * FROM costumes WHERE id = '".$db2->costume."'";
-						if ($result4 = mysqli_query($conn, $query4))
-						{
-							while ($db4 = mysqli_fetch_object($result4))
+							// Rebel Legion
+							else if($db4->club == 1)
 							{
-								// 501st
-								if($db4->club == 0)
-								{
-									$i++;
-								}
-								// Rebel Legion
-								else if($db4->club == 1)
-								{
-									$rl++;
-								}
-								// Droid Builders
-								else if($db4->club == 2)
-								{
-									$droidb++;
-								}
-								// Mandos
-								else if($db4->club == 3)
-								{
-									$mandos++;
-								}
-								// Other
-								else if($db4->club == 4)
-								{
-									$other++;
-								}					
+								$rl++;
 							}
+							// Droid Builders
+							else if($db4->club == 2)
+							{
+								$droidb++;
+							}
+							// Mandos
+							else if($db4->club == 3)
+							{
+								$mandos++;
+							}
+							// Other
+							else if($db4->club == 4)
+							{
+								$other++;
+							}					
 						}
 					}
 				}

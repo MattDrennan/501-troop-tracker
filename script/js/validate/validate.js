@@ -126,15 +126,6 @@ $(function() {
               $("#limitMando").val("9999");
               $("#limitDroid").val("9999");
               $("#referred").val("");
-
-              // Clear shift boxes
-              $("#time1a").val("option");
-              $("#time1b").val("option");
-              $("#time2a").val("option");
-              $("#time2b").val("option");
-              $("#time3a").val("option");
-              $("#time3b").val("option");
-              $("#shiftsetup").hide();
             }
 
             // Alert to success
@@ -490,17 +481,12 @@ $(function() {
       status: {
         required: true,
         range: [0, 5]
-      },
-      "shiftcheckbox[]": {
-        required: true,
-        minlength: 1
       }
     },
     // Specify validation error messages
     messages: {
       costume: "Please choose a costume.",
-      status: "Please choose your status.",
-      "shiftcheckbox[]": "You must select a day and shift."
+      status: "Please choose your status."
     },
     // Make sure the form is submitted to the destination defined
     // in the "action" attribute of the form when valid
@@ -531,17 +517,12 @@ $(function() {
       status: {
         required: true,
         range: [0, 5]
-      },
-      "shiftcheckbox[]": {
-        required: true,
-        minlength: 1
       }
     },
     // Specify validation error messages
     messages: {
       costume: "Please choose a costume.",
-      status: "Please choose your status.",
-      "shiftcheckbox[]": "You must select a day and shift."
+      status: "Please choose your status."
     },
     // Make sure the form is submitted to the destination defined
     // in the "action" attribute of the form when valid

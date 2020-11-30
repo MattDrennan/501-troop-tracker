@@ -1,5 +1,11 @@
 **Changelog**
 
+_11/30/2020_
+
+-Removed multiple troops due to the complexity of maintaining and to simplify future updates
+-Fixed several bugs with database counts
+-You can now change the date in the command staff edit screen
+
 _07/31/2020_
 
 -Updated SQL

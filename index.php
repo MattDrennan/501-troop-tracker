@@ -31,10 +31,10 @@ echo '
 	<script src="script/lib/jquery-ui-timepicker-addon.js"></script>
 	<script src="script/js/validate/jquery.validate.min.js"></script>
 	<script src="script/js/validate/validate.js"></script>
-	<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>-->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
 	<script>
-	$( function() {
+ 	$( function() {
 		$("#datepicker").datetimepicker();
 		$("#datepicker2").datetimepicker();
 	} );
@@ -258,64 +258,16 @@ if(isset($_GET['profile']))
 				</tr>';
 			}
 
-			// If multiple days
-			$date1 = date('Y-m-d H:i:s', strtotime($db->dateStart));
-			$date2 = date('Y-m-d H:i:s', strtotime($db->dateEnd));
+			echo '
+			<tr>
+				<td><a href="index.php?event='.$db->troopid.'">'.$db->eventName.'</a></td>';
 
-			$days = getDatesFromRange($date1, $date2);
+			echo '
+				<td>'.getCostume($db->costume).'</td>	<td>'.getCostume($db->attended_costume).'</td>
+			</tr>';
 
-			if(count($days) > 1)
-			{
-				// Multiple day query
-				$query2 = "SELECT shift_trooper.shift, shift_trooper.troopid, shift_trooper.trooperid, shift_trooper.attend, shift_trooper.costume FROM shift_trooper WHERE shift_trooper.trooperid = '".cleanInput($_GET['profile'])."' AND shift_trooper.troopid = '".$db->eventId."'";
-
-				if ($result2 = mysqli_query($conn, $query2))
-				{
-					while ($db2 = mysqli_fetch_object($result2))
-					{
-
-						$shiftString = explode(",", substr($db2->attend, 3));
-						$shiftStringCostume = explode(",", substr($db2->costume, 3));
-						$l = 0;
-
-						for($n = 0; $n <= count($shiftString) - 1; $n += 2)
-						{
-							$shiftGet = $conn->query("SELECT shifts.id, shifts.starttime, shifts.endtime FROM shifts WHERE shifts.id = '".$shiftString[$n]."'") or die($conn->error);
-
-							$shift = mysqli_fetch_array($shiftGet);
-
-							// Convert times
-							$readTime1 = date('h:i A', strtotime($shift[1]));
-							$readTime2 = date('h:i A', strtotime($shift[2]));
-
-							echo '
-							<tr>
-								<td><a href="index.php?event='.$db->troopid.'">'.$db->eventName.' ['.$days[$shiftString[$n + 1]].' '.$readTime1.'-'.$readTime2.']</a></td>';
-
-							echo '
-								<td>'.getCostume($db->costume).'</td>	<td>'.getCostume($shiftStringCostume[$l + $n + 2]).'</td>
-							</tr>';
-
-							// Increment i, l
-							$i++;
-							$l++;
-						}
-					}
-				}
-			}
-			else
-			{
-				echo '
-				<tr>
-					<td><a href="index.php?event='.$db->troopid.'">'.$db->eventName.'</a></td>';
-
-				echo '
-					<td>'.getCostume($db->costume).'</td>	<td>'.getCostume($db->attended_costume).'</td>
-				</tr>';
-
-				// Increment i
-				$i++;
-			}
+			// Increment i
+			$i++;
 		}
 	}
 
@@ -325,7 +277,8 @@ if(isset($_GET['profile']))
 	}
 	else
 	{
-		$troops_get = $conn->query("SELECT id FROM event_sign_up WHERE attend = '1' AND trooperid = '".cleanInput($_GET['profile'])."'") or die($conn->error);
+		$troops_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE attend = '1' AND trooperid = '".cleanInput($_GET['profile'])."'") or die($conn->error);
+		$count = $troops_get->fetch_row();
 		$j = 0;
 
 		echo '
@@ -341,68 +294,68 @@ if(isset($_GET['profile']))
 		<h2 class="tm-section-header">Awards</h2>
 		<ul>';
 
-		if($troops_get->num_rows >= 1)
+		if($count[0] >= 1)
 		{
 			echo '<li>First Troop Completed!</li>';
 			$j++;
 		}
 
-		if($troops_get->num_rows >= 10)
+		if($count[0] >= 10)
 		{
 			echo '<li>10 Troops</li>';
 		}
 
-		if($troops_get->num_rows >= 25)
+		if($count[0] >= 25)
 		{
 			echo '<li>25 Troops</li>';
 		}
 
-		if($troops_get->num_rows >= 50)
+		if($count[0] >= 50)
 		{
 			echo '<li>50 Troops</li>';
 		}
 
-		if($troops_get->num_rows >= 75)
+		if($count[0] >= 75)
 		{
 			echo '<li>75 Troops</li>';
 		}
 
-		if($troops_get->num_rows >= 100)
+		if($count[0] >= 100)
 		{
 			echo '<li>100 Troops</li>';
 		}
 
-		if($troops_get->num_rows >= 150)
+		if($count[0] >= 150)
 		{
 			echo '<li>150 Troops</li>';
 		}
 
-		if($troops_get->num_rows >= 200)
+		if($count[0] >= 200)
 		{
 			echo '<li>200 Troops</li>';
 		}
 
-		if($troops_get->num_rows >= 250)
+		if($count[0] >= 250)
 		{
 			echo '<li>250 Troops</li>';
 		}
 
-		if($troops_get->num_rows >= 300)
+		if($count[0] >= 300)
 		{
 			echo '<li>300 Troops</li>';
 		}
 
-		if($troops_get->num_rows >= 400)
+		if($count[0] >= 400)
 		{
 			echo '<li>400 Troops</li>';
 		}
 
-		if($troops_get->num_rows >= 500)
+		if($count[0] >= 500)
 		{
 			echo '<li>500 Troops</li>';
 		}
 
-		if($troops_get->num_rows >= 501)
+		if($count[0] >= 501)
 		{
 			echo '<li>Mr./Ms. 501 Award</li>';
 		}
@@ -560,7 +513,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 					</tr>';
 				}
 
-				// Output data
+				// Output data - calculate time spent at troops
 				$date1 = new DateTime($db->dateStart);
 				$date2 = new DateTime($db->dateEnd);
 				$getDiff = $date1->diff($date2);
@@ -568,33 +521,12 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 				$time += $getDiff->h * 60;
 				$time += $getDiff->i;
 
-				// How many shifts
-				$shift_get = $conn->query("SELECT * FROM shift_trooper WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".$db->eventId."'") or die($conn->error);
-
-				// Conversion
-
-				$shifts = mysqli_fetch_array($shift_get);
-
-				$shifts = explode(",", $shifts['attend']);
-
-				$shifts = (count($shifts)) - 1;
-
-				// End conversion
-
 				echo '
 				<tr>
 					<td><a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.getCostume($db->costume).'</td>	<td>$'.$db->moneyRaised.'</td>	<td>'.floor($time/60).'H '.($time % 60).'M</td>
 				</tr>';
 
-
-				if($shifts > 0)
-				{
-					$troopsAttended += $shifts;
-				}
-				else
-				{
-					$troopsAttended++;
-				}
+				$troopsAttended++;
 				$moneyRaised += $db->moneyRaised;
 				$timeSpent += $time;
 				$i++;
@@ -660,11 +592,13 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 			$moneyRaised += $db->moneyRaised;
 
 			// How many troopers attended
-			$trooperCount_get = $conn->query("SELECT id, COUNT(*) FROM event_sign_up WHERE troopid = '".$db->troopid."' AND attend = '1'") or die($conn->error);
+			$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE troopid = '".$db->troopid."' AND attend = '1'") or die($conn->error);
+			
+			$count = $trooperCount_get->fetch_row();
 
 			echo '
 			<tr>
-				<td><a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.$trooperCount_get->num_rows.'</td>	<td>$'.$db->moneyRaised.'</td>	<td>'.floor($time/60).'H '.($time % 60).'M</td>
+				<td><a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.$count[0].'</td>	<td>$'.$db->moneyRaised.'</td>	<td>'.floor($time/60).'H '.($time % 60).'M</td>
 			</tr>';
 
 			$i++;
@@ -678,41 +612,49 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		$favoriteCostume = mysqli_fetch_array($favoriteCostume_get);
 
 		// How many troops did the user attend
-		$attended_get = $conn->query("SELECT id FROM event_sign_up WHERE attend = '1'") or die($conn->error);
-
+		$attended_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE attend = '1'") or die($conn->error);
+		$count1 = $attended_get->fetch_row();
 		// How many regular troops
-		$regular_get = $conn->query("SELECT id FROM events WHERE label = '0'") or die($conn->error);
+		$regular_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '0'") or die($conn->error);
+		$count2 = $regular_get->fetch_row();
 		// How many regular troops
-		$charity_get = $conn->query("SELECT id FROM events WHERE label = '1'") or die($conn->error);
+		$charity_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '1'") or die($conn->error);
+		$count3 = $charity_get->fetch_row();
 		// How many regular troops
-		$pr_get = $conn->query("SELECT id FROM events WHERE label = '2'") or die($conn->error);
+		$pr_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '2'") or die($conn->error);
+		$count4 = $pr_get->fetch_row();
 		// How many regular troops
-		$disney_get = $conn->query("SELECT id FROM events WHERE label = '3'") or die($conn->error);
+		$disney_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '3'") or die($conn->error);
+		$count5 = $disney_get->fetch_row();
 		// How many regular troops
-		$convention_get = $conn->query("SELECT id FROM events WHERE label = '4'") or die($conn->error);
+		$convention_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '4'") or die($conn->error);
+		$count6 = $convention_get->fetch_row();
 		// How many regular troops
-		$wedding_get = $conn->query("SELECT id FROM events WHERE label = '5'") or die($conn->error);
+		$wedding_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '5'") or die($conn->error);
+		$count7 = $wedding_get->fetch_row();
 		// How many regular troops
-		$birthday_get = $conn->query("SELECT id FROM events WHERE label = '6'") or die($conn->error);
+		$birthday_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '6'") or die($conn->error);
+		$count8 = $birthday_get->fetch_row();
 		// How many regular troops
-		$other_get = $conn->query("SELECT id FROM events WHERE label = '7'") or die($conn->error);
+		$other_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '7'") or die($conn->error);
+		$count9 = $other_get->fetch_row();
 
 		echo '
 		</table>
 		</div>
 
 		<p><b>Favorite Costume:</b> '.getCostume($favoriteCostume['costume']).'</p>
-		<p><b>Volunteers at Troops:</b> '.$attended_get->num_rows.'</p>
+		<p><b>Volunteers at Troops:</b> '.$count1[0].'</p>
 		<p><b>Money Raised:</b> $'.$moneyRaised.'</p>
 		<p><b>Time Spent:</b> '.floor($timeSpent/60).'H '.($timeSpent % 60).'M</p>
-		<p><b>Regular Troops:</b> '.$regular_get->num_rows.'</p>
-		<p><b>Charity Troops:</b> '.$charity_get->num_rows.'</p>
-		<p><b>PR Troops:</b> '.$pr_get->num_rows.'</p>
-		<p><b>Disney Troops:</b> '.$disney_get->num_rows.'</p>
-		<p><b>Convention Troops:</b> '.$convention_get->num_rows.'</p>
-		<p><b>Wedding Troops:</b> '.$wedding_get->num_rows.'</p>
-		<p><b>Birthday Troops:</b> '.$birthday_get->num_rows.'</p>
-		<p><b>Other Troops:</b> '.$other_get->num_rows.'</p>
+		<p><b>Regular Troops:</b> '.$count2[0].'</p>
+		<p><b>Charity Troops:</b> '.$count3[0].'</p>
+		<p><b>PR Troops:</b> '.$count4[0].'</p>
+		<p><b>Disney Troops:</b> '.$count5[0].'</p>
+		<p><b>Convention Troops:</b> '.$count6[0].'</p>
+		<p><b>Wedding Troops:</b> '.$count7[0].'</p>
+		<p><b>Birthday Troops:</b> '.$count8[0].'</p>
+		<p><b>Other Troops:</b> '.$count9[0].'</p>
 		<p><b>Total Finished Troops:</b> '.$i.'</p>';
 	}
 	else
@@ -1014,13 +956,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<p>Location:</p>
 						<input type="text" name="location" id="location" />
 
-						<div style="display:none;">
 						<p>Date/Time Start:</p>
 						<input type="text" name="dateStart" id="datepicker" />
 
 						<p>Date/Time End:</p>
 						<input type="text" name="dateEnd" id="datepicker2" />
-						</div>
 
 						<p>Website:</p>
 						<input type="text" name="website" id="website" />
@@ -1367,186 +1307,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<p>Date/Time End:</p>
 				<input type="text" name="dateEnd" id="datepicker2" />
-
-				<div id="shiftsetup" name="shiftsetup" style="display: none;">
-				<p>Shift Setup (Required for multi day troops):</p>
-				<select name="time1a" id="time1a">
-					<option value="" SELECTED>Please choose an option...</option>
-					<option value="00:00:00">12AM</option>
-					<option value="01:00:00">1AM</option>
-					<option value="02:00:00">2AM</option>
-					<option value="03:00:00">3AM</option>
-					<option value="04:00:00">4AM</option>
-					<option value="05:00:00">5AM</option>
-					<option value="06:00:00">6AM</option>
-					<option value="07:00:00">7AM</option>
-					<option value="08:00:00">8AM</option>
-					<option value="09:00:00">9AM</option>
-					<option value="10:00:00">10AM</option>
-					<option value="11:00:00">11AM</option>
-					<option value="12:00:00">12PM</option>
-					<option value="13:00:00">1PM</option>
-					<option value="14:00:00">2PM</option>
-					<option value="15:00:00">3PM</option>
-					<option value="16:00:00">4PM</option>
-					<option value="17:00:00">5PM</option>
-					<option value="18:00:00">6PM</option>
-					<option value="19:00:00">7PM</option>
-					<option value="20:00:00">8PM</option>
-					<option value="21:00:00">9PM</option>
-					<option value="22:00:00">10PM</option>
-					<option value="23:00:00">11PM</option>		
-				</select>
-				 - 
-				<select name="time1b" id="time1b">
-					<option value="" SELECTED>Please choose an option...</option>
-					<option value="00:00:00">12AM</option>
-					<option value="01:00:00">1AM</option>
-					<option value="02:00:00">2AM</option>
-					<option value="03:00:00">3AM</option>
-					<option value="04:00:00">4AM</option>
-					<option value="05:00:00">5AM</option>
-					<option value="06:00:00">6AM</option>
-					<option value="07:00:00">7AM</option>
-					<option value="08:00:00">8AM</option>
-					<option value="09:00:00">9AM</option>
-					<option value="10:00:00">10AM</option>
-					<option value="11:00:00">11AM</option>
-					<option value="12:00:00">12PM</option>
-					<option value="13:00:00">1PM</option>
-					<option value="14:00:00">2PM</option>
-					<option value="15:00:00">3PM</option>
-					<option value="16:00:00">4PM</option>
-					<option value="17:00:00">5PM</option>
-					<option value="18:00:00">6PM</option>
-					<option value="19:00:00">7PM</option>
-					<option value="20:00:00">8PM</option>
-					<option value="21:00:00">9PM</option>
-					<option value="22:00:00">10PM</option>
-					<option value="23:00:00">11PM</option>			
-				</select>
-
-				<div id="subshift1" style="display: none;">
-
-				<select name="time2a" id="time2a">
-					<option value="" SELECTED>Optional - Shifts</option>
-					<option value="00:00:00">12AM</option>
-					<option value="01:00:00">1AM</option>
-					<option value="02:00:00">2AM</option>
-					<option value="03:00:00">3AM</option>
-					<option value="04:00:00">4AM</option>
-					<option value="05:00:00">5AM</option>
-					<option value="06:00:00">6AM</option>
-					<option value="07:00:00">7AM</option>
-					<option value="08:00:00">8AM</option>
-					<option value="09:00:00">9AM</option>
-					<option value="10:00:00">10AM</option>
-					<option value="11:00:00">11AM</option>
-					<option value="12:00:00">12PM</option>
-					<option value="13:00:00">1PM</option>
-					<option value="14:00:00">2PM</option>
-					<option value="15:00:00">3PM</option>
-					<option value="16:00:00">4PM</option>
-					<option value="17:00:00">5PM</option>
-					<option value="18:00:00">6PM</option>
-					<option value="19:00:00">7PM</option>
-					<option value="20:00:00">8PM</option>
-					<option value="21:00:00">9PM</option>
-					<option value="22:00:00">10PM</option>
-					<option value="23:00:00">11PM</option>		
-				</select>
-				 - 
-				<select name="time2b" id="time2b">
-					<option value="" SELECTED>Optional - Shifts</option>
-					<option value="00:00:00">12AM</option>
-					<option value="01:00:00">1AM</option>
-					<option value="02:00:00">2AM</option>
-					<option value="03:00:00">3AM</option>
-					<option value="04:00:00">4AM</option>
-					<option value="05:00:00">5AM</option>
-					<option value="06:00:00">6AM</option>
-					<option value="07:00:00">7AM</option>
-					<option value="08:00:00">8AM</option>
-					<option value="09:00:00">9AM</option>
-					<option value="10:00:00">10AM</option>
-					<option value="11:00:00">11AM</option>
-					<option value="12:00:00">12PM</option>
-					<option value="13:00:00">1PM</option>
-					<option value="14:00:00">2PM</option>
-					<option value="15:00:00">3PM</option>
-					<option value="16:00:00">4PM</option>
-					<option value="17:00:00">5PM</option>
-					<option value="18:00:00">6PM</option>
-					<option value="19:00:00">7PM</option>
-					<option value="20:00:00">8PM</option>
-					<option value="21:00:00">9PM</option>
-					<option value="22:00:00">10PM</option>
-					<option value="23:00:00">11PM</option>		
-				</select>
-
-				<br />
-
-				</div>
-
-				<div id="subshift2" style="display: none;">
-
-				<select name="time3a" id="time3a">
-					<option value="" SELECTED>Optional - Shifts</option>
-					<option value="00:00:00">12AM</option>
-					<option value="01:00:00">1AM</option>
-					<option value="02:00:00">2AM</option>
-					<option value="03:00:00">3AM</option>
-					<option value="04:00:00">4AM</option>
-					<option value="05:00:00">5AM</option>
-					<option value="06:00:00">6AM</option>
-					<option value="07:00:00">7AM</option>
-					<option value="08:00:00">8AM</option>
-					<option value="09:00:00">9AM</option>
-					<option value="10:00:00">10AM</option>
-					<option value="11:00:00">11AM</option>
-					<option value="12:00:00">12PM</option>
-					<option value="13:00:00">1PM</option>
-					<option value="14:00:00">2PM</option>
-					<option value="15:00:00">3PM</option>
-					<option value="16:00:00">4PM</option>
-					<option value="17:00:00">5PM</option>
-					<option value="18:00:00">6PM</option>
-					<option value="19:00:00">7PM</option>
-					<option value="20:00:00">8PM</option>
-					<option value="21:00:00">9PM</option>
-					<option value="22:00:00">10PM</option>
-					<option value="23:00:00">11PM</option>		
-				</select>
-				 - 
-				<select name="time3b" id="time3b">
-					<option value="" SELECTED>Optional - Shifts</option>
-					<option value="00:00:00">12AM</option>
-					<option value="01:00:00">1AM</option>
-					<option value="02:00:00">2AM</option>
-					<option value="03:00:00">3AM</option>
-					<option value="04:00:00">4AM</option>
-					<option value="05:00:00">5AM</option>
-					<option value="06:00:00">6AM</option>
-					<option value="07:00:00">7AM</option>
-					<option value="08:00:00">8AM</option>
-					<option value="09:00:00">9AM</option>
-					<option value="10:00:00">10AM</option>
-					<option value="11:00:00">11AM</option>
-					<option value="12:00:00">12PM</option>
-					<option value="13:00:00">1PM</option>
-					<option value="14:00:00">2PM</option>
-					<option value="15:00:00">3PM</option>
-					<option value="16:00:00">4PM</option>
-					<option value="17:00:00">5PM</option>
-					<option value="18:00:00">6PM</option>
-					<option value="19:00:00">7PM</option>
-					<option value="20:00:00">8PM</option>
-					<option value="21:00:00">9PM</option>
-					<option value="22:00:00">10PM</option>
-					<option value="23:00:00">11PM</option>		
-				</select>
-				</div>
-				</div>
 
 				<p>Website:</p>
 				<input type="text" name="website" id="website" />
@@ -1915,13 +1675,17 @@ if(isset($_GET['event']))
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
+			// Format dates
+			$date1 = date("m/d/Y - H:i", strtotime($db->dateStart)); 
+			$date2 = date("m/d/Y - H:i", strtotime($db->dateEnd)); 
+			
 			// Display event info
 			echo '
 			<h2 class="tm-section-header">'.$db->name.'</h2>
 			<p><b>Venue:</b> '.$db->venue.'</p>
 			<p><b>Address:</b> <a href="https://www.google.com/maps/search/?api=1&query='.$db->location.'" target="_blank">'.$db->location.'</a></p>
-			<p><b>Event Start:</b> '.$db->dateStart.' - '.date('l', strtotime($db->dateStart)).'</p>
-			<p><b>Event End:</b> '.$db->dateEnd.' - '.date('l', strtotime($db->dateEnd)).'</p>
+			<p><b>Event Start:</b> '.$date1.' ('.date('l', strtotime($db->dateStart)).')</p>
+			<p><b>Event End:</b> '.$date2.' ('.date('l', strtotime($db->dateEnd)).')</p>
 			<p><b>Website:</b> <a href="'.addHttp($db->website).'" target="_blank">'.$db->website.'</a></p>
 			<p><b>Expected number of attendees:</b> '.$db->numberOfAttend.'</p>
 			<p><b>Requested number of characters:</b> '.$db->requestedNumber.'</p>
@@ -1957,73 +1721,13 @@ if(isset($_GET['event']))
 						<div style="overflow-x: auto;">
 						<table border="1">
 						<tr>
-							<th>Trooper Name</th>	<th>TKID</th>	<th>Costume</th>	<th>Backup Costume</th>	<th>Status</th>	<th>When</th>
+							<th>Trooper Name</th>	<th>TKID</th>	<th>Costume</th>	<th>Backup Costume</th>	<th>Status</th>
 						</tr>';
 					}
 
 					echo '
 					<tr>
-						<td><a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a></td>	<td>'.readTKNumber($db2->tkid).'</td>	<td>'.getCostume($db2->costume).'</td>	<td>'.getCostume($db2->costume_backup).'</td>	<td id="'.$db2->trooperId.'Status">'.getStatus($db2->status).'</td>';
-
-					// Query database for shift info
-					$query3 = "SELECT shift_trooper.shift, shift_trooper.troopid, shift_trooper.trooperid FROM shift_trooper WHERE shift_trooper.trooperid = '".$db2->trooperId."' AND shift_trooper.troopid = '".$db2->troopid."'";
-
-
-					$date1 = date('Y-m-d H:i:s', strtotime($db->dateStart));
-					$date2 = date('Y-m-d H:i:s', strtotime($db->dateEnd));
-
-					$days = getDatesFromRange($date1, $date2);
-
-					$l = 0;
-
-					if ($result3 = mysqli_query($conn, $query3))
-					{
-						while ($db3 = mysqli_fetch_object($result3))
-						{
-							// Formatting
-							if($l == 0)
-							{
-								echo '<td id="when'.$db3->trooperid.'">';
-							}
-
-							$shiftString = explode(",", $db3->shift);
-
-							for($n = 0; $n <= count($shiftString) - 1; $n += 2)
-							{
-								$shiftGet = $conn->query("SELECT shifts.id, shifts.starttime, shifts.endtime FROM shifts WHERE shifts.id = '".$shiftString[$n]."'") or die($conn->error);
-
-								$shift = mysqli_fetch_array($shiftGet);
-
-								$readTime1 = date('h:i A', strtotime($shift[1]));
-								$readTime2 = date('h:i A', strtotime($shift[2]));
-
-								echo $days[$shiftString[$n + 1]] . '<br />' . $readTime1 . ' - ' . $readTime2 . '<br /><br />';
-							}
-
-							$l++;
-						}
-					}
-
-					// Formatting
-					if($l == 0)
-					{
-						// Format for multiple days
-						if(count($days) > 1)
-						{
-							echo '<td>Canceled</td>';
-						}
-						else
-						{
-							echo '
-							<td>'.$days[0].'</td>';
-						}
-					}
-					else
-					{
-						echo '</td>';
-					}
-
-					echo '
+						<td><a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a></td>	<td>'.readTKNumber($db2->tkid).'</td>	<td>'.getCostume($db2->costume).'</td>	<td>'.getCostume($db2->costume_backup).'</td>	<td id="'.$db2->trooperId.'Status">'.getStatus($db2->status).'</td>
 					</tr>';
 
 					$i++;
@@ -2058,9 +1762,6 @@ if(isset($_GET['event']))
 				// Is the user in the event?
 				$eventCheck = inEvent($_SESSION['id'], strip_tags(addslashes($_GET['event'])));
 
-				// Get date range
-				$days = getDatesFromRange($db->dateStart, $db->dateEnd);
-
 				if(strtotime($db->dateEnd) < strtotime("NOW"))
 				{
 					echo '
@@ -2078,114 +1779,18 @@ if(isset($_GET['event']))
 						}
 						else
 						{
-							if(count($days) > 1)
-							{
-								echo '
-								<h2>Make Adjustments:</h2>
+							echo '
+							<div name="signeduparea" id="signeduparea">
+								<p><b>You are signed up for this troop!</b></p>
 
-								<form action="process.php?do=modifysignup" name="modifysignup" id="modifysignup" method="POST">
-
+								<form action="index.php" method="POST" name="cancelForm" id="cancelForm">
 									<input type="hidden" name="troopidC" id="troopidC" value="'.strip_tags(addslashes($_GET['event'])).'" />
-									<input type="hidden" name="days" id="days" value="1" />
-									<input type="hidden" name="dateStart" id="dateStart" value="'.$db->dateStart.'" />
-									<input type="hidden" name="dateEnd" id="dateEnd" value="'.$db->dateEnd.'" />
-									<input type="hidden" name="limitedevent" id="limitedevent" value="'.$db->limitedEvent.'" />
-
-									<div id="goingarea">
-										<select name="status" id="status">';
-
-									if($db->limitedEvent != 1)
-									{
-										echo '
-											<option value="0" '.echoSelect($status, 0).'>I\'ll be there!</option>
-											<option value="1" '.echoSelect($status, 1).'>Tentative</option>';
-									}
-									else
-									{
-										echo '
-											<option value="5">Request to attend (Pending)</option>';								
-									}
-
-									echo '
-										</select>
-									</div>
-
-									<div id="cancelarea" style="display: none;">
-										<p>Reason why you are canceling:</p>
-										<input type="text" name="cancelReason" id="cancelReason" />
-									</div>';
-
-								$j = 0;
-
-								foreach ($days as $key => $value)
-								{
-								    echo '<p><b>' . $value . '</b></p>';
-
-									$query3 = "SELECT shifts.id, shifts.starttime, shifts.endtime, shifts.troopid AS shiftTroop, shift_trooper.troopid, shift_trooper.shift, shift_trooper.trooperid FROM shifts LEFT JOIN shift_trooper ON shifts.troopid = shift_trooper.troopid WHERE shifts.troopid = '".$_GET['event']."' AND shift_trooper.trooperid = '".$_SESSION['id']."'";
-
-									if ($result3 = mysqli_query($conn, $query3))
-									{
-										while ($db3 = mysqli_fetch_object($result3))
-										{
-											// The dates
-											$readTime1 = date('h:i A', strtotime($db3->starttime));
-											$readTime2 = date('h:i A', strtotime($db3->endtime));
-
-											// Our string of choices from databases
-											$shiftString = explode(",", $db3->shift);
-
-											// Was this choice picked?
-											$pickedChoice = false;
-
-											// loop through and see if checked
-											for($o = 0; $o <= count($shiftString) - 1; $o += 2)
-											{
-												// Check the choice
-												if($key == $shiftString[$o + 1] && $shiftString[$o] == $db3->id)
-												{
-													// This is a picked choice
-													$pickedChoice = true;
-												}
-											}
-
-											// If picked
-											if($pickedChoice)
-											{
-												echo '
-												<input type="checkbox" name="shiftcheckbox[]" id="shiftcheckbox" value="'. $db3->id .','.$key.'" CHECKED />'.$readTime1.' - '.$readTime2.'<br />';
-											}
-											else
-											{
-												// If not picked
-												echo '
-												<input type="checkbox" name="shiftcheckbox[]" id="shiftcheckbox" value="'. $db3->id .','.$key.'" />'.$readTime1.' - '.$readTime2.'<br />';				
-											}
-
-											// Increment
-											$j += 2;
-										}
-									}
-								}
-
-								echo '
-									<input type="submit" name="submitModifySignUp" id="submitModifySignUp" value="Save Changes" />
-								</form>';
-							}
-							else
-							{
-								echo '
-								<div name="signeduparea" id="signeduparea">
-									<p><b>You are signed up for this troop!</b></p>
-
-									<form action="index.php" method="POST" name="cancelForm" id="cancelForm">
-										<input type="hidden" name="troopidC" id="troopidC" value="'.strip_tags(addslashes($_GET['event'])).'" />
-										<input type="hidden" name="myId" id="myId" value="'.strip_tags(addslashes($_SESSION['id'])).'" />
-										<p>Reason why you are canceling:</p>
-										<input type="text" name="cancelReason" id="cancelReason" />
-										<input type="submit" name="submitCancelTroop" id="submitCancelTroop" value="Cancel Troop" />
-									</form>
-								</div>';
-							}
+									<input type="hidden" name="myId" id="myId" value="'.strip_tags(addslashes($_SESSION['id'])).'" />
+									<p>Reason why you are canceling:</p>
+									<input type="text" name="cancelReason" id="cancelReason" />
+									<input type="submit" name="submitCancelTroop" id="submitCancelTroop" value="Cancel Troop" />
+								</form>
+							</div>';
 						}
 					}
 					else
@@ -2267,38 +1872,10 @@ if(isset($_GET['event']))
 								}
 
 								echo '
-								</select>';
-
-								$days = getDatesFromRange($db->dateStart, $db->dateEnd);
-
-								if(count($days) > 1)
-								{
-									echo '
-									<p>Which day and shift are you going to attend?</p>';
-
-									foreach ($days as $key => $value)
-									{
-									    echo '<p><b>' . $value . '</b></p>';
-
-										$query3 = "SELECT * FROM shifts WHERE troopid = '".$_GET['event']."'";
-										$j = 0;
-										if ($result3 = mysqli_query($conn, $query3))
-										{
-											while ($db3 = mysqli_fetch_object($result3))
-											{
-												$readTime1 = date('h:i A', strtotime($db3->starttime));
-												$readTime2 = date('h:i A', strtotime($db3->endtime));
-
-												echo '
-												<input type="checkbox" name="shiftcheckbox[]" id="shiftcheckbox" value="'. $db3->id .','.$key.'" />'.$readTime1.' - '.$readTime2.'<br />';
-												$j++;
-											}
-										} 
-									}
-								}
-
-								echo '
-								<br /><br />
+								</select>
+								
+								<br />
+								<br />
 
 								<input type="submit" value="Submit!" name="submitSignUp" />
 							</form>
@@ -2450,12 +2027,6 @@ else
 				// Get number of troopers at event
 				$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".$db->id."'");
 
-				// Get the number of days
-				$date1 = date('Y-m-d H:i:s', strtotime($db->dateStart));
-				$date2 = date('Y-m-d H:i:s', strtotime($db->dateEnd));
-
-				$days = getDatesFromRange($date1, $date2);
-
 				echo '<div style="border: 1px solid gray; margin-bottom: 10px;">';
 
 				// No squad set
@@ -2463,113 +2034,10 @@ else
 				{
 					echo '<a href="index.php?event=' . $db->id . '">' .date('M d, Y', strtotime($db->dateStart)). ' - '.date('M d, Y', strtotime($db->dateEnd)).''.'<br />' . $db->name . '</a>';
 
-					// If more than one day
-					if(count($days) > 1)
+					// If not enough troopers
+					if($getNumOfTroopers->num_rows <= 1)
 					{
-						// Multiple day query
-						$query2 = "SELECT shifts.starttime, shifts.endtime, shifts.id, shifts.troopid, shift_trooper.shift, shift_trooper.troopid FROM shifts LEFT JOIN shift_trooper ON shifts.troopid = shift_trooper.troopid WHERE shift_trooper.troopid = '".$db->id."'";
-
-						// Days and shifts that exist
-						$dayShiftArray = array();
-						$dayShiftPickedArray = array();
-
-						if ($result2 = mysqli_query($conn, $query2))
-						{
-							while ($db2 = mysqli_fetch_object($result2))
-							{
-								// Shift string
-								$shiftString = explode(",", $db2->shift);
-
-								for($n = 0; $n <= count($shiftString) - 1; $n += 2)
-								{
-									// Loop through days ($l)
-									for($l = 0; $l <= count($days) - 1; $l++)
-									{
-										// Populate days and shifts
-										if(!in_array($l . ',' . $db2->id, $dayShiftArray))
-										{
-											array_push($dayShiftArray, $l . ',' . $db2->id);
-										}
-
-										// If day ($l) equals day in string and also equals shift in string
-										if($l == $shiftString[$n + 1] && $shiftString[$n] == $db2->id)
-										{
-											// Loop through days and shifts
-											for($k = 0; $k <= count($dayShiftArray) - 1; $k++)
-											{
-												// Seperate day and shift
-												$kCheck = explode(",", $dayShiftArray[$k]);
-
-												// Check if day and shift exist
-												if($kCheck[0] == $l && $kCheck[1] == $db2->id)
-												{
-													array_push($dayShiftPickedArray, $kCheck[0] . ',' . $kCheck[1]);
-												}	
-											}
-										}
-									}
-								}
-							}
-						}
-
-						// Sort the array
-						sort($dayShiftArray);
-
-						// Display
-						echo '
-						<br /><span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS DATE/TIME:</b></span>
-
-						<ul>';
-
-						// Loop through all shifts
-						for($n = 0; $n <= count($dayShiftArray) - 1; $n++)
-						{
-							// Count how many troopers picked this shift
-							$isMoreThan = 0;
-
-							// Loop through picked shifts
-							for($j = 0; $j <= count($dayShiftPickedArray) - 1; $j++)
-							{
-								if($dayShiftArray[$n] == $dayShiftPickedArray[$j])
-								{
-									// Increment $isMoreThan
-									$isMoreThan++;
-								}
-							}
-
-							// If less than or equal to one trooper, show message
-							if($isMoreThan <= 1)
-							{
-								// Explode the value to get information
-								$dateNeed = explode(",", $dayShiftArray[$n]);
-
-								$shiftGet = $conn->query("SELECT shifts.id, shifts.starttime, shifts.endtime FROM shifts WHERE shifts.id = '".$dateNeed[1]."'") or die($conn->error);
-
-								$shift = mysqli_fetch_array($shiftGet);
-
-								// Convert times
-								$readTime1 = date('h:i A', strtotime($shift[1]));
-								$readTime2 = date('h:i A', strtotime($shift[2]));
-
-								echo '
-								<li>
-								'.$days[$dateNeed[0]].' - '.$readTime1.' - '.$readTime2.'
-								</li>';
-							}
-
-							$isMoreThan = 0;	
-						}
-
-						echo '
-						</ul>';
-					}
-					else
-					{
-						// If one day
-						if($getNumOfTroopers->num_rows <= 1)
-						{
-							echo '<br /><span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
-						}
+						echo '<br /><span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
 					}
 
 					$i++;
@@ -2581,113 +2049,10 @@ else
 					{
 						echo '<a href="index.php?event=' . $db->id . '">' .date('M d, Y', strtotime($db->dateStart)). ' - '.date('M d, Y', strtotime($db->dateEnd)).''.'<br />' . $db->name . '</a>';
 
-						// If more than one day
-						if(count($days) > 1)
+						// If not enough troopers...
+						if($getNumOfTroopers->num_rows <= 1)
 						{
-							// Multiple day query
-							$query2 = "SELECT shifts.starttime, shifts.endtime, shifts.id, shifts.troopid, shift_trooper.shift, shift_trooper.troopid FROM shifts LEFT JOIN shift_trooper ON shifts.troopid = shift_trooper.troopid WHERE shift_trooper.troopid = '".$db->id."'";
-
-							// Days and shifts that exist
-							$dayShiftArray = array();
-							$dayShiftPickedArray = array();
-
-							if ($result2 = mysqli_query($conn, $query2))
-							{
-								while ($db2 = mysqli_fetch_object($result2))
-								{
-									// Shift string
-									$shiftString = explode(",", $db2->shift);
-
-									for($n = 0; $n <= count($shiftString) - 1; $n += 2)
-									{
-										// Loop through days ($l)
-										for($l = 0; $l <= count($days) - 1; $l++)
-										{
-											// Populate days and shifts
-											if(!in_array($l . ',' . $db2->id, $dayShiftArray))
-											{
-												array_push($dayShiftArray, $l . ',' . $db2->id);
-											}
-
-											// If day ($l) equals day in string and also equals shift in string
-											if($l == $shiftString[$n + 1] && $shiftString[$n] == $db2->id)
-											{
-												// Loop through days and shifts
-												for($k = 0; $k <= count($dayShiftArray) - 1; $k++)
-												{
-													// Seperate day and shift
-													$kCheck = explode(",", $dayShiftArray[$k]);
-
-													// Check if day and shift exist
-													if($kCheck[0] == $l && $kCheck[1] == $db2->id)
-													{
-														array_push($dayShiftPickedArray, $kCheck[0] . ',' . $kCheck[1]);
-													}	
-												}
-											}
-										}
-									}
-								}
-							}
-
-							// Sort the array
-							sort($dayShiftArray);
-
-							// Display
-							echo '
-							<br /><span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS DATE/TIME:</b></span>
-
-							<ul>';
-
-							// Loop through all shifts
-							for($n = 0; $n <= count($dayShiftArray) - 1; $n++)
-							{
-								// Count how many troopers picked this shift
-								$isMoreThan = 0;
-
-								// Loop through picked shifts
-								for($j = 0; $j <= count($dayShiftPickedArray) - 1; $j++)
-								{
-									if($dayShiftArray[$n] == $dayShiftPickedArray[$j])
-									{
-										// Increment $isMoreThan
-										$isMoreThan++;
-									}
-								}
-
-								// If less than or equal to one trooper, show message
-								if($isMoreThan <= 1)
-								{
-									// Explode the value to get information
-									$dateNeed = explode(",", $dayShiftArray[$n]);
-
-									$shiftGet = $conn->query("SELECT shifts.id, shifts.starttime, shifts.endtime FROM shifts WHERE shifts.id = '".$dateNeed[1]."'") or die($conn->error);
-
-									$shift = mysqli_fetch_array($shiftGet);
-
-									// Convert times
-									$readTime1 = date('h:i A', strtotime($shift[1]));
-									$readTime2 = date('h:i A', strtotime($shift[2]));
-
-									echo '
-									<li>
-									'.$days[$dateNeed[0]].' - '.$readTime1.' - '.$readTime2.'
-									</li>';
-								}
-
-								$isMoreThan = 0;	
-							}
-
-							echo '
-							</ul>';
-						}
-						else
-						{
-							// If one day
-							if($getNumOfTroopers->num_rows <= 1)
-							{
-								echo '<br /><span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
-							}
+							echo '<br /><span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
 						}
 
 						$i2++;
@@ -2728,99 +2093,13 @@ else
 				// Number of results total
 				$i = 0;
 
-				// Number of results within shift_trooper
-				$l = 0;
-
-				// Count how many have data from user
-				$m = 0;
-
 				while ($db = mysqli_fetch_object($result))
 				{
-					// Load shifts if applicable
-					// Query database for shift info
-					$query3 = "SELECT shift_trooper.id, shift_trooper.shift, shift_trooper.troopid, shift_trooper.trooperid, shift_trooper.attend, shift_trooper.didNotAttend FROM shift_trooper WHERE shift_trooper.trooperid = '".$_SESSION['id']."' AND shift_trooper.troopid = '".$db->eventId."'";
-
-
-					$date1 = date('Y-m-d H:i:s', strtotime($db->dateStart));
-					$date2 = date('Y-m-d H:i:s', strtotime($db->dateEnd));
-
-					$days = getDatesFromRange($date1, $date2);
-
-					$data = "";
-
-					if($result3 = mysqli_query($conn, $query3))
-					{
-						while ($db3 = mysqli_fetch_object($result3))
-						{
-							// Array of shifts
-							$shiftString = explode(",", $db3->shift);
-
-							for($n = 0; $n <= count($shiftString) - 1; $n += 2)
-							{
-								$shiftGet = $conn->query("SELECT shifts.id, shifts.starttime, shifts.endtime FROM shifts WHERE shifts.id = '".$shiftString[$n]."'") or die($conn->error);
-
-								$shift = mysqli_fetch_array($shiftGet);
-
-								// The dates
-								$readTime1 = date('h:i A', strtotime($shift[1]));
-								$readTime2 = date('h:i A', strtotime($shift[2]));
-
-								// This may be able to be deleted - keep this until further notice - 07/26/2020
-								//$data .= '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . $days[$shiftString[$n + 1]] . '<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="confirmShift[]" id="confirmShift_'.$shift[0].'" value="'.$shift[0].','.str_replace(" ", "", $shiftString[$n + 1]).','.$db->eventId.'" /> ' . $readTime1 . ' - ' . $readTime2 . '<br /><br />';
-
-								$checkAttend = explode(",", substr($db3->attend, 3));
-								$checkDidNotAttend = explode(",", substr($db3->didNotAttend, 3));
-
-								// Check 1 - check attend data
-								$check1 = true;
-								// Check 2 - check did not attend data
-								$check2 = true;
-
-								// Do not loop through did not attend, if no data
-								if(count($checkAttend) > 1)
-								{
-									// Loop through attend
-									for($j = 0; $j <= count($checkAttend) - 1; $j += 2)
-									{
-										// Inside shift
-										if($checkAttend[$j] == $shiftString[$n] && $checkAttend[$j + 1] == $shiftString[$n + 1])
-										{
-											$check1 = false;
-										}
-									}
-								}
-
-								// Do not loop through did not attend, if no data
-								if(count($checkDidNotAttend) > 1)
-								{
-									// Loop through did not attend
-									for($j = 0; $j <= count($checkDidNotAttend) - 1; $j += 2)
-									{
-										// Inside shift
-										if($checkDidNotAttend[$j] == $shiftString[$n] && $checkDidNotAttend[$j + 1] == $shiftString[$n + 1])
-										{
-											$check2 = false;
-										}
-									}
-								}
-
-								if($check1 && $check2)
-								{
-									$data .= '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . $days[$shiftString[$n + 1]] . '<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="confirmShift[]" id="confirmShift_'.$shift[0].'" value="'.$shift[0].','.str_replace(" ", "", $shiftString[$n + 1]).','.$db->eventId.'" /> ' . $readTime1 . ' - ' . $readTime2 . '<br /><br />';
-
-									$m++;
-								}
-							}
-
-							$l++;
-						}
-					}
-
 					// If a shift exists to attest to
 					$i++;
 
 					// If data
-					if($i > 0 && $l == 0 || $l > 0 && $m > 0)
+					if($i > 0)
 					{
 						echo '
 						<div name="confirmArea" id="confirmArea">
@@ -2829,31 +2108,15 @@ else
 						<div name="confirmArea2" id="confirmArea2">';
 					}
 
-					if($l > 0)
-					{
-						// If has data
-						if($m > 0)
-						{
-							echo '
-							<div name="confirmListBox_'.$db->eventId.'" id="confirmListBox_'.$db->eventId.'">'.$db->name.'<br /><br />' . $data;
-						}
-					}
-					else
-					{
-						echo '
-						<div name="confirmListBox_'.$db->eventId.'" id="confirmListBox_'.$db->eventId.'">
-							<input type="checkbox" name="confirmList[]" id="confirmList_'.$db->eventId.'" value="'.$db->eventId.'" /> '.$db->name.'<br /><br />';
-					}
-
-					// End load shifts
-
 					echo '
+					<div name="confirmListBox_'.$db->eventId.'" id="confirmListBox_'.$db->eventId.'">
+						<input type="checkbox" name="confirmList[]" id="confirmList_'.$db->eventId.'" value="'.$db->eventId.'" /> '.$db->name.'<br /><br />
 					</div>';
 				}
 			}
 
 			// If data
-			if($i > 0 && $l == 0 || $l > 0 && $m > 0)
+			if($i > 0)
 			{
 				echo '
 					</div>
@@ -2863,12 +2126,12 @@ else
 					<select name="costume" id="costumeChoice">';
 
 					$query3 = "SELECT * FROM costumes";
-					$i = 0;
+					$l = 0;
 					if ($result3 = mysqli_query($conn, $query3))
 					{
 						while ($db3 = mysqli_fetch_object($result3))
 						{
-							if($i == 0)
+							if($l == 0)
 							{
 								echo '
 								<option value="">Please choose an option...</option>';
@@ -2954,21 +2217,6 @@ function myFunction() {
 
 $(document).ready(function()
 {
-	// Show and hide cancel textbox when on a multi-day event based on # of checkboxes
-	$("#modifysignup").on("change", function()
-	{
-		if($(this).find("input[name=\'shiftcheckbox[]\']:checked").length == 0)
-		{
-			$("#modifysignup #cancelarea").show();
-			$("#modifysignup #goingarea").hide();
-		}
-		else
-		{
-			$("#modifysignup #cancelarea").hide();
-			$("#modifysignup #goingarea").show();
-		}
-	});
-
 	// Modify sign up submit button
 	$("#submitModifySignUp").button().click(function(e)
 	{
@@ -3058,13 +2306,16 @@ $(document).ready(function()
 				{
 					$("#submitEdit").val("Close");
 					$("#editEventInfo").show();
+					
+					var date1 = moment(json.dateStart).format("MM/DD/YYYY HH:mm");
+					var date2 = moment(json.dateEnd).format("MM/DD/YYYY HH:mm");
 
 					$("#eventIdE").val(json.id);
 					$("#eventName").val(json.name);
 					$("#eventVenue").val(json.venue);
 					$("#location").val(json.location);
-					$("#datepicker").val(json.dateStart);
-					$("#datepicker2").val(json.dateEnd);
+					$("#datepicker").val(date1);
+					$("#datepicker2").val(date2);
 					$("#website").val(json.website);
 					$("#numberOfAttend").val(json.numberOfAttend);
 					$("#requestedNumber").val(json.requestedNumber);
@@ -3529,189 +2780,12 @@ $(document).ready(function()
 		}
 	});
 
+	// If date picker (first option) is changed
 	$("#datepicker").on("change", function()
 	{
-		var start = Date.parse($("#datepicker").val());
-		var end = Date.parse($("#datepicker2").val());
-		var diff = new Date(end - start);
-		var days = diff/1000/60/60/24;
-
-		// If days is a negative number, reset back
-		if(days < 0)
-		{
-			$("#datepicker").val("");
-		}
-
-		// Lock hand picked events
-		if(days >= 1)
-		{
-			$("#limitedEvent").val(0);
-			$("#limitedEvent").prop("disabled", true);
-		}
-		else
-		{
-			$("#limitedEvent").val("null");
-			$("#limitedEvent").prop("disabled", false);
-		}
-
-		if(end != "")
-		{
-			if(days > 0)
-			{
-				// Show
-				$("#shiftsetup").show();
-			}
-			else
-			{
-				// Clear out
-				$("#time1a").val("option");
-				$("#time1b").val("option");
-				$("#time2a").val("option");
-				$("#time2b").val("option");
-				$("#time3a").val("option");
-				$("#time3b").val("option");
-
-				// Hide
-				$("#shiftsetup").hide();
-			}
-		}
-	});
-
-	$("#datepicker2").on("change", function()
-	{
-		var start = Date.parse($("#datepicker").val());
-		var end = Date.parse($("#datepicker2").val());
-		var diff = new Date(end - start);
-		var days = diff/1000/60/60/24;
-
-		// If days is a negative number, reset back
-		if(days < 0)
-		{
-			$("#datepicker").val("");
-		}
-
-		// Lock hand picked events
-		if(days >= 1)
-		{
-			$("#limitedEvent").val(0);
-			$("#limitedEvent").prop("disabled", true);
-		}
-		else
-		{
-			$("#limitedEvent").val("null");
-			$("#limitedEvent").prop("disabled", false);
-		}
-
-		if(end != "")
-		{
-			if(days > 0)
-			{
-				// Show
-				$("#shiftsetup").show();
-
-				// Select first option
-				$("#time1a").val($("#time1a option:first").val());
-				$("#time1b").val($("#time1b option:first").val());
-
-				$("#time2a").val($("#time2a option:first").val());
-				$("#time2b").val($("#time2b option:first").val());
-
-				$("#time3a").val($("#time3a option:first").val());
-				$("#time3b").val($("#time3b option:first").val());
-
-				// Add required rules
-                $("#time1a").rules("add", 
-                {
-                    required: true,
-					messages:
-					{
-						time1a: "Please select a time."
-					}
-                });
-
-                $("#time1b").rules("add", 
-                {
-                    required: true,
-					messages:
-					{
-						time1a: "Please select a time."
-					}
-                });
-			}
-			else
-			{
-				// Clear out
-				$("#time1a").val("");
-				$("#time1b").val("");
-				$("#time2a").val("");
-				$("#time2b").val("");
-				$("#time3a").val("");
-				$("#time3b").val("");
-
-				// Hide
-				$("#shiftsetup").hide();
-			}
-		}
-	});
-
-	$("#time1a").on("change", function()
-	{
-		if($("#time1a").val() != "" && $("#time1b").val() != "")
-		{
-			$("#subshift1").show();
-		}
-		else
-		{
-			$("#subshift1").hide();
-			$("#time2a").val("");
-			$("#time2b").val("");
-			$("#time3a").val("");
-			$("#time3b").val("");
-		}
-	});
-
-	$("#time1b").on("change", function()
-	{
-		if($("#time1a").val() != "" && $("#time1b").val() != "")
-		{
-			$("#subshift1").show();
-		}
-		else
-		{
-			$("#subshift1").hide();
-			$("#time2a").val("");
-			$("#time2b").val("");
-			$("#time3a").val("");
-			$("#time3b").val("");
-		}
-	});
-
-	$("#time2a").on("change", function()
-	{
-		if($("#time2a").val() != "" && $("#time2b").val() != "")
-		{
-			$("#subshift2").show();
-		}
-		else
-		{
-			$("#subshift2").hide();
-			$("#time3a").val("");
-			$("#time3b").val("");
-		}
-	});
-
-	$("#time2b").on("change", function()
-	{
-		if($("#time2a").val() != "" && $("#time2b").val() != "")
-		{
-			$("#subshift2").show();
-		}
-		else
-		{
-			$("#subshift2").hide();
-			$("#time3a").val("");
-			$("#time3b").val("");
-		}
+		// Only allow one day option
+		$("#datepicker2").datetimepicker("option", "minDate", $("#datepicker").val());
+		$("#datepicker2").datetimepicker("option", "maxDate", $("#datepicker").val());
 	});
 
 	$("#eventId").on("change", function()
@@ -4012,7 +3086,7 @@ $(document).ready(function()
 		var form = $("#confirmListForm");
 		var url = form.attr("action");
 
-		var r = confirm("Are you sure you want to DELETE these events?");
+		var r = confirm("Are you sure you did NOT attend these events?");
 
 		if (r == true)
 		{

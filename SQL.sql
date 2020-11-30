@@ -1,17 +1,24 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.5
+-- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:8889
--- Generation Time: Jul 31, 2020 at 03:13 PM
--- Server version: 5.7.25
--- PHP Version: 7.3.1
+-- Host: 127.0.0.1:3306
+-- Generation Time: Nov 30, 2020 at 08:59 AM
+-- Server version: 5.7.31
+-- PHP Version: 7.3.21
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
 SET time_zone = "+00:00";
 
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
 --
--- Database: `501`
+-- Database: `troop`
 --
 
 -- --------------------------------------------------------
@@ -20,10 +27,12 @@ SET time_zone = "+00:00";
 -- Table structure for table `awards`
 --
 
-CREATE TABLE `awards` (
-  `id` int(100) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `awards`;
+CREATE TABLE IF NOT EXISTS `awards` (
+  `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL,
-  `icon` varchar(100) NOT NULL
+  `icon` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -32,11 +41,13 @@ CREATE TABLE `awards` (
 -- Table structure for table `award_troopers`
 --
 
-CREATE TABLE `award_troopers` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `award_troopers`;
+CREATE TABLE IF NOT EXISTS `award_troopers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `trooperid` int(11) NOT NULL,
   `awardid` int(11) NOT NULL,
-  `awarded` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `awarded` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -45,13 +56,15 @@ CREATE TABLE `award_troopers` (
 -- Table structure for table `comments`
 --
 
-CREATE TABLE `comments` (
-  `id` int(100) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `comments`;
+CREATE TABLE IF NOT EXISTS `comments` (
+  `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT,
   `troopid` int(100) NOT NULL,
   `trooperid` int(100) NOT NULL,
   `comment` text NOT NULL,
   `important` int(1) NOT NULL,
-  `posted` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `posted` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -60,11 +73,13 @@ CREATE TABLE `comments` (
 -- Table structure for table `costumes`
 --
 
-CREATE TABLE `costumes` (
-  `id` int(100) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `costumes`;
+CREATE TABLE IF NOT EXISTS `costumes` (
+  `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT,
   `costume` varchar(50) NOT NULL,
   `era` int(2) NOT NULL,
-  `club` int(2) NOT NULL
+  `club` int(2) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -73,8 +88,9 @@ CREATE TABLE `costumes` (
 -- Table structure for table `events`
 --
 
-CREATE TABLE `events` (
-  `id` int(100) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `events`;
+CREATE TABLE IF NOT EXISTS `events` (
+  `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `venue` varchar(100) NOT NULL,
   `dateStart` datetime NOT NULL,
@@ -103,7 +119,8 @@ CREATE TABLE `events` (
   `limitDroid` int(10) NOT NULL DEFAULT '9999',
   `closed` tinyint(1) NOT NULL DEFAULT '0',
   `moneyRaised` int(100) NOT NULL DEFAULT '0',
-  `squad` int(1) NOT NULL
+  `squad` int(1) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -112,12 +129,14 @@ CREATE TABLE `events` (
 -- Table structure for table `event_comments`
 --
 
-CREATE TABLE `event_comments` (
-  `id` int(11) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `event_comments`;
+CREATE TABLE IF NOT EXISTS `event_comments` (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `trooperid` int(11) NOT NULL,
   `troopid` int(10) NOT NULL,
   `comment` text,
-  `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -126,8 +145,9 @@ CREATE TABLE `event_comments` (
 -- Table structure for table `event_sign_up`
 --
 
-CREATE TABLE `event_sign_up` (
-  `id` int(100) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `event_sign_up`;
+CREATE TABLE IF NOT EXISTS `event_sign_up` (
+  `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT,
   `trooperid` int(100) NOT NULL,
   `troopid` int(100) NOT NULL,
   `costume` varchar(50) NOT NULL,
@@ -136,37 +156,8 @@ CREATE TABLE `event_sign_up` (
   `status` int(2) NOT NULL DEFAULT '0',
   `attend` int(2) NOT NULL DEFAULT '0',
   `attended_costume` varchar(100) NOT NULL DEFAULT '-1',
-  `signuptime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `shifts`
---
-
-CREATE TABLE `shifts` (
-  `id` int(11) NOT NULL,
-  `troopid` int(11) NOT NULL,
-  `starttime` time NOT NULL,
-  `endtime` time NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `shift_trooper`
---
-
-CREATE TABLE `shift_trooper` (
-  `id` int(11) NOT NULL,
-  `troopid` int(11) NOT NULL,
-  `trooperid` int(11) NOT NULL,
-  `shift` varchar(1000) NOT NULL,
-  `status` int(11) NOT NULL DEFAULT '0',
-  `attend` varchar(1000) DEFAULT '-1',
-  `didNotAttend` varchar(1000) NOT NULL DEFAULT '-1',
-  `costume` varchar(1000) NOT NULL DEFAULT '-1'
+  `signuptime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -175,145 +166,24 @@ CREATE TABLE `shift_trooper` (
 -- Table structure for table `troopers`
 --
 
-CREATE TABLE `troopers` (
-  `id` int(100) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `troopers`;
+CREATE TABLE IF NOT EXISTS `troopers` (
+  `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
   `email` varchar(240) NOT NULL,
   `phone` varchar(10) NOT NULL,
   `squad` int(10) NOT NULL,
-  `permissions` int(2) NOT NULL,
+  `permissions` int(2) NOT NULL DEFAULT '0',
   `tkid` varchar(20) NOT NULL,
   `password` varchar(50) DEFAULT NULL,
   `last_active` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `approved` int(1) NOT NULL DEFAULT '0',
   `subscribe` int(11) NOT NULL DEFAULT '1',
-  `datecreated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `datecreated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+COMMIT;
 
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `awards`
---
-ALTER TABLE `awards`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `award_troopers`
---
-ALTER TABLE `award_troopers`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `comments`
---
-ALTER TABLE `comments`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `costumes`
---
-ALTER TABLE `costumes`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `events`
---
-ALTER TABLE `events`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `event_comments`
---
-ALTER TABLE `event_comments`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `event_sign_up`
---
-ALTER TABLE `event_sign_up`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `shifts`
---
-ALTER TABLE `shifts`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `shift_trooper`
---
-ALTER TABLE `shift_trooper`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `troopers`
---
-ALTER TABLE `troopers`
-  ADD PRIMARY KEY (`id`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `awards`
---
-ALTER TABLE `awards`
-  MODIFY `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `award_troopers`
---
-ALTER TABLE `award_troopers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `comments`
---
-ALTER TABLE `comments`
-  MODIFY `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `costumes`
---
-ALTER TABLE `costumes`
-  MODIFY `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `events`
---
-ALTER TABLE `events`
-  MODIFY `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `event_comments`
---
-ALTER TABLE `event_comments`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `event_sign_up`
---
-ALTER TABLE `event_sign_up`
-  MODIFY `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `shifts`
---
-ALTER TABLE `shifts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `shift_trooper`
---
-ALTER TABLE `shift_trooper`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `troopers`
---
-ALTER TABLE `troopers`
-  MODIFY `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
