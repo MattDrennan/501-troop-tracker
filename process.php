@@ -44,7 +44,48 @@ if($_GET['do'] == "changepassword")
 	}
 }
 
-// Approve troopers
+/************************ Costumes ***************************************/
+// Costume management - add, delete, edit
+if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmin())
+{
+	// Costume submitted for deletion...
+	if(isset($_POST['submitDeleteCostume']))
+	{
+		// Query the database
+		$conn->query("DELETE FROM costumes WHERE id = '".cleanInput($_POST['costumeID'])."'");
+	}
+	
+	// Add costume...
+	if(isset($_POST['addCostumeButton']))
+	{
+		$message = "Costume added";
+
+		// Check if has value
+		if(cleanInput($_POST['costumeName']) == "")
+		{
+			$message = "Costume must have a name.";
+		}
+		else
+		{
+			// Query the database
+			$conn->query("INSERT INTO costumes (costume, era, club) VALUES ('".cleanInput($_POST['costumeName'])."', '".cleanInput($_POST['costumeEra'])."', '".cleanInput($_POST['costumeClub'])."')");
+			$last_id = $conn->insert_id;
+		}
+		
+		$array = array(array('message' => $message, 'id' => $last_id));
+		echo json_encode($array);
+	}
+	
+	// Edit costume
+	if(isset($_POST['submitEditCostume']))
+	{
+		// Query the database
+		$conn->query("UPDATE costumes SET costume = '".cleanInput($_POST['costumeNameEdit'])."', era = '".cleanInput($_POST['costumeEraEdit'])."', club = '".cleanInput($_POST['costumeClubEdit'])."' WHERE id = '".cleanInput($_POST['costumeIDEdit'])."'");
+	}
+}
+
+/************************ AWARDS ***************************************/
+// Awards to troopers
 if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin())
 {
 	// Award submitted for deletion...
@@ -71,9 +112,10 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 		{
 			// Query the database
 			$conn->query("INSERT INTO awards (title, icon) VALUES ('".cleanInput($_POST['awardName'])."', '".cleanInput($_POST['awardImage'])."')");
+			$last_id = $conn->insert_id;
 		}
 
-		$array = array(array('message' => $message));
+		$array = array(array('message' => $message, 'id' => $last_id));
 		echo json_encode($array);
 	}
 

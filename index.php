@@ -8,18 +8,28 @@ echo '
 <!DOCTYPE html>
 <html lang="en">
 <head>
+	<!-- Meta Data -->
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+	
+	<!-- Title -->
 	<title>501st Florida Garrison - Troop Tracker</title>
+	
+	<!-- Fonts -->
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600&display=swap" rel="stylesheet" />
+	
+	<!-- Main Style Sheets -->
 	<link href="fontawesome/css/all.min.css" rel="stylesheet" />
 	<link href="css/main.css" rel="stylesheet" />
+	
 	<!-- Style Sheets -->
 	<link rel="stylesheet" href="script/lib/jquery-ui.min.css">
 	<link rel="stylesheet" href="script/lib/jquery-ui-timepicker-addon.css">
 	<link rel="stylesheet" href="css/nav.css">
-	<!--<link rel="stylesheet" href="script/js/validate/validate.css">-->
+	
+	<!-- Icon -->
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
 
 	<!-- JQUERY -->
 	<script src="script/lib/jquery-3.4.1.min.js"></script>
@@ -694,15 +704,171 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		<h2 class="tm-section-header">Command Staff Welcome Area</h2>
 
 		<p>
-		<a href="index.php?action=commandstaff&do=createevent" class="button">Create an Event</a> 
-		<a href="index.php?action=commandstaff&do=editevent" class="button">Edit an Event</a> 
-		<a href="index.php?action=commandstaff&do=createuser" class="button">Create Trooper</a> 
-		<a href="index.php?action=commandstaff&do=managetroopers" class="button">Manage Troopers</a> 
-		<a href="index.php?action=commandstaff&do=approvetroopers" class="button">Approve Trooper Requests - ('.$getTrooperNotifications->num_rows.')</a> 
-		<a href="index.php?action=commandstaff&do=assignawards" class="button">Assign Awards</a>
+			<a href="index.php?action=commandstaff&do=createevent" class="button">Create an Event</a> 
+			<a href="index.php?action=commandstaff&do=editevent" class="button">Edit an Event</a> 
+			<a href="index.php?action=commandstaff&do=createuser" class="button">Create Trooper</a> 
+			<a href="index.php?action=commandstaff&do=managetroopers" class="button">Manage Troopers</a> 
+			<a href="index.php?action=commandstaff&do=approvetroopers" class="button">Approve Trooper Requests - ('.$getTrooperNotifications->num_rows.')</a> 
+			<a href="index.php?action=commandstaff&do=assignawards" class="button">Assign Awards</a>
+			<a href="index.php?action=commandstaff&do=managecostumes" class="button">Costume Management</a>
 		</p>
 
 ';
+
+		/**************************** COSTUMES *********************************/
+
+		// Manage costumes - allow command staff to add, edit, and delete costumes
+		if(isset($_GET['do']) && $_GET['do'] == "managecostumes")
+		{
+			echo '
+			<h3>Add Costume</h3>
+			
+			<form action="process.php?do=managecostumes" method="POST" name="addCostumeForm" id="addCostumeForm">
+			
+				<b>Costume Name:</b></br />
+				<input type="text" name="costumeName" id="costumeName" />
+				
+				<b>Costume Era:</b></br />
+				<select name="costumeEra" id="costumeEra">
+					<option value="0">Prequel</option>
+					<option value="1" SELECTED>Original</option>
+					<option value="2">Sequel</option>
+					<option value="3">Expanded</option>
+					<option value="4">All</option>
+				</select>
+				
+				<b>Costume Club:</b></br />
+				<select name="costumeClub" id="costumeClub">
+					<option value="0" SELECTED>501st Legion</option>
+					<option value="1">Rebel Legion</option>
+					<option value="2">Mando Mercs</option>
+					<option value="3">Droid Builders</option>
+					<option value="4">Rebel + 501st</option>
+					<option value="5">Other</option>
+					<option value="6">All</option>
+				</select>
+				
+				<input type="submit" name="addCostumeButton" id="addCostumeButton" value="Add Costume" />
+				
+			</form>
+				
+			<br />
+			<hr />
+			<br />
+			
+			<h3>Edit Costume</h3>';
+
+			// Get data
+			$query = "SELECT * FROM costumes ORDER BY costume";
+
+			$i = 0;
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					// Formatting
+					if($i == 0)
+					{
+						echo '
+						<form action="process.php?do=managecostumes" method="POST" name="costumeEditForm" id="costumeEditForm">
+
+						<select name="costumeIDEdit" id="costumeIDEdit">
+
+							<option value="0" SELECTED>Please select a costume...</option>';
+					}
+
+					echo '
+					<option value="'.$db->id.'" costumeName="'.$db->costume.'" costumeID="'.$db->id.'" costumeEra="'.$db->era.'" costumeClub="'.$db->club.'">'.$db->costume.'</option>';
+
+					// Increment
+					$i++;
+				}
+			}
+
+			if($i == 0)
+			{
+				echo 'No costumes to display.';
+			}
+			else
+			{
+				echo '
+				</select>
+
+				<div id="editCostumeList" name="editCostumeList" style="display: none;">
+
+				<b>Costume Name:</b></br />
+				<input type="text" name="costumeNameEdit" id="costumeNameEdit" />
+				
+				<b>Costume Era:</b></br />
+				<select name="costumeEraEdit" id="costumeEraEdit">
+					<option value="0">Prequel</option>
+					<option value="1" SELECTED>Original</option>
+					<option value="2">Sequel</option>
+					<option value="3">Expanded</option>
+					<option value="4">All</option>
+				</select>
+				
+				<b>Costume Club:</b></br />
+				<select name="costumeClubEdit" id="costumeClubEdit">
+					<option value="0" SELECTED>501st Legion</option>
+					<option value="1">Rebel Legion</option>
+					<option value="2">Mando Mercs</option>
+					<option value="3">Droid Builders</option>
+					<option value="4">Rebel + 501st</option>
+					<option value="5">Other</option>
+					<option value="6">All</option>
+				</select>
+
+				<input type="submit" name="submitEditCostume" id="submitEditCostume" value="Edit Costume" />
+
+				</div>
+				</form>';
+			}
+			
+			echo '
+			<br />
+			<hr />
+			<br />
+			
+			<h3>Delete Costume</h3>';
+
+			// Get data
+			$query = "SELECT * FROM costumes ORDER BY costume";
+
+			$i = 0;
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					// Formatting
+					if($i == 0)
+					{
+						echo '
+						<form action="process.php?do=managecostumes" method="POST" name="costumeDeleteForm" id="costumeDeleteForm">
+
+						<select name="costumeID" id="costumeID">';
+					}
+
+					echo '<option value="'.$db->id.'">'.$db->costume.'</option>';
+
+					// Increment
+					$i++;
+				}
+			}
+
+			if($i == 0)
+			{
+				echo 'No costumes to display.';
+			}
+			else
+			{
+				echo '
+				<input type="submit" name="submitDeleteCostume" id="submitDeleteCostume" value="Delete Costume" />
+				</form>';
+			}
+		}
+		
+		/**************************** AWARDS *********************************/
 
 		// Assign an award to users
 		if(isset($_GET['do']) && $_GET['do'] == "assignawards")
@@ -2842,6 +3008,148 @@ $(document).ready(function()
 			}
 		});
 	});
+	
+	/************ COSTUME *******************/
+	
+	// Award Edit Select Change
+	$("#costumeIDEdit").on("change", function()
+	{
+		// If click please select, hide list
+		if($("#costumeIDEdit :selected").val() == 0)
+		{
+			$("#editCostumeList").hide();
+		}
+		else
+		{
+			$("#editCostumeList").show();
+		}
+
+		$("#costumeNameEdit").val($("#costumeIDEdit :selected").attr("costumeName"));
+		$("#costumeEraEdit").val($("#costumeIDEdit :selected").attr("costumeEra"));
+		$("#costumeClubEdit").val($("#costumeIDEdit :selected").attr("costumeClub"));
+	});
+	
+	$("#submitEditCostume").button().click(function(e)
+	{
+		e.preventDefault();
+
+		var form = $("#costumeEditForm");
+		var url = form.attr("action");
+
+		var r = confirm("Are you sure you want to edit this costume?");
+
+		if (r == true)
+		{
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitEditCostume=1",
+				success: function(data)
+				{
+					// Change values for delete form
+					$("#costumeID").children("option[value=\'" + $("#costumeIDEdit :selected").val() + "\']").text($("#costumeNameEdit").val());
+					
+					// Change values for edit form
+					$("#costumeIDEdit :selected").text($("#costumeNameEdit").val());
+					$("#costumeIDEdit :selected").attr("costumeName", $("#costumeNameEdit").val());
+					$("#costumeIDEdit :selected").attr("costumeEra", $("#costumeEraEdit").val());
+					$("#costumeIDEdit :selected").attr("costumeClub", $("#costumeClubEdit").val());
+
+					$("#editCostumeList").hide();
+
+					$("#costumeIDEdit").val(0);
+
+					// Alert to success
+			  		alert("The costume was edited successfully!");
+				}
+			});
+		}
+	})
+
+	$("#addCostumeButton").button().click(function(e)
+	{
+		e.preventDefault();
+
+		var form = $("#addCostumeForm");
+		var url = form.attr("action");
+
+		var r = confirm("Are you sure you want to add this costume?");
+
+		if (r == true)
+		{
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&addCostumeButton=1",
+				success: function(data)
+				{
+					var json = JSON.parse(data);
+					
+					// Add to lists
+					$("#costumeID").append("<option value=\'" + json[0].id + "\'>" + $("#costumeName").val() + "</option>");
+					$("#costumeIDEdit").append("<option value=\'" + json[0].id + "\' costumeName=\'" + $("#costumeName").val() + "\' costumeID=\'" + json[0].id + "\' costumeEra=\'" + $("#costumeEra").val() + "\' costumeClub=\'" + $("#costumeClub").val() + "\'>" + $("#costumeName").val() + "</option>");
+
+					// Clear form
+					$("#costumeName").val("");
+					$("#costumeEra").val("1");
+					$("#costumeClub").val("0");
+
+					// Alert to success
+			  		alert(json[0].message);
+				}
+			});
+		}
+	})
+	
+	$("#submitDeleteCostume").button().click(function(e)
+	{
+		e.preventDefault();
+
+		var form = $("#costumeDeleteForm");
+		var url = form.attr("action");
+
+		var r = confirm("Are you sure you want to delete this costume?");
+
+		if (r == true)
+		{
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitDeleteCostume=1",
+				success: function(data)
+				{
+					// Delete from edit list
+					$("#costumeIDEdit").children("option[value=\'" + $("#costumeID :selected").val() + "\']").remove();
+
+					// Clear
+					$("#costumeID").find("option:selected").remove();
+					
+					// Alert to success
+			  		alert("The costume was deleted successfully!");
+
+			  		// Show message if empty
+			  		if($("#costumeID").has("option").length <= 0)
+			  		{
+			  			$("#costumeDeleteForm").hide();
+			  		}
+					
+			  		// Show message if empty - edit
+			  		if($("#costumeIDEdit").has("option").length <= 0)
+			  		{
+			  			$("#costumeEditForm").hide();
+			  		}
+				}
+			});
+
+	  		// Show message if empty
+	  		if($("#costumeID").has("option").length <= 0)
+	  		{
+	  			$("#costumeDeleteForm").hide();
+	  		}
+		}
+	})
+	
+	/************ AWARD ********************/
 
 	// Award Edit Select Change
 	$("#awardIDEdit").on("change", function()
@@ -2877,6 +3185,10 @@ $(document).ready(function()
 				data: form.serialize() + "&submitEditAward=1",
 				success: function(data)
 				{
+					// Change values for delete form
+					$("#awardID").children("option[value=\'" + $("#awardIDEdit :selected").val() + "\']").text($("#editAwardTitle").val());
+					
+					// Change values in edit form select
 					$("#awardIDEdit :selected").text($("#editAwardTitle").val());
 					$("#awardIDEdit :selected").attr("awardTitle", $("#editAwardTitle").val());
 					$("#awardIDEdit :selected").attr("awardImage", $("#editAwardImage").val());
@@ -2965,6 +3277,9 @@ $(document).ready(function()
 				data: form.serialize() + "&submitDeleteAward=1",
 				success: function(data)
 				{
+					// Delete from award list
+					$("#awardIDEdit").children("option[value=\'" + $("#awardID :selected").val() + "\']").remove();
+					
 					// Clear
 					$("#awardID").find("option:selected").remove();
 
@@ -2975,6 +3290,12 @@ $(document).ready(function()
 			  		if($("#awardID").has("option").length <= 0)
 			  		{
 			  			$("#awardUserDelete").hide();
+			  		}
+					
+			  		// Show message if empty - edit
+			  		if($("#awardIDEdit").has("option").length <= 0)
+			  		{
+			  			$("#awardEdit").hide();
 			  		}
 				}
 			});

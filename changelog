@@ -2,6 +2,13 @@
 
 _11/30/2020_
 
+-Added icon
+-Added Costume Management (Add, edit, delete)
+-Improved Award Management (Made it more dynamic)
+-Removed main.js file which was unnecessary
+
+_11/30/2020_
+
 -Removed multiple troops due to the complexity of maintaining and to simplify future updates
 -Fixed several bugs with database counts
 -You can now change the date in the command staff edit screen
