@@ -362,12 +362,12 @@ function getDatesFromRange($start, $end, $format = 'M-d-Y')
     return $array;
 }
 
-// ifEmpty: Show empty
-function ifEmpty($value)
+// ifEmpty: Show empty - if no value, show message. Default is EMPTY
+function ifEmpty($value, $message = "EMPTY")
 {
 	if($value == "")
 	{
-		return "EMPTY";
+		return $message;
 	}
 	else
 	{

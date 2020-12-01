@@ -44,6 +44,20 @@ if($_GET['do'] == "changepassword")
 	}
 }
 
+/******************** MODIFY SIGN UP FROM EVENT PAGE *******************************/
+
+if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
+{
+	// Update SQL
+	$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costume'])."', costume_backup = '".cleanInput($_POST['costume_backup'])."', status = '".cleanInput($_POST['status'])."' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($_POST['troopid'])."'");
+}
+
+/*********************** UNDO CANCEL *********************************************/
+
+if(isset($_GET['do']) && $_GET['do'] == "undocancel" && loggedIn())
+{
+}
+
 /************************ Costumes ***************************************/
 // Costume management - add, delete, edit
 if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmin())
@@ -595,7 +609,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 						<div style="overflow-x: auto;">
 						<table border="1" name="rosterTable" id="rosterTable">
 							<tr>
-								<th>Selection</th>	<th>Trooper TKID</td>	<th>Trooper Costume</th>	<th>Trooper Backup Costume</th>	<th>Trooper Status</th>	<th>Trooper Comment</th>	<th>Trooper Attended</th>	<th>Attended With</th>	<th>Dates Attending</th>	<th>Dates Attended</th>';
+								<th>Selection</th>	<th>Trooper TKID</td>	<th>Trooper Costume</th>	<th>Trooper Backup Costume</th>	<th>Trooper Status</th>	<th>Trooper Comment</th>	<th>Trooper Attended</th>	<th>Attended With</th>';
 				}
 
 				// List troopers
@@ -639,7 +653,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 					</td>
 
 					<td>
-						<div name="backup1'.$db->trooperid.'" id="backup1'.$db->trooperid.'">'.getCostume($db->costume_backup).'</div>
+						<div name="backup1'.$db->trooperid.'" id="backup1'.$db->trooperid.'">'.ifEmpty(getCostume($db->costume_backup), "N/A").'</div>
 						<div name="backup2'.$db->trooperid.'" id="backup2'.$db->trooperid.'" style="display:none;">
 
 						<select name="costumeVal'.$db->trooperid.'" id="costumeVal'.$db->trooperid.'">';
@@ -698,7 +712,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 					</td>
 
 					<td>
-						<div name="reason1'.$db->trooperid.'" id="reason1'.$db->trooperid.'">'.$db->reason.'</div>
+						<div name="reason1'.$db->trooperid.'" id="reason1'.$db->trooperid.'">'.ifEmpty($db->reason, "None").'</div>
 						<div name="reason2'.$db->trooperid.'" id="reason2'.$db->trooperid.'" style="display:none;"><input type="text" id="reasonVal'.$db->trooperid.'" name="reasonVal'.$db->trooperid.'" value="'.$db->reason.'" /></div>
 					</td>
 
@@ -713,7 +727,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 					</td>
 
 					<td>
-						<div name="attendcostume1'.$db->trooperid.'" id="attendcostume1'.$db->trooperid.'">'.getCostume($db->attended_costume).'</div>
+						<div name="attendcostume1'.$db->trooperid.'" id="attendcostume1'.$db->trooperid.'">'.ifEmpty(getCostume($db->attended_costume), "Not Submitted").'</div>
 						<div name="attendcostume2'.$db->trooperid.'" id="attendcostume2'.$db->trooperid.'" style="display:none;">
 						<select name="attendcostumeVal'.$db->trooperid.'" id="attendcostumeVal'.$db->trooperid.'">';
 
@@ -751,17 +765,6 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 						echo '
 						</select>
 						</div>
-						</td>
-					
-						<td>';
-						
-						// If a single day event, let's see if they actually attended before showing
-						if($db->attend == 1)
-						{
-							echo '<p><b>ATTENDED</b></p>';
-						}
-						
-						echo '
 						</td>
 					</td>
 				</tr>';
@@ -826,7 +829,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				<select name="costume">
 					<option value="null" SELECTED>Please choose an option...</option>';
 
-				$query2 = "SELECT * FROM costumes";
+				$query2 = "SELECT * FROM costumes ORDER BY costume";
 				if ($result2 = mysqli_query($conn, $query2))
 				{
 					while ($db2 = mysqli_fetch_object($result2))

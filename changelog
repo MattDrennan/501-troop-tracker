@@ -1,5 +1,15 @@
 **Changelog**
 
+_12/01/2020_
+
+-Costumes ordered by name in list
+-You can now change your status on the event page
+-Undo cancel base implemented. Not finished.
+
+_11/30/2020_
+
+-Improved ifEmpty function to allow for different messages
+
 _11/30/2020_
 
 -Added icon
