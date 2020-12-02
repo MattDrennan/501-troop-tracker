@@ -307,7 +307,7 @@ function inEvent($id, $event)
 	return $array;
 }
 
-// getStatus: gets status of trooper
+// getStatus: gets status of trooper - 0 = Going, 1 = Stand by, 2 = Tentative, 3 = Attended, 4 = Canceled, 5 = Pending, 6 = Not Picked
 function getStatus($value)
 {
 	$returnValue = "";

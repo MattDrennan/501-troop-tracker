@@ -250,7 +250,7 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess")
 if(isset($_GET['profile']))
 {
 	// Get data
-	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, event_sign_up.attend, event_sign_up.attended_costume, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.tkid FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".cleanInput($_GET['profile'])."' AND events.closed = '1' ORDER BY events.dateEnd";
+	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, event_sign_up.attend, event_sign_up.attended_costume, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.tkid FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".cleanInput($_GET['profile'])."' AND events.closed = '1' AND event_sign_up.status = '3' ORDER BY events.dateEnd";
 	$i = 0;
 	if ($result = mysqli_query($conn, $query))
 	{
@@ -1889,7 +1889,11 @@ if(isset($_GET['event']))
 						
 						<form action="process.php?do=modifysignup" method="POST" name="modifysignupForm" id="modifysignupForm">
 						
+						<!-- Hidden variables -->
 						<input type="hidden" name="modifysignupTroopIdForm" id="modifysignupTroopIdForm" value="'.$db->id.'" />
+						<input type="hidden" name="limitedEventCancel" id="limitedEventCancel" value="'.$db->limitedEvent.'" />
+						<input type="hidden" name="troopidC" id="troopidC" value="'.strip_tags(addslashes($_GET['event'])).'" />
+						<input type="hidden" name="myId" id="myId" value="'.strip_tags(addslashes($_SESSION['id'])).'" />
 						
 						<table border="1">
 						<tr>
@@ -1898,7 +1902,7 @@ if(isset($_GET['event']))
 					}
 
 					// Allow for users to edit their status from the event, and make sure the event is not closed, and the user did not cancel
-					if($db2->trooperId == $_SESSION['id'] && $db->closed == 0 && $db2->status != 4)
+					if(loggedIn() && $db2->trooperId == $_SESSION['id'] && $db->closed == 0 && $db2->status != 4)
 					{
 						echo '
 						<tr>
@@ -2007,6 +2011,34 @@ if(isset($_GET['event']))
 							</td>
 						</tr>';
 					}
+					// If this is the user, and the user canceled, allow to be edited
+					else if(loggedIn() && $db2->trooperId == $_SESSION['id'] && $db->closed == 0 && $db2->status == 4)
+					{
+						echo '
+						<tr>
+							<td>
+								<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>
+							</td>
+								
+							<td>
+								'.readTKNumber($db2->tkid).'
+							</td>
+							
+							<td name="trooperRosterCostume" id="trooperRosterCostume">
+								'.getCostume($db2->costume).'
+							</td>
+							
+							<td name="trooperRosterBackup" id="trooperRosterBackup">
+								'.ifEmpty(getCostume($db2->costume_backup), "N/A").'
+							</td>
+							
+							<td id="'.$db2->trooperId.'Status">
+							<div name="trooperRosterStatus" id="trooperRosterStatus">
+								'.getStatus($db2->status).'
+							</div>
+							</td>
+						</tr>';
+					}
 					else
 					{
 						// If a user other than the current user
@@ -2082,13 +2114,18 @@ if(isset($_GET['event']))
 						if($eventCheck['status'] == 4)
 						{
 							echo '
+							<div class="cancelFormArea">
 							<p>
-								<b>You have canceled this event.</b>
+								<b>You have canceled this troop.</b>
 							</p>
 							
 							<form action="process.php?do=undocancel" method="POST" name="undoCancelForm" id="undoCancelForm">
 								<input type="submit" name="undoCancelButton" id="undoCancelButton" value="I changed my mind" />
-							</form>';
+							</form>
+							</div>
+						
+							<div name="signeduparea" id="signeduparea">
+							</div>';
 						}
 						else
 						{
@@ -2097,8 +2134,6 @@ if(isset($_GET['event']))
 								<p><b>You are signed up for this troop!</b></p>
 
 								<form action="index.php" method="POST" name="cancelForm" id="cancelForm">
-									<input type="hidden" name="troopidC" id="troopidC" value="'.strip_tags(addslashes($_GET['event'])).'" />
-									<input type="hidden" name="myId" id="myId" value="'.strip_tags(addslashes($_SESSION['id'])).'" />
 									<p>Reason why you are canceling:</p>
 									<input type="text" name="cancelReason" id="cancelReason" />
 									<input type="submit" name="submitCancelTroop" id="submitCancelTroop" value="Cancel Troop" />
@@ -2205,7 +2240,10 @@ if(isset($_GET['event']))
 			}
 		}
 
-		echo '<hr />';
+		echo '
+		<div class="cancelFormArea">
+		<hr />
+		</div>';
 
 		if(loggedIn())
 		{
@@ -3074,6 +3112,61 @@ $(document).ready(function()
 	
 	// Undo Cancel
 	
+	// Have to put this here for it to work
+	$("body").on("click", "#submitCancelTroop", function(e)
+	{
+		$("form[name=\'cancelForm\']").validate({
+			// Specify validation rules
+			rules: {
+				// The key name on the left side is the name attribute
+				// of an input field. Validation rules are defined
+				// on the right side
+			},
+			// Specify validation error messages
+				messages: {
+			},
+			// Make sure the form is submitted to the destination defined
+			// in the "action" attribute of the form when valid
+			submitHandler: function(form) {
+
+				var r = confirm("Are you sure you want to cancel this troop?");
+
+				var id = $("#myId").val();
+
+				if (r == true)
+				{
+					$.ajax({
+					type: "POST",
+					url: form.action,
+					data: $(form).serialize() + "&submitCancelTroop=1&troopidC=" + $(\'#troopidC\').val() + "&myId=" + $(\'#myId\').val(),
+					success: function(data)
+					{
+						var html = `
+						<div class="cancelFormArea">
+						<p>
+						<b>You have canceled this troop.</b>
+						</p>
+
+						<form action="process.php?do=undocancel" method="POST" name="undoCancelForm" id="undoCancelForm">
+						<input type="submit" name="undoCancelButton" id="undoCancelButton" value="I changed my mind" />
+						</form>
+						</div>`;
+
+						// Change to undo cancel
+						$("#signeduparea").html(html);
+						
+						console.log($("#trooperRosterCostume").html());
+
+						// Change select options
+						$("#trooperRosterCostume").html($("#modifysignupFormCostume2 option:selected").text());
+						$("#trooperRosterBackup").html($("#modiftybackupcostumeForm2 option:selected").text());
+						$("#" + id + "Status").html("<div name=\'trooperRosterStatus\' id=\'trooperRosterStatus\'>Canceled</div>");
+					}});
+				}
+			}
+		});
+	});
+	
 	$("body").on("click", "#undoCancelButton", function(e)
 	{
 		e.preventDefault();
@@ -3088,19 +3181,55 @@ $(document).ready(function()
 			$.ajax({
 				type: "POST",
 				url: url,
-				data: form.serialize() + "&removetrooper=1",
+				data: form.serialize() + "&undocancel=1&limitedevent=" + $("#limitedEventCancel").val(),
 				success: function(data)
 				{
 					var json = JSON.parse(data);
 
-					$("#trooperRosterCostume").html();
-					$("#trooperRosterBackup").html();
-					$("#trooperRosterStatus").html();
+					// Update roster to have form fields again
+					$("#trooperRosterCostume").html(json[0].costume);
+					$("#trooperRosterBackup").html(json[0].backup);
+					$("#trooperRosterStatus").html(json[0].status);
+					
+					// Hide cancel form area
+					$(".cancelFormArea").hide();
 
 					// Display message
-					alert(json.data);
+					alert(json[0].data);
 				}
 			});
+		}
+	});
+	
+	$("body").on("change", "#modifysignupFormCostume2, #modiftybackupcostumeForm2, #modifysignupStatusForm2", function(e)
+	{
+		// Make sure values were changed
+		if($("#modifysignupFormCostume2").val() != 0)
+		{
+			// Make sure this is not a limited event
+			if($("#modifysignupStatusForm2").val() != -1 && $("#limitedEventCancel").val() == 0)
+			{
+				$.ajax({
+					type: "POST",
+					url: "process.php?do=undocancel&do2=undofinish",
+					data: "costume=" + $("#modifysignupFormCostume2").val() + "&costume_backup=" + $("#modiftybackupcostumeForm2").val() + "&status=" + $("#modifysignupStatusForm2").val() + "&troopid=" + $("#modifysignupTroopIdForm").val(),
+					success: function(data)
+					{
+						alert("Status Updated!");
+						
+						var html = `
+						<p><b>You are signed up for this troop!</b></p>
+
+						<form action="index.php" method="POST" name="cancelForm" id="cancelForm">
+							<p>Reason why you are canceling:</p>
+							<input type="text" name="cancelReason" id="cancelReason" />
+							<input type="submit" name="submitCancelTroop" id="submitCancelTroop" value="Cancel Troop" />
+						</form>`;
+						
+						$("#signeduparea").html(html);
+					}
+				});
+			}
 		}
 	});
 	
@@ -3108,7 +3237,7 @@ $(document).ready(function()
 	
 	// Modify Sign Up Form Change
 	
-	$("body").on("change", "#modifysignupForm", function(e)
+	$("body").on("change", "#modifysignupFormCostume, #modiftybackupcostumeForm, #modifysignupStatusForm", function(e)
 	{
 		$.ajax({
 			type: "POST",

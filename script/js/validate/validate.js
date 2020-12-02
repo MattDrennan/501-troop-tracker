@@ -577,11 +577,27 @@ $(function() {
         $.ajax({
           type: "POST",
           url: form.action,
-          data: $(form).serialize() + "&submitCancelTroop=1",
+          data: $(form).serialize() + "&submitCancelTroop=1&troopidC=" + $('#troopidC').val() + "&myId=" + $('#myId').val(),
           success: function(data)
           {
-            $("#signeduparea").html("<p><b>You have canceled this troop.</b></p>");
-            $("#" + id + "Status").html("Canceled");
+			var html = `
+			<div class="cancelFormArea">
+			<p>
+				<b>You have canceled this troop.</b>
+			</p>
+			
+			<form action="process.php?do=undocancel" method="POST" name="undoCancelForm" id="undoCancelForm">
+				<input type="submit" name="undoCancelButton" id="undoCancelButton" value="I changed my mind" />
+			</form>
+			</div>`;
+			
+			// Change to undo cancel
+            $("#signeduparea").html(html);
+			
+			// Change select options
+			$("#trooperRosterCostume").html($("#modifysignupFormCostume option:selected").text());
+			$("#trooperRosterBackup").html($("#modiftybackupcostumeForm option:selected").text());
+            $("#" + id + "Status").html("<div name='trooperRosterStatus' id='trooperRosterStatus'>Canceled</div>");
           }
         });
       }
