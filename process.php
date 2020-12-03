@@ -1042,8 +1042,6 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 
 		// Get data to send back - query the event data for the information
 
-		// Start Test Code
-
 		// Query database for event info
 		$query = "SELECT * FROM events WHERE id = '".cleanInput($_POST['event'])."'";
 		if ($result = mysqli_query($conn, $query))
@@ -1066,6 +1064,14 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 						if($i == 0)
 						{
 							$data .= '
+							<form action="process.php?do=modifysignup" method="POST" name="modifysignupForm" id="modifysignupForm">
+							
+							<!-- Hidden variables -->
+							<input type="hidden" name="modifysignupTroopIdForm" id="modifysignupTroopIdForm" value="'.$db->id.'" />
+							<input type="hidden" name="limitedEventCancel" id="limitedEventCancel" value="'.$db->limitedEvent.'" />
+							<input type="hidden" name="troopidC" id="troopidC" value="'.strip_tags(addslashes($_POST['event'])).'" />
+							<input type="hidden" name="myId" id="myId" value="'.strip_tags(addslashes($_SESSION['id'])).'" />
+
 							<div style="overflow-x: auto;">
 							<table border="1">
 							<tr>
@@ -1073,12 +1079,177 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 							</tr>';
 						}
 
-						$data .= '
+						// Allow for users to edit their status from the event, and make sure the event is not closed, and the user did not cancel
+						if(loggedIn() && $db2->trooperId == $_SESSION['id'] && $db->closed == 0 && $db2->status != 4)
+						{
+							$data .= '
+							<tr>
+								<td>
+									<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>
+								</td>
+									
+								<td>
+									'.readTKNumber($db2->tkid).'
+								</td>
+								
+								<td name="trooperRosterCostume" id="trooperRosterCostume">
+									<select name="modifysignupFormCostume2" id="modifysignupFormCostume2">';
+
+									$query3 = "SELECT * FROM costumes ORDER BY costume";
+									if ($result3 = mysqli_query($conn, $query3))
+									{
+										while ($db3 = mysqli_fetch_object($result3))
+										{
+											if($db2->costume == $db3->id)
+											{
+												// If this is the selected costume, make it selected
+												$data .= '
+												<option value="'. $db3->id .'" SELECTED>'.$db3->costume.'</option>';
+											}
+											else
+											{
+												// Default
+												$data .= '
+												<option value="'. $db3->id .'">'.$db3->costume.'</option>';
+											}
+										}
+									}
+
+									$data .= '
+									</select>
+								</td>
+								
+								<td name="trooperRosterBackup" id="trooperRosterBackup">
+									<select name="modiftybackupcostumeForm2" id="modiftybackupcostumeForm2">';
+
+									// Display costumes
+									$query3 = "SELECT * FROM costumes ORDER BY costume";
+									
+									// Count results
+									$c = 0;
+									
+									// Amount of costumes
+									if ($result3 = mysqli_query($conn, $query3))
+									{
+										while ($db3 = mysqli_fetch_object($result3))
+										{
+											// If costume set to backup and first result
+											if($db2->costume_backup == 99999 && $c == 0)
+											{
+												$data .= '
+												<option value="99999" SELECTED>N/A</option>';
+											}
+											// Make sure this is a first result otherwise
+											else if($c == 0)
+											{
+												$data .= '
+												<option value="99999">N/A</option>';
+											}
+											// If a costume matches
+											else if($db2->costume_backup == $db3->id)
+											{
+												$data .= '
+												<option value="'.$db3->id.'" SELECTED>'.$db3->costume.'</option>';
+											}
+											// Start showing costumes
+											else
+											{
+												$data .= '
+												<option value="'.$db3->id.'">'.$db3->costume.'</option>';
+											}
+											
+											// Increment
+											$c++;
+										}
+									}
+
+									$data .= '
+									</select>
+								</td>
+								
+								<td id="'.$db2->trooperId.'Status">
+								<div name="trooperRosterStatus2" id="trooperRosterStatus2">';
+								
+									if($db->limitedEvent != 1)
+									{
+										$data .= '
+										<select name="modifysignupStatusForm" id="modifysignupStatusForm">
+											<option value="0" '.echoSelect(0, $db2->status).'>I\'ll be there!</option>
+											<option value="1" '.echoSelect(1, $db2->status).'>Tentative</option>
+										</select>';
+									}
+									else
+									{
+										$data .= '
+										(Pending Command Staff Approval)';								
+									}
+
+								$data .= '
+								</div>
+								</td>
+							</tr>';
+						}
+						// If this is the user, and the user canceled, allow to be edited
+						else if(loggedIn() && $db2->trooperId == $_SESSION['id'] && $db->closed == 0 && $db2->status == 4)
+						{
+							$data .= '
+							<tr>
+								<td>
+									<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>
+								</td>
+									
+								<td>
+									'.readTKNumber($db2->tkid).'
+								</td>
+								
+								<td name="trooperRosterCostume" id="trooperRosterCostume">
+									'.getCostume($db2->costume).'
+								</td>
+								
+								<td name="trooperRosterBackup" id="trooperRosterBackup">
+									'.ifEmpty(getCostume($db2->costume_backup), "N/A").'
+								</td>
+								
+								<td id="'.$db2->trooperId.'Status">
+								<div name="trooperRosterStatus" id="trooperRosterStatus">
+									'.getStatus($db2->status).'
+								</div>
+								</td>
+							</tr>';
+						}
+						else
+						{
+							// If a user other than the current user
+							$data .= '
+							<tr>
+								<td>
+									<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>
+								</td>
+									
+								<td>
+									'.readTKNumber($db2->tkid).'
+								</td>
+								
+								<td>
+									'.getCostume($db2->costume).'
+								</td>
+								
+								<td>
+									'.ifEmpty(getCostume($db2->costume_backup), "N/A").'
+								</td>
+								
+								<td id="'.$db2->trooperId.'Status">
+									'.getStatus($db2->status).'
+								</td>
+							</tr>';
+						}
+
+						/*$data .= '
 						<tr>
 							<td><a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a></td>	<td>'.readTKNumber($db2->tkid).'</td>	<td>'.getCostume($db2->costume).'</td>	<td>'.getCostume($db2->costume_backup).'</td>	<td id="'.$db2->trooperId.'Status">'.getStatus($db2->status).'
 						</td>
 						
-						</tr>';
+						</tr>';*/
 
 						$i++;
 					}
@@ -1094,10 +1265,20 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 				else
 				{
 					$data .= '</table>
-					</div>';
+					</div>
+					</form>';
 				}
 
-				// End Test Code
+				$data .= '
+				<div name="signeduparea" id="signeduparea">
+					<p><b>You are signed up for this troop!</b></p>
+
+					<form action="index.php" method="POST" name="cancelForm" id="cancelForm">
+						<p>Reason why you are canceling:</p>
+						<input type="text" name="cancelReason" id="cancelReason" />
+						<input type="submit" name="submitCancelTroop" id="submitCancelTroop" value="Cancel Troop" />
+					</form>
+				</div>';
 
 				// Send back data
 				$array = array('success' => 'success', 'data' => $data, 'id' => $_SESSION['id']);

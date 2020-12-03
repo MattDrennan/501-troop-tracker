@@ -105,6 +105,7 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 	<a href="#" id="changephoneLink" class="button">Change Phone</a> 
 	<a href="#" id="changenameLink" class="button">Change Name</a> 
 	<a href="#" id="changepasswordLink" class="button">Change Password</a>
+	<a href="index.php?profile='.$_SESSION['id'].'" class="button">View Your Profile</a>
 	<br /><br />
 
 	<div id="unsubscribe" style="display:none;">
@@ -1204,13 +1205,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						<p>Do you wish to limit the era of the costume?</p>
 						<select name="era" id="era">
-							<option value="0" SELECTED>No</option>
-							<option value="1">Prequel</option>
-							<option value="2">Original</option>
-							<option value="3">First Order</option>
-							<option value="4">Clone Wars</option>
-							<option value="5">Rebels</option>
-							<option value="6">Expanded Universe</option>
+							<option value="0">Prequel</option>
+							<option value="1" SELECTED>Original</option>
+							<option value="2">Sequel</option>
+							<option value="3">Expanded</option>
+							<option value="4" SELECTED>All</option>
 						</select>
 
 						<p>Limit of 501st Troopers:</p>
@@ -1550,13 +1549,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<p>Do you wish to limit the era of the costume?</p>
 				<select name="era" id="era">
-					<option value="0" SELECTED>No</option>
-					<option value="1">Prequel</option>
-					<option value="2">Original</option>
-					<option value="3">First Order</option>
-					<option value="4">Clone Wars</option>
-					<option value="5">Rebels</option>
-					<option value="6">Expanded Universe</option>
+					<option value="0">Prequel</option>
+					<option value="1">Original</option>
+					<option value="2">Sequel</option>
+					<option value="3">Expanded</option>
+					<option value="4" SELECTED>All</option>
 				</select>
 
 				<p>Limit of 501st Troopers:</p>
@@ -3138,7 +3135,7 @@ $(document).ready(function()
 					$.ajax({
 					type: "POST",
 					url: form.action,
-					data: $(form).serialize() + "&submitCancelTroop=1&troopidC=" + $(\'#troopidC\').val() + "&myId=" + $(\'#myId\').val(),
+					data: $(form).serialize() + "&submitCancelTroop=1&troopidC=" + $(\'#troopidC\').val() + "&myId=" + $(\'#myId\').val() + "&limitedevent=" + $("#limitedEventCancel").val(),
 					success: function(data)
 					{
 						var html = `
@@ -3154,8 +3151,6 @@ $(document).ready(function()
 
 						// Change to undo cancel
 						$("#signeduparea").html(html);
-						
-						console.log($("#trooperRosterCostume").html());
 
 						// Change select options
 						$("#trooperRosterCostume").html($("#modifysignupFormCostume2 option:selected").text());
@@ -3212,7 +3207,7 @@ $(document).ready(function()
 				$.ajax({
 					type: "POST",
 					url: "process.php?do=undocancel&do2=undofinish",
-					data: "costume=" + $("#modifysignupFormCostume2").val() + "&costume_backup=" + $("#modiftybackupcostumeForm2").val() + "&status=" + $("#modifysignupStatusForm2").val() + "&troopid=" + $("#modifysignupTroopIdForm").val(),
+					data: "costume=" + $("#modifysignupFormCostume2").val() + "&costume_backup=" + $("#modiftybackupcostumeForm2").val() + "&status=" + $("#modifysignupStatusForm2").val() + "&troopid=" + $("#modifysignupTroopIdForm").val() + "&limitedevent=" + $("#limitedEventCancel").val(),
 					success: function(data)
 					{
 						alert("Status Updated!");
@@ -3242,7 +3237,7 @@ $(document).ready(function()
 		$.ajax({
 			type: "POST",
 			url: "process.php?do=modifysignup",
-			data: "costume=" + $("#modifysignupFormCostume").val() + "&costume_backup=" + $("#modiftybackupcostumeForm").val() + "&status=" + $("#modifysignupStatusForm").val() + "&troopid=" + $("#modifysignupTroopIdForm").val(),
+			data: "costume=" + $("#modifysignupFormCostume").val() + "&costume_backup=" + $("#modiftybackupcostumeForm").val() + "&status=" + $("#modifysignupStatusForm").val() + "&troopid=" + $("#modifysignupTroopIdForm").val() + "&limitedevent=" + $("#limitedEventCancel").val(),
 			success: function(data)
 			{
 				alert("Status Updated!");

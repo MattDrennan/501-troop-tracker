@@ -459,7 +459,7 @@ $(function() {
           success: function(data)
           {
             // Hide Form
-            //$("#requestAccessFormArea").hide();
+            $("#requestAccessFormArea").hide();
 
             // Show data
             $("#requestAccessFormArea2").html(data);
@@ -577,26 +577,26 @@ $(function() {
         $.ajax({
           type: "POST",
           url: form.action,
-          data: $(form).serialize() + "&submitCancelTroop=1&troopidC=" + $('#troopidC').val() + "&myId=" + $('#myId').val(),
+          data: $(form).serialize() + "&submitCancelTroop=1&troopidC=" + $('#troopidC').val() + "&myId=" + $('#myId').val() + "&limitedevent=" + $("#limitedEventCancel").val(),
           success: function(data)
           {
-			var html = `
-			<div class="cancelFormArea">
-			<p>
-				<b>You have canceled this troop.</b>
-			</p>
+      			var html = `
+      			<div class="cancelFormArea">
+      			<p>
+      				<b>You have canceled this troop.</b>
+      			</p>
+      			
+      			<form action="process.php?do=undocancel" method="POST" name="undoCancelForm" id="undoCancelForm">
+      				<input type="submit" name="undoCancelButton" id="undoCancelButton" value="I changed my mind" />
+      			</form>
+      			</div>`;
 			
-			<form action="process.php?do=undocancel" method="POST" name="undoCancelForm" id="undoCancelForm">
-				<input type="submit" name="undoCancelButton" id="undoCancelButton" value="I changed my mind" />
-			</form>
-			</div>`;
-			
-			// Change to undo cancel
+      			// Change to undo cancel
             $("#signeduparea").html(html);
 			
-			// Change select options
-			$("#trooperRosterCostume").html($("#modifysignupFormCostume option:selected").text());
-			$("#trooperRosterBackup").html($("#modiftybackupcostumeForm option:selected").text());
+      			// Change select options
+      			$("#trooperRosterCostume").html($("#modifysignupFormCostume option:selected").text());
+      			$("#trooperRosterBackup").html($("#modiftybackupcostumeForm option:selected").text());
             $("#" + id + "Status").html("<div name='trooperRosterStatus' id='trooperRosterStatus'>Canceled</div>");
           }
         });

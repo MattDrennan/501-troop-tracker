@@ -1,5 +1,12 @@
 **Changelog**
 
+_12/03/2020_
+
+-When you sign up for an event, you can now immediately edit it
+-When you request for access, the form will be hidden after success
+-Added a link to your profile, under account management
+-Improved error handling for getSquad()
+
 _12/02/2020_
 
 -Troop tracker will only show events attended
