@@ -125,6 +125,78 @@ if(isset($_GET['do']) && isset($_GET['do2']) && $_GET['do'] == "undocancel" && $
 	$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costume'])."', costume_backup = '".cleanInput($_POST['costume_backup'])."', status = '".cleanInput($_POST['status'])."' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($_POST['troopid'])."'");
 }
 
+/************************* Comments **************************************/
+
+// Enter comment into database
+if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitComment']) && loggedIn())
+{
+	if(strlen($_POST['comment']) > 0 && ($_POST['important'] == 0 || $_POST['important'] == 1))
+	{
+		// Query the database
+		$conn->query("INSERT INTO comments (troopid, trooperid, comment, important) VALUES ('".cleanInput($_POST['eventId'])."', '".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['comment'])."', '".cleanInput($_POST['important'])."')") or die($conn->error);
+
+		// Load comments for return data
+		$query = "SELECT * FROM comments WHERE troopid = '".cleanInput($_POST['eventId'])."' ORDER BY posted DESC";
+
+		// Count comments
+		$i = 0;
+
+		// Return data
+		$data = "";
+
+		if ($result = mysqli_query($conn, $query))
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				$data .= '
+				<div style="overflow-x: auto;" style="text-align: center;">
+				<table border="1" name="comment_'.$db->id.'" id="comment_'.$db->id.'">';
+
+				$data .= '
+				<tr>
+					<td><a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.getTKNumber($db->trooperid).'</a></td>
+				</tr>';
+
+				if(isAdmin())
+				{
+					$data .= '
+					<tr>
+						<td><a href="#" id="deleteComment_'.$db->id.'" name="'.$db->id.'" class="button">Delete Comment</a></td>
+					</tr>';
+				}
+
+				$data .= '
+				<tr>
+					<td>'.$db->posted.'</td>
+				</tr>
+
+				<tr>
+					<td>'.isImportant($db->important, $db->comment).'</td>
+				</tr>
+
+				</table>
+				</div>
+
+				<br />';
+
+				// Increment
+				$i++;
+			}
+		}
+
+		if($i == 0)
+		{
+			$data .= '
+			<br />
+			<b>No comments to display.</b>';
+		}
+
+		$array = array('data' => $data);
+		echo json_encode($array);
+	}
+}
+
+
 /************************ Costumes ***************************************/
 // Costume management - add, delete, edit
 if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmin())

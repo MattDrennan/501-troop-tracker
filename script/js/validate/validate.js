@@ -686,7 +686,22 @@ $(function() {
     // Make sure the form is submitted to the destination defined
     // in the "action" attribute of the form when valid
     submitHandler: function(form) {
-      form.submit();
+      $.ajax({
+        type: "POST",
+        url: "process.php?do=postcomment",
+        data: $(form).serialize() + "&submitComment=1",
+        success: function(data)
+        {
+          var json = JSON.parse(data);
+
+          // Update HTML
+          $("#commentArea").html(json.data);
+
+          // Return vars to default
+          $("#comment").val("");
+          $("#important").val("0");
+        }
+      });
     }
   });
 

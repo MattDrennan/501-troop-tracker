@@ -267,6 +267,21 @@ function getTKNumber($id)
 	}
 }
 
+// getName: gets the user's name
+function getName($id)
+{
+	global $conn;
+	
+	$query = "SELECT * FROM troopers WHERE id='".$id."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			return $db->name;
+		}
+	}
+}
+
 // getIdNumberFromTK: gets ID number from TK number
 function getIDNumberFromTK($tk)
 {

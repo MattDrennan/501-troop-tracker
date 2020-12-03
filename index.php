@@ -2244,20 +2244,10 @@ if(isset($_GET['event']))
 
 		if(loggedIn())
 		{
-			// Enter comment into database
-			if(isset($_POST['submitComment']))
-			{
-				if(strlen($_POST['comment']) > 0 && ($_POST['important'] == 0 || $_POST['important'] == 1))
-				{
-					// Query the database
-					$conn->query("INSERT INTO comments (troopid, trooperid, comment, important) VALUES ('".cleanInput($_GET['event'])."', '".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['comment'])."', '".cleanInput($_POST['important'])."')") or die($conn->error);
-
-					echo '<b>Comment posted!</b>';
-				}
-			}
-
 			echo '
-			<form aciton="index.php?event='.cleanInput($_GET['event']).'" name="commentForm" id="commentForm" method="POST">
+			<form aciton="process.php?do=postcomment" name="commentForm" id="commentForm" method="POST">
+				<input type="hidden" name="eventId" id="eventId" value="'.cleanInput($_GET['event']).'" />
+
 				<h2 class="tm-section-header">Comments</h2>
 				<div style="text-align: center;">
 				<textarea cols="30" rows="10" name="comment" id="comment"></textarea>
@@ -2265,7 +2255,7 @@ if(isset($_GET['event']))
 				<br />
 
 				<p>Is this an important message?</p>
-				<select name="important">
+				<select name="important" id="important">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</select>
@@ -2274,7 +2264,9 @@ if(isset($_GET['event']))
 
 				<input type="submit" name="submitComment" value="Post!" />
 				</div>
-			</form>';
+			</form>
+
+			<div name="commentArea" id="commentArea">';
 
 			// Query database for event info
 			$query = "SELECT * FROM comments WHERE troopid = '".cleanInput($_GET['event'])."' ORDER BY posted DESC";
@@ -2290,14 +2282,14 @@ if(isset($_GET['event']))
 
 					echo '
 					<tr>
-						<td><a href="index.php?profile='.$db->trooperid.'">'.getTKNumber($db->trooperid).'</a></td>
+						<td><a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.getTKNumber($db->trooperid).'</a></td>
 					</tr>';
 
 					if(isAdmin())
 					{
 						echo '
 						<tr>
-							<td><a href="#" id="deleteComment_'.$db->id.'" name="'.$db->id.'">Delete Comment</a></td>
+							<td><a href="#" id="deleteComment_'.$db->id.'" name="'.$db->id.'" class="button">Delete Comment</a></td>
 						</tr>';
 					}
 
@@ -2333,6 +2325,9 @@ if(isset($_GET['event']))
 			<br />
 			<b>You must <a href="index.php?action=login">login</a> to view comments.</b>';
 		}
+
+		echo '
+		</div>';
 	}
 }
 else
@@ -2759,8 +2754,7 @@ $(document).ready(function()
 			}
 		});
 	})
-
-	$("[id^=deleteComment]").click(function(e)
+	$("body").on("click", "[id^=deleteComment]", function(e)
 	{
 		e.preventDefault();
 
