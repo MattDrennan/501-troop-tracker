@@ -1104,7 +1104,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<br /><br />
 
-				<input type="submit" name="submitDelete" id="submitDelete" value="Delete" /> <input type="submit" name="submitCancel" id="submitCancel" value="Mark Canceled" /> <input type="submit" name="submitFinish" id="submitFinish" value="Mark Finished" /> <input type="submit" name="submitEdit" id="submitEdit" value="Edit" /> <input type="submit" name="submitRoster" id="submitRoster" value="Roster" />
+				<input type="submit" name="submitDelete" id="submitDelete" value="Delete" /> <input type="submit" name="submitCancel" id="submitCancel" value="Mark Canceled" /> <input type="submit" name="submitFinish" id="submitFinish" value="Mark Finished" /> <input type="submit" name="submitEdit" id="submitEdit" value="Edit" /> <input type="submit" name="submitRoster" id="submitRoster" value="Roster" /> <input type="submit" name="submitCharity" id="submitCharity" value="Set Charity Amount" />
 
 				</form>
 
@@ -1223,6 +1223,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						<p>Limit of Droid Builders:</p>
 						<input type="number" name="limitDroid" value="9999" id="limitDroid" />
+						
+						<p>Limit Total:</p>
+						<input type="number" name="limitTotal" value="9999" id="limitTotal" />
 
 						<p>Referred By:</p>
 						<input type="text" name="referred" id="referred" />
@@ -1279,11 +1282,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<br /><br />
 
-				<input type="submit" name="submitDenyUser" id="submitDenyUser" value="Deny" /> <input type="submit" name="submitApproveUser" id="submitApproveUser" value="Approve" />
+				<input type="submit" name="submitApproveUser" id="submitApproveUser" value="Approve" /> <input type="submit" name="submitDenyUser" id="submitDenyUser" value="Deny" />
 				</form>
 
 				<div style="overflow-x: auto;">
-				<table border="1">
+				<table border="1" id="userListTable" name="userListTable">
 				<tr>
 					<th>Name</th>	<th>E-mail</th>	<th>Phone</th>	<th>Squad</th>	<th>TKID</th>
 				</tr>';
@@ -1295,7 +1298,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					while ($db = mysqli_fetch_object($result))
 					{
 						echo '
-						<tr>
+						<tr id="userList'.$db->id.'" name="userList'.$db->id.'">
 							<td id="nameTable">'.$db->name.'</td>	<td id="emailTable">'.$db->email.'</td>	<td id="phoneTable">'.ifEmpty($db->phone).'</td>	<td id="squadTable">'.$db->squad.'</td>	<td id="tkTable">'.$db->tkid.'</td>
 						</tr>';
 					}
@@ -1567,6 +1570,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<p>Limit of Droid Builders:</p>
 				<input type="number" name="limitDroid" value="9999" id="limitDroid" />
+				
+				<p>Limit Total:</p>
+				<input type="number" name="limitTotal" value="9999" id="limitTotal" />
 
 				<p>Referred By:</p>
 				<input type="text" name="referred" id="referred" />
@@ -1843,6 +1849,15 @@ if(isset($_GET['event']))
 			$date1 = date("m/d/Y - H:i", strtotime($db->dateStart)); 
 			$date2 = date("m/d/Y - H:i", strtotime($db->dateEnd)); 
 			
+			// If canceled, show user
+			if($db->closed == 2)
+			{
+				echo '
+				<div style="text-align:center; color: red; margin-top: 25px;">
+					<b>This event was canceled by Command Staff. See comments for more details.</b>
+				</div>';
+			}
+			
 			// Display event info
 			echo '
 			<h2 class="tm-section-header">'.$db->name.'</h2>
@@ -1861,8 +1876,41 @@ if(isset($_GET['event']))
 			<p><b>Is venue accessible to those with limited mobility:</b> '.yesNo($db->mobility).'</p>
 			<p><b>Amenities available at venue:</b> '.$db->amenities.'</p>
 			<p><b>Comments:</b> '.$db->comments.'</p>
-			<p><b>Referred by:</b> '.$db->referred.'</p>
-
+			<p><b>Referred by:</b> '.$db->referred.'</p>';
+			
+			// If this event is limited to era
+			if($db->limitTo != 4)
+			{
+				echo '
+				<br />
+				<hr />
+				<br />
+				
+				<div style="color: red;">
+					This event is limited to ' . getEra($db->limitTo) . ' era.
+				</div>';
+			}
+			
+			// If this event is limited in troopers
+			if($db->limitTotal != 9999)
+			{
+				echo '
+				<br />
+				<hr />
+				<br />
+				
+				<div style="color: red;">
+					<ul>
+						<li>This event is limited to '.$db->limitTotal.' troopers.</li>
+						<li>This event is limited to '.convertNumber($db->limit501st, $db->limitTotal).' 501st troopers.</li>
+						<li>This event is limited to '.convertNumber($db->limitRebels, $db->limitTotal).' Rebel Legion troopers.</li>
+						<li>This event is limited to '.convertNumber($db->limitMando, $db->limitTotal).' Mando Merc troopers.</li>
+						<li>This event is limited to '.convertNumber($db->limitDroid, $db->limitTotal).' Droid Builder troopers.</li>
+					</ul>
+				</div>';
+			}
+			
+			echo '
 			<br />
 			<hr />
 			<br />';
@@ -2677,6 +2725,7 @@ $(document).ready(function()
 					$("#limit501st").val(json.limit501st);
 					$("#limitMando").val(json.limitMando);
 					$("#limitDroid").val(json.limitDroid);
+					$("#limitTotal").val(json.limitTotal);
 					$("#referred").val(json.referred);
 				}
 				else
@@ -2686,6 +2735,34 @@ $(document).ready(function()
 				}
 			}
 		});
+	})
+	
+	// Edit charity amount button
+	$("#submitCharity").button().click(function(e)
+	{
+		e.preventDefault();
+
+		var form = $("#editEvents");
+		var url = form.attr("action");
+		
+		var amount = prompt("How much money did this event raise for charity?", 0);
+
+		if(amount != null && parseInt(amount))
+		{
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitCharity=1&charity=" + amount,
+				success: function(data)
+				{
+					alert("Success!");
+				}
+			});
+		}
+		else
+		{
+			alert("Invalid");
+		}
 	})
 
 	$("#submitRoster").button().click(function(e)
@@ -2874,9 +2951,12 @@ $(document).ready(function()
 				data: form.serialize() + "&submitApproveUser=1",
 				success: function(data)
 				{
+					// Remove from table
+					$("#userList" + $("#userID").find("option:selected").val()).remove();
+
 					// Remove from select option
 					$("#userID").find("option:selected").remove();
-
+					
 					// Alert to success
 			  		alert("The user was approved successfully!");
 
@@ -2884,6 +2964,9 @@ $(document).ready(function()
 			  		if($("#userID").has("option").length <= 0 )
 			  		{
 			  			$("#approveTroopers").html("There are no troopers to display.");
+						
+						// Hide table if noone left
+						$("#userListTable").hide();
 			  		}
 				}
 			});
@@ -2907,6 +2990,9 @@ $(document).ready(function()
 				data: form.serialize() + "&submitDenyUser=1",
 				success: function(data)
 				{
+					// Remove from table
+					$("#userList" + $("#userID").find("option:selected").val()).remove();
+
 					// Remove from select option
 					$("#userID").find("option:selected").remove();
 
@@ -2917,6 +3003,9 @@ $(document).ready(function()
 			  		if($("#userID").has("option").length <= 0)
 			  		{
 			  			$("#approveTroopers").html("There are no troopers to display.");
+						
+						// Hide table if noone left
+						$("#userListTable").hide();
 			  		}
 				}
 			});

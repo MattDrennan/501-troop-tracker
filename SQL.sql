@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Nov 30, 2020 at 08:59 AM
+-- Generation Time: Dec 03, 2020 at 06:57 PM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -117,6 +117,7 @@ CREATE TABLE IF NOT EXISTS `events` (
   `limit501st` int(10) NOT NULL DEFAULT '9999',
   `limitMando` int(10) NOT NULL DEFAULT '9999',
   `limitDroid` int(10) NOT NULL DEFAULT '9999',
+  `limitTotal` int(10) NOT NULL DEFAULT '9999',
   `closed` tinyint(1) NOT NULL DEFAULT '0',
   `moneyRaised` int(100) NOT NULL DEFAULT '0',
   `squad` int(1) NOT NULL,

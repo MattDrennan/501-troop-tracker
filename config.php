@@ -589,7 +589,92 @@ function sendEmail($SendTo, $Name, $Subject, $Message)
 	// END MAIL
 }
 
-// Check to see if the event is full ($eventID = ID of the event, $costumeID = costume they are going to wear)
+// getEra: what is the era?
+function getEra($number)
+{
+	// Return value
+	$text = "";
+	
+	if($number == 0)
+	{
+		$text = "Prequel";
+	}
+	else if($number == 1)
+	{
+		$text = "Original";
+	}
+	else if($number == 2)
+	{
+		$text = "Sequel";
+	}
+	else if($number == 3)
+	{
+		$text = "Expanded";
+	}
+	else if($number == 4)
+	{
+		$text = "All";
+	}
+	
+	// Return
+	return $text;
+}
+
+// convertNumber: convert number to unlimited if 9999
+function convertNumber($number, $total)
+{
+	// Number is high enough return unlimited and if total is less than unlimited
+	if($number == 9999 && $total == 9999)
+	{
+		$number = "unlimited";
+	}
+	
+	// If total troopers allowed is set less than other trooper counts
+	if($total < $number)
+	{
+		$number = $total;
+	}
+	
+	// Return
+	return $number;
+}
+
+// eraCheck: Check to see if the event is limited to certain costumes
+function eraCheck($eventID, $costumeID)
+{
+	global $conn;
+
+	// Variables
+	$eventFail = false;	// Is this costume allowed?
+
+	// Query database for event info
+	$query = "SELECT * FROM events WHERE id = '".$eventID."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Query costume database to get information on the users costume
+			$query4 = "SELECT * FROM costumes WHERE id = '".$costumeID."'";
+			if ($result4 = mysqli_query($conn, $query4))
+			{
+				while ($db4 = mysqli_fetch_object($result4))
+				{
+					// Make sure event and costume era isn't set to "All" and check if the era and limited to match
+					if($db->limitTo != 4 && $db4->era != 4 && $db->limitTo != $db4->era)
+					{
+						// Did not fail
+						$eventFail = true;
+					}
+				}
+			}
+		}
+	}
+
+	// Return
+	return $eventFail;
+}
+
+// isEventFull: Check to see if the event is full ($eventID = ID of the event, $costumeID = costume they are going to wear)
 function isEventFull($eventID, $costumeID)
 {
 	global $conn;
@@ -600,6 +685,7 @@ function isEventFull($eventID, $costumeID)
 	$droidb = 0;	// Droid builders
 	$mandos = 0;	// Mandos
 	$other = 0;	// Others
+	$total = 0; // Total count
 	$eventFull = false;	// Is the event full?
 
 	// Query database for event info
@@ -625,27 +711,49 @@ function isEventFull($eventID, $costumeID)
 							if($db4->club == 0)
 							{
 								$i++;
+								$total++;
 							}
 							// Rebel Legion
 							else if($db4->club == 1)
 							{
 								$rl++;
-							}
-							// Droid Builders
-							else if($db4->club == 2)
-							{
-								$droidb++;
+								$total++;
 							}
 							// Mandos
-							else if($db4->club == 3)
+							else if($db4->club == 2)
 							{
 								$mandos++;
+								$total++;
 							}
-							// Other
+							// Droid Builders
+							else if($db4->club == 3)
+							{
+								$droidb++;
+								$total++;
+							}
+							// Rebel + 501st
 							else if($db4->club == 4)
 							{
+								$i++;
+								$rl++;
+								$total++;
+							}
+							// Other
+							else if($db4->club == 5)
+							{
 								$other++;
-							}					
+								$total++;
+							}
+							// All
+							else if($db4->club == 6)
+							{
+								$i++;
+								$rl++;
+								$mandos++;
+								$droidb++;
+								$other++;
+								$total++;
+							}							
 						}
 					}
 				}
@@ -697,6 +805,12 @@ function isEventFull($eventID, $costumeID)
 					}							
 				}
 			}
+			
+			// Total trooper count check
+			if($total >= $db->limitTotal)
+			{
+				$eventFull = true;
+			}
 		}
 	}
 
@@ -708,6 +822,17 @@ function isEventFull($eventID, $costumeID)
 if(loggedIn())
 {
 	$conn->query("UPDATE troopers SET last_active = NOW() WHERE id='".$_SESSION['id']."'") or die($conn->error);
+}
+
+// Check for events that need to be closed
+$query = "SELECT * FROM events WHERE dateEnd < NOW() - INTERVAL 5 DAY and closed = '0'";
+if ($result = mysqli_query($conn, $query))
+{
+	while ($db = mysqli_fetch_object($result))
+	{
+		// Close them
+		$conn->query("UPDATE events SET closed = '1' WHERE id = '".$db->id."'");
+	}
 }
 
 ?>

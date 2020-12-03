@@ -57,6 +57,10 @@ $(function() {
         required: false,
         digits: true
       },
+      limitTotal: {
+        required: false,
+        digits: true
+      },
       limitRebels: {
         required: false,
         digits: true
@@ -125,6 +129,7 @@ $(function() {
               $("#limitRebels").val("9999");
               $("#limitMando").val("9999");
               $("#limitDroid").val("9999");
+			  $("#limitTotal").val("9999");
               $("#referred").val("");
             }
 
@@ -249,6 +254,10 @@ $(function() {
         digits: true
       },
       limitDroid: {
+        required: false,
+        digits: true
+      },
+      limitTotal: {
         required: false,
         digits: true
       },

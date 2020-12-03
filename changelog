@@ -2,6 +2,15 @@
 
 _12/03/2020_
 
+-Added "limitTotal" to events. This will allow to define a limited amount of total troopers for events
+-Added era and improved costume checks for certain events
+-Improved approving trooper command staff area. It is now more dynamic
+-Added "Set Charity Amount" button to command staff area
+-Added alerts to an event when it is canceled
+-Added additional information to events for trooper limits
+
+_12/03/2020_
+
 -Comment AJAX Implemented
 
 _12/03/2020_
