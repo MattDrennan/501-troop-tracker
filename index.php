@@ -1775,7 +1775,9 @@ if(isset($_GET['action']) && $_GET['action'] == "logout")
 
 	// Show logout message
 	echo '
-	You have logged out! <a href="index.php">Click here to go home.</a>';
+	<div style="margin-top: 25px;">
+		You have logged out! <a href="index.php">Click here to go home.</a>
+	</div>';
 }
 
 // Show the forgot your password page
@@ -1937,9 +1939,17 @@ if(isset($_GET['event']))
 						<!-- Hidden variables -->
 						<input type="hidden" name="modifysignupTroopIdForm" id="modifysignupTroopIdForm" value="'.$db->id.'" />
 						<input type="hidden" name="limitedEventCancel" id="limitedEventCancel" value="'.$db->limitedEvent.'" />
-						<input type="hidden" name="troopidC" id="troopidC" value="'.strip_tags(addslashes($_GET['event'])).'" />
-						<input type="hidden" name="myId" id="myId" value="'.strip_tags(addslashes($_SESSION['id'])).'" />
+						<input type="hidden" name="troopidC" id="troopidC" value="'.strip_tags(addslashes($_GET['event'])).'" />';
 						
+						// If user logged in
+						if(loggedIn())
+						{
+							// Show user ID in hidden input field
+							echo '
+							<input type="hidden" name="myId" id="myId" value="'.strip_tags(addslashes($_SESSION['id'])).'" />';
+						}
+						
+						echo '
 						<table border="1">
 						<tr>
 							<th>Trooper Name</th>	<th>TKID</th>	<th>Costume</th>	<th>Backup Costume</th>	<th>Status</th>
@@ -2373,9 +2383,6 @@ if(isset($_GET['event']))
 			<br />
 			<b>You must <a href="index.php?action=login">login</a> to view comments.</b>';
 		}
-
-		echo '
-		</div>';
 	}
 }
 else

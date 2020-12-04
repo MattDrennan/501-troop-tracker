@@ -1,5 +1,12 @@
 **Changelog**
 
+_12/04/2020_
+
+-Adjusted margin on logout message
+-Fixed a error where it tried to show the users session ID when they were not logged in on event screen
+-Removed a "</div>" that was causing a display error
+
+
 _12/03/2020_
 
 -Added "limitTotal" to events. This will allow to define a limited amount of total troopers for events
