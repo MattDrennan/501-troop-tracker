@@ -2430,7 +2430,7 @@ else
 				// No squad set
 				if(!isset($_GET['squad']))
 				{
-					echo '<a href="index.php?event=' . $db->id . '">' .date('M d, Y', strtotime($db->dateStart)). ' - '.date('M d, Y', strtotime($db->dateEnd)).''.'<br />' . $db->name . '</a>';
+					echo '<a href="index.php?event=' . $db->id . '">' .date('M d, Y', strtotime($db->dateStart)). ''.'<br />' . $db->name . '</a>';
 
 					// If not enough troopers
 					if($getNumOfTroopers->num_rows <= 1)
@@ -2445,7 +2445,7 @@ else
 					// Squad set
 					if($db->squad == cleanInput($_GET['squad']))
 					{
-						echo '<a href="index.php?event=' . $db->id . '">' .date('M d, Y', strtotime($db->dateStart)). ' - '.date('M d, Y', strtotime($db->dateEnd)).''.'<br />' . $db->name . '</a>';
+						echo '<a href="index.php?event=' . $db->id . '">' .date('M d, Y', strtotime($db->dateStart)). ''.'<br />' . $db->name . '</a>';
 
 						// If not enough troopers...
 						if($getNumOfTroopers->num_rows <= 1)
