@@ -148,6 +148,7 @@ $(function() {
       // of an input field. Validation rules are defined
       // on the right side
       user: "required",
+	  forumid: "required",
       email: {
         required: true,
         email: true
@@ -170,7 +171,8 @@ $(function() {
       user: "Please enter a name.",
       squad: "Please enter a squad.",
       permissions: "Please enter permissions.",
-      tkid: "Please enter a TKID."
+      tkid: "Please enter a TKID.",
+	  forumid: "Please enter a forum ID."
     },
     // Make sure the form is submitted to the destination defined
     // in the "action" attribute of the form when valid

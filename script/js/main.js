@@ -60,6 +60,7 @@ $(document).ready(function()
 					$("#squad").val(json.squad);
 					$("#permissions").val(json.permissions);
 					$("#tkid").val(json.tkid);
+					$("#forumid").val(json.forumid);
 				}
 				else
 				{

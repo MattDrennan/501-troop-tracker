@@ -1,5 +1,13 @@
 **Changelog**
 
+_12/11/2020_
+
+-Added merge.php to allow for merging of old troop data with new troop tracker
+-Added features to allow to show old troop data
+-Added edit forum id in command staff area
+-Added TKID to trooper management select screen
+-Updated SQL.sql file
+
 _12/04/2020_
 
 -Show only one date per event on home page due to simplify events update

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Dec 03, 2020 at 06:57 PM
+-- Generation Time: Dec 12, 2020 at 05:29 AM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -91,28 +91,28 @@ CREATE TABLE IF NOT EXISTS `costumes` (
 DROP TABLE IF EXISTS `events`;
 CREATE TABLE IF NOT EXISTS `events` (
   `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
-  `venue` varchar(100) NOT NULL,
-  `dateStart` datetime NOT NULL,
-  `dateEnd` datetime NOT NULL,
-  `website` varchar(500) NOT NULL,
-  `numberOfAttend` int(10) NOT NULL,
-  `requestedNumber` int(10) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `venue` varchar(255) DEFAULT NULL,
+  `dateStart` datetime DEFAULT NULL,
+  `dateEnd` datetime DEFAULT NULL,
+  `website` varchar(500) DEFAULT NULL,
+  `numberOfAttend` int(10) DEFAULT NULL,
+  `requestedNumber` int(10) DEFAULT NULL,
   `requestedCharacter` text,
-  `secureChanging` tinyint(1) NOT NULL,
-  `blasters` tinyint(1) NOT NULL,
-  `lightsabers` tinyint(1) NOT NULL,
-  `parking` tinyint(1) NOT NULL,
-  `mobility` tinyint(1) NOT NULL,
+  `secureChanging` tinyint(1) DEFAULT NULL,
+  `blasters` tinyint(1) DEFAULT NULL,
+  `lightsabers` tinyint(1) DEFAULT NULL,
+  `parking` tinyint(1) DEFAULT NULL,
+  `mobility` tinyint(1) DEFAULT NULL,
   `amenities` text,
   `referred` text,
   `comments` text,
-  `location` varchar(500) NOT NULL,
-  `label` varchar(100) NOT NULL,
+  `location` varchar(500) DEFAULT NULL,
+  `label` varchar(100) DEFAULT NULL,
   `postComment` text,
   `notes` text,
-  `limitedEvent` tinyint(1) NOT NULL,
-  `limitTo` int(2) NOT NULL,
+  `limitedEvent` tinyint(1) DEFAULT NULL,
+  `limitTo` int(2) DEFAULT NULL,
   `limitRebels` int(10) NOT NULL DEFAULT '9999',
   `limit501st` int(10) NOT NULL DEFAULT '9999',
   `limitMando` int(10) NOT NULL DEFAULT '9999',
@@ -149,9 +149,9 @@ CREATE TABLE IF NOT EXISTS `event_comments` (
 DROP TABLE IF EXISTS `event_sign_up`;
 CREATE TABLE IF NOT EXISTS `event_sign_up` (
   `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `trooperid` int(100) NOT NULL,
+  `trooperid` int(100) DEFAULT NULL,
   `troopid` int(100) NOT NULL,
-  `costume` varchar(50) NOT NULL,
+  `costume` varchar(50) DEFAULT NULL,
   `costume_backup` varchar(50) NOT NULL DEFAULT '-1',
   `reason` text,
   `status` int(2) NOT NULL DEFAULT '0',
@@ -170,12 +170,13 @@ CREATE TABLE IF NOT EXISTS `event_sign_up` (
 DROP TABLE IF EXISTS `troopers`;
 CREATE TABLE IF NOT EXISTS `troopers` (
   `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` varchar(20) NOT NULL,
-  `email` varchar(240) NOT NULL,
-  `phone` varchar(10) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(240) DEFAULT NULL,
+  `phone` varchar(10) DEFAULT NULL,
   `squad` int(10) NOT NULL,
   `permissions` int(2) NOT NULL DEFAULT '0',
   `tkid` varchar(20) NOT NULL,
+  `forum_id` varchar(255) NOT NULL,
   `password` varchar(50) DEFAULT NULL,
   `last_active` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `approved` int(1) NOT NULL DEFAULT '0',
