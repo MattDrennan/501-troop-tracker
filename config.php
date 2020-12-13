@@ -121,6 +121,22 @@ function getSquadName($value)
 	{
 		$returnValue = 'Tampa Bay Squad';
 	}
+	else if($value == 6)
+	{
+		$returnValue = 'Rebel Legion';
+	}
+	else if($value == 7)
+	{
+		$returnValue = 'Droid Builders';
+	}
+	else if($value == 8)
+	{
+		$returnValue = 'Mando Mercs';
+	}
+	else if($value == 9)
+	{
+		$returnValue = 'Other';
+	}
 
 	return $returnValue;
 }

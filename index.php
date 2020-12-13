@@ -224,6 +224,8 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess")
 			<br /><br />
 			Phone (Optional): <input type="text" name="phone" id="phone" />
 			<br /><br />
+			Forum Username: <input type="text" name="forumid" id="forumid" />
+			<br /><br />
 			Password: <input type="password" name="password" id="password" />
 			<br /><br />
 			Password (Confirm): <input type="password" name="passwordC" id="passwordC" />
@@ -634,27 +636,33 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		// How many regular troops
 		$regular_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '0'") or die($conn->error);
 		$count2 = $regular_get->fetch_row();
- 		// How many regular troops
+ 		// How many PR troops
 		$charity_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '1'") or die($conn->error);
 		$count3 = $charity_get->fetch_row();
-		// How many regular troops
+		// How many Disney troops
 		$pr_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '2'") or die($conn->error);
 		$count4 = $pr_get->fetch_row();
-		// How many regular troops
+		// How many convention troops
 		$disney_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '3'") or die($conn->error);
 		$count5 = $disney_get->fetch_row();
-		// How many regular troops
+		// How many wedding troops
 		$convention_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '4'") or die($conn->error);
 		$count6 = $convention_get->fetch_row();
-		// How many regular troops
+		// How many birthday party troops
 		$wedding_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '5'") or die($conn->error);
 		$count7 = $wedding_get->fetch_row();
-		// How many regular troops
+		// How many wedding troops
 		$birthday_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '6'") or die($conn->error);
 		$count8 = $birthday_get->fetch_row();
-		// How many regular troops
-		$other_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '7'") or die($conn->error);
-		$count9 = $other_get->fetch_row();
+		// How many virtual troops
+		$virtual_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '7'") or die($conn->error);
+		$count9 = $virtual_get->fetch_row();
+		// How many other troops
+		$other_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '8'") or die($conn->error);
+		$count10 = $other_get->fetch_row();
+		// How many total troops
+		$total_get = $conn->query("SELECT COUNT(*) FROM events WHERE closed = '1'") or die($conn->error);
+		$count11 = $total_get->fetch_row();
  
 		echo '
 		</table>
@@ -671,8 +679,9 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		<p><b>Convention Troops:</b> '.number_format($count6[0]).'</p>
 		<p><b>Wedding Troops:</b> '.number_format($count7[0]).'</p>
 		<p><b>Birthday Troops:</b> '.number_format($count8[0]).'</p>
-		<p><b>Other Troops:</b> '.number_format($count9[0]).'</p>
-		<p><b>Total Finished Troops:</b> '.number_format($i).'</p>';
+		<p><b>Virtual Troops:</b> '.number_format($count9[0]).'</p>
+		<p><b>Other Troops:</b> '.number_format($count10[0]).'</p>
+		<p><b>Total Finished Troops:</b> '.number_format($count11[0]).'</p>';
 	}
 	else
 	{
@@ -1198,7 +1207,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<option value="4">Convention</option>
 							<option value="5">Wedding</option>
 							<option value="6">Birthday Party</option>
-							<option value="7">Other</option>
+							<option value="7">Virtual Troop</option>
+							<option value="8">Other</option>
 						</select>
 
 						<p>Do you wish for command staff to manually select people for this event?</p>
@@ -1293,7 +1303,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<div style="overflow-x: auto;">
 				<table border="1" id="userListTable" name="userListTable">
 				<tr>
-					<th>Name</th>	<th>E-mail</th>	<th>Phone</th>	<th>Squad</th>	<th>TKID</th>
+					<th>Name</th>	<th>E-mail</th>	<th>Forum ID</th>	<th>Phone</th>	<th>Squad</th>	<th>TKID</th>
 				</tr>';
 
 				// Get data
@@ -1304,7 +1314,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					{
 						echo '
 						<tr id="userList'.$db->id.'" name="userList'.$db->id.'">
-							<td id="nameTable">'.$db->name.'</td>	<td id="emailTable">'.$db->email.'</td>	<td id="phoneTable">'.ifEmpty($db->phone).'</td>	<td id="squadTable">'.$db->squad.'</td>	<td id="tkTable">'.$db->tkid.'</td>
+							<td id="nameTable">'.$db->name.'</td>	<td id="emailTable">'.$db->email.'</td> <td>'.$db->forum_id.'</td>	<td id="phoneTable">'.ifEmpty($db->phone).'</td>	<td id="squadTable">'.getSquadName($db->squad).'</td>	<td id="tkTable">'.readTKNumber($db->tkid).'</td>
 						</tr>';
 					}
 				}
@@ -1340,7 +1350,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<select name="userID" id="userID">';
 					}
 
-					echo '<option value="'.$db->id.'">'.$db->name.' - '.$db->tkid.'</option>';
+					echo '<option value="'.$db->id.'">'.$db->name.' - '.readTKNumber($db->tkid).'</option>';
 
 					// Increment
 					$i++;
@@ -1424,6 +1434,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<p>Phone (Optional):</p>
 				<input type="text" name="phone" id="phone" />
+				
+				<p>Forum Username:</p>
+				<input type="text" name="forumid" id="forumid" />
 
 				<p>Squad/Club:</p>
 				<select name="squad" id="squad">
@@ -1458,6 +1471,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		{
 			// JQUERY Easy Form Filler
 			echo '
+			<a href="#" class="button" id="easyfilltoolbutton" name="easyfilltoolbutton">Easy Fill Tool</a>
+			
+			<div name="easyfilltoolarea" id="easyfilltoolarea" style="display: none;">
 			<p>Easy Fill Tool:</p>
 			<form action="index.php?action=commandstaff&do=createevent" method="POST" name="easyFillTool" id="easyFillTool">
 				<textarea rows="10" cols="50" name="easyFill" id="easyFill"></textarea>
@@ -1465,7 +1481,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<input type="submit" name="submit" name="easyFillButton" id="easyFillButton" value="Fill!" />
 			</form>
 
-			<p><i>Make sure there is a ":" in the time for both datetime values</i></p>';
+			<p><i>Make sure there is a ":" in the time for both datetime values</i></p>
+			</div>';
 
 			// Display create event form
 			echo '
@@ -1550,7 +1567,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<option value="4">Convention</option>
 					<option value="5">Wedding</option>
 					<option value="6">Birthday Party</option>
-					<option value="7">Other</option>
+					<option value="7">Virtual Troop</option>
+					<option value="8">Other</option>
 				</select>
 
 				<p>Do you wish for command staff to manually select people for this event?</p>
@@ -1693,7 +1711,15 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 			<input type="submit" value="Login!" name="loginWithTK" />
 		</form>
 
-		<p><a href="index.php?action=forgotpassword" class="button">Forgot Your Password</a><p>';
+		<p><a href="index.php?action=forgotpassword" class="button">Forgot Your Password</a><p>
+		
+		<p>
+			<small>
+				<b>Remember:</b><br />If you are in a club other than the 501st, enter the first letter of your club, and then your TKID.
+				<br />
+				<b>Example:</b><br />Rebel Legion: R1234
+			</small>
+		</p>';
 	}
 }
 
@@ -2353,7 +2379,7 @@ if(isset($_GET['event']))
 		<hr />
 		</div>';
 
-		if(loggedIn())
+		if(loggedIn() && !$isMerged)
 		{
 			echo '
 			<form aciton="process.php?do=postcomment" name="commentForm" id="commentForm" method="POST">
@@ -2432,9 +2458,18 @@ if(isset($_GET['event']))
 		}
 		else
 		{
-			echo '
-			<br />
-			<b>You must <a href="index.php?action=login">login</a> to view comments.</b>';
+			if(!$isMerged)
+			{
+				echo '
+				<br />
+				<b>You must <a href="index.php?action=login">login</a> to view comments.</b>';
+			}
+			else
+			{
+				echo '
+				<br />
+				<b>You are unable to comment on this event.</b>';
+			}
 		}
 	}
 }

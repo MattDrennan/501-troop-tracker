@@ -13,6 +13,23 @@ function myFunction() {
 
 $(document).ready(function()
 {
+	// Easy Fill Button: Show/Hide
+	$("#easyfilltoolbutton").click(function(e)
+	{
+		e.preventDefault();
+		
+		if($("#easyfilltoolarea").is(":hidden"))
+		{
+			$("#easyfilltoolarea").show();
+			$("#easyfilltoolbutton").text("Hide");
+		}
+		else
+		{
+			$("#easyfilltoolarea").hide();
+			$("#easyfilltoolbutton").text("Easy Fill Tool");
+		}
+	})
+	
 	// Modify sign up submit button
 	$("#submitModifySignUp").button().click(function(e)
 	{

@@ -432,7 +432,7 @@ if(isset($_GET['do']) && $_GET['do'] == "createuser" && loggedIn())
 			else
 			{
 				// Insert into database
-				$conn->query("INSERT INTO troopers (name, email, phone, squad, permissions, tkid) VALUES ('".cleanInput($_POST['name'])."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['phone'])."', '".cleanInput($_POST['squad'])."', '".cleanInput($_POST['permissions'])."', '".cleanInput($_POST['tkid'])."')");
+				$conn->query("INSERT INTO troopers (name, email, forum_id, phone, squad, permissions, tkid) VALUES ('".cleanInput($_POST['name'])."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['phone'])."', '".cleanInput($_POST['squad'])."', '".cleanInput($_POST['permissions'])."', '".cleanInput($_POST['tkid'])."')");
 
 				$array = array('success' => 'success', 'data' => 'User created!');
 				echo json_encode($array);
@@ -553,6 +553,12 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			}
 
 			$tkid = cleanInput($_POST['tkid']);
+			
+			if(cleanInput($_POST['forumid']) == "")
+			{
+				$failed = true;
+				echo '<li>Please enter your FL 501st Forum Username.</li>';
+			}
 
 			if(cleanInput($_POST['squad']) == 6)
 			{
@@ -622,7 +628,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			// If failed
 			if(!$failed)
 			{
-				$conn->query("INSERT INTO troopers (name, tkid, email, phone, squad, password) VALUES ('".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['phone'])."', '".cleanInput($_POST['squad'])."', '".md5(cleanInput($_POST['password']))."')") or die($conn->error);
+				$conn->query("INSERT INTO troopers (name, tkid, email, forum_id, phone, squad, password) VALUES ('".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['phone'])."', '".cleanInput($_POST['squad'])."', '".md5(cleanInput($_POST['password']))."')") or die($conn->error);
 				echo '<li>Request submitted! You will receive an e-mail when your request is approved or denied.</li>';
 			}
 

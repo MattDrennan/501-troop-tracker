@@ -42,7 +42,7 @@ if ($conn->connect_error)
 // Check connection to server - 2
 if ($conn2->connect_error)
 {
-	trigger_error('Database connection failed: ' . $conn->connect_error, E_USER_ERROR);
+	trigger_error('Database connection failed: ' . $conn2->connect_error, E_USER_ERROR);
 }
 
 if(!isset($_GET['do']))
@@ -99,7 +99,7 @@ else
 				$intToDate = date("Y-m-d H:i:s", $db->date);
 				
 				// Insert into database
-				$conn->query("INSERT INTO events (id, name, dateStart, dateEnd, comments, squad) VALUES ('".$db->id."', '".$db->title."', '".$intToDate."', '".$intToDate."', '".$db->description."', '".getSquadID($db->event_squad)."')") or die(error_log($conn->error));
+				$conn->query("INSERT INTO events (id, name, dateStart, dateEnd, comments, squad, closed) VALUES ('".$db->id."', '".$db->title."', '".$intToDate."', '".$intToDate."', '".$db->description."', '".getSquadID($db->event_squad)."', 1)") or die(error_log($conn->error));
 			}
 		}
 

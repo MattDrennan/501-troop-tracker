@@ -448,6 +448,7 @@ $(function() {
         required: true,
         email: true
       },
+	  forumid: "required",
       password: "required",
       passwordC: "required",
       name: "required"
@@ -455,6 +456,7 @@ $(function() {
     // Specify validation error messages
     messages: {
       tkid: "Please enter your TKID and make sure it is no more than eleven (11) characters.",
+	  forumid: "Please enter your FL 501st Forum Username.",
       password: "Please enter your password.",
       passwordC: "Please re-enter your password to confirm it.",
       email: "Please enter a valid e-mail.",
@@ -622,6 +624,7 @@ $(function() {
       // of an input field. Validation rules are defined
       // on the right side
       name: "required",
+	  forumid: "required",
       email: {
         required: true,
         email: true
@@ -638,6 +641,7 @@ $(function() {
     // Specify validation error messages
     messages: {
       name: "Please enter a name.",
+	  forumid: "Please enter the FL 501st Username.",
       email: "Please enter a valid e-mail address.",
       squad: "Please choose a squad.",
       tkid: "Please enter a valid ID."
@@ -663,6 +667,7 @@ $(function() {
               // Clear Form
               $("#name").val("");
               $("#email").val("");
+			  $("#forumid").val("");
               $("#phone").val("");
               $("#squad").val("0");
               $("#permissions").val("0");
