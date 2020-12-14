@@ -1,5 +1,9 @@
 **Changelog**
 
+_12/14/2020_
+
+-Improved troop tracker query speed by reducing results by date
+
 _12/13_2020_
 
 -Disabled commenting on merged events
@@ -7,7 +11,7 @@ _12/13_2020_
 -Fixed a connection variable in merge.php
 -Easy Fill Button - Show/Hide feature
 -Added "Virtual Troop" label
--Added Forum ID to command staff creater user
+-Added Forum ID to command staff create user
 -Added Forum ID to request access
 -Updated getSquad to include other clubs
 -Added login help message
