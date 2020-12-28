@@ -487,18 +487,22 @@ function isAdmin()
 	
 	$isAdmin = false;
 	
-	$query = "SELECT * FROM troopers WHERE id='".$_SESSION['id']."'";
-	if ($result = mysqli_query($conn, $query))
+	if(isset($_SESSION['id']))
 	{
-		while ($db = mysqli_fetch_object($result))
+		$query = "SELECT * FROM troopers WHERE id='".$_SESSION['id']."'";
+		if ($result = mysqli_query($conn, $query))
 		{
-			if($db->permissions == 1)
+			while ($db = mysqli_fetch_object($result))
 			{
-				$isAdmin = true;
+				if($db->permissions == 1)
+				{
+					$isAdmin = true;
+				}
 			}
 		}
-		return $isAdmin;
 	}
+	
+	return $isAdmin;
 }
 
 // Does the TK ID exist?

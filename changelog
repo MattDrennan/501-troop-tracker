@@ -1,5 +1,10 @@
 **Changelog**
 
+_12/28/2020_
+
+-Added the ability for command staff to edit an event from the event page by clicking a link
+-Improved isAdmin function
+
 _12/14/2020_
 
 -Improved troop tracker query speed by reducing results by date

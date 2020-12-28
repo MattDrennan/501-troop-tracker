@@ -1079,6 +1079,17 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		{
 			echo '
 			<h3>Edit an Event</h3>';
+			
+			// If admin is visting this page from the event page
+			
+			// We use this value to determine which event is selected
+			$eid = -1;
+			
+			// If eid set, set eid
+			if(isset($_GET['eid']))
+			{
+				$eid = $_GET['eid'];
+			}
 
 			// Get data
 			$query = "SELECT * FROM events ORDER BY dateStart DESC LIMIT 150";
@@ -1099,7 +1110,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<select name="eventId" id="eventId">';
 					}
 
-					echo '<option value="'.$db->id.'">'.$db->name.'</option>';
+					echo '<option value="'.$db->id.'" '.echoSelect($db->id, $eid).'>'.$db->name.'</option>';
 
 					// Increment
 					$i++;
@@ -1897,6 +1908,14 @@ if(isset($_GET['event']))
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
+			// Admin Area
+			if(isAdmin())
+			{
+				echo '
+				<h2 class="tm-section-header">Admin Controls</h2>
+				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=editevent&eid='.$db->id.'">Edit/View Event in Command Staff Area</a></p>';
+			}
+			
 			// Format dates
 			$date1 = date("m/d/Y - H:i", strtotime($db->dateStart)); 
 			$date2 = date("m/d/Y - H:i", strtotime($db->dateEnd)); 
