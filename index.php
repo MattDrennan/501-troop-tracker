@@ -262,6 +262,14 @@ if(isset($_GET['profile']))
 		{
 			if($i == 0)
 			{
+				// Command Staff Edit Link
+				if(isAdmin())
+				{
+					echo '
+					<h2 class="tm-section-header">Admin Controls</h2>
+					<p style="text-align: center;"><a href="index.php?action=commandstaff&do=managetroopers&uid='.$db->id.'">Edit/View Event in Command Staff Area</a></p>';
+				}
+				
 				echo '
 				<h2 class="tm-section-header">'.$db->name.' - '.readTKNumber($db->tkid).'</h2>
 
@@ -1092,7 +1100,16 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			}
 
 			// Get data
-			$query = "SELECT * FROM events ORDER BY dateStart DESC LIMIT 150";
+			// If edid set - this makes sure that old events are shown in the edit screen
+			if($eid >= 0)
+			{
+				$query = "(SELECT * FROM events WHERE id = ".$eid." LIMIT 1) UNION (SELECT * FROM events ORDER BY dateStart DESC LIMIT 150)";
+			}
+			else
+			{
+				// If eid is not set
+				$query = "SELECT * FROM events ORDER BY dateStart DESC LIMIT 150";
+			}
 
 			// Amount of events
 			$i = 0;
@@ -1339,6 +1356,17 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		// Manage users
 		if(isset($_GET['do']) && $_GET['do'] == "managetroopers")
 		{
+			// If admin is visting this page from the event page
+			
+			// We use this value to determine which event is selected
+			$uid = -1;
+			
+			// If eid set, set eid
+			if(isset($_GET['uid']))
+			{
+				$uid = $_GET['uid'];
+			}
+			
 			echo '
 			<h3>Manage Troopers</h3>';
 
@@ -1361,7 +1389,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<select name="userID" id="userID">';
 					}
 
-					echo '<option value="'.$db->id.'">'.$db->name.' - '.readTKNumber($db->tkid).'</option>';
+					echo '<option value="'.$db->id.'" '.echoSelect($db->id, $uid).'>'.$db->name.' - '.readTKNumber($db->tkid).'</option>';
 
 					// Increment
 					$i++;

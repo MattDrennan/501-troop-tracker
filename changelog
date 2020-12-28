@@ -2,6 +2,11 @@
 
 _12/28/2020_
 
+-Added the ability for command staff to edit a member from the profile page by clicking a link
+-Fixed a bug where old events would not be able to be edited in the command staff area
+
+_12/28/2020_
+
 -Added the ability for command staff to edit an event from the event page by clicking a link
 -Improved isAdmin function
 
