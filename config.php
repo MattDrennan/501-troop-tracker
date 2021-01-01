@@ -101,7 +101,11 @@ function getSquadName($value)
 {
 	$returnValue = "";
 
-	if($value == 1)
+	if($value == 0)
+	{
+		$returnValue = 'Makaze Squad';
+	}
+	else if($value == 1)
 	{
 		$returnValue = 'Everglades Squad';
 	}
