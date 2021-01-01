@@ -1165,6 +1165,18 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						<p>Location:</p>
 						<input type="text" name="location" id="location" />
+						<input type="button" name="getLocation" id="getLocation" value="Get Squad Based On Location" />
+						
+						<p>Squad</p>
+						<select name="squadm" id="squadm">
+							<option value="null" SELECTED>Please choose an option...</option>
+							<option value="1">Everglades Squad</option>
+							<option value="5">Tampa Bay Squad</option>
+							<option value="2">Makaze Squad</option>
+							<option value="4">Squad 7 Squad</option>
+							<option value="3">Parjai Squad</option>
+							<option value="0">Florida Garrison</option>
+						</select>		
 
 						<p>Date/Time Start:</p>
 						<input type="text" name="dateStart" id="datepicker" />
@@ -1536,6 +1548,18 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<p>Location:</p>
 				<input type="text" name="location" id="location" />
+				<input type="button" name="getLocation" id="getLocation" value="Get Squad Based On Location" />
+				
+				<p>Squad</p>
+				<select name="squadm" id="squadm">
+					<option value="null" SELECTED>Please choose an option...</option>
+					<option value="1">Everglades Squad</option>
+					<option value="5">Tampa Bay Squad</option>
+					<option value="2">Makaze Squad</option>
+					<option value="4">Squad 7 Squad</option>
+					<option value="3">Parjai Squad</option>
+					<option value="0">Florida Garrison</option>
+				</select>				
 
 				<p>Date/Time Start:</p>
 				<input type="text" name="dateStart" id="datepicker" />

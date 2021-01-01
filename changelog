@@ -1,5 +1,11 @@
 **Changelog**
 
+_01/01/2020_
+
+-Added "Get Squad Based On Location Button." Which allows users to automatically set the squad based on where the event is
+-Added the ability to set and edit the squad location, instead of automatically setting the squad based on location
+-Added "Florida Garrison" as a squad choice
+
 _12/28/2020_
 
 -Added the ability for command staff to edit a member from the profile page by clicking a link

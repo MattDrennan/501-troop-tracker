@@ -30,6 +30,33 @@ $(document).ready(function()
 		}
 	})
 	
+	// Get Location Button
+	$("#getLocation").button().click(function(e)
+	{
+		e.preventDefault();
+		
+		// Ensure value is not blank
+		if($("#location").val() != "")
+		{
+			// Send data
+			$.ajax({
+				type: "POST",
+				url: "process.php?do=getlocation",
+				data: { location: $("#location").val() },
+				success: function(data)
+				{
+					var json = JSON.parse(data);
+					$("#squadm").val(json.squad);
+				}
+			});
+		}
+		else
+		{
+			// If empty
+			alert("Location can not be empty.");
+		}
+	})
+	
 	// Modify sign up submit button
 	$("#submitModifySignUp").button().click(function(e)
 	{
@@ -128,6 +155,7 @@ $(document).ready(function()
 					$("#eventName").val(json.name);
 					$("#eventVenue").val(json.venue);
 					$("#location").val(json.location);
+					$("#squadm").val(json.squad);
 					$("#datepicker").val(date1);
 					$("#datepicker2").val(date2);
 					$("#website").val(json.website);

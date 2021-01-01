@@ -21,6 +21,10 @@ $(function() {
         required: true,
         digits: true
       },
+      squadm: {
+        required: true,
+        range: [0, 1]
+      },
       secure: {
         required: true,
         range: [0, 1]
@@ -75,6 +79,7 @@ $(function() {
       eventName: "Please enter the event name.",
       eventVenue: "Please enter the event venue.",
       location: "Please enter the location.",
+	  squadm: "Please select a squad.",
       datepicker: "Please enter a proper date/time.",
       datepicker2: "Please enter a proper date/time.",
       numberOfAttend: "Please enter a valid number.",
@@ -109,6 +114,7 @@ $(function() {
               $("#eventName").val("");
               $("#eventVenue").val("");
               $("#location").val("");
+			  $("#squadm").val("null");
               $("#datepicker").val("");
               $("#datepicker2").val("");
               $("#website").val("");
@@ -223,6 +229,10 @@ $(function() {
         required: true,
         digits: true
       },
+      squadm: {
+        required: true,
+        range: [0, 1]
+      },
       secure: {
         required: true,
         range: [0, 1]
@@ -277,6 +287,7 @@ $(function() {
       eventName: "Please enter the event name.",
       eventVenue: "Please enter the event venue.",
       location: "Please enter the location.",
+	  squadm: "Please select a squad.",
       datepicker: "Please enter a proper date/time.",
       datepicker2: "Please enter a proper date/time.",
       numberOfAttend: "Please enter a valid number.",
