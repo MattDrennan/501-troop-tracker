@@ -103,7 +103,7 @@ function getSquadName($value)
 
 	if($value == 0)
 	{
-		$returnValue = 'Makaze Squad';
+		$returnValue = 'Florida Garrison';
 	}
 	else if($value == 1)
 	{

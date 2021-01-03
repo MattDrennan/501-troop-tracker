@@ -1,5 +1,9 @@
 **Changelog**
 
+_01/03/2020_
+
+-Corrected getSquadName()
+
 _01/01/2020_
 
 -Added "Florida Garrison" to getSquadName()
