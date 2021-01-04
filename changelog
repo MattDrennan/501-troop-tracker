@@ -1,5 +1,9 @@
 **Changelog**
 
+_01/04/2020_
+
+-Moved sendEmail() required files in config file. This will prevent issues when sending multiple e-mails to users.
+
 _01/04/2021_
 
 -Fixed Troop Tracker Order. Older content was being displayed first.

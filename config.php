@@ -6,6 +6,15 @@ error_reporting(E_ALL);
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+/* Exception class. */
+require 'script/lib/phpmail/src/Exception.php';
+
+/* The main PHPMailer class. */
+require 'script/lib/phpmail/src/PHPMailer.php';
+
+/* SMTP class, needed if you want to use SMTP. */
+require 'script/lib/phpmail/src/SMTP.php';
+
 session_start();
 
 // DB Info
@@ -560,15 +569,6 @@ function cleanInput($value)
 function sendEmail($SendTo, $Name, $Subject, $Message)
 {
 	// MAIL
-	/* Exception class. */
-	require 'script/lib/phpmail/src/Exception.php';
-
-	/* The main PHPMailer class. */
-	require 'script/lib/phpmail/src/PHPMailer.php';
-
-	/* SMTP class, needed if you want to use SMTP. */
-	require 'script/lib/phpmail/src/SMTP.php';
-
 	$mail = new PHPMailer(TRUE);
 
 	/* Set the mail sender. */
