@@ -47,6 +47,8 @@ echo '
  	$( function() {
 		$("#datepicker").datetimepicker();
 		$("#datepicker2").datetimepicker();
+		$("#datepicker3").datetimepicker();
+		$("#datepicker4").datetimepicker();
 	} );
 	</script>
 </head>
@@ -418,15 +420,37 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 	echo '
 	<h2 class="tm-section-header">Search</h2>
 	<div name="searchForm" id="searchForm">
-		<form action="index.php?action=search" method="POST">
-			Search Troop Name: <input type="text" name="searchName" id="searchName" value="'.cleanInput($_POST['searchName']).'" />
+		<form action="index.php?action=search" method="POST">';
+			// Get our search type, and show certain fields
+			if($_POST['searchType'] == "regular")
+			{
+				echo '
+				Search Troop Name: <input type="text" name="searchName" id="searchName" value="'.cleanInput($_POST['searchName']).'" />
+				<br /><br />';
+			}
+			
+			echo '
+			Date Start: <input type="text" name="dateStart" id="datepicker3" value="'.cleanInput($_POST['dateStart']).'" />
 			<br /><br />
-			Date Start: <input type="text" name="dateStart" id="datepicker" value="'.cleanInput($_POST['dateStart']).'" />
-			<br /><br />
-			Date End: <input type="text" name="dateEnd" id="datepicker2" value="'.cleanInput($_POST['dateEnd']).'" />
-			<br /><br />
-			Search TKID: <input type="text" name="tkID" id="tkID" value="'.cleanInput($_POST['tkID']).'" />
-			<br /><br />
+			Date End: <input type="text" name="dateEnd" id="datepicker4" value="'.cleanInput($_POST['dateEnd']).'" />
+			<br /><br />';
+			
+			// Get our search type, and show certain fields
+			if($_POST['searchType'] == "regular")
+			{
+				echo '
+				Search TKID: <input type="text" name="tkID" id="tkID" value="'.cleanInput($_POST['tkID']).'" />
+				<br /><br />';
+			}
+			
+			// If trooper search, include searchType for another search
+			if($_POST['searchType'] == "trooper")
+			{
+				echo '
+				<input type="hidden" name="searchType" value="trooper" />';				
+			}
+			
+			echo '
 			<input type="submit" name="submitSearch" id="submitSearch" value="Search!" />
 		</form>
 	</div>
@@ -434,80 +458,166 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 	<br /><br />
 	<hr />
 	<br /><br />';
-
-	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.attend, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE";
-
-	if(strlen($_POST['tkID']) > 0)
+	
+	// Regular search
+	if($_POST['searchType'] == "regular")
 	{
-		$query .= " event_sign_up.trooperid = '".getIDNumberFromTK(cleanInput($_POST['tkID']))."'";
-	}
-
-	if(strlen($_POST['searchName']) > 0)
-	{
+		// Query for search
+		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.attend, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE";
+		
 		if(strlen($_POST['tkID']) > 0)
 		{
-			$query .= " AND";
+			$query .= " event_sign_up.trooperid = '".getIDNumberFromTK(cleanInput($_POST['tkID']))."'";
 		}
 
-		$query .= " events.name LIKE '%".cleanInput($_POST['searchName'])."%'";
-	}
-
-	if(strlen($_POST['dateStart']) > 0)
-	{
 		if(strlen($_POST['searchName']) > 0)
 		{
-			$query .= " AND";
-		}
-
-		$date = strtotime(cleanInput($_POST['dateStart']));
-		$dateF = date('Y-m-d H:i:s', $date);
-
-		$query .= " events.dateStart >= '".$dateF."'";
-	}
-
-	if(strlen($_POST['dateEnd']) > 0)
-	{
-		if(strlen($_POST['dateEnd']) > 0)
-		{
-			$query .= " AND";
-		}
-
-		$date = strtotime(cleanInput($_POST['dateEnd']));
-		$dateF = date('Y-m-d H:i:s', $date);
-
-		$query .= " events.dateEnd <= '".$dateF."'";
-	}
-
-	// Get data
-	$i = 0;
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			if($i == 0)
+			if(strlen($_POST['tkID']) > 0)
 			{
-				echo '
-				<div style="overflow-x: auto;">
-				<table border="1">
-				<tr>
-					<th>Event Name</th>	<th>Trooper TKID</th>	<th>Signed Up With Costume</th>	<th>Attended Costume</th>	<th>Attended</th>
-				</tr>';
+				$query .= " AND";
 			}
 
+			$query .= " events.name LIKE '%".cleanInput($_POST['searchName'])."%'";
+		}
+
+		if(strlen($_POST['dateStart']) > 0)
+		{
+			if(strlen($_POST['searchName']) > 0)
+			{
+				$query .= " AND";
+			}
+
+			$date = strtotime(cleanInput($_POST['dateStart']));
+			$dateF = date('Y-m-d H:i:s', $date);
+
+			$query .= " events.dateStart >= '".$dateF."'";
+		}
+
+		if(strlen($_POST['dateEnd']) > 0)
+		{
+			if(strlen($_POST['dateEnd']) > 0)
+			{
+				$query .= " AND";
+			}
+
+			$date = strtotime(cleanInput($_POST['dateEnd']));
+			$dateF = date('Y-m-d H:i:s', $date);
+
+			$query .= " events.dateEnd <= '".$dateF."'";
+		}
+	}
+	else if($_POST['searchType'] == "trooper")
+	{
+		// Query for search
+		$query = "SELECT * FROM troopers";
+	}
+
+	// Get our search type, and show certain fields
+	// Regular search
+	if($_POST['searchType'] == "regular")
+	{
+		// Get data
+		$i = 0;
+		if ($result = mysqli_query($conn, $query))
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				if($i == 0)
+				{
+					echo '
+					<div style="overflow-x: auto;">
+					<table border="1">
+					<tr>
+						<th>Event Name</th>	<th>Trooper TKID</th>	<th>Signed Up With Costume</th>	<th>Attended Costume</th>	<th>Attended</th>
+					</tr>';
+				}
+
+				echo '
+				<tr>
+					<td><a href="index.php?event='.$db->troopid.'">'.$db->eventName.'</a></td>	<td><a href="index.php?profile='.$db->trooperid.'">'.getTKNumber($db->trooperid).'</a></td>	<td>'.ifEmpty(getCostume($db->costume), "N/A").'</td>	<td>'.ifEmpty(getCostume($db->attended_costume), "N/A").'</td>	<td>'.didAttend($db->attend).'</td>
+				</tr>';
+
+				$i++;
+			}
+		}
+	}
+	// Trooper search
+	else if($_POST['searchType'] == "trooper")
+	{
+		// Get data
+		$i = 0;
+		
+		// Trooper array
+		$troopArray = array();
+		
+		// Start going through troopers
+		if ($result = mysqli_query($conn, $query))
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				// Show table
+				if($i == 0)
+				{
+					echo '
+					<div style="overflow-x: auto;">
+					<table border="1">
+					<tr>
+						<th>Trooper TKID</th>	<th>Troop Count</th>
+					</tr>';
+				}
+
+				// Increment $i
+				$i++;
+				
+				// Format date start
+				$date = strtotime(cleanInput($_POST['dateStart']));
+				$dateF = date('Y-m-d H:i:s', $date);
+				
+				// Format date end
+				$date = strtotime(cleanInput($_POST['dateEnd']));
+				$dateE = date('Y-m-d H:i:s', $date);
+				
+				// Get troop counts
+				$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."'") or die($conn->error);
+				$count = $troops_get->fetch_row();
+				
+				// Create an array of our count
+				$tempArray = array($db->tkid, $count[0]);
+				
+				// Push to main array
+				array_push($troopArray, $tempArray);
+			}
+		}
+		
+		// Sort array for display
+		$keys = array_column($troopArray, 1);
+		array_multisort($keys, SORT_DESC, $troopArray);
+
+		// Loop through array
+		foreach($troopArray as $value)
+		{
+			// Display
 			echo '
 			<tr>
-				<td><a href="index.php?event='.$db->troopid.'">'.$db->eventName.'</a></td>	<td><a href="index.php?profile='.$db->trooperid.'">'.getTKNumber($db->trooperid).'</a></td>	<td>'.ifEmpty(getCostume($db->costume), "N/A").'</td>	<td>'.ifEmpty(getCostume($db->attended_costume), "N/A").'</td>	<td>'.didAttend($db->attend).'</td>
+				<td>'.readTKNumber($value[0]).'</td>	<td>'.$value[1].'</td>
 			</tr>';
-
-			$i++;
 		}
 	}
 
+	// What to do if we have more than one field
 	if($i > 0)
 	{
 		echo '
 		</table>
 		</div>';
+	}
+	else
+	{
+		// Nothing to show
+		echo '
+		<p style="text-align: center;">
+			<b>No results</b>
+		</p>';
 	}
 }
 
@@ -703,13 +813,23 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 	<h2 class="tm-section-header">Search</h2>
 	<div name="searchForm" id="searchForm">
 		<form action="index.php?action=search" method="POST">
+			<div id="searchNameDiv">
 			Search Troop Name: <input type="text" name="searchName" id="searchName" />
 			<br /><br />
-			Date Start: <input type="text" name="dateStart" id="datepicker" />
+			</div>
+			Date Start: <input type="text" name="dateStart" id="datepicker3" />
 			<br /><br />
-			Date End: <input type="text" name="dateEnd" id="datepicker2" />
+			Date End: <input type="text" name="dateEnd" id="datepicker4" />
 			<br /><br />
+			<div id="tkIDDiv">
 			Search TKID: <input type="text" name="tkID" id="tkID" />
+			<br /><br />
+			</div>
+			Search Type:
+			<br />
+			<input type="radio" name="searchType" value="regular" CHECKED />Default
+			<br />
+			<input type="radio" name="searchType" value="trooper" />Troop Count Per Trooper
 			<br /><br />
 			<input type="submit" name="submitSearch" id="submitSearch" value="Search!" />
 		</form>

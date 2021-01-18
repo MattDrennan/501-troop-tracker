@@ -30,6 +30,21 @@ $(document).ready(function()
 		}
 	})
 	
+	// Troop Tracker Search
+	$("input[name='searchType']").click(function()
+	{
+		if($("input[name='searchType']:checked").val() == "regular")
+		{
+			$("#searchNameDiv").show();
+			$("#tkIDDiv").show();
+		}
+		else
+		{
+			$("#searchNameDiv").hide();
+			$("#tkIDDiv").hide();
+		}
+	})
+	
 	// Get Location Button
 	$("#getLocation").button().click(function(e)
 	{

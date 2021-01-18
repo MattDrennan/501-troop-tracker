@@ -1,6 +1,10 @@
 **Changelog**
 
-_01/04/2020_
+_01/18/2021_
+
+-Added "Troop Count Per Trooper" under Troop Tracker Search
+
+_01/04/2021_
 
 -Moved sendEmail() required files in config file. This will prevent issues when sending multiple e-mails to users.
 
@@ -13,7 +17,7 @@ _01/03/2021_
 
 -Corrected getSquadName()
 
-_01/01/2020_
+_01/01/2021_
 
 -Added "Florida Garrison" to getSquadName()
 
