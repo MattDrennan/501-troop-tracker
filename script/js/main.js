@@ -37,11 +37,13 @@ $(document).ready(function()
 		{
 			$("#searchNameDiv").show();
 			$("#tkIDDiv").show();
+			$("#trooper_count_radio").hide();
 		}
 		else
 		{
 			$("#searchNameDiv").hide();
 			$("#tkIDDiv").hide();
+			$("#trooper_count_radio").show();
 		}
 	})
 	

@@ -447,7 +447,17 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			if($_POST['searchType'] == "trooper")
 			{
 				echo '
-				<input type="hidden" name="searchType" value="trooper" />';				
+				<input type="hidden" name="searchType" value="trooper" />
+				
+				<select name="squad" id="squad">
+					<option value="0" '.echoSelect(0, cleanInput($_POST['squad'])).'>All</option>
+					<option value="1" '.echoSelect(1, cleanInput($_POST['squad'])).'>Everglades Squad</option>
+					<option value="5" '.echoSelect(5, cleanInput($_POST['squad'])).'>Tampa Bay Squad</option>
+					<option value="2" '.echoSelect(2, cleanInput($_POST['squad'])).'>Makaze Squad</option>
+					<option value="4" '.echoSelect(4, cleanInput($_POST['squad'])).'>Squad 7 Squad</option>
+					<option value="3" '.echoSelect(3, cleanInput($_POST['squad'])).'>Parjai Squad</option>
+				</select>	
+				<br /><br />';				
 			}
 			
 			echo '
@@ -510,6 +520,13 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 	{
 		// Query for search
 		$query = "SELECT * FROM troopers";
+		
+		// Get the squad search type
+		if($_POST['squad'] != 0)
+		{
+			// Add to query
+			$query .= " WHERE squad = '".cleanInput($_POST['squad'])."'";
+		}
 	}
 
 	// Get our search type, and show certain fields
@@ -582,7 +599,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				$count = $troops_get->fetch_row();
 				
 				// Create an array of our count
-				$tempArray = array($db->tkid, $count[0]);
+				$tempArray = array($db->tkid, $count[0], $db->name);
 				
 				// Push to main array
 				array_push($troopArray, $tempArray);
@@ -599,7 +616,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			// Display
 			echo '
 			<tr>
-				<td>'.readTKNumber($value[0]).'</td>	<td>'.$value[1].'</td>
+				<td>'.readTKNumber($value[0]).' - '.$value[2].'</td>	<td>'.$value[1].'</td>
 			</tr>';
 		}
 	}
@@ -831,6 +848,17 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 			<br />
 			<input type="radio" name="searchType" value="trooper" />Troop Count Per Trooper
 			<br /><br />
+			<div id="trooper_count_radio" style="display: none;">
+				<select name="squad" id="squad">
+					<option value="0" SELECTED>All</option>
+					<option value="1">Everglades Squad</option>
+					<option value="5">Tampa Bay Squad</option>
+					<option value="2">Makaze Squad</option>
+					<option value="4">Squad 7 Squad</option>
+					<option value="3">Parjai Squad</option>
+				</select>	
+				<br /><br />
+			</div>
 			<input type="submit" name="submitSearch" id="submitSearch" value="Search!" />
 		</form>
 	</div>';
