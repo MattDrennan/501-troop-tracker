@@ -521,11 +521,37 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		// Query for search
 		$query = "SELECT * FROM troopers";
 		
+		// Format date start
+		$date = strtotime(cleanInput($_POST['dateStart']));
+		$dateF = date('Y-m-d H:i:s', $date);
+		
+		// Format date end
+		$date = strtotime(cleanInput($_POST['dateEnd']));
+		$dateE = date('Y-m-d H:i:s', $date);
+		
 		// Get the squad search type
 		if($_POST['squad'] != 0)
 		{
 			// Add to query
 			$query .= " WHERE squad = '".cleanInput($_POST['squad'])."'";
+			
+			// Get troop counts
+			$troops_get = $conn->query("SELECT COUNT(id) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."' AND squad = '".cleanInput($_POST['squad'])."'") or die($conn->error);
+			$troop_count = $troops_get->fetch_row();
+			
+			// Get charity counts
+			$charity_get = $conn->query("SELECT SUM(moneyRaised) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."' AND squad = '".cleanInput($_POST['squad'])."'") or die($conn->error);
+			$charity_count = $charity_get->fetch_row();
+		}
+		else
+		{
+			// Get troop counts
+			$troops_get = $conn->query("SELECT COUNT(id) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."'") or die($conn->error);
+			$troop_count = $troops_get->fetch_row();
+			
+			// Get charity counts
+			$charity_get = $conn->query("SELECT SUM(moneyRaised) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."'") or die($conn->error);
+			$charity_count = $charity_get->fetch_row();
 		}
 	}
 
@@ -576,6 +602,14 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				if($i == 0)
 				{
 					echo '
+					<p>
+						Total Troops: '.$troop_count[0].'
+					</p>
+					
+					<p>
+						Total Money Raised: $'.number_format($charity_count[0]).'
+					</p>
+					
 					<div style="overflow-x: auto;">
 					<table border="1">
 					<tr>
@@ -585,14 +619,6 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 
 				// Increment $i
 				$i++;
-				
-				// Format date start
-				$date = strtotime(cleanInput($_POST['dateStart']));
-				$dateF = date('Y-m-d H:i:s', $date);
-				
-				// Format date end
-				$date = strtotime(cleanInput($_POST['dateEnd']));
-				$dateE = date('Y-m-d H:i:s', $date);
 				
 				// Get troop counts
 				$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."'") or die($conn->error);
