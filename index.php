@@ -216,7 +216,10 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess")
 {
 	echo '
 	<h2 class="tm-section-header">Request Access</h2>
+	
 	<div name="requestAccessFormArea" id="requestAccessFormArea">
+		<p style="text-align: center;">New to the 501st and/or Florida Garrison? Use this form below to start signing up for troops. Command Staff will need to approve your account prior to use.</p>
+		
 		<form action="process.php?do=requestaccess" name="requestAccessForm" id="requestAccessForm" method="POST">
 			First & Last Name: <input type="text" name="name" id="name" />
 			<br /><br />
@@ -256,7 +259,7 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess")
 if(isset($_GET['profile']))
 {
 	// Get data
-	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, event_sign_up.attend, event_sign_up.attended_costume, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.tkid FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".cleanInput($_GET['profile'])."' AND events.closed = '1' AND event_sign_up.status = '3' ORDER BY events.dateEnd";
+	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, event_sign_up.attend, event_sign_up.attended_costume, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.forum_id, troopers.tkid FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".cleanInput($_GET['profile'])."' AND events.closed = '1' AND event_sign_up.status = '3' ORDER BY events.dateEnd";
 	$i = 0;
 	if ($result = mysqli_query($conn, $query))
 	{
@@ -274,20 +277,24 @@ if(isset($_GET['profile']))
 				
 				echo '
 				<h2 class="tm-section-header">'.$db->name.' - '.readTKNumber($db->tkid).'</h2>
+				
+				<p style="text-align: center;"><a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un='.$db->forum_id.'" target="_blank">View Boards Profile</a></p>
 
 				<div style="overflow-x: auto;">
 				<table border="1">
 				<tr>
-					<th>Event Name</th>	<th>Signed Up With Costume</th>	<th>Attended Costume</th>
+					<th>Event Name</th>	<th>Date</th>	<th>Attended Costume</th>
 				</tr>';
 			}
 
 			echo '
 			<tr>
 				<td><a href="index.php?event='.$db->troopid.'">'.$db->eventName.'</a></td>';
+				
+			$dateFormat = date('m-d-Y', strtotime($db->dateEnd));
 
 			echo '
-				<td>'.ifEmpty(getCostume($db->costume), "N/A").'</td>	<td>'.ifEmpty(getCostume($db->attended_costume), "N/A").'</td>
+				<td>'.$dateFormat.'</td>	<td>'.ifEmpty(getCostume($db->attended_costume), "N/A").'</td>
 			</tr>';
 
 			// Increment i
@@ -443,6 +450,18 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				<br /><br />';
 			}
 			
+			// Set search type
+			if($_POST['searchType'] == "regular")
+			{
+				echo '
+				<input type="hidden" name="searchType" value="regular" />';
+			}
+			else
+			{
+				echo '
+				<input type="hidden" name="searchType" value="trooper" />';
+			}
+			
 			// If trooper search, include searchType for another search
 			if($_POST['searchType'] == "trooper")
 			{
@@ -571,13 +590,15 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 					<div style="overflow-x: auto;">
 					<table border="1">
 					<tr>
-						<th>Event Name</th>	<th>Trooper TKID</th>	<th>Signed Up With Costume</th>	<th>Attended Costume</th>	<th>Attended</th>
+						<th>Event Name</th>	<th>Date</th>	<th>Trooper TKID</th>	<th>Attended Costume</th>	<th>Attended</th>
 					</tr>';
 				}
+				
+				$dateFormat = date('m-d-Y', strtotime($db->dateEnd));
 
 				echo '
 				<tr>
-					<td><a href="index.php?event='.$db->troopid.'">'.$db->eventName.'</a></td>	<td><a href="index.php?profile='.$db->trooperid.'">'.getTKNumber($db->trooperid).'</a></td>	<td>'.ifEmpty(getCostume($db->costume), "N/A").'</td>	<td>'.ifEmpty(getCostume($db->attended_costume), "N/A").'</td>	<td>'.didAttend($db->attend).'</td>
+					<td><a href="index.php?event='.$db->troopid.'">'.$db->eventName.'</a></td>	<td>'.$dateFormat.'</td>	<td><a href="index.php?profile='.$db->trooperid.'">'.getTKNumber($db->trooperid).'</a></td>	<td>'.ifEmpty(getCostume($db->attended_costume), "N/A").'</td>	<td>'.didAttend($db->attend).'</td>
 				</tr>';
 
 				$i++;
@@ -906,7 +927,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<a href="index.php?action=commandstaff&do=editevent" class="button">Edit an Event</a> 
 			<a href="index.php?action=commandstaff&do=createuser" class="button">Create Trooper</a> 
 			<a href="index.php?action=commandstaff&do=managetroopers" class="button">Manage Troopers</a> 
-			<a href="index.php?action=commandstaff&do=approvetroopers" class="button">Approve Trooper Requests - ('.$getTrooperNotifications->num_rows.')</a> 
+			<a href="index.php?action=commandstaff&do=approvetroopers" class="button" id="trooperRequestButton" name="trooperRequestButton">Approve Trooper Requests - ('.$getTrooperNotifications->num_rows.')</a> 
 			<a href="index.php?action=commandstaff&do=assignawards" class="button">Assign Awards</a>
 			<a href="index.php?action=commandstaff&do=managecostumes" class="button">Costume Management</a>
 		</p>
@@ -1476,7 +1497,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 			// Amount of users
 			$i = 0;
-			$getId = 0;
 
 			if ($result = mysqli_query($conn, $query))
 			{
@@ -1485,11 +1505,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					// Formatting
 					if($i == 0)
 					{
-						$getId = $db->id;
 						echo '
 						<form action="process.php?do=approvetroopers" method="POST" name="approveTroopers" id="approveTroopers">
 
-						<select name="userID" id="userID">';
+						<select name="userID2" id="userID2">
+							<option value="-1" SELECTED>Please select a trooper...</option>';
 					}
 
 					echo '<option value="'.$db->id.'">'.$db->name.'</option>';
@@ -1518,22 +1538,10 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<table border="1" id="userListTable" name="userListTable">
 				<tr>
 					<th>Name</th>	<th>E-mail</th>	<th>Forum ID</th>	<th>Phone</th>	<th>Squad</th>	<th>TKID</th>
-				</tr>';
-
-				// Get data
-				$query = "SELECT * FROM troopers WHERE id = '".$getId."'";
-				if ($result = mysqli_query($conn, $query))
-				{
-					while ($db = mysqli_fetch_object($result))
-					{
-						echo '
-						<tr id="userList'.$db->id.'" name="userList'.$db->id.'">
-							<td id="nameTable">'.$db->name.'</td>	<td id="emailTable">'.$db->email.'</td> <td>'.$db->forum_id.'</td>	<td id="phoneTable">'.ifEmpty($db->phone).'</td>	<td id="squadTable">'.getSquadName($db->squad).'</td>	<td id="tkTable">'.readTKNumber($db->tkid).'</td>
-						</tr>';
-					}
-				}
-
-				echo '
+				</tr>
+					<tr id="userList" name="userList">
+						<td id="nameTable"></td>	<td id="emailTable"></td> <td id="forumTable"></td>	<td id="phoneTable"></td>	<td id="squadTable"></td>	<td id="tkTable"></td>
+					</tr>
 				</table>
 				</div>';
 			}
@@ -2020,6 +2028,8 @@ if(isset($_GET['action']) && $_GET['action'] == "setup")
 	{
 		// Display form to register an account
 		echo '
+		<p style="text-align: center;">Were you already using the old trooper tracker? Set up your account by using the form below.</p>
+		
 		<form method="POST" action="index.php?action=setup" name="registerForm" id="registerForm">
 			<p>What is your TKID:</p>
 			<input type="text" name="tkid" id="tkid" />
@@ -2724,6 +2734,14 @@ else
 	if(!isset($_GET['action']) && !isset($_GET['profile']) && !isset($_GET['event']))
 	{
 		// Show options for squad choice
+		if(!loggedIn())
+		{
+			echo '
+			<h2 class="tm-section-header">Welcome</h2>
+			
+			<p style="text-align: center;">Welcome to the Florida Garrison troop tracker!<br /><br /><a href="index.php?action=requestaccess">Are you new to the Florida Garrison and/or 501st? Click here.</a><br /><br /><a href="index.php?action=setup">Have you used the old troop tracker and need to set up your account? Click here.</a></p>';
+		}
+		
 		echo '
 		<h2 class="tm-section-header">Troops</h2>
 
@@ -2928,7 +2946,7 @@ Website created and maintained by Matthew Drennan (TK52233). If you encounter an
 </p>
 
 <p style="text-align: center;">
-<a href="https://github.com/MattDrennan/501-troop-tracker" target="_blank"><img src="images/github.png" alt="Help contribute on GitHub.com!" /><br />Help contribute on GitHub.com!</a>
+<a href="https://github.com/MattDrennan/501-troop-tracker" target="_blank">Help contribute on GitHub.com!</a>
 </p>
 </section>
 

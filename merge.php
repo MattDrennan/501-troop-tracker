@@ -66,10 +66,6 @@ if(!isset($_GET['do']))
 		</li>
 		
 		<li>
-			IMPORTANT!! Be sure to run this before inserting any user data into the new database.
-		</li>
-		
-		<li>
 			DO NOT KEEP THIS FILE ON A LIVE SERVER!
 		</li>
 	</ul>';
@@ -78,6 +74,10 @@ else
 {
 	if($_GET['do'] == "install")
 	{
+		// Arrays
+		$trooperArray = [];
+		$eventArray = [];
+		
 		// Go through the users
 		$query = "SELECT * FROM troopers";
 		if ($result = mysqli_query($conn2, $query))
@@ -85,7 +85,10 @@ else
 			while ($db = mysqli_fetch_object($result))
 			{
 				// Insert into database
-				$conn->query("INSERT INTO troopers (id, name, squad, tkid, forum_id, approved) VALUES ('".$db->id."', '".$db->name."', '".getSquadID($db->squad_id)."', '".$db->tkid."', '".$db->forum_id."', 1)") or die(error_log($conn->error));
+				$conn->query("INSERT INTO troopers (name, squad, tkid, forum_id, approved) VALUES ('".$db->name."', '".getSquadID($db->squad_id)."', '".$db->tkid."', '".$db->forum_id."', 1)") or die(error_log($conn->error));
+				
+				// Update Array
+				$trooperArray[$db->id] = $conn->insert_id;
 			}
 		}
 
@@ -99,7 +102,10 @@ else
 				$intToDate = date("Y-m-d H:i:s", $db->date);
 				
 				// Insert into database
-				$conn->query("INSERT INTO events (id, name, dateStart, dateEnd, comments, squad, closed) VALUES ('".$db->id."', '".$db->title."', '".$intToDate."', '".$intToDate."', '".$db->description."', '".getSquadID($db->event_squad)."', 1)") or die(error_log($conn->error));
+				$conn->query("INSERT INTO events (name, dateStart, dateEnd, comments, squad, closed) VALUES ('".$db->title."', '".$intToDate."', '".$intToDate."', '".$db->description."', '".getSquadID($db->event_squad)."', 1)") or die(error_log($conn->error));
+				
+				// Update Array
+				$eventArray[$db->id] = $conn->insert_id;
 			}
 		}
 
@@ -110,7 +116,7 @@ else
 			while ($db = mysqli_fetch_object($result))
 			{
 				// Insert into database
-				$conn->query("INSERT INTO event_sign_up (trooperid, troopid, status, attend) VALUES ('".$db->trooper_id."', '".$db->event_id."', 3, 1)") or die(error_log($conn->error));
+				$conn->query("INSERT INTO event_sign_up (trooperid, troopid, status, attend) VALUES ('".$trooperArray[$db->trooper_id]."', '".$eventArray[$db->event_id]."', 3, 1)") or die(error_log($conn->error));
 			}
 		}
 

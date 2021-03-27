@@ -313,7 +313,7 @@ if(isset($_GET['do']) && $_GET['do'] == "getuser" && loggedIn())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$array = array('name' => $db->name, 'email' => $db->email, 'phone' => $db->phone, 'squad' => $db->squad, 'tkid' => $db->tkid);
+				$array = array('name' => $db->name, 'email' => $db->email, 'forum' => $db->forum_id, 'phone' => $db->phone, 'squad' => $db->squad, 'tkid' => $db->tkid);
 			}
 		}
 	}
@@ -346,14 +346,52 @@ if(isset($_GET['do']) && $_GET['do'] == "approvetroopers" && loggedIn() && isAdm
 	// User submitted for deletion...
 	if(isset($_POST['submitDenyUser']))
 	{
+		// Query for user info
+		$query = "SELECT * FROM troopers WHERE id = '".cleanInput($_POST['userID2'])."'";
+
+		if ($result = mysqli_query($conn, $query) or die($conn->error))
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				// Send e-mail
+				try
+				{
+					sendEmail($db->email, $db->name, "Florida Garrison Troop Tracker: Account Denied", "Your account has been denied. Please confirm that all your information is correct and try again. If you continue to have issues, please reach out on the boards.");
+				}
+				catch(Exception $e)
+				{
+					// Nothing
+				}
+			}
+		}
+		
 		// Query the database
-		$conn->query("DELETE FROM troopers WHERE id = '".cleanInput($_POST['userID'])."'");
+		$conn->query("DELETE FROM troopers WHERE id = '".cleanInput($_POST['userID2'])."'");
 	}
 
 	if(isset($_POST['submitApproveUser']))
 	{
+		// Query for user info
+		$query = "SELECT * FROM troopers WHERE id = '".cleanInput($_POST['userID2'])."'";
+
+		if ($result = mysqli_query($conn, $query) or die($conn->error))
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				try
+				{
+					// Send e-mail
+					sendEmail($db->email, $db->name, "Florida Garrison Troop Tracker: Account Approved", "Your account has been approved!");
+				}
+				catch(Exception $e)
+				{
+					// Nothing
+				}
+			}
+		}
+		
 		// Query the database
-		$conn->query("UPDATE troopers SET approved = 1 WHERE id = '".cleanInput($_POST['userID'])."'");
+		$conn->query("UPDATE troopers SET approved = 1 WHERE id = '".cleanInput($_POST['userID2'])."'");
 	}
 }
 

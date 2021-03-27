@@ -15,6 +15,9 @@ require 'script/lib/phpmail/src/PHPMailer.php';
 /* SMTP class, needed if you want to use SMTP. */
 require 'script/lib/phpmail/src/SMTP.php';
 
+// Include credential file
+require 'cred.php';
+
 session_start();
 
 // DB Info
@@ -572,7 +575,7 @@ function sendEmail($SendTo, $Name, $Subject, $Message)
 	$mail = new PHPMailer(TRUE);
 
 	/* Set the mail sender. */
-	$mail->setFrom('matt@drennansoftware.com', 'Matthew Drennan');
+	$mail->setFrom('noreply@trooptracking.com', 'Troop Tracker');
 
 	/* Add a recipient. */
 	$mail->addAddress($SendTo, $Name);
@@ -590,10 +593,10 @@ function sendEmail($SendTo, $Name, $Subject, $Message)
 	$mail->SMTPSecure = 'tls';
 
 	/* SMTP authentication username. */
-	$mail->Username = 'matt@drennansoftware.com';
+	$mail->Username = 'noreply@trooptracking.com';
 
 	/* SMTP authentication password. */
-	$mail->Password = 'PASSWORD';
+	$mail->Password = ePassword;
 
 	/* Set the SMTP port. */
 	$mail->Port = 587;

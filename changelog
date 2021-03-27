@@ -1,5 +1,17 @@
 **Changelog**
 
+_03/27/2021_
+
+-Updated "merge.php" to allow for old data to be imported at any point in the troop tracker without affecting new data. All old data will be reassigned new IDs
+-Added dates to troop tracker search
+-Fixed bug with troop tracker search, when you went to search again
+-When approving new trooper requests, a link to the member forum profile is provided
+-Added boards profile link
+-Added dates to profiles
+-Added credentials file to hide certain sensitive data from Internet
+-Improved Appove Trooper Area
+-An e-mail will be sent when a trooper is approved or denied
+
 _02/06/2021_
 
 -"Troop Count Per Trooper" now provides totals for charity and troops

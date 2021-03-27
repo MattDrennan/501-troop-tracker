@@ -11,6 +11,19 @@ function myFunction() {
 	}
 }
 
+// If Empty Function
+function ifEmpty(val)
+{
+	if(val == "" || val === undefined || val === null)
+	{
+		return "N/A";
+	}
+	else
+	{
+		return val;
+	}
+}
+
 $(document).ready(function()
 {
 	// Easy Fill Button: Show/Hide
@@ -419,17 +432,28 @@ $(document).ready(function()
 				data: form.serialize() + "&submitApproveUser=1",
 				success: function(data)
 				{
-					// Remove from table
-					$("#userList" + $("#userID").find("option:selected").val()).remove();
-
 					// Remove from select option
-					$("#userID").find("option:selected").remove();
+					$("#userID2").find("option:selected").remove();
 					
 					// Alert to success
 			  		alert("The user was approved successfully!");
+					
+					// Move Select Val
+					$("#userID2").val(-1);
+					
+					// Reset
+					$("#nameTable").html("");
+					$("#emailTable").html("");
+					$("#forumTable").html("");
+					$("#phoneTable").html("");
+					$("#squadTable").html("");
+					$("#tkTable").html("");
+					
+					// Set Button
+					$("#trooperRequestButton").text("Approve Trooper Requests - ("+ ($("#userID2 option").length - 1) +")");
 
 			  		// Show message if empty
-			  		if($("#userID").has("option").length <= 0 )
+			  		if($("#userID2 option").length <= 1)
 			  		{
 			  			$("#approveTroopers").html("There are no troopers to display.");
 						
@@ -458,17 +482,28 @@ $(document).ready(function()
 				data: form.serialize() + "&submitDenyUser=1",
 				success: function(data)
 				{
-					// Remove from table
-					$("#userList" + $("#userID").find("option:selected").val()).remove();
-
 					// Remove from select option
-					$("#userID").find("option:selected").remove();
+					$("#userID2").find("option:selected").remove();
 
 					// Alert to success
 			  		alert("The user was denied successfully!");
+					
+					// Move Select Val
+					$("#userID2").val(-1);
+					
+					// Reset
+					$("#nameTable").html("");
+					$("#emailTable").html("");
+					$("#forumTable").html("");
+					$("#phoneTable").html("");
+					$("#squadTable").html("");
+					$("#tkTable").html("");
+					
+					// Set Button
+					$("#trooperRequestButton").text("Approve Trooper Requests - ("+ ($("#userID2 option").length - 1) +")");
 
 			  		// Show message if empty
-			  		if($("#userID").has("option").length <= 0)
+			  		if($("#userID2 option").length <= 1)
 			  		{
 			  			$("#approveTroopers").html("There are no troopers to display.");
 						
@@ -504,7 +539,7 @@ $(document).ready(function()
 			  		alert("The user was removed successfully!");
 
 			  		// Show message if empty
-			  		if($("#userID").has("option").length <= 0 )
+			  		if($("#userID option").length <= 1)
 			  		{
 			  			$("#approveTroopers").html("There are no troopers to display.");
 			  		}
@@ -852,7 +887,7 @@ $(document).ready(function()
 		}
 	});
 
-	$("#userID").on("change", function()
+	$("body").on("change", "#userID", function(e)
 	{
 		if($("#editEventInfo").is(":hidden"))
 		{
@@ -878,6 +913,37 @@ $(document).ready(function()
 				$("#phoneTable").html(json.phone);
 				$("#squadTable").html(json.squad);
 				$("#tkTable").html(json.tkid);
+			}
+		});
+	});
+	
+	$("body").on("change", "#userID2", function(e)
+	{
+		if($("#editEventInfo").is(":hidden"))
+		{
+			//$("#editUserInfo").show();
+			//$("#submitEditUser").val("Close");
+		}
+		else
+		{
+			$("#editUserInfo").hide();
+			$("#submitEditUser").val("Edit");
+		}
+
+		// Only used for approving area
+		$.ajax({
+			type: "POST",
+			url: "process.php?do=getuser",
+			data: "id=" + $("#userID2").val() + "&getuser=1",
+			success: function(data)
+			{
+				var json = JSON.parse(data);
+				$("#nameTable").html(ifEmpty(json.name));
+				$("#emailTable").html(ifEmpty(json.email));
+				$("#forumTable").html('<a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un=' + json.forum + '" target="_blank">' + json.forum + '</a>');
+				$("#phoneTable").html(ifEmpty(json.phone));
+				$("#squadTable").html(ifEmpty(json.squad));
+				$("#tkTable").html(ifEmpty(json.tkid));
 			}
 		});
 	});
