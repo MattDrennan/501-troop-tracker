@@ -2,6 +2,10 @@
 
 _03/28/2021_
 
+-Trooper count notifications implemented
+
+_03/28/2021_
+
 -Improved AJAX in Costume Management and Award Management
 -Added permissions for signing up for a troop
 -Updated SQL - Added notifications

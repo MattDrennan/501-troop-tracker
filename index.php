@@ -946,6 +946,39 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		{
 			echo '
 			<h3>Notifications</h3>';
+			
+			// Get data
+			$query = "SELECT * FROM notifications ORDER BY id ASC";
+			$i = 0;
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					if($i == 0)
+					{
+						echo '<ul>';
+					}
+					
+					// Format Date
+					$dateF = date('m-d-Y H:i:s', strtotime($db->datetime));
+					
+					echo '
+					<li>
+						<a href="index.php?profile='.$db->trooperid.'">'.$db->message.'</a> on '.$dateF.'.
+					</li>';
+					
+					$i++;
+				}
+			}
+			
+			if($i == 0)
+			{
+				echo '<p>No notifications to display.</p>';
+			}
+			else
+			{
+				echo '</ul>';
+			}
 		}
 
 		/**************************** COSTUMES *********************************/

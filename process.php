@@ -1756,6 +1756,15 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmList")
 				// Query the database
 				$conn->query("UPDATE event_sign_up SET attended_costume = '".cleanInput($_POST['costume'])."', attend = '1', status = '3' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($list[$i])."'") or die($conn->error);
 			}
+			
+			// Notify how many troops did a trooper attend
+			$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$_SESSION['id']."' AND attend = '1'") or die($conn->error);
+			$count = $trooperCount_get->fetch_row();
+			
+			if($count[0] == 1 || $count[0] == 10 || $count[0] == 25 || $count[0] == 50 || $count[0] == 75 || $count[0] == 100 || $count[0] == 150 || $count[0] == 200 || $count[0] == 250 || $count[0] == 300 || $count[0] == 400 || $count[0] == 500 || $count[0] == 501)
+			{
+				$conn->query("INSERT INTO notifications (message, trooperid) VALUES ('".getName($_SESSION['id'])." now has ".$count[0]." troop(s)', '".$_SESSION['id']."')");
+			}
 		}
 	}
 
