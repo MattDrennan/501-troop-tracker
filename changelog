@@ -1,5 +1,11 @@
 **Changelog**
 
+_03/28/2021_
+
+-Improved AJAX in Costume Management and Award Management
+-Added permissions for signing up for a troop
+-Updated SQL - Added notifications
+
 _03/27/2021_
 
 -Added troop full message

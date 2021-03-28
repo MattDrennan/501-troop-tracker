@@ -925,6 +925,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		<p>
 			<a href="index.php?action=commandstaff&do=createevent" class="button">Create an Event</a> 
 			<a href="index.php?action=commandstaff&do=editevent" class="button">Edit an Event</a> 
+			<a href="index.php?action=commandstaff&do=notifications" class="button">Notifications</a> 
 			<a href="index.php?action=commandstaff&do=managecostumes" class="button">Costume Management</a> ';
 			
 			if(hasPermission(1))
@@ -938,6 +939,14 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			
 		echo '
 		</p>';
+		
+		/**************************** Notifications *********************************/
+		
+		if(isset($_GET['do']) && $_GET['do'] == "notifications")
+		{
+			echo '
+			<h3>Notifications</h3>';
+		}
 
 		/**************************** COSTUMES *********************************/
 
@@ -979,6 +988,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<br />
 			<hr />
 			<br />
+			
+			<div id="costumearea" name="costumearea">
 			
 			<h3>Edit Costume</h3>';
 
@@ -1090,6 +1101,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<input type="submit" name="submitDeleteCostume" id="submitDeleteCostume" value="Delete Costume" />
 				</form>';
 			}
+			
+			echo '
+			</div>';
 		}
 		
 		/**************************** AWARDS *********************************/
@@ -1097,7 +1111,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		// Assign an award to users
 		if(isset($_GET['do']) && $_GET['do'] == "assignawards")
 		{
-			echo '<h3>Assign Awards</h3>';
+			echo '<h3>Assign Awards</h3>
+			
+			<div name="assignarea" id="assignarea">';
 
 			// Get data
 			$query = "SELECT * FROM troopers WHERE approved = 1 ORDER BY name";
@@ -1179,7 +1195,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				}
 			}
 
-			echo '</form>';
+			echo '</form></div>';
 
 			echo '<br /><hr /><br /><h3>Create Award</h3>
 
@@ -1191,7 +1207,10 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<input type="submit" name="submitAwardAdd" id="submitAwardAdd" value="Add Award" />
 			</form>';
 
-			echo '<br /><hr /><br /><h3>Edit Award</h3>';
+			echo '
+			<div id="awardarea">
+			<br /><hr /><br />
+			<h3>Edit Award</h3>';
 
 			// Get data
 			$query = "SELECT * FROM awards ORDER BY title";
@@ -1280,7 +1299,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<input type="submit" name="submitDeleteAward" id="submitDeleteAward" value="Delete Award" />
 				</form>';
 			}
+			
+			echo '
+			</div>';
 		}
+		
+		/************** EVENTS ******************/
 
 		// Update an event form
 		if(isset($_GET['do']) && $_GET['do'] == "editevent")
@@ -2554,93 +2578,101 @@ if(isset($_GET['event']))
 						// Check to see if this event is full
 						$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".$db->id."' AND status != '4'");
 						
-						if($getNumOfTroopers->num_rows < $db->limitTotal)
+						if(hasPermission(0, 1, 2, 3))
 						{
-							if($db->limitedEvent == 1)
+							if($getNumOfTroopers->num_rows < $db->limitTotal)
 							{
-								echo '<b>This is a locked event. When you sign up, you will be placed in a pending status until command staff approves you. Please check for updates.</b>';
-							}
-							
-							echo '
-								<form action="process.php?do=signup" method="POST" name="signupForm2" id="signupForm2">
-									<input type="hidden" name="event" value="'.$_GET["event"].'" />
-									<p>What costume will you wear?</p>
-									<select name="costume">
-										<option value="null" SELECTED>Please choose an option...</option>';
+								if($db->limitedEvent == 1)
+								{
+									echo '<b>This is a locked event. When you sign up, you will be placed in a pending status until command staff approves you. Please check for updates.</b>';
+								}
+								
+								echo '
+									<form action="process.php?do=signup" method="POST" name="signupForm2" id="signupForm2">
+										<input type="hidden" name="event" value="'.$_GET["event"].'" />
+										<p>What costume will you wear?</p>
+										<select name="costume">
+											<option value="null" SELECTED>Please choose an option...</option>';
 
-									$query3 = "SELECT * FROM costumes ORDER BY costume";
-									if ($result3 = mysqli_query($conn, $query3))
-									{
-										while ($db3 = mysqli_fetch_object($result3))
+										$query3 = "SELECT * FROM costumes ORDER BY costume";
+										if ($result3 = mysqli_query($conn, $query3))
+										{
+											while ($db3 = mysqli_fetch_object($result3))
+											{
+												echo '
+												<option value="'. $db3->id .'">'.$db3->costume.'</option>';
+											}
+										}
+
+									echo '
+										</select>
+
+										<br />
+
+										<p>Select a status:</p>
+
+										<select name="status">
+											<option value="null" SELECTED>Please choose an option...</option>';
+
+										if($db->limitedEvent != 1)
 										{
 											echo '
-											<option value="'. $db3->id .'">'.$db3->costume.'</option>';
+												<option value="0">I\'ll be there!</option>
+												<option value="1">Tentative</option>';
 										}
-									}
-
-								echo '
-									</select>
-
-									<br />
-
-									<p>Select a status:</p>
-
-									<select name="status">
-										<option value="null" SELECTED>Please choose an option...</option>';
-
-									if($db->limitedEvent != 1)
-									{
-										echo '
-											<option value="0">I\'ll be there!</option>
-											<option value="1">Tentative</option>';
-									}
-									else
-									{
-										echo '
-											<option value="5">Request to attend (Pending)</option>';								
-									}
-
-									echo '
-									</select>
-
-									<p>Back up costume (if applicable):</p>
-
-									<select name="backupcostume" id="backupcostume">';
-
-									// Display costumes
-									$query2 = "SELECT * FROM costumes ORDER BY costume";
-									// Amount of costumes
-									$c = 0;
-									if ($result2 = mysqli_query($conn, $query2))
-									{
-										while ($db2 = mysqli_fetch_object($result2))
+										else
 										{
-											if($c == 0)
-											{
-												echo '<option value="99999">Select a costume...</option>';
-											}
-
-											// Display costume
-											echo '<option value="'.$db2->id.'">'.$db2->costume.'</option>';
-
-											$c++;
+											echo '
+												<option value="5">Request to attend (Pending)</option>';								
 										}
-									}
 
-									echo '
-									</select>
-									
-									<br />
-									<br />
+										echo '
+										</select>
 
-									<input type="submit" value="Submit!" name="submitSignUp" />
-								</form>
-							</div>';
+										<p>Back up costume (if applicable):</p>
+
+										<select name="backupcostume" id="backupcostume">';
+
+										// Display costumes
+										$query2 = "SELECT * FROM costumes ORDER BY costume";
+										// Amount of costumes
+										$c = 0;
+										if ($result2 = mysqli_query($conn, $query2))
+										{
+											while ($db2 = mysqli_fetch_object($result2))
+											{
+												if($c == 0)
+												{
+													echo '<option value="99999">Select a costume...</option>';
+												}
+
+												// Display costume
+												echo '<option value="'.$db2->id.'">'.$db2->costume.'</option>';
+
+												$c++;
+											}
+										}
+
+										echo '
+										</select>
+										
+										<br />
+										<br />
+
+										<input type="submit" value="Submit!" name="submitSignUp" />
+									</form>
+								</div>';
+							}
+							else
+							{
+								echo '
+								This event is full.';
+							}
 						}
 						else
 						{
 							echo '
-							This event is full.';
+							You do not have permission to sign up for events. Please refer to the boards for assistance.';
 						}
 					}
 				}

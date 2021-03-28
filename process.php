@@ -237,7 +237,119 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 			$last_id = $conn->insert_id;
 		}
 		
-		$array = array(array('message' => $message, 'id' => $last_id));
+		$returnMessage = '
+		<h3>Edit Costume</h3>';
+
+		// Get data
+		$query = "SELECT * FROM costumes ORDER BY costume";
+
+		$i = 0;
+		if ($result = mysqli_query($conn, $query))
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				// Formatting
+				if($i == 0)
+				{
+					$returnMessage .= '
+					<form action="process.php?do=managecostumes" method="POST" name="costumeEditForm" id="costumeEditForm">
+
+					<select name="costumeIDEdit" id="costumeIDEdit">
+
+						<option value="0" SELECTED>Please select a costume...</option>';
+				}
+
+				$returnMessage .= '
+				<option value="'.$db->id.'" costumeName="'.$db->costume.'" costumeID="'.$db->id.'" costumeEra="'.$db->era.'" costumeClub="'.$db->club.'">'.$db->costume.'</option>';
+
+				// Increment
+				$i++;
+			}
+		}
+
+		if($i == 0)
+		{
+			$returnMessage .= 'No costumes to display.';
+		}
+		else
+		{
+			$returnMessage .= '
+			</select>
+
+			<div id="editCostumeList" name="editCostumeList" style="display: none;">
+
+			<b>Costume Name:</b></br />
+			<input type="text" name="costumeNameEdit" id="costumeNameEdit" />
+			
+			<b>Costume Era:</b></br />
+			<select name="costumeEraEdit" id="costumeEraEdit">
+				<option value="0">Prequel</option>
+				<option value="1" SELECTED>Original</option>
+				<option value="2">Sequel</option>
+				<option value="3">Expanded</option>
+				<option value="4">All</option>
+			</select>
+			
+			<b>Costume Club:</b></br />
+			<select name="costumeClubEdit" id="costumeClubEdit">
+				<option value="0" SELECTED>501st Legion</option>
+				<option value="1">Rebel Legion</option>
+				<option value="2">Mando Mercs</option>
+				<option value="3">Droid Builders</option>
+				<option value="4">Rebel + 501st</option>
+				<option value="5">Other</option>
+				<option value="6">All</option>
+			</select>
+
+			<input type="submit" name="submitEditCostume" id="submitEditCostume" value="Edit Costume" />
+
+			</div>
+			</form>';
+		}
+		
+		$returnMessage .= '
+		<br />
+		<hr />
+		<br />
+		
+		<h3>Delete Costume</h3>';
+
+		// Get data
+		$query = "SELECT * FROM costumes ORDER BY costume";
+
+		$i = 0;
+		if ($result = mysqli_query($conn, $query))
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				// Formatting
+				if($i == 0)
+				{
+					$returnMessage .= '
+					<form action="process.php?do=managecostumes" method="POST" name="costumeDeleteForm" id="costumeDeleteForm">
+
+					<select name="costumeID" id="costumeID">';
+				}
+
+				$returnMessage .= '<option value="'.$db->id.'">'.$db->costume.'</option>';
+
+				// Increment
+				$i++;
+			}
+		}
+
+		if($i == 0)
+		{
+			$returnMessage .= 'No costumes to display.';
+		}
+		else
+		{
+			$returnMessage .= '
+			<input type="submit" name="submitDeleteCostume" id="submitDeleteCostume" value="Delete Costume" />
+			</form>';
+		}
+		
+		$array = array(array('message' => $message, 'id' => $last_id, 'result' => $returnMessage));
 		echo json_encode($array);
 	}
 	
@@ -279,8 +391,182 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 			$conn->query("INSERT INTO awards (title, icon) VALUES ('".cleanInput($_POST['awardName'])."', '".cleanInput($_POST['awardImage'])."')");
 			$last_id = $conn->insert_id;
 		}
+		
+		$returnMessage = '<br /><hr /><br /><h3>Edit Award</h3>';
 
-		$array = array(array('message' => $message, 'id' => $last_id));
+		// Get data
+		$query = "SELECT * FROM awards ORDER BY title";
+
+		$i = 0;
+		if ($result = mysqli_query($conn, $query))
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				// Formatting
+				if($i == 0)
+				{
+					$returnMessage .= '
+					<form action="process.php?do=assignawards" method="POST" name="awardEdit" id="awardEdit">
+
+					<select name="awardIDEdit" id="awardIDEdit">
+
+						<option value="0" SELECTED>Please select an award...</option>';
+				}
+
+				$returnMessage .= '<option value="'.$db->id.'" awardTitle="'.$db->title.'" awardID="'.$db->id.'" awardImage="'.$db->icon.'">'.$db->title.'</option>';
+
+				// Increment
+				$i++;
+			}
+		}
+
+		if($i == 0)
+		{
+			$returnMessage .= 'No awards to display.';
+		}
+		else
+		{
+			$returnMessage .= '
+			</select>
+
+			<div id="editAwardList" name="editAwardList" style="display: none;">
+
+			<b>Award Title:</b><br />
+			<input type="text" name="editAwardTitle" id="editAwardTitle" />
+
+			<br /><b>Award Image:</b><br />
+			<input type="text" name="editAwardImage" id="editAwardImage" />
+
+			<br />
+
+			<input type="submit" name="submitEditAward" id="submitEditAward" value="Edit Award" />
+
+			</div>
+			</form>';
+		}
+
+		$returnMessage .= '<br /><hr /><br /><h3>Delete Award</h3>';
+
+		// Get data
+		$query = "SELECT * FROM awards ORDER BY title";
+
+		$i = 0;
+		if ($result = mysqli_query($conn, $query))
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				// Formatting
+				if($i == 0)
+				{
+					$returnMessage .= '
+					<form action="process.php?do=assignawards" method="POST" name="awardUserDelete" id="awardUserDelete">
+
+					<select name="awardID" id="awardID">';
+				}
+
+				$returnMessage .= '<option value="'.$db->id.'">'.$db->title.'</option>';
+
+				// Increment
+				$i++;
+			}
+		}
+
+		if($i == 0)
+		{
+			$returnMessage .= 'No awards to display.';
+		}
+		else
+		{
+			$returnMessage .= '
+			<input type="submit" name="submitDeleteAward" id="submitDeleteAward" value="Delete Award" />
+			</form>';
+		}
+		
+		$returnMessage2 = '';
+		
+		// Get data
+		$query = "SELECT * FROM troopers WHERE approved = 1 ORDER BY name";
+
+		// Amount of users
+		$i = 0;
+		$getId = 0;
+
+		if ($result = mysqli_query($conn, $query))
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				// Formatting
+				if($i == 0)
+				{
+					$getId = $db->id;
+
+					$returnMessage2 .= '
+					<form action="process.php?do=assignawards" method="POST" name="awardUser" id="awardUser">
+
+					<select name="userIDAward" id="userIDAward">';
+				}
+
+					$returnMessage2 .= '<option value="'.$db->id.'">'.$db->name.'</option>';
+
+				// Increment
+				$i++;
+			}
+		}
+
+		// If no events
+		if($i == 0)
+		{
+				$returnMessage2 .= 'There are no troopers to display.';
+		}
+		else
+		{
+				$returnMessage2 .= '
+			</select>
+
+			<br /><br />';
+
+			// Get data
+			$query2 = "SELECT * FROM awards ORDER BY title";
+
+			// Amount of awards
+			$j = 0;
+
+			if ($result2 = mysqli_query($conn, $query2))
+			{
+				while ($db = mysqli_fetch_object($result2))
+				{
+					// Formatting
+					if($j == 0)
+					{
+						$getId = $db->id;
+
+							$returnMessage2 .= '<select id="awardIDAssign" name="awardIDAssign">';
+					}
+
+						$returnMessage2 .= '<option value="'.$db->id.'">'.$db->title.'</option>';
+
+					// Increment $j
+					$j++;
+				}
+			}
+
+			// If awards exist
+			if($j > 0)
+			{
+					$returnMessage2 .= '
+				</select>
+
+				<input type="submit" name="award" id="award" value="Assign!" />';
+			}
+			else
+			{
+					$returnMessage2 .= 'No awards to display.';
+			}
+		}
+
+		$returnMessage2 .= '</form>';
+
+		$array = array(array('message' => $message, 'id' => $last_id, 'result' => $returnMessage, 'result2' => $returnMessage2));
 		echo json_encode($array);
 	}
 

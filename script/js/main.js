@@ -950,8 +950,8 @@ $(document).ready(function()
 	
 	/************ COSTUME *******************/
 	
-	// Award Edit Select Change
-	$("#costumeIDEdit").on("change", function()
+	// Costume Edit Select Change
+	$("body").on("change", "#costumeIDEdit", function(e)
 	{
 		// If click please select, hide list
 		if($("#costumeIDEdit :selected").val() == 0)
@@ -968,7 +968,7 @@ $(document).ready(function()
 		$("#costumeClubEdit").val($("#costumeIDEdit :selected").attr("costumeClub"));
 	});
 	
-	$("#submitEditCostume").button().click(function(e)
+	$("body").on("click", "#submitEditCostume", function(e)
 	{
 		e.preventDefault();
 
@@ -1005,7 +1005,7 @@ $(document).ready(function()
 		}
 	})
 
-	$("#addCostumeButton").button().click(function(e)
+	$("body").on("click", "#addCostumeButton", function(e)
 	{
 		e.preventDefault();
 
@@ -1032,6 +1032,12 @@ $(document).ready(function()
 					$("#costumeName").val("");
 					$("#costumeEra").val("1");
 					$("#costumeClub").val("0");
+					
+					if($("#costumeID option").length <= 1)
+					{
+						// Populate result
+						$("#costumearea").html(json[0].result);
+					}
 
 					// Alert to success
 			  		alert(json[0].message);
@@ -1040,7 +1046,7 @@ $(document).ready(function()
 		}
 	})
 	
-	$("#submitDeleteCostume").button().click(function(e)
+	$("body").on("click", "#submitDeleteCostume", function(e)
 	{
 		e.preventDefault();
 
@@ -1069,13 +1075,14 @@ $(document).ready(function()
 			  		// Show message if empty
 			  		if($("#costumeID").has("option").length <= 0)
 			  		{
-			  			$("#costumeDeleteForm").hide();
+			  			$("#costumeDeleteForm").html("No costume to display.");
+						
 			  		}
 					
 			  		// Show message if empty - edit
-			  		if($("#costumeIDEdit").has("option").length <= 0)
+			  		if($("#costumeIDEdit").has("option").length <= 1)
 			  		{
-			  			$("#costumeEditForm").hide();
+			  			$("#costumeEditForm").html("No costume to display.");
 			  		}
 				}
 			});
@@ -1083,7 +1090,7 @@ $(document).ready(function()
 	  		// Show message if empty
 	  		if($("#costumeID").has("option").length <= 0)
 	  		{
-	  			$("#costumeDeleteForm").hide();
+	  			$("#costumeDeleteForm").html("No costume to display.");
 	  		}
 		}
 	})
@@ -1091,7 +1098,7 @@ $(document).ready(function()
 	/************ AWARD ********************/
 
 	// Award Edit Select Change
-	$("#awardIDEdit").on("change", function()
+	$("body").on("change", "#awardIDEdit", function(e)
 	{
 		// If click please select, hide list
 		if($("#awardIDEdit :selected").val() == 0)
@@ -1107,7 +1114,7 @@ $(document).ready(function()
 		$("#editAwardImage").val($("#awardIDEdit :selected").attr("awardImage"));
 	});
 
-	$("#submitEditAward").button().click(function(e)
+	$("body").on("click", "#submitEditAward", function(e)
 	{
 		e.preventDefault();
 
@@ -1126,6 +1133,7 @@ $(document).ready(function()
 				{
 					// Change values for delete form
 					$("#awardID").children("option[value='" + $("#awardIDEdit :selected").val() + "']").text($("#editAwardTitle").val());
+					$("#awardIDAssign").children("option[value='" + $("#awardIDEdit :selected").val() + "']").text($("#editAwardTitle").val());
 					
 					// Change values in edit form select
 					$("#awardIDEdit :selected").text($("#editAwardTitle").val());
@@ -1143,7 +1151,7 @@ $(document).ready(function()
 		}
 	})
 
-	$("#submitAwardAdd").button().click(function(e)
+	$("body").on("click", "#submitAwardAdd", function(e)
 	{
 		e.preventDefault();
 
@@ -1168,12 +1176,19 @@ $(document).ready(function()
 
 					// Alert to success
 			  		alert(json[0].message);
+					
+					if($("#awardID option").length <= 1)
+					{
+						// Populate result
+						$("#awardarea").html(json[0].result);
+						$("#assignarea").html(json[0].result2);
+					}
 				}
 			});
 		}
 	})
 
-	$("#award").button().click(function(e)
+	$("body").on("click", "#award", function(e)
 	{
 		e.preventDefault();
 
@@ -1199,7 +1214,7 @@ $(document).ready(function()
 		}
 	})
 
-	$("#submitDeleteAward").button().click(function(e)
+	$("body").on("click", "#submitDeleteAward", function(e)
 	{
 		e.preventDefault();
 
@@ -1228,13 +1243,19 @@ $(document).ready(function()
 			  		// Show message if empty
 			  		if($("#awardID").has("option").length <= 0)
 			  		{
-			  			$("#awardUserDelete").hide();
+			  			$("#awardUserDelete").html("No award to display.");
 			  		}
 					
 			  		// Show message if empty - edit
-			  		if($("#awardIDEdit").has("option").length <= 0)
+			  		if($("#awardIDEdit").has("option").length <= 1)
 			  		{
-			  			$("#awardEdit").hide();
+			  			$("#awardEdit").html("No award to display.");
+			  		}
+					
+			  		// Show message if empty - assign
+			  		if($("#awardIDAssign").has("option").length <= 0)
+			  		{
+			  			$("#assignarea").html("No award to display.");
 			  		}
 				}
 			});
@@ -1242,7 +1263,7 @@ $(document).ready(function()
 	  		// Show message if empty
 	  		if($("#awardID").has("option").length <= 0)
 	  		{
-	  			$("#awardUserDelete").hide();
+	  			$("#awardUserDelete").html("No award to display.");
 	  		}
 		}
 	})

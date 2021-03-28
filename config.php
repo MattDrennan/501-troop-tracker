@@ -523,6 +523,7 @@ function isAdmin()
 }
 
 // hasPermission: Does the user have permission to access the data?
+// 0 = 501st Member, 1 = Super Admin, 2 = Squad Leader, 3 = Reserve Member, 4 = Retired Member
 function hasPermission($permissionLevel1, $permissionLevel2 = -1, $permissionLevel3 = -1, $permissionLevel4 = -1)
 {
 	global $conn;
