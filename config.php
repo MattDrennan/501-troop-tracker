@@ -497,6 +497,7 @@ function addHttp($url)
 	return $url;
 }
 
+// isAdmin: Is the user an admin or squad leader?
 function isAdmin()
 {
 	global $conn;
@@ -510,7 +511,7 @@ function isAdmin()
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				if($db->permissions == 1)
+				if($db->permissions == 1 || $db->permissions == 2)
 				{
 					$isAdmin = true;
 				}
@@ -519,6 +520,46 @@ function isAdmin()
 	}
 	
 	return $isAdmin;
+}
+
+// hasPermission: Does the user have permission to access the data?
+function hasPermission($permissionLevel1, $permissionLevel2 = -1, $permissionLevel3 = -1, $permissionLevel4 = -1)
+{
+	global $conn;
+	
+	$isAllowed = false;
+	
+	if(isset($_SESSION['id']))
+	{
+		$query = "SELECT * FROM troopers WHERE id='".$_SESSION['id']."'";
+		if ($result = mysqli_query($conn, $query))
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				if($db->permissions == $permissionLevel1)
+				{
+					$isAllowed = true;
+				}
+				
+				if($db->permissions == $permissionLevel2)
+				{
+					$isAllowed = true;
+				}
+				
+				if($db->permissions == $permissionLevel3)
+				{
+					$isAllowed = true;
+				}
+				
+				if($db->permissions == $permissionLevel4)
+				{
+					$isAllowed = true;
+				}
+			}
+		}
+	}
+	
+	return $isAllowed;
 }
 
 // Does the TK ID exist?

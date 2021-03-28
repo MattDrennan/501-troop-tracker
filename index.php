@@ -925,14 +925,19 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		<p>
 			<a href="index.php?action=commandstaff&do=createevent" class="button">Create an Event</a> 
 			<a href="index.php?action=commandstaff&do=editevent" class="button">Edit an Event</a> 
-			<a href="index.php?action=commandstaff&do=createuser" class="button">Create Trooper</a> 
-			<a href="index.php?action=commandstaff&do=managetroopers" class="button">Manage Troopers</a> 
-			<a href="index.php?action=commandstaff&do=approvetroopers" class="button" id="trooperRequestButton" name="trooperRequestButton">Approve Trooper Requests - ('.$getTrooperNotifications->num_rows.')</a> 
-			<a href="index.php?action=commandstaff&do=assignawards" class="button">Assign Awards</a>
-			<a href="index.php?action=commandstaff&do=managecostumes" class="button">Costume Management</a>
-		</p>
-
-';
+			<a href="index.php?action=commandstaff&do=managecostumes" class="button">Costume Management</a> ';
+			
+			if(hasPermission(1))
+			{
+				echo '
+				<a href="index.php?action=commandstaff&do=createuser" class="button">Create Trooper</a> 
+				<a href="index.php?action=commandstaff&do=managetroopers" class="button">Manage Troopers</a> 
+				<a href="index.php?action=commandstaff&do=approvetroopers" class="button" id="trooperRequestButton" name="trooperRequestButton">Approve Trooper Requests - ('.$getTrooperNotifications->num_rows.')</a> 
+				<a href="index.php?action=commandstaff&do=assignawards" class="button">Assign Awards</a>';
+			}
+			
+		echo '
+		</p>';
 
 		/**************************** COSTUMES *********************************/
 
@@ -1446,7 +1451,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<option value="8">Other</option>
 						</select>
 
-						<p>Do you wish for command staff to manually select people for this event?</p>
+						<p>Do you wish to lock this event?</p>
 						<select name="limitedEvent" id="limitedEvent">
 							<option value="null" SELECTED>Please choose an option...</option>
 							<option value="1">Yes</option>
@@ -1548,7 +1553,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		}
 
 		// Manage users
-		if(isset($_GET['do']) && $_GET['do'] == "managetroopers")
+		if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && hasPermission(1))
 		{
 			// If admin is visting this page from the event page
 			
@@ -1633,8 +1638,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						<p>Permissions:</p>
 						<select name="permissions" id="permissions">
-							<option value="0">No</option>
-							<option value="1">Yes</option>
+							<option value="0">501st Member</option>
+							<option value="3">Reserve Member</option>
+							<option value="4">Retired Member</option>
+							<option value="5">Handler</option>
+							<option value="2">Squad Leader</option>
+							<option value="1">Super Admin</option>
 						</select>
 
 						<p>TKID:</p>
@@ -1652,7 +1661,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		}
 
 		// Create a user
-		if(isset($_GET['do']) && $_GET['do'] == "createuser")
+		if(isset($_GET['do']) && $_GET['do'] == "createuser" && hasPermission(1))
 		{
 			// Display create user form
 			echo '
@@ -1686,12 +1695,19 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<p>Permissions:</p>
 				<select name="permissions" id="permissions">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
+					<option value="0">501st Member</option>
+					<option value="3">Reserve Member</option>
+					<option value="4">Retired Member</option>
+					<option value="5">Handler</option>
+					<option value="2">Squad Leader</option>
+					<option value="1">Super Admin</option>
 				</select>
 
 				<p>TKID:</p>
 				<input type="text" name="tkid" id="tkid" />
+				
+				<p>Password:</p>
+				<input type="text" name="password" id="password" />
 
 				<br /><br />
 
@@ -1816,7 +1832,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<option value="8">Other</option>
 				</select>
 
-				<p>Do you wish for command staff to manually select people for this event?</p>
+				<p>Do you wish to lock this event?</p>
 				<select name="limitedEvent" id="limitedEvent">
 					<option value="null" SELECTED>Please choose an option...</option>
 					<option value="1">Yes</option>
@@ -2235,9 +2251,11 @@ if(isset($_GET['event']))
 			}
 			
 			echo '
-			<br />
-			<hr />
-			<br />';
+			<div id="hr1" name="hr1">
+				<br />
+				<hr />
+				<br />
+			</div>';
 
 			// Query database for roster info
 			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attend, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' ORDER BY status";
@@ -2254,7 +2272,7 @@ if(isset($_GET['event']))
 					if($i == 0)
 					{
 						echo '
-						<div style="overflow-x: auto;">
+						<div style="overflow-x: auto;" id="signuparea1" name="signuparea1">
 						
 						<form action="process.php?do=modifysignup" method="POST" name="modifysignupForm" id="modifysignupForm">
 						
@@ -2490,15 +2508,23 @@ if(isset($_GET['event']))
 					{
 						if($eventCheck['status'] == 4)
 						{
+							$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' AND status != '4'");
+							
 							echo '
 							<div class="cancelFormArea">
 							<p>
 								<b>You have canceled this troop.</b>
-							</p>
+							</p>';
 							
-							<form action="process.php?do=undocancel" method="POST" name="undoCancelForm" id="undoCancelForm">
-								<input type="submit" name="undoCancelButton" id="undoCancelButton" value="I changed my mind" />
-							</form>
+							if($getNumOfTroopers->num_rows < $db->limitTotal)
+							{
+								echo '
+								<form action="process.php?do=undocancel" method="POST" name="undoCancelForm" id="undoCancelForm">
+									<input type="submit" name="undoCancelButton" id="undoCancelButton" value="I changed my mind" />
+								</form>';
+							}
+							
+							echo '
 							</div>
 						
 							<div name="signeduparea" id="signeduparea">
@@ -2524,87 +2550,98 @@ if(isset($_GET['event']))
 						echo '
 						<div name="signuparea" id="signuparea">
 							<h2 class="tm-section-header">Sign Up</h2>';
-
-						if($db->limitedEvent == 1)
+								
+						// Check to see if this event is full
+						$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".$db->id."' AND status != '4'");
+						
+						if($getNumOfTroopers->num_rows < $db->limitTotal)
 						{
-							echo '<b>This is a hand picked event. When you sign up, you will be placed in a pending status until command staff approves you. Please check for updates.</b>';
-						}
+							if($db->limitedEvent == 1)
+							{
+								echo '<b>This is a locked event. When you sign up, you will be placed in a pending status until command staff approves you. Please check for updates.</b>';
+							}
+							
+							echo '
+								<form action="process.php?do=signup" method="POST" name="signupForm2" id="signupForm2">
+									<input type="hidden" name="event" value="'.$_GET["event"].'" />
+									<p>What costume will you wear?</p>
+									<select name="costume">
+										<option value="null" SELECTED>Please choose an option...</option>';
 
-						echo '
-							<form action="process.php?do=signup" method="POST" name="signupForm2" id="signupForm2">
-								<input type="hidden" name="event" value="'.$_GET["event"].'" />
-								<p>What costume will you wear?</p>
-								<select name="costume">
-									<option value="null" SELECTED>Please choose an option...</option>';
+									$query3 = "SELECT * FROM costumes ORDER BY costume";
+									if ($result3 = mysqli_query($conn, $query3))
+									{
+										while ($db3 = mysqli_fetch_object($result3))
+										{
+											echo '
+											<option value="'. $db3->id .'">'.$db3->costume.'</option>';
+										}
+									}
 
-								$query3 = "SELECT * FROM costumes ORDER BY costume";
-								if ($result3 = mysqli_query($conn, $query3))
-								{
-									while ($db3 = mysqli_fetch_object($result3))
+								echo '
+									</select>
+
+									<br />
+
+									<p>Select a status:</p>
+
+									<select name="status">
+										<option value="null" SELECTED>Please choose an option...</option>';
+
+									if($db->limitedEvent != 1)
 									{
 										echo '
-										<option value="'. $db3->id .'">'.$db3->costume.'</option>';
+											<option value="0">I\'ll be there!</option>
+											<option value="1">Tentative</option>';
 									}
-								}
-
-							echo '
-								</select>
-
-								<br />
-
-								<p>Select a status:</p>
-
-								<select name="status">
-									<option value="null" SELECTED>Please choose an option...</option>';
-
-								if($db->limitedEvent != 1)
-								{
-									echo '
-										<option value="0">I\'ll be there!</option>
-										<option value="1">Tentative</option>';
-								}
-								else
-								{
-									echo '
-										<option value="5">Request to attend (Pending)</option>';								
-								}
-
-								echo '
-								</select>
-
-								<p>Back up costume (if applicable):</p>
-
-								<select name="backupcostume" id="backupcostume">';
-
-								// Display costumes
-								$query2 = "SELECT * FROM costumes ORDER BY costume";
-								// Amount of costumes
-								$c = 0;
-								if ($result2 = mysqli_query($conn, $query2))
-								{
-									while ($db2 = mysqli_fetch_object($result2))
+									else
 									{
-										if($c == 0)
-										{
-											echo '<option value="99999">Select a costume...</option>';
-										}
-
-										// Display costume
-										echo '<option value="'.$db2->id.'">'.$db2->costume.'</option>';
-
-										$c++;
+										echo '
+											<option value="5">Request to attend (Pending)</option>';								
 									}
-								}
 
-								echo '
-								</select>
-								
-								<br />
-								<br />
+									echo '
+									</select>
 
-								<input type="submit" value="Submit!" name="submitSignUp" />
-							</form>
-						</div>';
+									<p>Back up costume (if applicable):</p>
+
+									<select name="backupcostume" id="backupcostume">';
+
+									// Display costumes
+									$query2 = "SELECT * FROM costumes ORDER BY costume";
+									// Amount of costumes
+									$c = 0;
+									if ($result2 = mysqli_query($conn, $query2))
+									{
+										while ($db2 = mysqli_fetch_object($result2))
+										{
+											if($c == 0)
+											{
+												echo '<option value="99999">Select a costume...</option>';
+											}
+
+											// Display costume
+											echo '<option value="'.$db2->id.'">'.$db2->costume.'</option>';
+
+											$c++;
+										}
+									}
+
+									echo '
+									</select>
+									
+									<br />
+									<br />
+
+									<input type="submit" value="Submit!" name="submitSignUp" />
+								</form>
+							</div>';
+						}
+						else
+						{
+							echo '
+							This event is full.';
+						}
 					}
 				}
 			}
@@ -2774,7 +2811,7 @@ else
 			while ($db = mysqli_fetch_object($result))
 			{
 				// Get number of troopers at event
-				$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".$db->id."'");
+				$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".$db->id."' AND status != '4'");
 
 				echo '<div style="border: 1px solid gray; margin-bottom: 10px;">';
 
@@ -2787,6 +2824,12 @@ else
 					if($getNumOfTroopers->num_rows <= 1)
 					{
 						echo '<br /><span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
+					}
+					
+					// If full
+					if($getNumOfTroopers->num_rows >= $db->limitTotal)
+					{
+						echo '<br /><span style="color:green;"><b>THIS TROOP IS FULL!</b></span>';
 					}
 
 					$i++;
@@ -2802,6 +2845,12 @@ else
 						if($getNumOfTroopers->num_rows <= 1)
 						{
 							echo '<br /><span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
+						}
+						
+						// If full
+						if($getNumOfTroopers->num_rows >= $db->limitTotal)
+						{
+							echo '<br /><span style="color:green;"><b>THIS TROOP IS FULL!</b></span>';
 						}
 
 						$i2++;

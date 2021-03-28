@@ -2,6 +2,14 @@
 
 _03/27/2021_
 
+-Added troop full message
+-Added permission ranks and limited certain functions
+-Fixed a bug with squads in event creation
+-Improved cancelled troop. Will not show "Changed Mind" if the troop is full and it will not change the database
+-Fixed a display bug when signing up for a troop when another user is signed up
+
+_03/27/2021_
+
 -Updated "merge.php" to allow for old data to be imported at any point in the troop tracker without affecting new data. All old data will be reassigned new IDs
 -Added dates to troop tracker search
 -Fixed bug with troop tracker search, when you went to search again

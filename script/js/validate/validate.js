@@ -23,7 +23,7 @@ $(function() {
       },
       squadm: {
         required: true,
-        range: [0, 1]
+        range: [0, 5]
       },
       secure: {
         required: true,
@@ -231,7 +231,7 @@ $(function() {
       },
       squadm: {
         required: true,
-        range: [0, 1]
+        range: [0, 5]
       },
       secure: {
         required: true,
@@ -571,6 +571,8 @@ $(function() {
 
               // Do the rest...
               $("#signeduparea").show();
+			  $("#signuparea1").hide();
+			  $("#hr1").hide();
               $("#rosterTableNoData").hide();
             }
           }
@@ -647,6 +649,10 @@ $(function() {
       tkid: {
         required: true,
         digits: true
+      },
+      password: {
+        required: true,
+        minlength: 6
       }
     },
     // Specify validation error messages
@@ -655,7 +661,8 @@ $(function() {
 	  forumid: "Please enter the FL 501st Username.",
       email: "Please enter a valid e-mail address.",
       squad: "Please choose a squad.",
-      tkid: "Please enter a valid ID."
+      tkid: "Please enter a valid ID.",
+	  password: "Please enter a valid password."
     },
     // Make sure the form is submitted to the destination defined
     // in the "action" attribute of the form when valid
@@ -683,6 +690,7 @@ $(function() {
               $("#squad").val("0");
               $("#permissions").val("0");
               $("#tkid").val("");
+			  $("#password").val("");
             }
 
             // Alert to success
@@ -745,11 +753,11 @@ $(function() {
       },
       password: {
         required: true,
-        mixlength: 6
+        minlength: 6
       },
       password2: {
         required: true,
-        mixlength: 6
+        minlength: 6
       }
     },
     // Specify validation error messages
