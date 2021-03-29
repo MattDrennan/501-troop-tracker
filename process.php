@@ -1064,6 +1064,13 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		$conn->query("UPDATE events SET moneyRaised = '".cleanInput($_POST['charity'])."', closed = '1' WHERE id = '".cleanInput($_POST['eventId'])."'");
 	}
 	
+	// Event submitted for open...
+	if(isset($_POST['submitOpen']))
+	{
+		// Query the database
+		$conn->query("UPDATE events SET closed = '0' WHERE id = '".cleanInput($_POST['eventId'])."'");
+	}
+	
 	// Event submitted for completion...
 	if(isset($_POST['submitCharity']))
 	{
@@ -1288,7 +1295,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		}
 
 		// Load all users
-		$query = "SELECT troopers.id AS troopida, troopers.name AS troopername, event_sign_up.trooperid, event_sign_up.troopid AS troopid FROM troopers LEFT JOIN event_sign_up ON troopers.id = event_sign_up.trooperid WHERE event_sign_up.troopid != '".cleanInput($_POST['eventId'])."' AND troopers.id NOT IN (SELECT event_sign_up.trooperid FROM event_sign_up WHERE event_sign_up.troopid = '".cleanInput($_POST['eventId'])."') OR event_sign_up.troopid IS NULL GROUP BY troopers.id";
+		$query = "SELECT troopers.id AS troopida, troopers.name AS troopername, troopers.tkid, event_sign_up.trooperid, event_sign_up.troopid AS troopid FROM troopers LEFT JOIN event_sign_up ON troopers.id = event_sign_up.trooperid WHERE event_sign_up.troopid != '".cleanInput($_POST['eventId'])."' AND troopers.id NOT IN (SELECT event_sign_up.trooperid FROM event_sign_up WHERE event_sign_up.troopid = '".cleanInput($_POST['eventId'])."') OR event_sign_up.troopid IS NULL GROUP BY troopers.id ORDER BY troopers.name";
 
 		$i = 0;
 		if ($result = mysqli_query($conn, $query) or die($conn->error))
@@ -1308,7 +1315,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 
 				// List troopers
 				echo '
-				<option value="'.$db->troopida.'">'.$db->troopername.'</option>';
+				<option value="'.$db->troopida.'">'.$db->troopername.' - '.readTKNumber($db->tkid).'</option>';
 				$i++;
 			}
 		}

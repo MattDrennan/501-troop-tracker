@@ -948,7 +948,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<h3>Notifications</h3>';
 			
 			// Get data
-			$query = "SELECT * FROM notifications ORDER BY id ASC";
+			$query = "SELECT * FROM notifications ORDER BY id ASC LIMIT 100";
 			$i = 0;
 			if ($result = mysqli_query($conn, $query))
 			{
@@ -1403,7 +1403,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<br /><br />
 
-				<input type="submit" name="submitDelete" id="submitDelete" value="Delete" /> <input type="submit" name="submitCancel" id="submitCancel" value="Mark Canceled" /> <input type="submit" name="submitFinish" id="submitFinish" value="Mark Finished" /> <input type="submit" name="submitEdit" id="submitEdit" value="Edit" /> <input type="submit" name="submitRoster" id="submitRoster" value="Roster" /> <input type="submit" name="submitCharity" id="submitCharity" value="Set Charity Amount" />
+				<input type="submit" name="submitDelete" id="submitDelete" value="Delete" /> <input type="submit" name="submitCancel" id="submitCancel" value="Mark Canceled" /> <input type="submit" name="submitFinish" id="submitFinish" value="Mark Finished" /> <input type="submit" name="submitOpen" id="submitOpen" value="Mark Open" /> <input type="submit" name="submitEdit" id="submitEdit" value="Edit" /> <input type="submit" name="submitRoster" id="submitRoster" value="Roster" /> <input type="submit" name="submitCharity" id="submitCharity" value="Set Charity Amount" />
 
 				</form>
 
@@ -2589,16 +2589,24 @@ if(isset($_GET['event']))
 						}
 						else
 						{
-							echo '
-							<div name="signeduparea" id="signeduparea">
-								<p><b>You are signed up for this troop!</b></p>
+							if($db->closed == 0)
+							{
+								echo '
+								<div name="signeduparea" id="signeduparea">
+									<p><b>You are signed up for this troop!</b></p>
 
-								<form action="index.php" method="POST" name="cancelForm" id="cancelForm">
-									<p>Reason why you are canceling:</p>
-									<input type="text" name="cancelReason" id="cancelReason" />
-									<input type="submit" name="submitCancelTroop" id="submitCancelTroop" value="Cancel Troop" />
-								</form>
-							</div>';
+									<form action="index.php" method="POST" name="cancelForm" id="cancelForm">
+										<p>Reason why you are canceling:</p>
+										<input type="text" name="cancelReason" id="cancelReason" />
+										<input type="submit" name="submitCancelTroop" id="submitCancelTroop" value="Cancel Troop" />
+									</form>
+								</div>';
+							}
+							else
+							{
+								echo '
+								<p>This event is closed for editing.</p>';
+							}
 						}
 					}
 					else
@@ -2611,101 +2619,109 @@ if(isset($_GET['event']))
 						// Check to see if this event is full
 						$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".$db->id."' AND status != '4'");
 						
-						if(hasPermission(0, 1, 2, 3))
+						if($db->closed == 0)
 						{
-							if($getNumOfTroopers->num_rows < $db->limitTotal)
+							if(hasPermission(0, 1, 2, 3))
 							{
-								if($db->limitedEvent == 1)
+								if($getNumOfTroopers->num_rows < $db->limitTotal)
 								{
-									echo '<b>This is a locked event. When you sign up, you will be placed in a pending status until command staff approves you. Please check for updates.</b>';
-								}
-								
-								echo '
-									<form action="process.php?do=signup" method="POST" name="signupForm2" id="signupForm2">
-										<input type="hidden" name="event" value="'.$_GET["event"].'" />
-										<p>What costume will you wear?</p>
-										<select name="costume">
-											<option value="null" SELECTED>Please choose an option...</option>';
+									if($db->limitedEvent == 1)
+									{
+										echo '<b>This is a locked event. When you sign up, you will be placed in a pending status until command staff approves you. Please check for updates.</b>';
+									}
+									
+									echo '
+										<form action="process.php?do=signup" method="POST" name="signupForm2" id="signupForm2">
+											<input type="hidden" name="event" value="'.$_GET["event"].'" />
+											<p>What costume will you wear?</p>
+											<select name="costume">
+												<option value="null" SELECTED>Please choose an option...</option>';
 
-										$query3 = "SELECT * FROM costumes ORDER BY costume";
-										if ($result3 = mysqli_query($conn, $query3))
-										{
-											while ($db3 = mysqli_fetch_object($result3))
+											$query3 = "SELECT * FROM costumes ORDER BY costume";
+											if ($result3 = mysqli_query($conn, $query3))
+											{
+												while ($db3 = mysqli_fetch_object($result3))
+												{
+													echo '
+													<option value="'. $db3->id .'">'.$db3->costume.'</option>';
+												}
+											}
+
+										echo '
+											</select>
+
+											<br />
+
+											<p>Select a status:</p>
+
+											<select name="status">
+												<option value="null" SELECTED>Please choose an option...</option>';
+
+											if($db->limitedEvent != 1)
 											{
 												echo '
-												<option value="'. $db3->id .'">'.$db3->costume.'</option>';
+													<option value="0">I\'ll be there!</option>
+													<option value="1">Tentative</option>';
 											}
-										}
-
-									echo '
-										</select>
-
-										<br />
-
-										<p>Select a status:</p>
-
-										<select name="status">
-											<option value="null" SELECTED>Please choose an option...</option>';
-
-										if($db->limitedEvent != 1)
-										{
-											echo '
-												<option value="0">I\'ll be there!</option>
-												<option value="1">Tentative</option>';
-										}
-										else
-										{
-											echo '
-												<option value="5">Request to attend (Pending)</option>';								
-										}
-
-										echo '
-										</select>
-
-										<p>Back up costume (if applicable):</p>
-
-										<select name="backupcostume" id="backupcostume">';
-
-										// Display costumes
-										$query2 = "SELECT * FROM costumes ORDER BY costume";
-										// Amount of costumes
-										$c = 0;
-										if ($result2 = mysqli_query($conn, $query2))
-										{
-											while ($db2 = mysqli_fetch_object($result2))
+											else
 											{
-												if($c == 0)
-												{
-													echo '<option value="99999">Select a costume...</option>';
-												}
-
-												// Display costume
-												echo '<option value="'.$db2->id.'">'.$db2->costume.'</option>';
-
-												$c++;
+												echo '
+													<option value="5">Request to attend (Pending)</option>';								
 											}
-										}
 
-										echo '
-										</select>
-										
-										<br />
-										<br />
+											echo '
+											</select>
 
-										<input type="submit" value="Submit!" name="submitSignUp" />
-									</form>
-								</div>';
+											<p>Back up costume (if applicable):</p>
+
+											<select name="backupcostume" id="backupcostume">';
+
+											// Display costumes
+											$query2 = "SELECT * FROM costumes ORDER BY costume";
+											// Amount of costumes
+											$c = 0;
+											if ($result2 = mysqli_query($conn, $query2))
+											{
+												while ($db2 = mysqli_fetch_object($result2))
+												{
+													if($c == 0)
+													{
+														echo '<option value="99999">Select a costume...</option>';
+													}
+
+													// Display costume
+													echo '<option value="'.$db2->id.'">'.$db2->costume.'</option>';
+
+													$c++;
+												}
+											}
+
+											echo '
+											</select>
+											
+											<br />
+											<br />
+
+											<input type="submit" value="Submit!" name="submitSignUp" />
+										</form>
+									</div>';
+								}
+								else
+								{
+									echo '
+									This event is full.';
+								}
 							}
 							else
 							{
 								echo '
-								This event is full.';
+								You do not have permission to sign up for events. Please refer to the boards for assistance.';
 							}
 						}
 						else
 						{
 							echo '
-							You do not have permission to sign up for events. Please refer to the boards for assistance.';
+							<p>This event is closed for editing.</p>';
 						}
 					}
 				}
@@ -3003,7 +3019,7 @@ else
 							echo '
 							<option value="'. $db3->id .'">'.$db3->costume.'</option>';
 
-							$i++;
+							$l++;
 						}
 					}
 

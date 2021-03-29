@@ -1307,6 +1307,32 @@ $(document).ready(function()
 			});
 		}
 	})
+	
+	$("#submitOpen").button().click(function(e)
+	{
+		e.preventDefault();
+
+		var form = $("#editEvents");
+		var url = form.attr("action");
+
+		var r = confirm("Are you sure you want to open this event?");
+
+		if (r == true)
+		{
+			// AJAX
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitOpen=1",
+				success: function(data)
+				{
+					// Alert to success
+					alert("The event was opened successfully!");
+				}
+			});
+			// END AJAX
+		}
+	})
 
 	$("#submitConfirmList").button().click(function(e)
 	{
@@ -1320,7 +1346,7 @@ $(document).ready(function()
 
 		if (r == true)
 		{
-			if($("#costumeChoice").val() != "")
+			if($("#costumeChoice").val() != "" || $("#costumeChoice").val() !== undefined || $("#costumeChoice").val() !== null)
 			{
 				$.ajax({
 					type: "POST",

@@ -1,5 +1,13 @@
 **Changelog**
 
+_03/29/2021_
+
+-Limited notifications to 100
+-Ordered edit roster by name, added TKID
+-Removed bug where you could sign up for a troop without a costume
+-Fixed bug where you could cancel or sign up for a troop when the event is finished
+-Added "Mark Open" button to re-open an event
+
 _03/28/2021_
 
 -Trooper count notifications implemented
