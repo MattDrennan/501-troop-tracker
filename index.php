@@ -646,7 +646,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				$count = $troops_get->fetch_row();
 				
 				// Create an array of our count
-				$tempArray = array($db->tkid, $count[0], $db->name);
+				$tempArray = array($db->tkid, $count[0], $db->name, $db->id);
 				
 				// Push to main array
 				array_push($troopArray, $tempArray);
@@ -663,7 +663,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			// Display
 			echo '
 			<tr>
-				<td>'.readTKNumber($value[0]).' - '.$value[2].'</td>	<td>'.$value[1].'</td>
+				<td><a href="index.php?profile='.$value[3].'">'.readTKNumber($value[0]).'</a> - '.$value[2].'</td>	<td>'.$value[1].'</td>
 			</tr>';
 		}
 	}
