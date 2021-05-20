@@ -85,7 +85,7 @@ else
 			while ($db = mysqli_fetch_object($result))
 			{
 				// Insert into database
-				$conn->query("INSERT INTO troopers (name, squad, tkid, forum_id, approved) VALUES ('".$db->name."', '".getSquadID($db->squad_id)."', '".$db->tkid."', '".$db->forum_id."', 1)") or die(error_log($conn->error));
+				$conn->query("INSERT INTO troopers (name, oldid, squad, tkid, forum_id, approved) VALUES ('".$db->name."', '".$db->id."', '".getSquadID($db->squad_id)."', '".$db->tkid."', '".$db->forum_id."', 1)") or die(error_log($conn->error));
 				
 				// Update Array
 				$trooperArray[$db->id] = $conn->insert_id;
@@ -102,7 +102,7 @@ else
 				$intToDate = date("Y-m-d H:i:s", $db->date);
 				
 				// Insert into database
-				$conn->query("INSERT INTO events (name, dateStart, dateEnd, comments, squad, closed) VALUES ('".$db->title."', '".$intToDate."', '".$intToDate."', '".$db->description."', '".getSquadID($db->event_squad)."', 1)") or die(error_log($conn->error));
+				$conn->query("INSERT INTO events (name, oldid, dateStart, dateEnd, comments, squad, closed) VALUES ('".$db->title."', '".$db->id."', '".$intToDate."', '".$intToDate."', '".$db->description."', '".getSquadID($db->event_squad)."', 1)") or die(error_log($conn->error));
 				
 				// Update Array
 				$eventArray[$db->id] = $conn->insert_id;
