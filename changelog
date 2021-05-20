@@ -1,5 +1,9 @@
 **Changelog**
 
+_05/20/2021_
+
+-Added auto.php, a file that allows for the automatic conversion of old troop data to new troop data
+
 _03/29/2021_
 
 -Limited notifications to 100
