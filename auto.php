@@ -35,7 +35,6 @@ if ($conn2->connect_error)
 	trigger_error('Database connection failed: ' . $conn2->connect_error, E_USER_ERROR);
 }
 
-
 // Arrays
 $trooperArray = [];
 $eventArray = [];
@@ -52,6 +51,7 @@ $linkRecords = 0;
 $query = "SELECT * FROM troopers";
 if ($result = mysqli_query($conn2, $query))
 {
+	// Set
 	$found = false;
 	
 	while ($db = mysqli_fetch_object($result))
@@ -70,19 +70,22 @@ if ($result = mysqli_query($conn2, $query))
 				}
 			}
 		}
-	}
-	
-	// If not found
-	if(!$found)
-	{
-		// Insert into database
-		$conn->query("INSERT INTO troopers (name, squad, tkid, forum_id, approved) VALUES ('".$db->name."', '".getSquadID($db->squad_id)."', '".$db->tkid."', '".$db->forum_id."', 1)") or die(error_log($conn->error));
 		
-		// Update Array
-		$trooperArray[$db->id] = $conn->insert_id;
+		// If not found
+		if(!$found)
+		{
+			// Insert into database
+			$conn->query("INSERT INTO troopers (name, squad, tkid, forum_id, approved) VALUES ('".$db->name."', '".getSquadID($db->squad_id)."', '".$db->tkid."', '".$db->forum_id."', 1)") or die(error_log($conn->error));
+			
+			// Update Array
+			$trooperArray[$db->id] = $conn->insert_id;
+			
+			// Update records count
+			$userRecords++;
+		}
 		
-		// Update records count
-		$userRecords++;
+		// Reset
+		$found = false;
 	}
 }
 
@@ -90,6 +93,7 @@ if ($result = mysqli_query($conn2, $query))
 $query = "SELECT * FROM events";
 if ($result = mysqli_query($conn2, $query))
 {
+	// Set
 	$found = false;
 	
 	while ($db = mysqli_fetch_object($result))
@@ -108,35 +112,38 @@ if ($result = mysqli_query($conn2, $query))
 				}
 			}
 		}
-	}
-	
-	// If not found
-	if(!$found)
-	{
-		// Convert int to date
-		$intToDate = date("Y-m-d H:i:s", $db->date);
 		
-		// Insert into database
-		$conn->query("INSERT INTO events (name, dateStart, dateEnd, comments, squad, closed) VALUES ('".$db->title."', '".$intToDate."', '".$intToDate."', '".$db->description."', '".getSquadID($db->event_squad)."', 1)") or die(error_log($conn->error));
-		
-		// Update Array
-		$eventArray[$db->id] = $conn->insert_id;
-		
-		// Update ID
-		if($firstEvent == 0)
+		// If not found
+		if(!$found)
 		{
-			$firstEvent = $db->id;
+			// Convert int to date
+			$intToDate = date("Y-m-d H:i:s", $db->date);
+			
+			// Insert into database
+			$conn->query("INSERT INTO events (name, dateStart, dateEnd, comments, squad, closed) VALUES ('".$db->title."', '".$intToDate."', '".$intToDate."', '".$db->description."', '".getSquadID($db->event_squad)."', 1)") or die(error_log($conn->error));
+			
+			// Update Array
+			$eventArray[$db->id] = $conn->insert_id;
+			
+			// Update ID
+			if($firstEvent == 0)
+			{
+				$firstEvent = $db->id;
+			}
+			
+			// Update records count
+			$eventRecords++;
 		}
 		
-		// Update records count
-		$eventRecords++;
+		// Reset
+		$found = false;
 	}
 }
 
 if($firstEvent != 0)
 {
 	// Go through the event linker
-	$query = "SELECT * FROM event_linker WHERE troopid > ".$firstEvent."";
+	$query = "SELECT * FROM event_linker WHERE event_id > ".$firstEvent."";
 	if ($result = mysqli_query($conn2, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
