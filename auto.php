@@ -8,23 +8,14 @@ error_reporting(E_ALL);
 ini_set('max_execution_time', '0');
 set_time_limit(0);
 
-// DB Info - 1
-$dbServer = "localhost";
-$dbUser = "root";
-$dbPassword = "";
-$dbName = "troop";
-
-// DB Info - 2
-$dbServer2 = "localhost";
-$dbUser2 = "root";
-$dbPassword2 = "";
-$dbName2 = "troopmerge";
+// Include credential file
+require 'cred.php';
 
 // Connect to server - 1
-$conn = new mysqli($dbServer, $dbUser, $dbPassword, $dbName);
+$conn = new mysqli(dbServer, dbUser, dbPassword, dbName);
 
 // Connect to server - 2
-$conn2 = new mysqli($dbServer2, $dbUser2, $dbPassword2, $dbName2);
+$conn2 = new mysqli(dbServer2, dbUser2, dbPassword2, dbName2);
 
 // Check for errors
 // Check connection to server - 1

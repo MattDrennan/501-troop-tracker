@@ -4,6 +4,7 @@ _05/20/2021_
 
 -Added auto.php, a file that allows for the automatic conversion of old troop data to new troop data
 -Added profile links to "Troop Count Per Trooper"
+-Added cred file to any file with username or password for database
 
 _03/29/2021_
 

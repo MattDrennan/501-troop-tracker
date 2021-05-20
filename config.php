@@ -20,14 +20,8 @@ require 'cred.php';
 
 session_start();
 
-// DB Info
-$dbServer = "localhost";
-$dbUser = "root";
-$dbPassword = "";
-$dbName = "troop";
-
 // Connect to server
-$conn = new mysqli($dbServer, $dbUser, $dbPassword, $dbName);
+$conn = new mysqli(dbServer, dbUser, dbPassword, dbName);
  
 // Check connection to server
 if ($conn->connect_error)
