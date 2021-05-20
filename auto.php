@@ -57,7 +57,7 @@ if ($result = mysqli_query($conn2, $query))
 	while ($db = mysqli_fetch_object($result))
 	{
 		// Go through the users on new database
-		$query2 = "SELECT id FROM troopers WHERE forum_id = '".$db->forum_id."'";
+		$query2 = "SELECT id FROM troopers WHERE tkid = '".$db->tkid."'";
 		if ($result2 = mysqli_query($conn, $query2))
 		{
 			while ($db2 = mysqli_fetch_object($result2))
