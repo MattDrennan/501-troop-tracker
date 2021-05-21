@@ -346,6 +346,18 @@ $(document).ready(function()
 		$("#changeemail").hide();
 		$("#unsubscribe").hide();
 		$("#changepassword").hide();
+		$("#changetheme").hide();
+	});
+	
+	$("#changethemeLink").click(function(e)
+	{
+		e.preventDefault();
+		$("#changephone").hide();
+		$("#changename").hide();
+		$("#changeemail").hide();
+		$("#unsubscribe").hide();
+		$("#changepassword").hide();
+		$("#changetheme").show();
 	});
 
 	$("#changenameLink").click(function(e)
@@ -356,6 +368,7 @@ $(document).ready(function()
 		$("#changeemail").hide();
 		$("#unsubscribe").hide();
 		$("#changepassword").hide();
+		$("#changetheme").hide();
 	});
 
 	$("#changepasswordLink").click(function(e)
@@ -366,6 +379,7 @@ $(document).ready(function()
 		$("#changename").hide();
 		$("#changeemail").hide();
 		$("#unsubscribe").hide();
+		$("#changetheme").hide();
 	});
 
 	$("#changeemailLink").click(function(e)
@@ -376,6 +390,7 @@ $(document).ready(function()
 		$("#changeemail").show();
 		$("#unsubscribe").hide();
 		$("#changepassword").hide();
+		$("#changetheme").hide();
 	});
 
 	$("#unsubscribeLink").click(function(e)
@@ -386,6 +401,7 @@ $(document).ready(function()
 		$("#changeemail").hide();
 		$("#unsubscribe").show();
 		$("#changepassword").hide();
+		$("#changetheme").hide();
 	});
 
 	$("#submitDelete").button().click(function(e)

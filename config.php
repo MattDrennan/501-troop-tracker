@@ -177,12 +177,27 @@ function myEmail()
 {
 	global $conn;
 	
-	$query = "SELECT * FROM troopers WHERE id='".$_SESSION['id']."'";
+	$query = "SELECT email FROM troopers WHERE id='".$_SESSION['id']."'";
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
 			return $db->email;
+		}
+	}
+}
+
+// myTheme: gets users theme
+function myTheme()
+{
+	global $conn;
+	
+	$query = "SELECT theme FROM troopers WHERE id='".$_SESSION['id']."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			return $db->theme;
 		}
 	}
 }

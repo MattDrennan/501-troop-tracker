@@ -20,13 +20,39 @@ echo '
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600&display=swap" rel="stylesheet" />
 	
 	<!-- Main Style Sheets -->
-	<link href="fontawesome/css/all.min.css" rel="stylesheet" />
-	<link href="css/main.css" rel="stylesheet" />
+	<link href="fontawesome/css/all.min.css" rel="stylesheet" />';
 	
+	if(loggedIn())
+	{
+		if(myTheme() == 0)
+		{
+			echo '
+			<link href="css/main.css" rel="stylesheet" />
+			<link rel="stylesheet" href="css/nav.css">';
+		}
+		else if(myTheme() == 1)
+		{
+			echo '
+			<link href="css/main1.css" rel="stylesheet" />
+			<link rel="stylesheet" href="css/nav1.css">';
+		}
+		else if(myTheme() == 2)
+		{
+			echo '
+			<link href="css/main2.css" rel="stylesheet" />
+			<link rel="stylesheet" href="css/nav2.css">';
+		}
+	}
+	else
+	{
+		echo '
+		<link href="css/main.css" rel="stylesheet" />';
+	}
+	
+	echo '
 	<!-- Style Sheets -->
 	<link rel="stylesheet" href="script/lib/jquery-ui.min.css">
 	<link rel="stylesheet" href="script/lib/jquery-ui-timepicker-addon.css">
-	<link rel="stylesheet" href="css/nav.css">
 	
 	<!-- Icon -->
 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
@@ -99,6 +125,15 @@ echo '
 // Show the account page
 if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 {
+	// Theme Button Submit
+	if(isset($_POST['themeButton']))
+	{
+		$conn->query("UPDATE troopers SET theme = '".cleanInput($_POST['themeselect'])."' WHERE id = '".$_SESSION['id']."'");
+		
+		echo '<p>Your theme has been changed. Please <a href="index.php?action=account">refresh</a> the page to see the changes.</p>';
+	}
+	
+	// Account Page
 	echo '
 	<h2 class="tm-section-header">Manage Account</h2>
 
@@ -107,6 +142,7 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 	<a href="#" id="changephoneLink" class="button">Change Phone</a> 
 	<a href="#" id="changenameLink" class="button">Change Name</a> 
 	<a href="#" id="changepasswordLink" class="button">Change Password</a>
+	<a href="#" id="changethemeLink" class="button">Change Theme</a> 
 	<a href="index.php?profile='.$_SESSION['id'].'" class="button">View Your Profile</a>
 	<br /><br />
 
@@ -132,6 +168,28 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 			}
 		}
 		echo '
+		</form>
+	</div>
+	
+	<div id="changetheme" style="display:none;">
+		<h2 class="tm-section-header">Change Theme</h2>
+		<form action="index.php?action=account" method="POST" name="changethemeForm" id="changethemeForm">
+			<select name="themeselect" id="themeselect">';
+			$query = "SELECT theme FROM troopers WHERE id = '".$_SESSION['id']."'";
+
+			if ($result = mysqli_query($conn, $query) or die($conn->error))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					echo '
+					<option value="0" '.echoSelect(0, $db->theme).'>Everglades Theme (Default)</option>
+					<option value="1" '.echoSelect(1, $db->theme).'>Makaze Theme</option>
+					<option value="2" '.echoSelect(2, $db->theme).'>Florida Garrison Theme</option>';
+				}
+			}
+		echo '
+				<input type="submit" name="themeButton" id="themeButton" value="Change Theme" />
+			</select>
 		</form>
 	</div>
 
