@@ -208,6 +208,17 @@ $(document).ready(function()
 					$("#limitDroid").val(json.limitDroid);
 					$("#limitTotal").val(json.limitTotal);
 					$("#referred").val(json.referred);
+					
+					// Prevent an issue with old data, convert blank selects to have a value
+					$('select').each(function()
+					{
+						// If no value or null
+						if($(this).val() == "" || $(this).val() == null)
+						{
+							// Select
+							$(this).find('option[value="null"]').prop('selected', true);
+						}
+					});
 				}
 				else
 				{

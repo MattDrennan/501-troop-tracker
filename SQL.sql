@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: May 21, 2021 at 05:21 AM
+-- Generation Time: May 21, 2021 at 07:39 PM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -123,7 +123,7 @@ CREATE TABLE IF NOT EXISTS `events` (
   `moneyRaised` int(100) NOT NULL DEFAULT '0',
   `squad` int(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13201 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -160,7 +160,7 @@ CREATE TABLE IF NOT EXISTS `event_sign_up` (
   `attended_costume` varchar(100) NOT NULL DEFAULT '-1',
   `signuptime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=93900 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -176,6 +176,26 @@ CREATE TABLE IF NOT EXISTS `notifications` (
   `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `settings`
+--
+
+DROP TABLE IF EXISTS `settings`;
+CREATE TABLE IF NOT EXISTS `settings` (
+  `lastidtrooper` int(11) NOT NULL DEFAULT '0',
+  `lastidevent` int(11) NOT NULL DEFAULT '0',
+  `lastidlink` int(11) NOT NULL DEFAULT '0'
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `settings`
+--
+
+INSERT INTO `settings` (`lastidtrooper`, `lastidevent`, `lastidlink`) VALUES
+(0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -201,7 +221,7 @@ CREATE TABLE IF NOT EXISTS `troopers` (
   `theme` int(11) NOT NULL DEFAULT '0',
   `datecreated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1939 DEFAULT CHARSET=utf8;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

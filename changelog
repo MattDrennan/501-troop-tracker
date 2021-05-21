@@ -2,6 +2,13 @@
 
 _05/21/2021_
 
+-Improved auto.php by adding settings to database to track last added old data
+-Removed merge.php due to not needing anymore because of auto.php improvements
+-Updated SQL
+-Fixed an issue with editing old events and not showing "Please select an option..."
+
+_05/21/2021_
+
 -Added the ability to select themes
 
 _05/20/2021_

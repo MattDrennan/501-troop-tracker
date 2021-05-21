@@ -30,91 +30,86 @@ if ($conn2->connect_error)
 	trigger_error('Database connection failed: ' . $conn2->connect_error, E_USER_ERROR);
 }
 
-// Arrays
-$eventArrayOld = [];
-
 // Records added
 $userRecords = 0;
 $eventRecords = 0;
 $linkRecords = 0;
 
-// Go through the users on old database
-$query = "SELECT * FROM troopers";
-if ($result = mysqli_query($conn2, $query))
+// Start ID
+$startTrooperId = 0;
+$startEventId = 0;
+$startLinkId = 0;
+
+// Last ID
+$lastTrooperId = 0;
+$lastEventId = 0;
+$lastLinkId = 0;
+
+// Get settings
+$query = "SELECT * FROM settings";
+if ($result = mysqli_query($conn, $query))
 {
-	// Set
-	$found = false;
-	
 	while ($db = mysqli_fetch_object($result))
 	{
-		// Go through the users on new database
-		$query2 = "SELECT id FROM troopers WHERE tkid = '".$db->tkid."'";
-		if ($result2 = mysqli_query($conn, $query2))
-		{
-			while ($db2 = mysqli_fetch_object($result2))
-			{
-				// Found a match
-				$found = true;
-			}
-		}
+		// Trooper
+		$startTrooperId = $db->lastidtrooper;
+		$lastTrooperId = $db->lastidtrooper;
 		
-		// If not found
-		if(!$found)
-		{
-			// Insert into database
-			$conn->query("INSERT INTO troopers (name, oldid, squad, tkid, forum_id, approved) VALUES ('".$db->name."', '".$db->id."', '".getSquadID($db->squad_id)."', '".$db->tkid."', '".$db->forum_id."', 1)") or die(error_log($conn->error));
-			
-			// Update records count
-			$userRecords++;
-		}
+		// Event
+		$startEventId = $db->lastidevent;
+		$lastEventId = $db->lastidevent;
 		
-		// Reset
-		$found = false;
+		// Link
+		$startLinkId = $db->lastidlink;
+		$lastLinkId = $db->lastidlink;
 	}
 }
+
+// Go through the users on old database
+$query = "SELECT * FROM troopers WHERE id > ".$startTrooperId."";
+if ($result = mysqli_query($conn2, $query))
+{
+	while ($db = mysqli_fetch_object($result))
+	{
+		// Insert into database
+		$conn->query("INSERT INTO troopers (name, oldid, squad, tkid, forum_id, approved) VALUES ('".$db->name."', '".$db->id."', '".getSquadID($db->squad_id)."', '".$db->tkid."', '".$db->forum_id."', 1)") or die(error_log($conn->error));
+		
+		// Update records count
+		$userRecords++;
+		
+		// Update ID
+		$lastTrooperId = $db->id;
+	}
+}
+
+// Update last trooper id in database
+$conn->query("UPDATE settings SET lastidtrooper = '".$lastTrooperId."'");
 
 // Go through the old events
-$query = "SELECT * FROM events";
+$query = "SELECT * FROM events WHERE id > ".$startEventId."";
 if ($result = mysqli_query($conn2, $query))
 {
-	// Set
-	$found = false;
-	
 	while ($db = mysqli_fetch_object($result))
 	{
-		// Go through the users on new database
-		$query2 = "SELECT id FROM events WHERE name = '".$db->title."' AND dateStart = '".date("Y-m-d H:i:s", $db->date)."'";
-		if ($result2 = mysqli_query($conn, $query2))
-		{
-			while ($db2 = mysqli_fetch_object($result2))
-			{
-				$found = true;
-			}
-		}
+		// Convert int to date
+		$intToDate = date("Y-m-d H:i:s", $db->date);
 		
-		// If not found
-		if(!$found)
-		{
-			// Convert int to date
-			$intToDate = date("Y-m-d H:i:s", $db->date);
-			
-			// Insert into database
-			$conn->query("INSERT INTO events (name, oldid, dateStart, dateEnd, comments, squad, closed) VALUES ('".$db->title."', '".$db->id."', '".$intToDate."', '".$intToDate."', '".$db->description."', '".getSquadID($db->event_squad)."', 1)") or die(error_log($conn->error));
-			
-			// Update Array
-			array_push($eventArrayOld, $db->id);
-			
-			// Update records count
-			$eventRecords++;
-		}
+		// Insert into database
+		$conn->query("INSERT INTO events (name, oldid, dateStart, dateEnd, comments, squad, closed) VALUES ('".$db->title."', '".$db->id."', '".$intToDate."', '".$intToDate."', '".$db->description."', '".getSquadID($db->event_squad)."', 1)") or die(error_log($conn->error));
 		
-		// Reset
-		$found = false;
+		// Update records count
+		$eventRecords++;
+		
+		// Update ID
+		$lastEventId = $db->id;
 	}
 }
 
+// Update last event id in database
+$conn->query("UPDATE settings SET lastidevent = '".$lastEventId."'");
+
 // Go through the event linker
-$query = "SELECT * FROM event_linker WHERE event_id IN (" . implode(',', $eventArrayOld) . ")";
+$query = "SELECT * FROM event_linker WHERE id > ".$startLinkId."";
 if ($result = mysqli_query($conn2, $query))
 {
 	while ($db = mysqli_fetch_object($result))
@@ -147,8 +142,14 @@ if ($result = mysqli_query($conn2, $query))
 		
 		// Update records count
 		$linkRecords++;
+		
+		// Update ID
+		$lastLinkId = $db->id;
 	}
 }
+
+// Update last trooper id in database
+$conn->query("UPDATE settings SET lastidlink = '".$lastLinkId."'");
 
 echo '
 Finished!
