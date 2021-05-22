@@ -56,7 +56,7 @@ function getSquad($address)
 	$squad = 0;
 
 	// Request
-	$geocode = file_get_contents("https://maps.google.com/maps/api/geocode/json?address=".urlencode($address)."&sensor=false&key=AIzaSyBXGfnJb3XBBfP7we-S65uPOWP7AFcUDWA");
+	$geocode = file_get_contents("https://maps.google.com/maps/api/geocode/json?address=".urlencode($address)."&sensor=false&key=".googleKey."");
     $output = json_decode($geocode);
 
     // Get Data

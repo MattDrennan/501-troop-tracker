@@ -1,5 +1,9 @@
 **Changelog**
 
+_05/22/2021_
+
+-Removed Google Key
+
 _05/21/2021_
 
 -Improved auto.php by adding settings to database to track last added old data
