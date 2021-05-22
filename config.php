@@ -626,7 +626,7 @@ function sendEmail($SendTo, $Name, $Subject, $Message)
 	$mail = new PHPMailer(TRUE);
 
 	/* Set the mail sender. */
-	$mail->setFrom('noreply@trooptracking.com', 'Troop Tracker');
+	$mail->setFrom(emailUser, 'Troop Tracker');
 
 	/* Add a recipient. */
 	$mail->addAddress($SendTo, $Name);
@@ -635,7 +635,7 @@ function sendEmail($SendTo, $Name, $Subject, $Message)
 	$mail->isSMTP();
 
 	/* SMTP server address. */
-	$mail->Host = 'sub5.mail.dreamhost.com';
+	$mail->Host = emailServer;
 
 	/* Use SMTP authentication. */
 	$mail->SMTPAuth = TRUE;
@@ -644,13 +644,13 @@ function sendEmail($SendTo, $Name, $Subject, $Message)
 	$mail->SMTPSecure = 'tls';
 
 	/* SMTP authentication username. */
-	$mail->Username = 'noreply@trooptracking.com';
+	$mail->Username = emailUser;
 
 	/* SMTP authentication password. */
-	$mail->Password = ePassword;
+	$mail->Password = emailPassword;
 
 	/* Set the SMTP port. */
-	$mail->Port = 587;
+	$mail->Port = emailPort;
 
 	/* Set the subject. */
 	$mail->Subject = $Subject;
