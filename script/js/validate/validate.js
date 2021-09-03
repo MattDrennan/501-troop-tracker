@@ -165,7 +165,7 @@ $(function() {
       },
       permissions: {
         required: true,
-        range: [0, 1]
+        range: [0, 2]
       },
       tkid: {
         required: true,
