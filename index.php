@@ -2330,7 +2330,7 @@ if(isset($_GET['event']))
 				<p><b>Is parking available:</b> '.yesNo($db->parking).'</p>
 				<p><b>Is venue accessible to those with limited mobility:</b> '.yesNo($db->mobility).'</p>
 				<p><b>Amenities available at venue:</b> '.$db->amenities.'</p>
-				<p><b>Comments:</b> '.$db->comments.'</p>
+				<p><b>Comments:</b><br />'.nl2br($db->comments).'</p>
 				<p><b>Referred by:</b> '.$db->referred.'</p>';
 			
 				// If this event is limited to era
