@@ -92,7 +92,7 @@ echo '
 <div class="topnav" id="myTopnav">
 <a href="index.php" '.isPageActive("home").'>Home</a>';
 
-if(!isWebsiteClosed() && !isAdmin())
+if(!isWebsiteClosed() || isAdmin())
 {
 	echo '
 	<a href="index.php?action=trooptracker" '.isPageActive("trooptracker").'>Troop Tracker</a>';
@@ -102,7 +102,7 @@ if(!isWebsiteClosed() && !isAdmin())
 if(!loggedIn())
 {
 	// If sign ups are not closed
-	if(!isSignUpClosed() &&!isWebsiteClosed())
+	if(!isSignUpClosed() || !isWebsiteClosed())
 	{
 		echo '
 		<a href="index.php?action=requestaccess" '.isPageActive("requestaccess").'>Request Access</a>
@@ -765,7 +765,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				else if(($_POST['squad'] >= 1 && $_POST['squad'] <= 5))
 				{
 					// Get troop counts - 501st
-					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume))") or die($conn->error);
+					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR EXISTS(SELECT events.id, events.oldid FROM events WHERE events.oldid != 0 AND events.id = event_sign_up.troopid))") or die($conn->error);
 					$count = $troops_get->fetch_row();
 				}
 				
@@ -1158,7 +1158,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<h3>Notifications</h3>';
 			
 			// Get data
-			$query = "SELECT * FROM notifications ORDER BY id ASC LIMIT 100";
+			$query = "SELECT * FROM notifications ORDER BY id DESC LIMIT 100";
 			$i = 0;
 			if ($result = mysqli_query($conn, $query))
 			{
@@ -3196,6 +3196,8 @@ else
 						if($i > 0)
 						{
 							echo '
+							<br />
+							<hr />
 							<div name="confirmArea" id="confirmArea">
 							<h2 class="tm-section-header">Confirm Troops</h2>
 							<form action="process.php?do=confirmList" method="POST" name="confirmListForm" id="confirmListForm">

@@ -176,6 +176,48 @@ function loggedIn()
 	return false;
 }
 
+// checkTroopCounts: Checks the troop counts, and puts the information into notifications
+function checkTroopCounts($count, $message, $trooperid)
+{
+	global $conn;
+	
+	// Counts to check
+	$counts = [1, 10, 25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 501];
+	
+	// Search notifications for previous notifications, so we don't duplicate
+	$query = "SELECT * FROM notifications WHERE trooperid='".$trooperid."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			foreach($counts as $value)
+			{
+				if(str_contains($db->message, $value))
+				{
+					// Find in array
+					$pos = array_search($value, $counts);
+					
+					// Remove from array
+					unset($counts[$pos]);
+				}
+			}
+		}
+	}
+	
+	// Loop through remaining counts to check
+	foreach($counts as $value)
+	{
+		if($count >= $value)
+		{
+			// Replace [COUNT] with actual count
+			$tempMessage = $message;
+			$tempMessage = str_replace("[COUNT]", $value, $tempMessage);
+			
+			$conn->query("INSERT INTO notifications (message, trooperid) VALUES ('".cleanInput($tempMessage)."', '".cleanInput($trooperid)."')");
+		}
+	}
+}
+
 // myEmail: gets users email
 function myEmail()
 {

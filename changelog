@@ -2,6 +2,12 @@
 
 _09/08/2021_
 
+-Added: Function checkTroopCounts() which adds a notification based on troop counts for command staff
+-Added: Improved notifications
+-Improved: Added a subquery to 501st queries to get old data for troop tracker
+
+_09/08/2021_
+
 -Changed "No one has attended a troop" to "Noone has attended a troop recently"
 -"Troop Count Per Trooper" now searches for troops by costume worn per request
 -Costume Add Tool now puts all 501st costumes to 501st costume instead of all
