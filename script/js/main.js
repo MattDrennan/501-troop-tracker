@@ -87,6 +87,62 @@ $(document).ready(function()
 		}
 	})
 	
+	// Change Site Settings - Close Website
+	$("#submitCloseSite").button().click(function(e)
+	{
+		e.preventDefault();
+
+		var form = $("#changeSettingsForm");
+		var url = form.attr("action");
+
+		$.ajax({
+			type: "POST",
+			url: url,
+			data: form.serialize()  + "&submitCloseSite=1",
+			success: function(data)
+			{
+				if($("#submitCloseSite").prop("value") == "Close Website")
+				{
+					$("#submitCloseSite").prop("value", "Open Website");
+				}
+				else
+				{
+					$("#submitCloseSite").prop("value", "Close Website");
+				}
+				
+				alert("Changes submitted!");
+			}
+		});
+	})
+	
+	// Change Site Settings - Close Sign Ups
+	$("#submitCloseSignUps").button().click(function(e)
+	{
+		e.preventDefault();
+
+		var form = $("#changeSettingsForm");
+		var url = form.attr("action");
+
+		$.ajax({
+			type: "POST",
+			url: url,
+			data: form.serialize() + "&submitCloseSignUps=1",
+			success: function(data)
+			{
+				if($("#submitCloseSignUps").prop("value") == "Close Sign Ups")
+				{
+					$("#submitCloseSignUps").prop("value", "Open Sign Ups");
+				}
+				else
+				{
+					$("#submitCloseSignUps").prop("value", "Close Sign Ups");
+				}
+				
+				alert("Changes submitted!");
+			}
+		});
+	})
+	
 	// Modify sign up submit button
 	$("#submitModifySignUp").button().click(function(e)
 	{
@@ -1471,10 +1527,9 @@ $(document).ready(function()
 		var textArray = text.split(":");
 
 		// Event Title
-		var eventTitle = textArray.indexOf("Event Name");
-		eventTitle = textArray[eventTitle + 1].split("n");
-		eventTitle[0] = eventTitle[0].slice(1);
-		$("#eventName").val(eventTitle);
+		var eventTitle = textArray.indexOf("Event Name");	
+		eventTitle = textArray[eventTitle + 1].split("\n");
+		$("#eventName").val(eventTitle[0]);
 
 		// Event Venue
 		var eventVenue = textArray[2].split("Venue address");
@@ -1482,15 +1537,21 @@ $(document).ready(function()
 
 		// Event Location
 		var eventLocation = textArray[3].split("Event Start");
-		eventLocation[0] = eventLocation[0].replace(/[rn]+/g, " ");
+		eventLocation[0] = eventLocation[0].replace(/\n/g, " ");
 		$("#location").val(eventLocation[0].slice(1));
 
 		// Event Time ISSUE WITH : in time need to fix
 		var eventTime = textArray[4].slice(1) + ":" + textArray[5].split("Event End")[0];
+		eventTime = eventTime.split("-");
+		eventTime = eventTime[0] + eventTime[1];
+		eventTime = moment(new Date(eventTime)).format('MM/DD/YYYY HH:mm');
 		$("#datepicker").val(eventTime);
 
 		// Event Time 2
 		var eventTime2 = textArray[6].slice(1) + ":" + textArray[7].split("Event Website")[0];
+		eventTime2 = eventTime2.split("-");
+		eventTime2 = eventTime2[0] + eventTime2[1];
+		eventTime2 = moment(new Date(eventTime2)).format('MM/DD/YYYY HH:mm');
 		$("#datepicker2").val(eventTime2);
 
 		// Website

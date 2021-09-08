@@ -935,7 +935,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			if($idcheck->num_rows > 0)
 			{
 				$failed = true;
-				echo '<li>TKID is taken.</li>';
+				echo '<li>TKID is taken. If you have troops on the old troop tracker, <a href="index.php?action=setup">click here to request access</a>.</li>';
 			}
 
 			// Verify passwords
@@ -980,6 +980,50 @@ if(isset($_GET['do']) && $_GET['do'] == "getlocation" && loggedIn() && isAdmin()
 	{
 		$array = array('squad' => getSquad($_POST['location']));
 		echo json_encode($array);
+	}
+}
+
+// Edit Settings
+if(isset($_GET['do']) && $_GET['do'] == "changesettings" && loggedIn() && isAdmin())
+{
+	$query = "SELECT * FROM settings LIMIT 1";
+	
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Close site button pressed
+			if(isset($_POST['submitCloseSite']))
+			{
+				// If site closed, show button
+				if($db->siteclosed == 0)
+				{
+					// Close website button
+					$conn->query("UPDATE settings SET siteclosed = '1'");
+				}
+				else
+				{
+					// Open website button
+					$conn->query("UPDATE settings SET siteclosed = '0'");
+				}
+			}
+			
+			// Close site button pressed
+			if(isset($_POST['submitCloseSignUps']))
+			{
+				// If sign up closed, show button
+				if($db->signupclosed == 0)
+				{
+					// Close sign up button
+					$conn->query("UPDATE settings SET signupclosed = '1'");
+				}
+				else
+				{
+					// Open sign up button
+					$conn->query("UPDATE settings SET signupclosed = '0'");
+				}
+			}
+		}
 	}
 }
 

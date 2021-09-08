@@ -3,6 +3,10 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// Unlimited time to execute
+ini_set('max_execution_time', '0');
+set_time_limit(0);
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -570,6 +574,50 @@ function hasPermission($permissionLevel1, $permissionLevel2 = -1, $permissionLev
 	}
 	
 	return $isAllowed;
+}
+
+// isWebsiteClosed: Is the website closed?
+function isWebsiteClosed()
+{
+	global $conn;
+	
+	$isWebsiteClosed = false;
+	
+	$query = "SELECT * FROM settings LIMIT 1";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			if($db->siteclosed)
+			{
+				$isWebsiteClosed = true;
+			}
+		}
+	}
+	
+	return $isWebsiteClosed;
+}
+
+// isSignUpClosed: Are the website sign ups closed?
+function isSignUpClosed()
+{
+	global $conn;
+	
+	$isWebsiteClosed = false;
+	
+	$query = "SELECT * FROM settings LIMIT 1";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			if($db->signupclosed)
+			{
+				$isWebsiteClosed = true;
+			}
+		}
+	}
+	
+	return $isWebsiteClosed;
 }
 
 // Does the TK ID exist?

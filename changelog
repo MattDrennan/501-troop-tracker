@@ -1,5 +1,34 @@
 **Changelog**
 
+_09/08/2021_
+
+-Changed "No one has attended a troop" to "Noone has attended a troop recently"
+-"Troop Count Per Trooper" now searches for troops by costume worn per request
+-Costume Add Tool now puts all 501st costumes to 501st costume instead of all
+-Fixed "Easy Fill Tool"
+-Added disable sign up and close website options
+
+_09/07/2021_
+
+-Troop Tracker search now limits searches by costume for more accurate club troop counts
+-Fixed "search" page by adding additional clubs
+
+_09/06/2021_
+
+-Added: When a user requests access and TKID exists, suggests to request access
+
+_09/05/2021_
+
+-Suggestion Added: Line breaks are translated to breaks in HTML for better formatting.
+
+_09/03/2021_
+
+-Fixed range, would not allow to edit permissions of user.
+
+_08/23/2021_
+
+-Made a tool to add costumes from 501st and Rebel Legion site
+
 _05/22/2021_
 
 -Removed Google Key
