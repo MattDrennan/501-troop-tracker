@@ -33,6 +33,7 @@ if ($conn->connect_error)
 	trigger_error('Database connection failed: ' . $conn->connect_error, E_USER_ERROR);
 }
 
+// email_check: Checks if e-mail is verified
 function email_check()
 {
 	global $conn;
@@ -54,6 +55,7 @@ function email_check()
 	}
 }
 
+// getSquad: Gets squad by location
 function getSquad($address)
 {
 	// Squad code
@@ -174,6 +176,14 @@ function loggedIn()
 		return true;
 	}
 	return false;
+}
+
+// sendNotification: Sends a notification to the log
+function sendNotification($message, $trooperid)
+{
+	global $conn;
+	
+	$conn->query("INSERT INTO notifications (message, trooperid) VALUES ('".$message."', '".$trooperid."')");
 }
 
 // checkTroopCounts: Checks the troop counts, and puts the information into notifications
@@ -788,11 +798,11 @@ function getEra($number)
 	return $text;
 }
 
-// convertNumber: convert number to unlimited if 9999
+// convertNumber: convert number to unlimited if 500
 function convertNumber($number, $total)
 {
 	// Number is high enough return unlimited and if total is less than unlimited
-	if($number == 9999 && $total == 9999)
+	if($number == 500 && $total == 500)
 	{
 		$number = "unlimited";
 	}
@@ -993,7 +1003,7 @@ if(loggedIn())
 }
 
 // Check for events that need to be closed
-$query = "SELECT * FROM events WHERE dateEnd < NOW() - INTERVAL 5 DAY and closed = '0'";
+$query = "SELECT * FROM events WHERE dateEnd < NOW() - INTERVAL 1 DAY and closed = '0'";
 if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))

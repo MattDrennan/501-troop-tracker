@@ -693,6 +693,12 @@ $(document).ready(function()
 			{
 				// Change submit button
 				$("#edittrooper").val("Save");
+				
+				// Replace None
+				if($("#reason2" + $("input[name=trooperSelectEdit]:checked").val()).find("input").val() == "None")
+				{
+					$("#reason2" + $("input[name=trooperSelectEdit]:checked").val()).find("input").val("");
+				}
 
 				// Show Inputs for edit
 				$("#costume2" + $("input[name=trooperSelectEdit]:checked").val()).show();
@@ -713,6 +719,16 @@ $(document).ready(function()
 				$("#attendcostume1" + $("input[name=trooperSelectEdit]:checked").val()).hide();
 				$("#dateAttending" + $("input[name=trooperSelectEdit]:checked").val()).hide();
 				$("#dateAttended" + $("input[name=trooperSelectEdit]:checked").val()).hide();
+				
+				// Loop through inputs
+				$("input[name=trooperSelectEdit]").each(function( index )
+				{
+					// Disable all other input radios to prevent issues
+					if(!$(this).is(":checked"))
+					{
+						$(this).prop("disabled", true);
+					}
+				});
 			}
 			else
 			{
@@ -744,6 +760,12 @@ $(document).ready(function()
 							$("#attendcostume2" + $("input[name=trooperSelectEdit]:checked").val()).hide();
 							$("#dateAttending" + $("input[name=trooperSelectEdit]:checked").val() + "Edit").hide();
 							$("#dateAttended" + $("input[name=trooperSelectEdit]:checked").val() + "Edit").hide();
+							
+							// Set the comment back to "None" if no value
+							if($("#reason2" + $("input[name=trooperSelectEdit]:checked").val()).find("input").val() == "")
+							{
+								$("#reason2" + $("input[name=trooperSelectEdit]:checked").val()).find("input").val("None");
+							}
 
 							// Set values
 							$("#costume1" + $("input[name=trooperSelectEdit]:checked").val()).html($("#costume2" + $("input[name=trooperSelectEdit]:checked").val()).find("select :selected").text());
@@ -764,8 +786,12 @@ $(document).ready(function()
 							$("#dateAttended" + $("input[name=trooperSelectEdit]:checked").val()).show();
 
 							var json = JSON.parse(data);
+							
 							$("#dateAttending" + $("input[name=trooperSelectEdit]:checked").val()).html(json.data);
 							$("#dateAttended" + $("input[name=trooperSelectEdit]:checked").val()).html(json.data2);
+							
+							// Re-enable all input radios to prevent issues
+							$("input[name=trooperSelectEdit]").prop("disabled", false);
 
 							// Alert to success
 					  		alert("Roster updated!");

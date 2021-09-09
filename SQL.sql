@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: May 21, 2021 at 07:39 PM
+-- Generation Time: Sep 09, 2021 at 02:59 PM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS `costumes` (
 DROP TABLE IF EXISTS `events`;
 CREATE TABLE IF NOT EXISTS `events` (
   `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `oldid` int(11) NOT NULL,
+  `oldid` int(11) NOT NULL DEFAULT '0',
   `name` varchar(255) NOT NULL,
   `venue` varchar(255) DEFAULT NULL,
   `dateStart` datetime DEFAULT NULL,
@@ -123,22 +123,6 @@ CREATE TABLE IF NOT EXISTS `events` (
   `moneyRaised` int(100) NOT NULL DEFAULT '0',
   `squad` int(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13201 DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `event_comments`
---
-
-DROP TABLE IF EXISTS `event_comments`;
-CREATE TABLE IF NOT EXISTS `event_comments` (
-  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `trooperid` int(11) NOT NULL,
-  `troopid` int(10) NOT NULL,
-  `comment` text,
-  `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -153,14 +137,14 @@ CREATE TABLE IF NOT EXISTS `event_sign_up` (
   `trooperid` int(100) DEFAULT NULL,
   `troopid` int(100) NOT NULL,
   `costume` varchar(50) DEFAULT NULL,
-  `costume_backup` varchar(50) NOT NULL DEFAULT '-1',
+  `costume_backup` varchar(50) NOT NULL DEFAULT '0',
   `reason` text,
   `status` int(2) NOT NULL DEFAULT '0',
   `attend` int(2) NOT NULL DEFAULT '0',
-  `attended_costume` varchar(100) NOT NULL DEFAULT '-1',
+  `attended_costume` varchar(100) NOT NULL DEFAULT '0',
   `signuptime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=93900 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -187,15 +171,10 @@ DROP TABLE IF EXISTS `settings`;
 CREATE TABLE IF NOT EXISTS `settings` (
   `lastidtrooper` int(11) NOT NULL DEFAULT '0',
   `lastidevent` int(11) NOT NULL DEFAULT '0',
-  `lastidlink` int(11) NOT NULL DEFAULT '0'
+  `lastidlink` int(11) NOT NULL DEFAULT '0',
+  `siteclosed` int(11) NOT NULL DEFAULT '0',
+  `signupclosed` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `settings`
---
-
-INSERT INTO `settings` (`lastidtrooper`, `lastidevent`, `lastidlink`) VALUES
-(0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -221,7 +200,7 @@ CREATE TABLE IF NOT EXISTS `troopers` (
   `theme` int(11) NOT NULL DEFAULT '0',
   `datecreated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1939 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

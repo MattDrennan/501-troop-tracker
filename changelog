@@ -1,5 +1,20 @@
 **Changelog**
 
+_09/09/2021_
+
+-Added: Function sendNotification() to easily add notifications to the log
+-Added: Notifications to all command staff functions
+-Fixed: When command staff removes an event or costume, it will reset in the databases that are affected
+-Fixed: Era value got set to the wrong value after adding an event
+-For readability purposes, set costume backup to 0 instead of 9999 if not selected
+-Changed 9999 for limit counts to 500 for readability
+-Fixed: Locked events, will not allow you to edit costume after setting and fixed how to displays information
+-Removed: event_comments from database, comments table is used instead
+-Fixed: Removed a bug where "None" would save to database when editing roster
+-Minor performance improvement for roster button
+-Fixed: A bug where if command staff changed a radio box before saving, would cause errors
+-Updated: SQL
+
 _09/08/2021_
 
 -Added: Function checkTroopCounts() which adds a notification based on troop counts for command staff

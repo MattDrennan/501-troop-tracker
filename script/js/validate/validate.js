@@ -130,12 +130,12 @@ $(function() {
               $("#comments").val("");
               $("#label").val("null");
               $("#limitedEvent").val("null");
-              $("#era").val("0");
-              $("#limit501st").val("9999");
-              $("#limitRebels").val("9999");
-              $("#limitMando").val("9999");
-              $("#limitDroid").val("9999");
-			  $("#limitTotal").val("9999");
+              $("#era").val("4");
+              $("#limit501st").val("500");
+              $("#limitRebels").val("500");
+              $("#limitMando").val("500");
+              $("#limitDroid").val("500");
+			  $("#limitTotal").val("500");
               $("#referred").val("");
             }
 

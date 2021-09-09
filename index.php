@@ -1735,19 +1735,19 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						</select>
 
 						<p>Limit of 501st Troopers:</p>
-						<input type="number" name="limit501st" value="9999" id="limit501st" />
+						<input type="number" name="limit501st" value="500" id="limit501st" />
 
 						<p>Limit of Rebels:</p>
-						<input type="number" name="limitRebels" value="9999" id="limitRebels" />
+						<input type="number" name="limitRebels" value="500" id="limitRebels" />
 
 						<p>Limit of Mandos:</p>
-						<input type="number" name="limitMando" value="9999" id="limitMando" />
+						<input type="number" name="limitMando" value="500" id="limitMando" />
 
 						<p>Limit of Droid Builders:</p>
-						<input type="number" name="limitDroid" value="9999" id="limitDroid" />
+						<input type="number" name="limitDroid" value="500" id="limitDroid" />
 						
 						<p>Limit Total:</p>
-						<input type="number" name="limitTotal" value="9999" id="limitTotal" />
+						<input type="number" name="limitTotal" value="500" id="limitTotal" />
 
 						<p>Referred By:</p>
 						<input type="text" name="referred" id="referred" />
@@ -2116,19 +2116,19 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				</select>
 
 				<p>Limit of 501st Troopers:</p>
-				<input type="number" name="limit501st" value="9999" id="limit501st" />
+				<input type="number" name="limit501st" value="500" id="limit501st" />
 
 				<p>Limit of Rebels:</p>
-				<input type="number" name="limitRebels" value="9999" id="limitRebels" />
+				<input type="number" name="limitRebels" value="500" id="limitRebels" />
 
 				<p>Limit of Mandos:</p>
-				<input type="number" name="limitMando" value="9999" id="limitMando" />
+				<input type="number" name="limitMando" value="500" id="limitMando" />
 
 				<p>Limit of Droid Builders:</p>
-				<input type="number" name="limitDroid" value="9999" id="limitDroid" />
+				<input type="number" name="limitDroid" value="500" id="limitDroid" />
 				
 				<p>Limit Total:</p>
-				<input type="number" name="limitTotal" value="9999" id="limitTotal" />
+				<input type="number" name="limitTotal" value="500" id="limitTotal" />
 
 				<p>Referred By:</p>
 				<input type="text" name="referred" id="referred" />
@@ -2498,7 +2498,7 @@ if(isset($_GET['event']))
 				}
 			
 				// If this event is limited in troopers
-				if($db->limitTotal != 9999)
+				if($db->limitTotal < 500)
 				{
 					echo '
 					<br />
@@ -2574,83 +2574,101 @@ if(isset($_GET['event']))
 								
 							<td>
 								'.readTKNumber($db2->tkid).'
-							</td>
+							</td>';
 							
-							<td name="trooperRosterCostume" id="trooperRosterCostume">
-								<select name="modifysignupFormCostume" id="modifysignupFormCostume">';
+							// If not a limited event, show select boxes to change costumes
+							if($db->limitedEvent != 1)
+							{
+								echo '
+								<td name="trooperRosterCostume" id="trooperRosterCostume">
+									<select name="modifysignupFormCostume" id="modifysignupFormCostume">';
 
-								$query3 = "SELECT * FROM costumes ORDER BY costume";
-								if ($result3 = mysqli_query($conn, $query3))
-								{
-									while ($db3 = mysqli_fetch_object($result3))
+									$query3 = "SELECT * FROM costumes ORDER BY costume";
+									if ($result3 = mysqli_query($conn, $query3))
 									{
-										if($db2->costume == $db3->id)
+										while ($db3 = mysqli_fetch_object($result3))
 										{
-											// If this is the selected costume, make it selected
-											echo '
-											<option value="'. $db3->id .'" SELECTED>'.$db3->costume.'</option>';
-										}
-										else
-										{
-											// Default
-											echo '
-											<option value="'. $db3->id .'">'.$db3->costume.'</option>';
+											if($db2->costume == $db3->id)
+											{
+												// If this is the selected costume, make it selected
+												echo '
+												<option value="'. $db3->id .'" SELECTED>'.$db3->costume.'</option>';
+											}
+											else
+											{
+												// Default
+												echo '
+												<option value="'. $db3->id .'">'.$db3->costume.'</option>';
+											}
 										}
 									}
-								}
 
-								echo '
-								</select>
-							</td>
-							
-							<td name="trooperRosterBackup" id="trooperRosterBackup">
-								<select name="modiftybackupcostumeForm" id="modiftybackupcostumeForm">';
+									echo '
+									</select>
+								</td>
+								
+								<td name="trooperRosterBackup" id="trooperRosterBackup">
+									<select name="modiftybackupcostumeForm" id="modiftybackupcostumeForm">';
 
-								// Display costumes
-								$query3 = "SELECT * FROM costumes ORDER BY costume";
-								
-								// Count results
-								$c = 0;
-								
-								// Amount of costumes
-								if ($result3 = mysqli_query($conn, $query3))
-								{
-									while ($db3 = mysqli_fetch_object($result3))
+									// Display costumes
+									$query3 = "SELECT * FROM costumes ORDER BY costume";
+									
+									// Count results
+									$c = 0;
+									
+									// Amount of costumes
+									if ($result3 = mysqli_query($conn, $query3))
 									{
-										// If costume set to backup and first result
-										if($db2->costume_backup == 99999 && $c == 0)
+										while ($db3 = mysqli_fetch_object($result3))
 										{
-											echo '
-											<option value="99999" SELECTED>N/A</option>';
+											// If costume set to backup and first result
+											if($db2->costume_backup == 0 && $c == 0)
+											{
+												echo '
+												<option value="0" SELECTED>N/A</option>';
+											}
+											// Make sure this is a first result otherwise
+											else if($c == 0)
+											{
+												echo '
+												<option value="0">N/A</option>';
+											}
+											// If a costume matches
+											else if($db2->costume_backup == $db3->id)
+											{
+												echo '
+												<option value="'.$db3->id.'" SELECTED>'.$db3->costume.'</option>';
+											}
+											// Start showing costumes
+											else
+											{
+												echo '
+												<option value="'.$db3->id.'">'.$db3->costume.'</option>';
+											}
+											
+											// Increment
+											$c++;
 										}
-										// Make sure this is a first result otherwise
-										else if($c == 0)
-										{
-											echo '
-											<option value="99999">N/A</option>';
-										}
-										// If a costume matches
-										else if($db2->costume_backup == $db3->id)
-										{
-											echo '
-											<option value="'.$db3->id.'" SELECTED>'.$db3->costume.'</option>';
-										}
-										// Start showing costumes
-										else
-										{
-											echo '
-											<option value="'.$db3->id.'">'.$db3->costume.'</option>';
-										}
-										
-										// Increment
-										$c++;
 									}
-								}
 
+									echo '
+									</select>
+								</td>';
+							}
+							else
+							{
+								// This is a limited event, show costume without ability to edit
 								echo '
-								</select>
-							</td>
+								<td>
+									'.getCostume($db2->costume).'
+								</td>
+								
+								<td>
+									'.ifEmpty(getCostume($db2->costume_backup), "N/A").'
+								</td>';
+							}
 							
+							echo '
 							<td id="'.$db2->trooperId.'Status">
 							<div name="trooperRosterStatus" id="trooperRosterStatus">';
 							
@@ -2664,8 +2682,15 @@ if(isset($_GET['event']))
 								}
 								else
 								{
-									echo '
-									(Pending Command Staff Approval)';								
+									if($db2->status == 5)
+									{
+										echo '
+										(Pending Command Staff Approval)';
+									}
+									else
+									{
+										echo getStatus($db2->status);
+									}
 								}
 
 							echo '
@@ -2896,7 +2921,7 @@ if(isset($_GET['event']))
 												{
 													if($c == 0)
 													{
-														echo '<option value="99999">Select a costume...</option>';
+														echo '<option value="0">Select a costume...</option>';
 													}
 
 													// Display costume

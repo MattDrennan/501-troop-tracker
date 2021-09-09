@@ -84,7 +84,7 @@ if(isset($_GET['do']) && $_GET['do'] == "undocancel" && loggedIn())
 		
 		$backup = '
 		<select name="modiftybackupcostumeForm2" id="modiftybackupcostumeForm2">
-			<option value="99999" SELECTED>N/A</option>';
+			<option value="0" SELECTED>N/A</option>';
 
 		// Display costumes
 		$query3 = "SELECT * FROM costumes ORDER BY costume";
@@ -218,6 +218,13 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 	{
 		// Query the database
 		$conn->query("DELETE FROM costumes WHERE id = '".cleanInput($_POST['costumeID'])."'");
+		
+		// Update other databases that are affected
+		$conn->query("UPDATE event_sign_up SET attended_costume = '0' WHERE attended_costume = '".cleanInput($_POST['costumeID'])."'");
+		$conn->query("UPDATE event_sign_up SET costume_backup = '0' WHERE attended_costume = '".cleanInput($_POST['costumeID'])."'");
+		
+		// Send notification to command staff
+		sendNotification(getName($_SESSION['id']) . " has deleted costume: " . getCostume(cleanInput($_POST['costumeID'])), cleanInput($_SESSION['id']));
 	}
 	
 	// Add costume...
@@ -235,6 +242,9 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 			// Query the database
 			$conn->query("INSERT INTO costumes (costume, era, club) VALUES ('".cleanInput($_POST['costumeName'])."', '".cleanInput($_POST['costumeEra'])."', '".cleanInput($_POST['costumeClub'])."')");
 			$last_id = $conn->insert_id;
+			
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has added costume: " . cleanInput($_POST['costumeName']), cleanInput($_SESSION['id']));
 		}
 		
 		$returnMessage = '
@@ -358,6 +368,9 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 	{
 		// Query the database
 		$conn->query("UPDATE costumes SET costume = '".cleanInput($_POST['costumeNameEdit'])."', era = '".cleanInput($_POST['costumeEraEdit'])."', club = '".cleanInput($_POST['costumeClubEdit'])."' WHERE id = '".cleanInput($_POST['costumeIDEdit'])."'");
+		
+		// Send notification to command staff
+		sendNotification(getName($_SESSION['id']) . " has edited costume ID [" . cleanInput($_POST['costumeIDEdit']) . "] to " . cleanInput($_POST['costumeNameEdit']), cleanInput($_SESSION['id']));
 	}
 }
 
@@ -373,6 +386,9 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 
 		// Delete from the other database
 		$conn->query("DELETE FROM award_troopers WHERE awardid = '".cleanInput($_POST['awardID'])."'");
+		
+		// Send notification to command staff
+		sendNotification(getName($_SESSION['id']) . " has deleted award ID: " . cleanInput($_POST['awardID']), cleanInput($_SESSION['id']));
 	}
 
 	// Add award...
@@ -390,6 +406,9 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 			// Query the database
 			$conn->query("INSERT INTO awards (title, icon) VALUES ('".cleanInput($_POST['awardName'])."', '".cleanInput($_POST['awardImage'])."')");
 			$last_id = $conn->insert_id;
+			
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has added award: " . cleanInput($_POST['awardName']), cleanInput($_SESSION['id']));
 		}
 		
 		$returnMessage = '<br /><hr /><br /><h3>Edit Award</h3>';
@@ -583,6 +602,9 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 		{
 			// Query the database
 			$conn->query("INSERT INTO award_troopers (trooperid, awardid) VALUES ('".cleanInput($_POST['userIDAward'])."', '".cleanInput($_POST['awardIDAssign'])."')");
+			
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has awarded ID [" . cleanInput($_POST['awardIDAssign']) . "] to " . getName(cleanInput($_POST['userIDAward'])), cleanInput($_SESSION['id']));
 		}
 		else
 		{
@@ -597,6 +619,9 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 	{
 		// Query the database
 		$conn->query("UPDATE awards SET title = '".cleanInput($_POST['editAwardTitle'])."', icon = '".cleanInput($_POST['editAwardImage'])."' WHERE id = '".cleanInput($_POST['awardIDEdit'])."'");
+		
+		// Send notification to command staff
+		sendNotification(getName($_SESSION['id']) . " has edited award ID [" . cleanInput($_POST['awardIDEdit']) . " to " . cleanInput($_POST['editAwardTitle']), cleanInput($_SESSION['id']));
 	}
 }
 
@@ -665,6 +690,9 @@ if(isset($_GET['do']) && $_GET['do'] == "approvetroopers" && loggedIn() && isAdm
 		
 		// Query the database
 		$conn->query("DELETE FROM troopers WHERE id = '".cleanInput($_POST['userID2'])."'");
+		
+		// Send notification to command staff
+		sendNotification(getName($_SESSION['id']) . " has denied user ID [" . cleanInput($_POST['userID2']) . "]", cleanInput($_SESSION['id']));
 	}
 
 	if(isset($_POST['submitApproveUser']))
@@ -690,6 +718,9 @@ if(isset($_GET['do']) && $_GET['do'] == "approvetroopers" && loggedIn() && isAdm
 		
 		// Query the database
 		$conn->query("UPDATE troopers SET approved = 1 WHERE id = '".cleanInput($_POST['userID2'])."'");
+		
+		// Send notification to command staff
+		sendNotification(getName($_SESSION['id']) . " has approved user ID [" . cleanInput($_POST['userID2']) . "]", cleanInput($_SESSION['id']));
 	}
 }
 
@@ -701,6 +732,14 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 	{
 		// Query the database
 		$conn->query("DELETE FROM troopers WHERE id = '".cleanInput($_POST['userID'])."'");
+		
+		// Update other databases that will be affected
+		$conn->query("DELETE FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['userID'])."'");
+		$conn->query("DELETE FROM award_troopers WHERE trooperid = '".cleanInput($_POST['userID'])."'");
+		$conn->query("DELETE FROM comments WHERE trooperid = '".cleanInput($_POST['userID'])."'");
+		
+		// Send notification to command staff
+		sendNotification(getName($_SESSION['id']) . " has deleted user ID [" . cleanInput($_POST['userID']) . "]", cleanInput($_SESSION['id']));
 	}
 
 	// User submitted for edit...
@@ -736,6 +775,9 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 			{
 				// Query the database
 				$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['user'])."', email =  '".cleanInput($_POST['email'])."', phone = '".cleanInput(cleanInput($_POST['phone']))."', squad = '".cleanInput($_POST['squad'])."', permissions = '".cleanInput($_POST['permissions'])."', tkid = '".cleanInput($_POST['tkid'])."', forum_id = '".cleanInput($_POST['forumid'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'") or die($conn->error);
+				
+				// Send notification to command staff
+				sendNotification(getName($_SESSION['id']) . " has updated user ID [" . cleanInput($_POST['userIDE']) . "]", cleanInput($_SESSION['id']));
 
 				$array = array('success' => 'true', 'data' => 'User has been updated!');
 				echo json_encode($array);
@@ -769,6 +811,9 @@ if(isset($_GET['do']) && $_GET['do'] == "createuser" && loggedIn())
 			{
 				// Insert into database
 				$conn->query("INSERT INTO troopers (name, email, forum_id, phone, squad, permissions, tkid, password, approved) VALUES ('".cleanInput($_POST['name'])."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['phone'])."', '".cleanInput($_POST['squad'])."', '".cleanInput($_POST['permissions'])."', '".cleanInput($_POST['tkid'])."', '".cleanInput(md5($_POST['password']))."', 1)");
+				
+				// Send notification to command staff
+				sendNotification(getName($_SESSION['id']) . " has added a user", cleanInput($_SESSION['id']));
 
 				$array = array('success' => 'success', 'data' => 'User created!');
 				echo json_encode($array);
@@ -1042,6 +1087,9 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 			
 			// Query the database
 			$conn->query("INSERT INTO events (name, venue, dateStart, dateEnd, website, numberOfAttend, requestedNumber, requestedCharacter, secureChanging, blasters, lightsabers, parking, mobility, amenities, referred, comments, location, label, limitedEvent, limitTo, limitRebels, limit501st, limitMando, limitDroid, limitTotal, squad) VALUES ('".cleanInput($_POST['eventName'])."', '".cleanInput($_POST['eventVenue'])."', '".cleanInput($date1)."', '".cleanInput($date2)."', '".cleanInput($_POST['website'])."', '".cleanInput($_POST['numberOfAttend'])."', '".cleanInput($_POST['requestedNumber'])."', '".cleanInput($_POST['requestedCharacter'])."', '".cleanInput($_POST['secure'])."', '".cleanInput($_POST['blasters'])."', '".cleanInput($_POST['lightsabers'])."', '".cleanInput($_POST['parking'])."', '".cleanInput($_POST['mobility'])."', '".cleanInput($_POST['amenities'])."', '".cleanInput($_POST['referred'])."', '".cleanInput($_POST['comments'])."', '".cleanInput($_POST['location'])."', '".cleanInput($_POST['label'])."', '".cleanInput($_POST['limitedEvent'])."', '".cleanInput($_POST['era'])."', '".cleanInput($_POST['limitRebels'])."', '".cleanInput($_POST['limit501st'])."', '".cleanInput($_POST['limitMando'])."', '".cleanInput($_POST['limitDroid'])."', '".cleanInput($_POST['limitTotal'])."', '".cleanInput($_POST['squadm'])."')") or die($conn->error);
+			
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has added an event: [" . cleanInput($_POST['eventName']) . "]", cleanInput($_SESSION['id']));
 
 			$array = array('success' => 'success', 'data' => 'Event created!');
 			echo json_encode($array);
@@ -1063,8 +1111,18 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 	// Edit a trooper from roster
 	if(isset($_POST['submitEditRoster']))
 	{
+		// Filter out none
+		if(cleanInput($_POST['reasonVal' . $_POST['trooperSelectEdit'] . '']) == "None")
+		{
+			// Set to blank
+			$_POST['reasonVal' . $_POST['trooperSelectEdit'] . ''] = "";
+		}
+		
 		// Query the database
 		$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costumeValSelect' . $_POST['trooperSelectEdit'] . ''])."', costume_backup = '".cleanInput($_POST['costumeVal' . $_POST['trooperSelectEdit'] . ''])."', status = '".cleanInput($_POST['statusVal' . $_POST['trooperSelectEdit'] . ''])."', reason = '".cleanInput($_POST['reasonVal' . $_POST['trooperSelectEdit'] . ''])."', attend = '".cleanInput($_POST['attendVal' . $_POST['trooperSelectEdit'] . ''])."', attended_costume = '".cleanInput($_POST['attendcostumeVal' . $_POST['trooperSelectEdit'] . ''])."' WHERE trooperid = '".cleanInput($_POST['trooperSelectEdit'])."' AND troopid = '".cleanInput($_POST['eventId'])."'") or die($conn->error);
+
+		// Send notification to command staff
+		sendNotification(getName($_SESSION['id']) . " has edited event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
 
 		// Send back data
 		$array = array('success' => 'success', 'id' => $_SESSION['id']);
@@ -1078,6 +1136,9 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		{
 			// Query the database
 			$conn->query("INSERT INTO event_sign_up (trooperid, troopid, costume, costume_backup, reason, status, attended_costume) VALUES ('".cleanInput($_POST['trooperSelect'])."', '".cleanInput($_POST['troopid'])."', '".cleanInput($_POST['costume'])."', '".cleanInput($_POST['costumebackup'])."', '".cleanInput($_POST['reason'])."', '".cleanInput($_POST['status'])."', '".cleanInput($_POST['attendedcostume'])."')") or die($conn->error);
+			
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has added trooper ID [".cleanInput($_POST['trooperSelect'])."] to event ID [" . cleanInput($_POST['troopid']) . "]", cleanInput($_SESSION['id']));
 		}
 	}
 
@@ -1089,6 +1150,9 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 
 		// Delete from sign ups - event_sign_up
 		$conn->query("DELETE FROM event_sign_up WHERE troopid = '".cleanInput($_POST['eventId'])."'");
+		
+		// Send notification to command staff
+		sendNotification(getName($_SESSION['id']) . " has deleted event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
 	}
 
 	// Event submitted for cancelation...
@@ -1099,6 +1163,9 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 
 		// Delete from sign ups - event_sign_up
 		$conn->query("DELETE FROM event_sign_up WHERE troopid = '".cleanInput($_POST['eventId'])."'");
+		
+		// Send notification to command staff
+		sendNotification(getName($_SESSION['id']) . " has canceled event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
 	}
 
 	// Event submitted for completion...
@@ -1106,6 +1173,9 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 	{
 		// Query the database
 		$conn->query("UPDATE events SET moneyRaised = '".cleanInput($_POST['charity'])."', closed = '1' WHERE id = '".cleanInput($_POST['eventId'])."'");
+		
+		// Send notification to command staff
+		sendNotification(getName($_SESSION['id']) . " has finished event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
 	}
 	
 	// Event submitted for open...
@@ -1113,6 +1183,9 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 	{
 		// Query the database
 		$conn->query("UPDATE events SET closed = '0' WHERE id = '".cleanInput($_POST['eventId'])."'");
+		
+		// Send notification to command staff
+		sendNotification(getName($_SESSION['id']) . " has reopened event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
 	}
 	
 	// Event submitted for completion...
@@ -1120,6 +1193,9 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 	{
 		// Query the database
 		$conn->query("UPDATE events SET moneyRaised = '".cleanInput($_POST['charity'])."' WHERE id = '".cleanInput($_POST['eventId'])."'");
+		
+		// Send notification to command staff
+		sendNotification(getName($_SESSION['id']) . " has set charity raised to [".cleanInput($_POST['charity'])."] on event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
 	}
 
 	// Remove trooper from roster
@@ -1131,6 +1207,9 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 
 			// Query the database
 			$conn->query("DELETE FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['trooperSelectEdit'])."' AND troopid = '".cleanInput($_POST['eventId'])."'");
+			
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has removed trooper ID [".cleanInput($_POST['trooperSelectEdit'])."] on event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
 		}
 		else
 		{
@@ -1143,6 +1222,21 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 	// Roster
 	if(isset($_POST['submitRoster']))
 	{
+		// Array of costumes
+		$costumesName = array();
+		$costumesID = array();
+		
+		// Display costumes
+		$query2 = "SELECT * FROM costumes ORDER BY costume";
+		if ($result2 = mysqli_query($conn, $query2))
+		{
+			while ($db2 = mysqli_fetch_object($result2))
+			{
+				array_push($costumesID, $db2->id);
+				array_push($costumesName, $db2->costume);
+			}
+		}
+							
 		// Load users assigned to event
 		$query = "SELECT * FROM event_sign_up WHERE troopid = '".cleanInput($_POST['eventId'])."'";
 		$i = 0;
@@ -1177,23 +1271,24 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 						<div name="costume1'.$db->trooperid.'" id="costume1'.$db->trooperid.'">'.getCostume($db->costume).'</div>
 						<div name="costume2'.$db->trooperid.'" id="costume2'.$db->trooperid.'" style="display:none;">
 							<select name="costumeValSelect'.$db->trooperid.'">';
+							
+							// Array count
+							$a = 0;
 
-							// Display costumes
-							$query2 = "SELECT * FROM costumes ORDER BY costume";
-							if ($result2 = mysqli_query($conn, $query2))
+							// Display costumes	
+							foreach($costumesName as $key)
 							{
-								while ($db2 = mysqli_fetch_object($result2))
+								// Select the costume the user chose to wear
+								if($db->costume == intval($costumesID[$a]))
 								{
-									// Select the costume the user chose to wear
-									if($db->costume == $db2->id)
-									{
-										echo '<option value="'.$db2->id.'" SELECTED>'.$db2->costume.'</option>';
-									}
-									else
-									{
-										echo '<option value="'.$db2->id.'">'.$db2->costume.'</option>';
-									}
+									echo '<option value="'.$costumesID[$a].'" SELECTED>'.$key.'</option>';
 								}
+								else
+								{
+									echo '<option value="'.$costumesID[$a].'">'.$key.'</option>';
+								}
+								
+								$a++;
 							}
 
 							echo '
@@ -1207,36 +1302,38 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 
 						<select name="costumeVal'.$db->trooperid.'" id="costumeVal'.$db->trooperid.'">';
 
-						// Display costumes
-						$query2 = "SELECT * FROM costumes ORDER BY costume";
+						// Reset
+						$a = 0;
+						
 						// Count costumes
 						$c = 0;
+						
 						// Count picked
 						$p = 0;
-						if ($result2 = mysqli_query($conn, $query2))
+						
+						// Display costumes
+						foreach($costumesName as $key)
 						{
-							while ($db2 = mysqli_fetch_object($result2))
+							// Select the costume the user chose to wear
+							if($db->costume_backup == intval($costumesID[$a]))
 							{
-								// Select the costume the user chose to wear
-								if($db->costume_backup == $db2->id)
-								{
-									// The users costume
-									echo '<option value="'.$db2->costume.'" SELECTED>'.$db2->costume.'</option>';
-									$p++;
-								}
-								else
-								{
-									// Display costume
-									echo '<option value="'.$db2->id.'">'.$db2->costume.'</option>';
-								}
-
-								$c++;
+								// The users costume
+								echo '<option value="'.$costumesID[$a].'" SELECTED>'.$key.'</option>';
+								$p++;
 							}
+							else
+							{
+								// Display costume
+								echo '<option value="'.$costumesID[$a].'">'.$key.'</option>';
+							}
+
+							$c++;
+							$a++;
 						}
 
 						if($c == 0 || $p == 0)
 						{
-							echo '<option value="99999" SELECTED>None</option>';
+							echo '<option value="0" SELECTED>None</option>';
 						}
 
 						echo '
@@ -1280,35 +1377,37 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 						<div name="attendcostume2'.$db->trooperid.'" id="attendcostume2'.$db->trooperid.'" style="display:none;">
 						<select name="attendcostumeVal'.$db->trooperid.'" id="attendcostumeVal'.$db->trooperid.'">';
 
-						// Display costumes
-						$query2 = "SELECT * FROM costumes ORDER BY costume";
+						// Reset
+						$a = 0;
+						
 						// Amount of costumes
 						$c = 0;
+						
 						// Count picked
 						$p = 0;
-						if ($result2 = mysqli_query($conn, $query2))
-						{
-							while ($db2 = mysqli_fetch_object($result2))
-							{
-								if($db->attended_costume == $db2->id)
-								{
-									// The users costume
-									echo '<option value="'.$db2->id.'" SELECTED>'.$db2->costume.'</option>';
-									$p++;
-								}
-								else
-								{
-									// Display costume
-									echo '<option value="'.$db2->id.'">'.$db2->costume.'</option>';
-								}
 
-								$c++;
+						// Display costumes
+						foreach($costumesName as $key)
+						{
+							if($db->attended_costume == intval($costumesID[$a]))
+							{
+								// The users costume
+								echo '<option value="'.$costumesID[$a].'" SELECTED>'.$key.'</option>';
+								$p++;
 							}
+							else
+							{
+								// Display costume
+								echo '<option value="'.$costumesID[$a].'">'.$key.'</option>';
+							}
+
+							$c++;
+							$a++;
 						}
 
 						if($c == 0 || $p == 0)
 						{
-							echo '<option value="99999" SELECTED>None</option>';
+							echo '<option value="0" SELECTED>None</option>';
 						}
 
 						echo '
@@ -1377,15 +1476,17 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				<p>What costume are they wearing?</p>
 				<select name="costume">
 					<option value="null" SELECTED>Please choose an option...</option>';
-
-				$query2 = "SELECT * FROM costumes ORDER BY costume";
-				if ($result2 = mysqli_query($conn, $query2))
+					
+				// Reset
+				$a = 0;
+					
+				// Display costumes
+				foreach($costumesName as $key)
 				{
-					while ($db2 = mysqli_fetch_object($result2))
-					{
-						echo '
-						<option value="'. $db2->id .'">'.$db2->costume.'</option>';
-					}
+					echo '
+					<option value="'. $costumesID[$a] .'">'.$key.'</option>';
+					
+					$a++;
 				}
 
 			echo '
@@ -1394,26 +1495,27 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				<p>What is there backup costume if applicable:</p>
 
 				<select name="costumebackup" id="costumebackup">';
-
-				// Display costumes
-				$query2 = "SELECT * FROM costumes ORDER BY costume";
+				
+				// Reset
+				$a = 0;
+				
 				// Amount of costumes
 				$c = 0;
-				if ($result2 = mysqli_query($conn, $query2))
+				
+				// Display costumes
+				foreach($costumesName as $key)
 				{
-					while ($db2 = mysqli_fetch_object($result2))
+					// If first select option
+					if($c == 0)
 					{
-						// If first select option
-						if($c == 0)
-						{
-							echo '<option value="99999" SELECTED>Select a costume...</option>';
-						}
-
-						// Display costume
-						echo '<option value="'.$db2->id.'">'.$db2->costume.'</option>';
-
-						$c++;
+						echo '<option value="0" SELECTED>Select a costume...</option>';
 					}
+					
+					// Add costume
+					echo '<option value="'.$costumesID[$a].'">'.$key.'</option>';
+					
+					$a++;
+					$c++;
 				}
 
 				echo '
@@ -1473,6 +1575,9 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 
 			// Query the database
 			$conn->query("UPDATE events SET name = '".cleanInput($_POST['eventName'])."', venue =  '".cleanInput($_POST['eventVenue'])."', dateStart = '".cleanInput($date1)."', dateEnd = '".cleanInput($date2)."', website = '".cleanInput($_POST['website'])."', numberOfAttend = '".cleanInput($_POST['numberOfAttend'])."', requestedNumber = '".cleanInput($_POST['requestedNumber'])."', requestedCharacter = '".cleanInput($_POST['requestedCharacter'])."', secureChanging = '".cleanInput($_POST['secure'])."', blasters = '".cleanInput($_POST['blasters'])."', lightsabers = '".cleanInput($_POST['lightsabers'])."', parking = '".cleanInput($_POST['parking'])."', mobility = '".cleanInput($_POST['mobility'])."', amenities = '".cleanInput($_POST['amenities'])."', referred = '".cleanInput($_POST['referred'])."', comments = '".cleanInput($_POST['comments'])."', location = '".cleanInput($_POST['location'])."', squad = '".cleanInput($_POST['squadm'])."', label = '".cleanInput($_POST['label'])."', limitedEvent = '".cleanInput($_POST['limitedEvent'])."', limitTo = '".cleanInput($_POST['era'])."', limitRebels = '".cleanInput($_POST['limitRebels'])."', limit501st = '".cleanInput($_POST['limit501st'])."', limitMando = '".cleanInput($_POST['limitMando'])."', limitDroid = '".cleanInput($_POST['limitDroid'])."', limitTotal = '".cleanInput($_POST['limitTotal'])."'  WHERE id = '".cleanInput($_POST['eventIdE'])."'") or die($conn->error);
+			
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has edited event ID: [" . cleanInput($_POST['eventIdE']) . "]", cleanInput($_SESSION['id']));
 
 			$array = array('success' => 'true', 'data' => 'Event has been updated!');
 			echo json_encode($array);
@@ -1630,16 +1735,16 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 										while ($db3 = mysqli_fetch_object($result3))
 										{
 											// If costume set to backup and first result
-											if($db2->costume_backup == 99999 && $c == 0)
+											if($db2->costume_backup == 0 && $c == 0)
 											{
 												$data .= '
-												<option value="99999" SELECTED>N/A</option>';
+												<option value="0" SELECTED>N/A</option>';
 											}
 											// Make sure this is a first result otherwise
 											else if($c == 0)
 											{
 												$data .= '
-												<option value="99999">N/A</option>';
+												<option value="0">N/A</option>';
 											}
 											// If a costume matches
 											else if($db2->costume_backup == $db3->id)
