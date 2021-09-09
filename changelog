@@ -2,6 +2,10 @@
 
 _09/09/2021_
 
+-Fixed display error with sign ups closed
+
+_09/09/2021_
+
 -Added: Function sendNotification() to easily add notifications to the log
 -Added: Notifications to all command staff functions
 -Fixed: When command staff removes an event or costume, it will reset in the databases that are affected

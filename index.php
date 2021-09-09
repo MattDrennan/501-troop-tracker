@@ -101,12 +101,16 @@ if(!isWebsiteClosed() || isAdmin())
 // If not logged in
 if(!loggedIn())
 {
-	// If sign ups are not closed
-	if(!isSignUpClosed() || !isWebsiteClosed())
+	// If website is not closed
+	if(!isWebsiteClosed())
 	{
-		echo '
-		<a href="index.php?action=requestaccess" '.isPageActive("requestaccess").'>Request Access</a>
-		<a href="index.php?action=setup" '.isPageActive("setup").'>Account Setup</a>';
+		// If sign ups are not closed
+		if(!isSignUpClosed())
+		{
+			echo '
+			<a href="index.php?action=requestaccess" '.isPageActive("requestaccess").'>Request Access</a>
+			<a href="index.php?action=setup" '.isPageActive("setup").'>Account Setup</a>';
+		}
 	}
 	
 	echo '
@@ -3092,9 +3096,20 @@ else
 			if(!loggedIn())
 			{
 				echo '
-				<h2 class="tm-section-header">Welcome</h2>
+				<h2 class="tm-section-header">Welcome</h2>';
 				
-				<p style="text-align: center;">Welcome to the Florida Garrison troop tracker!<br /><br /><a href="index.php?action=requestaccess">Are you new to the Florida Garrison and/or 501st? Click here.</a><br /><br /><a href="index.php?action=setup">Have you used the old troop tracker and need to set up your account? Click here.</a></p>';
+				// If sign ups are not closed
+				if(!isSignUpClosed())
+				{
+					echo '
+					<p style="text-align: center;">Welcome to the Florida Garrison troop tracker!<br /><br /><a href="index.php?action=requestaccess">Are you new to the Florida Garrison and/or 501st? Click here.</a><br /><br /><a href="index.php?action=setup">Have you used the old troop tracker and need to set up your account? Click here.</a></p>';
+				}
+				else
+				{
+					// If sign ups are closed
+					echo '
+					<p style="text-align: center;">Sign ups are currently locked for maintenance and testing. You can view your troops <a href="index.php?action=trooptracker">here</a>.</p>';
+				}
 			}
 			
 			if(loggedIn())
