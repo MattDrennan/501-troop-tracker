@@ -2,6 +2,14 @@
 
 _09/09/2021_
 
+-Added trooper search option for roster
+-Changed wording for view event due to not always being for an event
+-Added urlencode() to view board profile URL's
+-Costume list was not showing in roster add
+-Made it so roster does not close when adding troopers due to load times
+
+_09/09/2021_
+
 -Fixed display error with sign ups closed
 
 _09/09/2021_

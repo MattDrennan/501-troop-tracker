@@ -43,6 +43,34 @@ $(document).ready(function()
 		}
 	})
 	
+	// Make contains, case insensitive
+	jQuery.expr[':'].contains = function(a, i, m)
+	{
+		return jQuery(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
+	};
+	
+	// Trooper Member Search
+	$("body").on("input", "input[id='trooperSearch']", function(e)
+	{
+		// Loop through options
+		$("#trooperSelect option").each(function(index)
+		{	
+			// If contains search query
+			if($(this).is(":contains(" + $("input[id='trooperSearch']").val() + ")"))
+			{
+				// Show and select
+				$(this).show();
+				$(this).prop('selected', true);
+			}
+			else
+			{
+				// Hide and unselect
+				$(this).hide();
+				$(this).prop('selected', false);
+			}
+		});
+	})
+	
 	// Troop Tracker Search
 	$("input[name='searchType']").click(function()
 	{

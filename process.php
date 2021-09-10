@@ -1236,6 +1236,14 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				array_push($costumesName, $db2->costume);
 			}
 		}
+		
+		// Convert to JavaScript array
+		echo '
+		<script type="text/javascript">
+
+			var jArray1 = ' . json_encode($costumesName) . ';
+			var jArray2 = ' . json_encode($costumesID) . ';
+		</script>';
 							
 		// Load users assigned to event
 		$query = "SELECT * FROM event_sign_up WHERE troopid = '".cleanInput($_POST['eventId'])."'";
@@ -1424,7 +1432,17 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		// If not users assigned
 		if($i == 0)
 		{
-			//echo 'There are no troopers assigned to this troop!';
+			echo '
+			<form action="process.php?do=editevent" method="POST" name="troopRosterForm" id="troopRosterForm" style="display: hidden;">
+				<div style="overflow-x: auto;">
+				<table border="1" name="rosterTable" id="rosterTable">
+					<tr>
+						<th>Selection</th>	<th>Trooper TKID</td>	<th>Trooper Costume</th>	<th>Trooper Backup Costume</th>	<th>Trooper Status</th>	<th>Trooper Comment</th>	<th>Trooper Attended</th>	<th>Attended With</th>
+				</table>
+				</div>
+				
+				<input type="submit" name="removetrooper" id="removetrooper" value="Remove Trooper" />	<input type="submit" name="edittrooper" id="edittrooper" value="Edit Trooper" />
+			</form>';
 		}
 		else
 		{
@@ -1451,6 +1469,10 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 					echo '
 					<form action="process.php?do=editevent" method="POST" name="troopRosterFormAdd" id="troopRosterFormAdd">
 						<input type="hidden" name="troopid" id="troopid" value="'.cleanInput($_POST['eventId']).'" />
+						
+						<br />
+						
+						Trooper Search: <input type="text" name="trooperSearch" id="trooperSearch" style="width: 50%;" />
 
 						<p>Select a trooper to add:</p>
 						<select name="trooperSelect" id="trooperSelect">';
@@ -1474,7 +1496,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				</select>
 
 				<p>What costume are they wearing?</p>
-				<select name="costume">
+				<select name="costume" id="costume">
 					<option value="null" SELECTED>Please choose an option...</option>';
 					
 				// Reset
@@ -1539,7 +1561,31 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 
 				<div id="attendBlock" name="attendBlock" style="display:none;">
 					<p>Attended event in the following costume:</p>
-					<input type="text" name="attendedcostume" id="attendedcostume" />
+					
+					<select name="attendedcostume" id="attendedcostume">';
+					
+					// Reset
+					$a = 0;
+					$c = 0;
+					
+					// Display costumes
+					foreach($costumesName as $key)
+					{
+						// If first select option
+						if($c == 0)
+						{
+							echo '<option value="0" SELECTED>Select a costume...</option>';
+						}
+						
+						// Add costume
+						echo '<option value="'.$costumesID[$a].'">'.$key.'</option>';
+						
+						$a++;
+						$c++;
+					}
+					
+					echo '
+					</select>
 				</div>
 
 				<input type="submit" name="submitAddOn" id="submitAddOn" value="Add!" />

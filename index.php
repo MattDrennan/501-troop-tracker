@@ -346,13 +346,13 @@ if(isset($_GET['profile']))
 				{
 					echo '
 					<h2 class="tm-section-header">Admin Controls</h2>
-					<p style="text-align: center;"><a href="index.php?action=commandstaff&do=managetroopers&uid='.$db->id.'">Edit/View Event in Command Staff Area</a></p>';
+					<p style="text-align: center;"><a href="index.php?action=commandstaff&do=managetroopers&uid='.$db->id.'">Edit/View in Command Staff Area</a></p>';
 				}
 				
 				echo '
 				<h2 class="tm-section-header">'.$db->name.' - '.readTKNumber($db->tkid).'</h2>
 				
-				<p style="text-align: center;"><a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un='.$db->forum_id.'" target="_blank">View Boards Profile</a></p>
+				<p style="text-align: center;"><a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un='.urlencode($db->forum_id).'" target="_blank">View Boards Profile</a></p>
 
 				<div style="overflow-x: auto;">
 				<table border="1">
