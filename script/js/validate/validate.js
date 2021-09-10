@@ -873,18 +873,34 @@ $(function() {
 					}
 				}
 				
-				string3 += '</select>';
+				string3 += '<option value="0" SELECTED>None</option>';
 				
+				string3 += '</select>';
+					
 				// Show form / table
 				$('#rosterTable').append('<tr id="roster_' + $("#trooperSelect").val() + '" name="roster_' + $("#trooperSelect").val() + '">');
 				$('#rosterTable').append('<td><input type="hidden" name="eventId" id="eventId" value = "' + $("#troopid").val() + '" /><input type="radio" name="trooperSelectEdit" id="trooperSelectEdit" value="' + $("#trooperSelect").val() + '" /></td>');
-				$('#rosterTable').append('<td><div name="tknumber1' + $("#trooperSelect").val() + '" id="tknumber1' + $("#trooperSelect").val() + '">TK NUMBER HERE</div></td>');
+				$('#rosterTable').append('<td><div name="tknumber1' + $("#trooperSelect").val() + '" id="tknumber1' + $("#trooperSelect").val() + '">' + $("#trooperSelect option:selected").attr("tkid") + '</div></td>');
 				$('#rosterTable').append('<td><div name="costume1' + $("#trooperSelect").val() + '" id="costume1' + $("#trooperSelect").val() + '">' + $("#costume option:selected").text() + '</div><div name="costume2' + $("#trooperSelect").val() + '" id="costume2' + $("#trooperSelect").val() + '" style="display:none;">' + string1 + '</div></td>');
-				$('#rosterTable').append('<td><div name="backup1' + $("#trooperSelect").val() + '" id="backup1' + $("#trooperSelect").val() + '">IF EMPTY COSTUME BACK UP</div><div name="backup2' + $("#trooperSelect").val() + '" id="backup2' + $("#trooperSelect").val() + '" style="display:none;">' + string2 + '</div></td>');
-				$('#rosterTable').append('<td><div name="status1' + $("#trooperSelect").val() + '" id="status1' + $("#trooperSelect").val() + '">GET STATUS</div><div name="status2' + $("#trooperSelect").val() + '" id="status2' + $("#trooperSelect").val() + '" style="display:none;">SELECT</div></td>');
-				$('#rosterTable').append('<td><div name="reason1' + $("#trooperSelect").val() + '" id="reason1' + $("#trooperSelect").val() + '">IF EMPTY</div><div name="reason2' + $("#trooperSelect").val() + '" id="reason2' + $("#trooperSelect").val() + '" style="display:none;"><input type="text" id="reasonVal' + $("#trooperSelect").val() + '" name="reasonVal' + $("#trooperSelect").val() + '" value="' + $("#reason").val() + '" /></div></td>');
-				$('#rosterTable').append('<td><div name="attend1' + $("#trooperSelect").val() + '" id="attend1' + $("#trooperSelect").val() + '">DID ATTEND</div><div name="attend2' + $("#trooperSelect").val() + '" id="attend2' + $("#trooperSelect").val() + '" style="display:none;"><select name="attendVal' + $("#trooperSelect").val() + '"><option value="0" ECHO SELECT>Did not attend</option><option value="1" ECHO SELECT>Attended</option></select></div></td>');
-				$('#rosterTable').append('<td><div name="attendcostume1' + $("#trooperSelect").val() + '" id="attendcostume1' + $("#trooperSelect").val() + '">IF EMPTY</div><div name="attendcostume2' + $("#trooperSelect").val() + '" id="attendcostume2' + $("#trooperSelect").val() + '" style="display:none;">' + string3 + '</div></td>');
+				$('#rosterTable').append('<td><div name="backup1' + $("#trooperSelect").val() + '" id="backup1' + $("#trooperSelect").val() + '">' + ifEmpty($("#costumebackup option:selected").text()) + '</div><div name="backup2' + $("#trooperSelect").val() + '" id="backup2' + $("#trooperSelect").val() + '" style="display:none;">' + string2 + '</div></td>');
+				$('#rosterTable').append('<td><div name="status1' + $("#trooperSelect").val() + '" id="status1' + $("#trooperSelect").val() + '">' + getStatus($("#status").val()) + '</div><div name="status2' + $("#trooperSelect").val() + '" id="status2' + $("#trooperSelect").val() + '" style="display:none;"><select name="statusVal' + $("#trooperSelect").val() + '"><option value="0">Going</option><option value="1">Stand By</option><option value="2">Tentative</option><option value="3">Attended</option><option value="4">Canceled</option><option value="5">Pending</option><option value="6">Not Picked</option></select></div></td>');
+				$('#rosterTable').append('<td><div name="reason1' + $("#trooperSelect").val() + '" id="reason1' + $("#trooperSelect").val() + '">' + ifEmpty2($("#reason").val(), "None") + '</div><div name="reason2' + $("#trooperSelect").val() + '" id="reason2' + $("#trooperSelect").val() + '" style="display:none;"><input type="text" id="reasonVal' + $("#trooperSelect").val() + '" name="reasonVal' + $("#trooperSelect").val() + '" value="' + $("#reason").val() + '" /></div></td>');
+				$('#rosterTable').append('<td><div name="attend1' + $("#trooperSelect").val() + '" id="attend1' + $("#trooperSelect").val() + '">' + didAttend($("attendVal" + $("#trooperSelect").val() + "")) + '</div><div name="attend2' + $("#trooperSelect").val() + '" id="attend2' + $("#trooperSelect").val() + '" style="display:none;"><select name="attendVal' + $("#trooperSelect").val() + '"><option value="0">Did not attend</option><option value="1" ' + echoSelect(3, $("status").val()) + '>Attended</option></select></div></td>');
+				$('#rosterTable').append('<td><div name="attendcostume1' + $("#trooperSelect").val() + '" id="attendcostume1' + $("#trooperSelect").val() + '">' + ifEmpty3($("#attendedcostume option:selected").text(), "Not Submitted") + '</div><div name="attendcostume2' + $("#trooperSelect").val() + '" id="attendcostume2' + $("#trooperSelect").val() + '" style="display:none;">' + string3 + '</div></td>');
+				$('#rosterTable').append('</tr>');
+				
+				// Select Options
+				$("select[name=statusVal" + $("#trooperSelect").val() + "]").val($("#status").val());
+				
+				// If attended, select
+				if($("#status").val() == 3)
+				{
+					$("select[name=attendVal" + $("#trooperSelect").val() + "]").val(1);
+				}
+				else
+				{
+					$("select[name=attendVal" + $("#trooperSelect").val() + "]").val(0);
+				}
 				
 				// Reset
 				$("#costume").val("null");

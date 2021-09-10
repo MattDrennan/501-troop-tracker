@@ -11,7 +11,7 @@ function myFunction() {
 	}
 }
 
-// If Empty Function
+// ifEmpty: If Empty Function
 function ifEmpty(val)
 {
 	if(val == "" || val === undefined || val === null)
@@ -22,6 +22,99 @@ function ifEmpty(val)
 	{
 		return val;
 	}
+}
+
+// ifEmpty2: If Empty Function - with custom attribute
+function ifEmpty2(val, textValue)
+{
+	if(val == "" || val === undefined || val === null)
+	{
+		return textValue;
+	}
+	else
+	{
+		return val;
+	}
+}
+
+// ifEmpty3: If Empty Function - with custom attributes
+function ifEmpty3(val, textValue)
+{
+	if(val == "" || val === undefined || val === null || val === "Select a costume...")
+	{
+		return textValue;
+	}
+	else
+	{
+		return val;
+	}
+}
+
+// didAttend: Did the trooper attend?
+function didAttend(value)
+{
+	var returnValue = "";
+
+	if(value == 3)
+	{
+		returnValue = "Attended";
+	}
+	else
+	{
+		returnValue = "Did not attend";
+	}
+
+	return returnValue;
+}
+
+// getStatus: gets status of trooper - 0 = Going, 1 = Stand by, 2 = Tentative, 3 = Attended, 4 = Canceled, 5 = Pending, 6 = Not Picked
+function getStatus(value)
+{
+	var returnValue = "";
+
+	if(value == 0)
+	{
+		returnValue = "Going";
+	}
+	else if(value == 1)
+	{
+		returnValue = "Stand By";
+	}
+	else if(value == 2)
+	{
+		returnValue = "Tentative";
+	}
+	else if(value == 3)
+	{
+		returnValue = "Attended";
+	}
+	else if(value == 4)
+	{
+		returnValue = "Canceled";
+	}
+	else if(value == 5)
+	{
+		returnValue = "Pending";
+	}
+	else if(value == 6)
+	{
+		returnValue = "Not Picked";
+	}
+
+	return returnValue;
+}
+
+// echoSelect: Selects the users set value
+function echoSelect(value1, value2)
+{
+	var returnValue = "";
+
+	if(value1 == value2)
+	{
+		returnValue = "SELECTED";
+	}
+
+	return returnValue;
 }
 
 $(document).ready(function()
@@ -702,7 +795,8 @@ $(document).ready(function()
 				{
 					var json = JSON.parse(data);
 
-					$("#roster_" + $("#trooperSelectEdit").val()).remove();
+					// Remove
+					$("#roster_" + $("input[name=trooperSelectEdit]:checked").val()).remove();
 
 					// Display message
 					alert(json.data);

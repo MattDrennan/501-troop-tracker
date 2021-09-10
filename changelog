@@ -1,5 +1,10 @@
 **Changelog**
 
+_09/10/2021_
+
+-Added ifEmpty2() JS function for a custom text value return
+-Made adjustments to roster
+
 _09/09/2021_
 
 -Added trooper search option for roster

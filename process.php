@@ -1433,7 +1433,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		if($i == 0)
 		{
 			echo '
-			<form action="process.php?do=editevent" method="POST" name="troopRosterForm" id="troopRosterForm" style="display: hidden;">
+			<form action="process.php?do=editevent" method="POST" name="troopRosterForm" id="troopRosterForm" style="display: none;">
 				<div style="overflow-x: auto;">
 				<table border="1" name="rosterTable" id="rosterTable">
 					<tr>
@@ -1477,10 +1477,13 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 						<p>Select a trooper to add:</p>
 						<select name="trooperSelect" id="trooperSelect">';
 				}
+				
+				// Get TKID
+				$tkid = readTKNumber($db->tkid);
 
 				// List troopers
 				echo '
-				<option value="'.$db->troopida.'">'.$db->troopername.' - '.readTKNumber($db->tkid).'</option>';
+				<option value="'.$db->troopida.'" tkid="'.$tkid.'">'.$db->troopername.' - '.$tkid.'</option>';
 				$i++;
 			}
 		}
