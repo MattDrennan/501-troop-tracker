@@ -794,6 +794,17 @@ $(document).ready(function()
 				success: function(data)
 				{
 					var json = JSON.parse(data);
+					
+					var eventId = $("#roster_" + $("input[name=trooperSelectEdit]:checked").val() + " input[name=eventId]").val();
+					var troopername = $("#roster_" + $("input[name=trooperSelectEdit]:checked").val() + " input[name=troopername]").val();
+					var tkid = $("#tknumber1" + $("input[name=trooperSelectEdit]:checked").val()).text();
+					
+					console.log(tkid);
+					console.log(troopername);
+					console.log(eventId);
+					
+					// Add to trooper list
+					$("#trooperSelect").append('<option value="' + eventId + '" troopername="' + troopername + '" tkid="' + tkid + '">' + troopername + ' - ' + tkid + '</option>');
 
 					// Remove
 					$("#roster_" + $("input[name=trooperSelectEdit]:checked").val()).remove();
@@ -888,7 +899,7 @@ $(document).ready(function()
 							{
 								$("#reason2" + $("input[name=trooperSelectEdit]:checked").val()).find("input").val("None");
 							}
-
+							
 							// Set values
 							$("#costume1" + $("input[name=trooperSelectEdit]:checked").val()).html($("#costume2" + $("input[name=trooperSelectEdit]:checked").val()).find("select :selected").text());
 							$("#backup1" + $("input[name=trooperSelectEdit]:checked").val()).html($("#backup2" + $("input[name=trooperSelectEdit]:checked").val()).find("select :selected").text());
@@ -896,6 +907,12 @@ $(document).ready(function()
 							$("#reason1" + $("input[name=trooperSelectEdit]:checked").val()).html($("#reason2" + $("input[name=trooperSelectEdit]:checked").val()).find("input").val());
 							$("#attend1" + $("input[name=trooperSelectEdit]:checked").val()).html($("#attend2" + $("input[name=trooperSelectEdit]:checked").val()).find("select :selected").text());
 							$("#attendcostume1" + $("input[name=trooperSelectEdit]:checked").val()).html($("#attendcostume2" + $("input[name=trooperSelectEdit]:checked").val()).find("select :selected").text());
+							
+							// Set attended text
+							if($("#attendcostume2" + $("input[name=trooperSelectEdit]:checked").val()).find("select :selected").text() == "None")
+							{
+								$("#attendcostume1" + $("input[name=trooperSelectEdit]:checked").val()).text("Not Submitted");
+							}
 
 							// Show static values
 							$("#costume1" + $("input[name=trooperSelectEdit]:checked").val()).show();

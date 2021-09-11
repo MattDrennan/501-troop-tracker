@@ -1267,6 +1267,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				echo '
 				<tr id="roster_'.$db->trooperid.'" name="roster_'.$db->trooperid.'">
 					<td>
+						<input type="hidden" name="troopername" id="troopername" value = "'.getName(cleanInput($db->trooperid)).'" />
 						<input type="hidden" name="eventId" id="eventId" value = "'.cleanInput($_POST['eventId']).'" />
 						<input type="radio" name="trooperSelectEdit" id="trooperSelectEdit" value="'.$db->trooperid.'" />
 					</td>
@@ -1483,7 +1484,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 
 				// List troopers
 				echo '
-				<option value="'.$db->troopida.'" tkid="'.$tkid.'">'.$db->troopername.' - '.$tkid.'</option>';
+				<option value="'.$db->troopida.'" tkid="'.$tkid.'" troopername="'.$db->troopername.'">'.$db->troopername.' - '.$tkid.'</option>';
 				$i++;
 			}
 		}
