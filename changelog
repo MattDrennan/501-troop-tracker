@@ -1,5 +1,11 @@
 **Changelog**
 
+_09/11/2021_
+
+-Added "addedby" to event_sign_up, which allow user to sign up other users
+-Fixed security risk
+-Added: Add a friend feature (requested)
+
 _09/10/2021_
 
 -Fixed a bug where it would not change text to "Not Submitted"

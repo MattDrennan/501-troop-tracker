@@ -2425,12 +2425,22 @@ if(isset($_GET['event']))
 		$conn->query("DELETE FROM comments WHERE id = '".cleanInput($_POST['comment'])."'") or die($conn->error);
 	}
 
+	// Globals
+	$eventClosed = 0;
+	$limitedEvent = 0;
+	$limitTotal = 0;
+			
 	// Query database for event info
 	$query = "SELECT * FROM events WHERE id = '".strip_tags(addslashes($_GET['event']))."'";
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
+			// Update globals
+			$eventClosed = $db->closed;
+			$limitedEvent = $db->limitedEvent;
+			$limitTotal = $db->limitTotal;
+					
 			// Admin Area
 			if(isAdmin())
 			{
@@ -2529,9 +2539,9 @@ if(isset($_GET['event']))
 			</div>';
 
 			// Query database for roster info
-			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attend, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' ORDER BY status";
+			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attend, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' ORDER BY status";
 			$i = 0;
-
+			
 			if ($result2 = mysqli_query($conn, $query2))
 			{
 				while ($db2 = mysqli_fetch_object($result2))
@@ -2568,7 +2578,7 @@ if(isset($_GET['event']))
 					}
 
 					// Allow for users to edit their status from the event, and make sure the event is not closed, and the user did not cancel
-					if(loggedIn() && $db2->trooperId == $_SESSION['id'] && $db->closed == 0 && $db2->status != 4)
+					if(loggedIn() && ($db2->trooperId == $_SESSION['id'] || $_SESSION['id'] == $db2->addedby) && $db->closed == 0 && $db2->status != 4)
 					{
 						echo '
 						<tr>
@@ -2585,7 +2595,7 @@ if(isset($_GET['event']))
 							{
 								echo '
 								<td name="trooperRosterCostume" id="trooperRosterCostume">
-									<select name="modifysignupFormCostume" id="modifysignupFormCostume">';
+									<select name="modifysignupFormCostume" id="modifysignupFormCostume" trooperid="'.$db2->trooperId.'">';
 
 									$query3 = "SELECT * FROM costumes ORDER BY costume";
 									if ($result3 = mysqli_query($conn, $query3))
@@ -2612,7 +2622,7 @@ if(isset($_GET['event']))
 								</td>
 								
 								<td name="trooperRosterBackup" id="trooperRosterBackup">
-									<select name="modiftybackupcostumeForm" id="modiftybackupcostumeForm">';
+									<select name="modiftybackupcostumeForm" id="modiftybackupcostumeForm" trooperid="'.$db2->trooperId.'">';
 
 									// Display costumes
 									$query3 = "SELECT * FROM costumes ORDER BY costume";
@@ -2679,7 +2689,7 @@ if(isset($_GET['event']))
 								if($db->limitedEvent != 1)
 								{
 									echo '
-									<select name="modifysignupStatusForm" id="modifysignupStatusForm">
+									<select name="modifysignupStatusForm" id="modifysignupStatusForm" trooperid="'.$db2->trooperId.'">
 										<option value="0" '.echoSelect(0, $db2->status).'>I\'ll be there!</option>
 										<option value="1" '.echoSelect(1, $db2->status).'>Tentative</option>
 									</select>';
@@ -2703,7 +2713,7 @@ if(isset($_GET['event']))
 						</tr>';
 					}
 					// If this is the user, and the user canceled, allow to be edited
-					else if(loggedIn() && $db2->trooperId == $_SESSION['id'] && $db->closed == 0 && $db2->status == 4)
+					else if(loggedIn() && ($db2->trooperId == $_SESSION['id'] || $_SESSION['id'] == $db2->addedby) && $db->closed == 0 && $db2->status == 4)
 					{
 						echo '
 						<tr>
@@ -2871,7 +2881,8 @@ if(isset($_GET['event']))
 									
 									echo '
 										<form action="process.php?do=signup" method="POST" name="signupForm2" id="signupForm2">
-											<input type="hidden" name="event" value="'.$_GET["event"].'" />
+											<input type="hidden" name="event" value="'.cleanInput($_GET["event"]).'" />
+											
 											<p>What costume will you wear?</p>
 											<select name="costume">
 												<option value="null" SELECTED>Please choose an option...</option>';
@@ -2941,7 +2952,7 @@ if(isset($_GET['event']))
 											<br />
 											<br />
 
-											<input type="submit" value="Submit!" name="submitSignUp" />
+											<input type="submit" value="Sign Up!" name="submitSignUp" />
 										</form>
 									</div>';
 								}
@@ -2993,7 +3004,169 @@ if(isset($_GET['event']))
 
 		if(loggedIn() && !$isMerged)
 		{
+			// Only show add a friend if main user is in event
+			if(inEvent($_SESSION['id'], cleanInput($_GET['event'])))
+			{
+				echo '
+				<h2 class="tm-section-header">Add a Friend</h2>';
+				
+				// Check to see if this event is full
+				$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".cleanInput($_GET['event'])."' AND status != '4'");
+				
+				if($eventClosed == 0)
+				{
+					if(hasPermission(0, 1, 2, 3))
+					{
+						if($getNumOfTroopers->num_rows < $limitTotal)
+						{
+							if($limitedEvent == 1)
+							{
+								echo '<b>This is a locked event. When you sign up, you will be placed in a pending status until command staff approves you. Please check for updates.</b>';
+							}
+							
+							echo '
+							<form action="process.php?do=signup" method="POST" name="signupForm3" id="signupForm3">
+								<input type="hidden" name="event" value="'.cleanInput($_GET["event"]).'" />';
+									
+							// Load all users
+							$query = "SELECT troopers.id AS troopida, troopers.name AS troopername, troopers.tkid, event_sign_up.trooperid, event_sign_up.troopid AS troopid FROM troopers LEFT JOIN event_sign_up ON troopers.id = event_sign_up.trooperid WHERE event_sign_up.troopid != '".cleanInput($_GET['event'])."' AND troopers.id NOT IN (SELECT event_sign_up.trooperid FROM event_sign_up WHERE event_sign_up.troopid = '".cleanInput($_GET['event'])."') OR event_sign_up.troopid IS NULL GROUP BY troopers.id ORDER BY troopers.name";
+
+							$i = 0;
+							if ($result = mysqli_query($conn, $query) or die($conn->error))
+							{
+								while ($db = mysqli_fetch_object($result))
+								{
+									// First add this to make a list
+									if($i == 0)
+									{
+										echo '
+										<form action="process.php?do=editevent" method="POST" name="troopRosterFormAdd" id="troopRosterFormAdd">
+											<input type="hidden" name="troopid" id="troopid" value="'.cleanInput($_GET['event']).'" />
+											
+											<br />
+											
+											Trooper Search: <input type="text" name="trooperSearch" id="trooperSearch" style="width: 50%;" />
+
+											<p>Select a trooper to add:</p>
+											<select name="trooperSelect" id="trooperSelect">';
+									}
+									
+									// Get TKID
+									$tkid = readTKNumber($db->tkid);
+
+									// List troopers
+									echo '
+									<option value="'.$db->troopida.'" tkid="'.$tkid.'" troopername="'.$db->troopername.'">'.$db->troopername.' - '.$tkid.'</option>';
+									$i++;
+								}
+							}
+
+							// If no troopers
+							if($i == 0)
+							{
+								echo 'No troopers to add.';
+							}
+							else
+							{
+								echo '
+								</select>';
+							}
+									
+							echo '
+							<p>What costume will they wear?</p>
+							<select name="costume">
+								<option value="null" SELECTED>Please choose an option...</option>';
+
+							$query3 = "SELECT * FROM costumes ORDER BY costume";
+							if ($result3 = mysqli_query($conn, $query3))
+							{
+								while ($db3 = mysqli_fetch_object($result3))
+								{
+									echo '
+									<option value="'. $db3->id .'">'.$db3->costume.'</option>';
+								}
+							}
+
+							echo '
+							</select>
+
+							<br />
+
+							<p>Select a status:</p>
+
+							<select name="status">
+								<option value="null" SELECTED>Please choose an option...</option>';
+
+							if($limitedEvent != 1)
+							{
+								echo '
+								<option value="0">I\'ll be there!</option>
+								<option value="1">Tentative</option>';
+							}
+							else
+							{
+								echo '
+								<option value="5">Request to attend (Pending)</option>';								
+							}
+
+							echo '
+							</select>
+
+							<p>Back up costume (if applicable):</p>
+
+							<select name="backupcostume" id="backupcostume">';
+
+							// Display costumes
+							$query2 = "SELECT * FROM costumes ORDER BY costume";
+							// Amount of costumes
+							$c = 0;
+							if ($result2 = mysqli_query($conn, $query2))
+							{
+								while ($db2 = mysqli_fetch_object($result2))
+								{
+									if($c == 0)
+									{
+										echo '<option value="0">Select a costume...</option>';
+									}
+
+									// Display costume
+									echo '<option value="'.$db2->id.'">'.$db2->costume.'</option>';
+
+									$c++;
+								}
+							}
+
+							echo '
+							</select>
+							
+							<br />
+							<br />
+
+							<input type="submit" value="Add Friend" name="submitSignUp" />
+							</form>';
+						}
+						else
+						{
+							echo '
+							This event is full.';
+						}
+					}
+					else
+					{
+						echo '
+						You do not have permission to sign up for events. Please refer to the boards for assistance.';
+					}
+				}
+				else
+				{
+					echo '
+					<p>This event is closed for editing.</p>';
+				}
+			}
+			
 			echo '
+			<hr />
+			
 			<form aciton="process.php?do=postcomment" name="commentForm" id="commentForm" method="POST">
 				<input type="hidden" name="eventId" id="eventId" value="'.cleanInput($_GET['event']).'" />
 

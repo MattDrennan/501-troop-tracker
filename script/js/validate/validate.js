@@ -557,6 +557,63 @@ $(function() {
           data: $(form).serialize() + "&submitSignUp=1",
           success: function(data)
           {
+			  console.log(data);
+            // Get JSON Data
+            var json = JSON.parse(data);
+
+            if(json.success == "failed")
+            {
+              alert(json.data);
+            }
+            else
+            {
+              // Put data in html
+              $("#signuparea").html(json.data);
+
+              // Do the rest...
+              $("#signeduparea").show();
+			  $("#signuparea1").hide();
+			  $("#hr1").hide();
+              $("#rosterTableNoData").hide();
+            }
+          }
+        });
+    }
+  });
+  
+  $("form[name='signupForm3']").validate({
+    // Specify validation rules
+    rules: {
+      // The key name on the left side is the name attribute
+      // of an input field. Validation rules are defined
+      // on the right side
+      trooperSelect: {
+        required: true,
+        digits: true
+      },
+      costume: {
+        required: true,
+        digits: true
+      },
+      status: {
+        required: true,
+        range: [0, 5]
+      }
+    },
+    // Specify validation error messages
+    messages: {
+      costume: "Please choose a costume.",
+      status: "Please choose your status."
+    },
+    // Make sure the form is submitted to the destination defined
+    // in the "action" attribute of the form when valid
+    submitHandler: function(form) {
+        $.ajax({
+          type: "POST",
+          url: form.action,
+          data: $(form).serialize() + "&submitSignUp=1&addfriend=1",
+          success: function(data)
+          {
             // Get JSON Data
             var json = JSON.parse(data);
 

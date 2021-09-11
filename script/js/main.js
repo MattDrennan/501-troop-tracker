@@ -1030,10 +1030,14 @@ $(document).ready(function()
 		}
 	});
 	
-	$("body").on("change", "#modifysignupFormCostume2, #modiftybackupcostumeForm2, #modifysignupStatusForm2", function(e)
+	$("body").on("change", "select[name=modifysignupFormCostume2], select[name=modiftybackupcostumeForm2], select[name=modifysignupStatusForm2]", function(e)
 	{
+		var signupForm1 = $("select[name=modifysignupFormCostume2][trooperid=" + $(this).attr("trooperid") + "]");
+		var signupForm2 = $("select[name=modiftybackupcostumeForm2][trooperid=" + $(this).attr("trooperid") + "]");
+		var signupForm3 = $("select[name=modifysignupStatusForm2][trooperid=" + $(this).attr("trooperid") + "]");
+			
 		// Make sure values were changed
-		if($("#modifysignupFormCostume2").val() != 0)
+		if(signupForm1.val() != 0)
 		{
 			// Make sure this is not a limited event
 			if($("#modifysignupStatusForm2").val() != -1 && $("#limitedEventCancel").val() == 0)
@@ -1041,7 +1045,7 @@ $(document).ready(function()
 				$.ajax({
 					type: "POST",
 					url: "process.php?do=undocancel&do2=undofinish",
-					data: "costume=" + $("#modifysignupFormCostume2").val() + "&costume_backup=" + $("#modiftybackupcostumeForm2").val() + "&status=" + $("#modifysignupStatusForm2").val() + "&troopid=" + $("#modifysignupTroopIdForm").val() + "&limitedevent=" + $("#limitedEventCancel").val(),
+					data: "costume=" + signupForm1.val() + "&costume_backup=" + signupForm2.val() + "&status=" + signupForm3.val() + "&troopid=" + $("#modifysignupTroopIdForm").val() + "&limitedevent=" + $("#limitedEventCancel").val() + "&trooperid=" + $(this).attr("trooperid"),
 					success: function(data)
 					{
 						alert("Status Updated!");
@@ -1066,12 +1070,16 @@ $(document).ready(function()
 	
 	// Modify Sign Up Form Change
 	
-	$("body").on("change", "#modifysignupFormCostume, #modiftybackupcostumeForm, #modifysignupStatusForm", function(e)
+	$("body").on("change", "select[name=modifysignupFormCostume], select[name=modiftybackupcostumeForm], select[name=modifysignupStatusForm]", function(e)
 	{
+		var signupForm1 = $("select[name=modifysignupFormCostume][trooperid=" + $(this).attr("trooperid") + "]");
+		var signupForm2 = $("select[name=modiftybackupcostumeForm][trooperid=" + $(this).attr("trooperid") + "]");
+		var signupForm3 = $("select[name=modifysignupStatusForm][trooperid=" + $(this).attr("trooperid") + "]");
+		
 		$.ajax({
 			type: "POST",
 			url: "process.php?do=modifysignup",
-			data: "costume=" + $("#modifysignupFormCostume").val() + "&costume_backup=" + $("#modiftybackupcostumeForm").val() + "&status=" + $("#modifysignupStatusForm").val() + "&troopid=" + $("#modifysignupTroopIdForm").val() + "&limitedevent=" + $("#limitedEventCancel").val(),
+			data: "costume=" + signupForm1.val() + "&costume_backup=" + signupForm2.val() + "&status=" + signupForm3.val() + "&troopid=" + $("#modifysignupTroopIdForm").val() + "&limitedevent=" + $("#limitedEventCancel").val() + "&trooperid=" + $(this).attr("trooperid"),
 			success: function(data)
 			{
 				alert("Status Updated!");

@@ -48,8 +48,27 @@ if($_GET['do'] == "changepassword")
 
 if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 {
+	// Hack Check
+	$query = "SELECT * FROM event_sign_up WHERE (trooperid = '".cleanInput($_SESSION['id'])."' OR addedby = '".cleanInput($_SESSION['id'])."') AND troopid = '".cleanInput($_POST['troopid'])."'";
+	$i = 0;
+	
+	// Output
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			$i++;
+		}
+	}
+	
+	// Kill hack
+	if($i == 0)
+	{
+		die("Can not do this.");
+	}
+	
 	// Update SQL
-	$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costume'])."', costume_backup = '".cleanInput($_POST['costume_backup'])."', status = '".cleanInput($_POST['status'])."' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($_POST['troopid'])."'");
+	$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costume'])."', costume_backup = '".cleanInput($_POST['costume_backup'])."', status = '".cleanInput($_POST['status'])."' WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['troopid'])."'");
 }
 
 /*********************** UNDO CANCEL *********************************************/
@@ -65,7 +84,7 @@ if(isset($_GET['do']) && $_GET['do'] == "undocancel" && loggedIn())
 		$message = "Please fill in the form fields.";
 		
 		$costume = '
-		<select name="modifysignupFormCostume2" id="modifysignupFormCostume2">
+		<select name="modifysignupFormCostume2" id="modifysignupFormCostume2" trooperid="'.$db->trooperid.'">
 			<option value="0" SELECTED>Please select a costume...</option>';
 
 		$query3 = "SELECT * FROM costumes ORDER BY costume";
@@ -83,7 +102,7 @@ if(isset($_GET['do']) && $_GET['do'] == "undocancel" && loggedIn())
 		</select>';
 		
 		$backup = '
-		<select name="modiftybackupcostumeForm2" id="modiftybackupcostumeForm2">
+		<select name="modiftybackupcostumeForm2" id="modiftybackupcostumeForm2" trooperid="'.$db->trooperid.'">
 			<option value="0" SELECTED>N/A</option>';
 
 		// Display costumes
@@ -105,7 +124,7 @@ if(isset($_GET['do']) && $_GET['do'] == "undocancel" && loggedIn())
 		if($_POST['limitedevent'] != 1)
 		{
 			$status = '
-			<select name="modifysignupStatusForm2" id="modifysignupStatusForm2">
+			<select name="modifysignupStatusForm2" id="modifysignupStatusForm2" trooperid="'.$db->trooperid.'">
 				<option value="-1" SELECTED>Please select an option...</option>
 				<option value="0">I\'ll be there!</option>
 				<option value="1">Tentative</option>
@@ -1645,12 +1664,21 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 	// When we receive a submission for an event sign up...
 	if(isset($_POST['submitSignUp']))
 	{
-		// Prevent bug of getting signed up twice
-		$eventCheck = inEvent(cleanInput($_SESSION['id']), cleanInput($_POST['event']));
+		// Check if this is add friend
+		if(isset($_POST['addfriend']))
+		{
+			// Prevent bug of getting signed up twice
+			$eventCheck = inEvent(cleanInput($_POST['trooperSelect']), cleanInput($_POST['event']));
+		}
+		else
+		{
+			// Prevent bug of getting signed up twice
+			$eventCheck = inEvent(cleanInput($_SESSION['id']), cleanInput($_POST['event']));
+		}
 
 		if($eventCheck['inTroop'] == 1)
 		{
-			die("YOU ARE ALREADY IN THIS TROOP!");
+			die("ALREADY IN THIS TROOP!");
 		}
 
 		// End prevent bug of getting signed up twice
@@ -1684,9 +1712,18 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 		}
 
 		// End of check to see if this event is full
-
-		// Query the database
-		$conn->query("INSERT INTO event_sign_up (trooperid, troopid, costume, status, costume_backup) VALUES ('".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['event'])."', '".cleanInput($_POST['costume'])."', '".cleanInput($_POST['status'])."', '".cleanInput($_POST['backupcostume'])."')") or die($conn->error);
+		
+		// Check if this is add friend
+		if(isset($_POST['addfriend']))
+		{
+			// Query the database
+			$conn->query("INSERT INTO event_sign_up (trooperid, troopid, costume, status, costume_backup, addedby) VALUES ('".cleanInput($_POST['trooperSelect'])."', '".cleanInput($_POST['event'])."', '".cleanInput($_POST['costume'])."', '".cleanInput($_POST['status'])."', '".cleanInput($_POST['backupcostume'])."', '".cleanInput($_SESSION['id'])."')") or die($conn->error);
+		}
+		else
+		{
+			// Query the database
+			$conn->query("INSERT INTO event_sign_up (trooperid, troopid, costume, status, costume_backup) VALUES ('".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['event'])."', '".cleanInput($_POST['costume'])."', '".cleanInput($_POST['status'])."', '".cleanInput($_POST['backupcostume'])."')") or die($conn->error);
+		}
 
 		// Define data variable for below code
 		$data = "";
@@ -1701,7 +1738,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 			{
 
 				// Query database for roster info
-				$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attend, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".cleanInput($_POST['event'])."' ORDER BY status";
+				$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attend, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".cleanInput($_POST['event'])."' ORDER BY status";
 				$i = 0;
 
 				if ($result2 = mysqli_query($conn, $query2))
@@ -1731,7 +1768,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 						}
 
 						// Allow for users to edit their status from the event, and make sure the event is not closed, and the user did not cancel
-						if(loggedIn() && $db2->trooperId == $_SESSION['id'] && $db->closed == 0 && $db2->status != 4)
+						if(loggedIn() && ($db2->trooperId == $_SESSION['id'] || $_SESSION['id'] == $db2->addedby) && $db->closed == 0 && $db2->status != 4)
 						{
 							$data .= '
 							<tr>
@@ -1841,7 +1878,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 							</tr>';
 						}
 						// If this is the user, and the user canceled, allow to be edited
-						else if(loggedIn() && $db2->trooperId == $_SESSION['id'] && $db->closed == 0 && $db2->status == 4)
+						else if(loggedIn() && ($db2->trooperId == $_SESSION['id'] || $_SESSION['id'] == $db2->addedby) && $db->closed == 0 && $db2->status == 4)
 						{
 							$data .= '
 							<tr>
