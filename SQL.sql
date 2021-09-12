@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Sep 09, 2021 at 02:59 PM
+-- Generation Time: Sep 12, 2021 at 01:22 AM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -142,6 +142,7 @@ CREATE TABLE IF NOT EXISTS `event_sign_up` (
   `status` int(2) NOT NULL DEFAULT '0',
   `attend` int(2) NOT NULL DEFAULT '0',
   `attended_costume` varchar(100) NOT NULL DEFAULT '0',
+  `addedby` int(11) NOT NULL DEFAULT '0',
   `signuptime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

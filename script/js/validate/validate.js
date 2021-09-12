@@ -523,6 +523,7 @@ $(function() {
           {
             $("#signeduparea").show();
             $("#signuparea").hide();
+			$("#addfriend").show();
           }
         });
     }
@@ -557,7 +558,6 @@ $(function() {
           data: $(form).serialize() + "&submitSignUp=1",
           success: function(data)
           {
-			  console.log(data);
             // Get JSON Data
             var json = JSON.parse(data);
 
@@ -572,6 +572,7 @@ $(function() {
 
               // Do the rest...
               $("#signeduparea").show();
+			  $("#addfriend").show();
 			  $("#signuparea1").hide();
 			  $("#hr1").hide();
               $("#rosterTableNoData").hide();
@@ -623,14 +624,10 @@ $(function() {
             }
             else
             {
-              // Put data in html
-              $("#signuparea").html(json.data);
-
-              // Do the rest...
-              $("#signeduparea").show();
-			  $("#signuparea1").hide();
-			  $("#hr1").hide();
-              $("#rosterTableNoData").hide();
+				// Put data in html
+				$("#signuparea1").html(json.data);
+				$("#signuparea1").show();
+				$("#signuparea").hide();
             }
           }
         });

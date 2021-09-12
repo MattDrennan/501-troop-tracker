@@ -1476,7 +1476,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		}
 
 		// Load all users
-		$query = "SELECT troopers.id AS troopida, troopers.name AS troopername, troopers.tkid, event_sign_up.trooperid, event_sign_up.troopid AS troopid FROM troopers LEFT JOIN event_sign_up ON troopers.id = event_sign_up.trooperid WHERE event_sign_up.troopid != '".cleanInput($_POST['eventId'])."' AND troopers.id NOT IN (SELECT event_sign_up.trooperid FROM event_sign_up WHERE event_sign_up.troopid = '".cleanInput($_POST['eventId'])."') OR event_sign_up.troopid IS NULL GROUP BY troopers.id ORDER BY troopers.name";
+		$query = "SELECT troopers.id AS troopida, troopers.name AS troopername, troopers.tkid FROM troopers WHERE NOT EXISTS (SELECT event_sign_up.trooperid FROM event_sign_up WHERE event_sign_up.trooperid = troopers.id AND event_sign_up.troopid = '".cleanInput($_POST['eventId'])."') ORDER BY troopers.name";
 
 		$i = 0;
 		if ($result = mysqli_query($conn, $query) or die($conn->error))
@@ -1957,16 +1957,19 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 					</form>';
 				}
 
-				$data .= '
-				<div name="signeduparea" id="signeduparea">
-					<p><b>You are signed up for this troop!</b></p>
+				if(!isset($_POST['addfriend']))
+				{
+					$data .= '
+					<div name="signeduparea" id="signeduparea">
+						<p><b>You are signed up for this troop!</b></p>
 
-					<form action="index.php" method="POST" name="cancelForm" id="cancelForm">
-						<p>Reason why you are canceling:</p>
-						<input type="text" name="cancelReason" id="cancelReason" />
-						<input type="submit" name="submitCancelTroop" id="submitCancelTroop" value="Cancel Troop" />
-					</form>
-				</div>';
+						<form action="index.php" method="POST" name="cancelForm" id="cancelForm">
+							<p>Reason why you are canceling:</p>
+							<input type="text" name="cancelReason" id="cancelReason" />
+							<input type="submit" name="submitCancelTroop" id="submitCancelTroop" value="Cancel Troop" />
+						</form>
+					</div>';
+				}
 
 				// Send back data
 				$array = array('success' => 'success', 'data' => $data, 'id' => $_SESSION['id']);
