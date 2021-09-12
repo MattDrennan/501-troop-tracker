@@ -346,7 +346,7 @@ if(isset($_GET['profile']))
 				{
 					echo '
 					<h2 class="tm-section-header">Admin Controls</h2>
-					<p style="text-align: center;"><a href="index.php?action=commandstaff&do=managetroopers&uid='.$db->id.'">Edit/View in Command Staff Area</a></p>';
+					<p style="text-align: center;"><a href="index.php?action=commandstaff&do=managetroopers&uid='.$db->id.'">Edit/View Member in Command Staff Area</a></p>';
 				}
 				
 				echo '
@@ -1989,6 +1989,93 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		// Create an event form
 		if(isset($_GET['do']) && $_GET['do'] == "createevent")
 		{
+			// Set up eid
+			$eid = 0;
+			
+			// Set up variables
+			$name = "";
+			$venue = "";
+			$dateStart = "";
+			$dateEnd = "";
+			$website = "";
+			$numberOfAttend = "";
+			$requestNumber = "";
+			$requestedCharacter = "";
+			$secureChanging = "";
+			$blasters = "";
+			$lightsabers = "";
+			$parking = "";
+			$mobility = "";
+			$amenities = "";
+			$referred = "";
+			$comments = "";
+			$location = "";
+			$label = "";
+			$postComment = "";
+			$notes = "";
+			$limitedEvent = "";
+			$limitTo = "";
+			$limitRebels = "";
+			$limit501st = "";
+			$limitMando = "";
+			$limitDroid = "";
+			$limitTotal = "";
+			$closed = "";
+			$moneyRaised = "";
+			$squad = "";
+			
+			// If edid set - lets load events
+			if(isset($_GET['eid']) && $_GET['eid'] >= 0)
+			{
+				// Get data for copy troop
+				$eid = cleanInput($_GET['eid']);
+				
+				$query = "SELECT * FROM events WHERE id = '".$eid."' LIMIT 1";
+				
+				// Event found
+				$i = 0;
+
+				if ($result = mysqli_query($conn, $query))
+				{
+					while ($db = mysqli_fetch_object($result))
+					{
+						$name = $db->name;
+						$venue = $db->venue;
+						$dateStart = $db->dateStart;
+						$dateEnd = $db->dateEnd;
+						$website = $db->website;
+						$numberOfAttend = $db->numberOfAttend;
+						$requestNumber = $db->requestedNumber;
+						$requestedCharacter = $db->requestedCharacter;
+						$secureChanging = $db->secureChanging;
+						$blasters = $db->blasters;
+						$lightsabers = $db->lightsabers;
+						$parking = $db->parking;
+						$mobility = $db->mobility;
+						$amenities = $db->amenities;
+						$referred = $db->referred;
+						$comments = $db->comments;
+						$location = $db->location;
+						$label = $db->label;
+						$postComment = $db->postComment;
+						$notes = $db->notes;
+						$limitedEvent = $db->limitedEvent;
+						$limitTo = $db->limitTo;
+						$limitRebels = $db->limitRebels;
+						$limit501st = $db->limit501st;
+						$limitMando = $db->limitMando;
+						$limitDroid = $db->limitDroid;
+						$limitTotal = $db->limitTotal;
+						$closed = $db->closed;
+						$moneyRaised = $db->moneyRaised;
+						$squad = $db->squad;
+
+						// Increment
+						$i++;
+					}
+				}
+			}
+
 			// JQUERY Easy Form Filler
 			echo '
 			<a href="#" class="button" id="easyfilltoolbutton" name="easyfilltoolbutton">Easy Fill Tool</a>
@@ -2010,132 +2097,132 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 			<form action="process.php?do=createevent" id="createEventForm" name="createEventForm" method="POST">
 				<p>Name of the event:</p>
-				<input type="text" name="eventName" id="eventName" />
+				<input type="text" name="eventName" id="eventName" value="'.copyEvent($eid, $name).'" />
 
 				<p>Venue of the event:</p>
-				<input type="text" name="eventVenue" id="eventVenue" />
+				<input type="text" name="eventVenue" id="eventVenue" value="'.copyEvent($eid, $venue).'" />
 
 				<p>Location:</p>
-				<input type="text" name="location" id="location" />
+				<input type="text" name="location" id="location" value="'.copyEvent($eid, $location).'" />
 				<input type="button" name="getLocation" id="getLocation" value="Get Squad Based On Location" />
 				
 				<p>Squad</p>
 				<select name="squadm" id="squadm">
-					<option value="null" SELECTED>Please choose an option...</option>
-					<option value="1">Everglades Squad</option>
-					<option value="5">Tampa Bay Squad</option>
-					<option value="2">Makaze Squad</option>
-					<option value="4">Squad 7 Squad</option>
-					<option value="3">Parjai Squad</option>
-					<option value="0">Florida Garrison</option>
+					<option value="null" '.copyEventSelect($eid, $squad, "null").'>Please choose an option...</option>
+					<option value="1" '.copyEventSelect($eid, $squad, 1).'>Everglades Squad</option>
+					<option value="5" '.copyEventSelect($eid, $squad, 5).'>Tampa Bay Squad</option>
+					<option value="2" '.copyEventSelect($eid, $squad, 2).'>Makaze Squad</option>
+					<option value="4" '.copyEventSelect($eid, $squad, 4).'>Squad 7 Squad</option>
+					<option value="3" '.copyEventSelect($eid, $squad, 3).'>Parjai Squad</option>
+					<option value="0" '.copyEventSelect($eid, $squad, 0).'>Florida Garrison</option>
 				</select>				
 
 				<p>Date/Time Start:</p>
-				<input type="text" name="dateStart" id="datepicker" />
+				<input type="text" name="dateStart" id="datepicker" value="'.copyEvent($eid, $dateStart).'" />
 
 				<p>Date/Time End:</p>
-				<input type="text" name="dateEnd" id="datepicker2" />
+				<input type="text" name="dateEnd" id="datepicker2" value="'.copyEvent($eid, $dateEnd).'" />
 
 				<p>Website:</p>
-				<input type="text" name="website" id="website" />
+				<input type="text" name="website" id="website" value="'.copyEvent($eid, $website).'" />
 
 				<p>Number of Attendees:</p>
-				<input type="number" name="numberOfAttend" id="numberOfAttend" />
+				<input type="number" name="numberOfAttend" id="numberOfAttend" value="'.copyEvent($eid, $numberOfAttend).'" />
 
 				<p>Requested Number of Characters:</p>
-				<input type="number" name="requestedNumber" id="requestedNumber" />
+				<input type="number" name="requestedNumber" id="requestedNumber" value="'.copyEvent($eid, $requestNumber).'" />
 
 				<p>Requested Character Types:</p>
-				<input type="text" name="requestedCharacter" id="requestedCharacter" />
+				<input type="text" name="requestedCharacter" id="requestedCharacter" value="'.copyEvent($eid, $requestedCharacter).'" />
 
 				<p>Secure Changing?</p>
 				<select name="secure" id="secure">
-					<option value="null" SELECTED>Please choose an option...</option>
-					<option value="1">Yes</option>
-					<option value="0">No</option>
+					<option value="null" '.copyEventSelect($eid, $secureChanging, "null").'>Please choose an option...</option>
+					<option value="1" '.copyEventSelect($eid, $secureChanging, 1).'>Yes</option>
+					<option value="0" '.copyEventSelect($eid, $secureChanging, 0).'>No</option>
 				</select>
 
 				<p>Blasters Allowed?</p>
 				<select name="blasters" id="blasters">
-					<option value="null" SELECTED>Please choose an option...</option>
-					<option value="1">Yes</option>
-					<option value="0">No</option>
+					<option value="null" '.copyEventSelect($eid, $blasters, "null").'>Please choose an option...</option>
+					<option value="1" '.copyEventSelect($eid, $blasters, 1).'>Yes</option>
+					<option value="0" '.copyEventSelect($eid, $blasters, 0).'>No</option>
 				</select>
-
+				
 				<p>Lightsabers Allowed?</p>
 				<select name="lightsabers" id="lightsabers">
-					<option value="null" SELECTED>Please choose an option...</option>
-					<option value="1">Yes</option>
-					<option value="0">No</option>
+					<option value="null" '.copyEventSelect($eid, $lightsabers, "null").'>Please choose an option...</option>
+					<option value="1" '.copyEventSelect($eid, $lightsabers, 1).'>Yes</option>
+					<option value="0" '.copyEventSelect($eid, $lightsabers, 0).'>No</option>
 				</select>
 
 				<p>Parking?</p>
 				<select name="parking" id="parking">
-					<option value="null" SELECTED>Please choose an option...</option>
-					<option value="1">Yes</option>
-					<option value="0">No</option>
+					<option value="null" '.copyEventSelect($eid, $parking, "null").'>Please choose an option...</option>
+					<option value="1" '.copyEventSelect($eid, $parking, 1).'>Yes</option>
+					<option value="0" '.copyEventSelect($eid, $parking, 0).'>No</option>
 				</select>
 
 				<p>People with limited mobility access?</p>
 				<select name="mobility" id="mobility">
-					<option value="null" SELECTED>Please choose an option...</option>
-					<option value="1">Yes</option>
-					<option value="0">No</option>
+					<option value="null" '.copyEventSelect($eid, $mobility, "null").'>Please choose an option...</option>
+					<option value="1" '.copyEventSelect($eid, $mobility, 1).'>Yes</option>
+					<option value="0" '.copyEventSelect($eid, $mobility, 0).'>No</option>
 				</select>
 
 				<p>Amenities?</p>
-				<input type="text" name="amenities" id="amenities" />
+				<input type="text" name="amenities" id="amenities" value="'.copyEvent($eid, $amenities).'" />
 
 				<p>Additional Comments:</p>
-				<textarea rows="10" cols="50" name="comments" id="comments"></textarea>
+				<textarea rows="10" cols="50" name="comments" id="comments">'.copyEvent($eid, $comments).'</textarea>
 
 				<p>Label:</p>
 				<select name="label" id="label">
-					<option value="null" SELECTED>Please choose an option...</option>
-					<option value="0">Regular</option>
-					<option value="1">Charity</option>
-					<option value="2">PR</option>
-					<option value="3">Disney</option>
-					<option value="4">Convention</option>
-					<option value="5">Wedding</option>
-					<option value="6">Birthday Party</option>
-					<option value="7">Virtual Troop</option>
-					<option value="8">Other</option>
+					<option value="null" '.copyEventSelect($eid, $label, "null").'>Please choose an option...</option>
+					<option value="0" '.copyEventSelect($eid, $label, 0).'>Regular</option>
+					<option value="1" '.copyEventSelect($eid, $label, 1).'>Charity</option>
+					<option value="2" '.copyEventSelect($eid, $label, 2).'>PR</option>
+					<option value="3" '.copyEventSelect($eid, $label, 3).'>Disney</option>
+					<option value="4" '.copyEventSelect($eid, $label, 4).'>Convention</option>
+					<option value="5" '.copyEventSelect($eid, $label, 5).'>Wedding</option>
+					<option value="6" '.copyEventSelect($eid, $label, 6).'>Birthday Party</option>
+					<option value="7" '.copyEventSelect($eid, $label, 7).'>Virtual Troop</option>
+					<option value="8" '.copyEventSelect($eid, $label, 8).'>Other</option>
 				</select>
 
 				<p>Do you wish to lock this event?</p>
 				<select name="limitedEvent" id="limitedEvent">
-					<option value="null" SELECTED>Please choose an option...</option>
-					<option value="1">Yes</option>
-					<option value="0">No</option>
+					<option value="null" '.copyEventSelect($eid, $limitedEvent, "null").'>Please choose an option...</option>
+					<option value="1" '.copyEventSelect($eid, $limitedEvent, 1).'>Yes</option>
+					<option value="0" '.copyEventSelect($eid, $limitedEvent, 0).'>No</option>
 				</select>
 
 				<p>Do you wish to limit the era of the costume?</p>
 				<select name="era" id="era">
-					<option value="0">Prequel</option>
-					<option value="1">Original</option>
-					<option value="2">Sequel</option>
-					<option value="3">Expanded</option>
-					<option value="4" SELECTED>All</option>
+					<option value="0" '.copyEventSelect($eid, $limitTo, 0).'>Prequel</option>
+					<option value="1" '.copyEventSelect($eid, $limitTo, 1).'>Original</option>
+					<option value="2" '.copyEventSelect($eid, $limitTo, 2).'>Sequel</option>
+					<option value="3" '.copyEventSelect($eid, $limitTo, 3).'>Expanded</option>
+					<option value="4" '.copyEventSelect($eid, $limitTo, 4, 4).'>All</option>
 				</select>
 
 				<p>Limit of 501st Troopers:</p>
-				<input type="number" name="limit501st" value="500" id="limit501st" />
+				<input type="number" name="limit501st" value="'.copyEvent($eid, $limit501st, 500).'" id="limit501st" />
 
 				<p>Limit of Rebels:</p>
-				<input type="number" name="limitRebels" value="500" id="limitRebels" />
+				<input type="number" name="limitRebels" value="'.copyEvent($eid, $limitRebels, 500).'" id="limitRebels" />
 
 				<p>Limit of Mandos:</p>
-				<input type="number" name="limitMando" value="500" id="limitMando" />
+				<input type="number" name="limitMando" value="'.copyEvent($eid, $limitMando, 500).'" id="limitMando" />
 
 				<p>Limit of Droid Builders:</p>
-				<input type="number" name="limitDroid" value="500" id="limitDroid" />
+				<input type="number" name="limitDroid" value="'.copyEvent($eid, $limitDroid, 500).'" id="limitDroid" />
 				
 				<p>Limit Total:</p>
-				<input type="number" name="limitTotal" value="500" id="limitTotal" />
+				<input type="number" name="limitTotal" value="'.copyEvent($eid, $limitTotal, 500).'" id="limitTotal" />
 
 				<p>Referred By:</p>
-				<input type="text" name="referred" id="referred" />
+				<input type="text" name="referred" id="referred" value="'.copyEvent($eid, $referred).'" />
 
 				<input type="submit" name="submitEvent" value="Create!" />
 			</form>';
@@ -2446,7 +2533,8 @@ if(isset($_GET['event']))
 			{
 				echo '
 				<h2 class="tm-section-header">Admin Controls</h2>
-				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=editevent&eid='.$db->id.'">Edit/View Event in Command Staff Area</a></p>';
+				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=editevent&eid='.$db->id.'">Edit/View Event in Command Staff Area</a></p>
+				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=createevent&eid='.$db->id.'">Copy Event in Command Staff Area</a></p>';
 			}
 			
 			// Format dates

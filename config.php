@@ -394,6 +394,84 @@ function getIDNumberFromTK($tk)
 	}
 }
 
+// copyEvent: Helps with copying event values to create an event page
+function copyEvent($eid, $value, $default = -1)
+{
+	// Check eid
+	if($eid > 0)
+	{
+		// Return value if eid set
+		return $value;
+	}
+	else
+	{
+		// Check if default value
+		if($default > -1)
+		{
+			return $default;
+		}
+		else
+		{
+			// Return nothing if eid not set
+			return '';
+		}
+	}
+}
+
+// copyEventSelect: Helps with copying event values to create an event page - this function selects from select list
+function copyEventSelect($eid, $value, $value2, $default = -1)
+{
+	// Check eid
+	if($eid > 0)
+	{
+		// Check if value is NULL
+		if($value === NULL)
+		{
+			// If null compare values
+			if($value == NULL && $value != 0 && $value2 == "null")
+			{
+				return 'SELECTED';
+			}
+			else if($default > -1)
+			{			
+				if($value2 == $default)
+				{
+					return 'SELECTED';
+				}
+			}
+		}
+		else
+		{
+			// Checks if this is the select option
+			if($value == $value2)
+			{
+				// Return value if eid set
+				return 'SELECTED';
+			}
+			// If both values null, no data
+			else if($value == "" && $value2 == "null")
+			{
+				return 'SELECTED';
+			}
+		}
+	}
+	else
+	{
+		if($default > -1)
+		{			
+			if($value2 == $default)
+			{
+				return 'SELECTED';
+			}
+		}
+		else
+		{
+			// Return nothing if eid not set and not a null value
+			return '';
+		}
+	}
+}
+
 // If the user ID is assigned to an event
 function inEvent($id, $event)
 {
