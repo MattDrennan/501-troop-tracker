@@ -906,11 +906,15 @@ $(function() {
 				// Costume Two
 				var string2 = '<select name="costumeVal' + $("#trooperSelect").val() + '" id="costumeVal' + $("#trooperSelect").val() + '">';
 				
+				// Checks to see if a option selected
+				var string2Set = false;
+				
 				for(var i = 0; i <= jArray1.length - 1; i++)
 				{
 					if($("#costumebackup").val() == jArray2[i])
 					{
 						string2 += '<option value="' + jArray2[i] + '" SELECTED>' + jArray1[i] + '</option>';
+						string2Set = true;
 					}
 					else
 					{
@@ -918,16 +922,25 @@ $(function() {
 					}
 				}
 				
+				if(!string2Set)
+				{
+					string2 += '<option value="0" SELECTED>Please select a costume...</option>';
+				}
+				
 				string2 += '</select>';
 				
 				// Costume Three
 				var string3 = '<select name="attendcostumeVal' + $("#trooperSelect").val() + '" id="attendcostumeVal' + $("#trooperSelect").val() + '">';
+				
+				// Checks to see if a option selected
+				var string3Set = false;
 				
 				for(var i = 0; i <= jArray1.length - 1; i++)
 				{
 					if($("#attendedcostume").val() == jArray2[i])
 					{
 						string3 += '<option value="' + jArray2[i] + '" SELECTED>' + jArray1[i] + '</option>';
+						string3Set = true;
 					}
 					else
 					{
@@ -935,7 +948,10 @@ $(function() {
 					}
 				}
 				
-				string3 += '<option value="0" SELECTED>None</option>';
+				if(!string3Set)
+				{
+					string3 += '<option value="0" SELECTED>None</option>';
+				}
 				
 				string3 += '</select>';
 				

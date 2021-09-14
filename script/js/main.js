@@ -14,7 +14,7 @@ function myFunction() {
 // ifEmpty: If Empty Function
 function ifEmpty(val)
 {
-	if(val == "" || val === undefined || val === null)
+	if(val == "" || val === undefined || val === null || val == "Select a costume...")
 	{
 		return "N/A";
 	}

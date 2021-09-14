@@ -2,6 +2,11 @@
 
 _09/14/2021_
 
+-Prevent double sign up on command staff portal roster
+-Fixed "Select a costume..." bug
+
+_09/14/2021_
+
 -Added show my stats/hide my stats button
 -Fixed: A bug where setting status as Attended would not mark the trooper as attended
 -Trooper name now displays on roster
