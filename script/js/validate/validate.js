@@ -628,6 +628,14 @@ $(function() {
 				$("#signuparea1").html(json.data);
 				$("#signuparea1").show();
 				$("#signuparea").hide();
+				
+				// Remove friend from list
+				$("select[name=trooperSelect]").find("option:selected").remove();
+				
+				// Reset fields
+				$("select[name=costume]").val("null");
+				$("select[name=status]").val("null");
+				$("select[name=backupcostume]").val("null");
             }
           }
         });

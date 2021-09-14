@@ -50,14 +50,29 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 {
 	// Hack Check
 	$query = "SELECT * FROM event_sign_up WHERE (trooperid = '".cleanInput($_SESSION['id'])."' OR addedby = '".cleanInput($_SESSION['id'])."') AND troopid = '".cleanInput($_POST['troopid'])."'";
+	
+	// Used to see if record exists
 	$i = 0;
+	
+	// Used to determine if a friend
+	$isFriend = false;
+	
+	// Used to set the reason for canceling
+	$reason = "";
 	
 	// Output
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
+			// Increment
 			$i++;
+			
+			// Check to see if a friend
+			if($db->addedby == $_SESSION['id'])
+			{
+				$isFriend = true;
+			}
 		}
 	}
 	
@@ -67,8 +82,18 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 		die("Can not do this.");
 	}
 	
+	// Check to see if friend
+	if($isFriend)
+	{
+		// Check to see if canceled
+		if($_POST['status'] == 4)
+		{
+			$reason = "Canceled by friend.";
+		}
+	}
+	
 	// Update SQL
-	$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costume'])."', costume_backup = '".cleanInput($_POST['costume_backup'])."', status = '".cleanInput($_POST['status'])."' WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['troopid'])."'");
+	$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costume'])."', costume_backup = '".cleanInput($_POST['costume_backup'])."', status = '".cleanInput($_POST['status'])."', reason = '".$reason."' WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['troopid'])."'");
 }
 
 /*********************** UNDO CANCEL *********************************************/
@@ -1863,7 +1888,16 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 										$data .= '
 										<select name="modifysignupStatusForm" id="modifysignupStatusForm">
 											<option value="0" '.echoSelect(0, $db2->status).'>I\'ll be there!</option>
-											<option value="1" '.echoSelect(1, $db2->status).'>Tentative</option>
+											<option value="1" '.echoSelect(1, $db2->status).'>Tentative</option>';
+											
+											// Check if this is add friend
+											if(isset($_POST['addfriend']))
+											{
+												$data .= '
+												<option value="4" '.echoSelect(4, $db2->status).'>Cancel</option>';
+											}
+											
+										$data .= '	
 										</select>';
 									}
 									else

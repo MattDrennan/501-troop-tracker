@@ -507,6 +507,8 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			{
 				echo '
 				Search Troop Name: <input type="text" name="searchName" id="searchName" value="'.cleanInput($_POST['searchName']).'" />
+				<br /><br />
+				Search Trooper Name: <input type="text" name="searchTrooperName" id="searchTrooperName" value="'.cleanInput($_POST['searchTrooperName']).'" />
 				<br /><br />';
 			}
 			
@@ -569,7 +571,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 	if($_POST['searchType'] == "regular")
 	{
 		// Query for search
-		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.attend, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE";
+		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.attend, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE";
 		
 		if(strlen($_POST['tkID']) > 0)
 		{
@@ -601,7 +603,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 
 		if(strlen($_POST['dateEnd']) > 0)
 		{
-			if(strlen($_POST['dateEnd']) > 0)
+			if(strlen($_POST['dateStart']) > 0)
 			{
 				$query .= " AND";
 			}
@@ -610,6 +612,16 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			$dateF = date('Y-m-d H:i:s', $date);
 
 			$query .= " events.dateEnd <= '".$dateF."'";
+		}
+		
+		if(strlen($_POST['searchTrooperName']) > 0)
+		{
+			if(strlen($_POST['dateEnd']) > 0)
+			{
+				$query .= " AND";
+			}
+
+			$query .= " troopers.name LIKE '%".cleanInput($_POST['searchTrooperName'])."%'";
 		}
 	}
 	else if($_POST['searchType'] == "trooper")
@@ -1032,6 +1044,8 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 			<div id="searchNameDiv">
 			Search Troop Name: <input type="text" name="searchName" id="searchName" />
 			<br /><br />
+			Search Trooper Name: <input type="text" name="searchTrooperName" id="searchTrooperName" />
+			<br /><br />
 			</div>
 			Date Start: <input type="text" name="dateStart" id="datepicker3" />
 			<br /><br />
@@ -1096,7 +1110,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		echo '
 		</p>';
 		
-		/**************************** Notifications *********************************/
+		/**************************** Site Settings *********************************/
 		
 		if(isset($_GET['do']) && $_GET['do'] == "sitesettings")
 		{
@@ -1159,10 +1173,31 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		if(isset($_GET['do']) && $_GET['do'] == "notifications")
 		{
 			echo '
-			<h3>Notifications</h3>';
+			<h3>Notifications</h3>
 			
-			// Get data
-			$query = "SELECT * FROM notifications ORDER BY id DESC LIMIT 100";
+			<p>
+				<a href="index.php?action=commandstaff&do=notifications" class="button">All</a>
+				<a href="index.php?action=commandstaff&do=notifications&s=system" class="button">System</a>
+				<a href="index.php?action=commandstaff&do=notifications&s=troopers" class="button">Troopers</a>
+			</p>';
+		
+			// Add to query if in URL
+			if(isset($_GET['s']) && $_GET['s'] == "system")
+			{
+				// Get data
+				$query = "SELECT * FROM notifications WHERE message NOT LIKE '%now has%' ORDER BY id DESC LIMIT 100";
+			}
+			else if(isset($_GET['s']) && $_GET['s'] == "troopers")
+			{
+				// Get data
+				$query = "SELECT * FROM notifications WHERE message LIKE '%now has%' ORDER BY id DESC LIMIT 100";
+			}
+			else
+			{
+				// Get data
+				$query = "SELECT * FROM notifications ORDER BY id DESC LIMIT 100";
+			}
+			
 			$i = 0;
 			if ($result = mysqli_query($conn, $query))
 			{
@@ -2779,7 +2814,16 @@ if(isset($_GET['event']))
 									echo '
 									<select name="modifysignupStatusForm" id="modifysignupStatusForm" trooperid="'.$db2->trooperId.'">
 										<option value="0" '.echoSelect(0, $db2->status).'>I\'ll be there!</option>
-										<option value="1" '.echoSelect(1, $db2->status).'>Tentative</option>
+										<option value="1" '.echoSelect(1, $db2->status).'>Tentative</option>';
+										
+										// Check if added by player
+										if($db2->addedby > 0)
+										{
+											echo '
+											<option value="4" '.echoSelect(4, $db2->status).'>Cancel</option>';
+										}
+									
+									echo '
 									</select>';
 								}
 								else
