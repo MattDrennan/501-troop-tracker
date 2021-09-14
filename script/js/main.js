@@ -119,6 +119,23 @@ function echoSelect(value1, value2)
 
 $(document).ready(function()
 {
+	// Shows / Hide Trooper Stats
+	$("body").on("click", "#showstats", function(e)
+	{
+		e.preventDefault();
+		
+		if($("#mystats").is(":hidden"))
+		{
+			$("#mystats").show();
+			$("#showstats").text("Hide My Stats");
+		}
+		else
+		{
+			$("#mystats").hide();
+			$("#showstats").text("Show My Stats");
+		}
+	})
+	
 	// Easy Fill Button: Show/Hide
 	$("#easyfilltoolbutton").click(function(e)
 	{

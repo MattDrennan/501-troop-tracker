@@ -856,7 +856,13 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 	if(loggedIn())
 	{
 		echo '
-		<h2 class="tm-section-header">My Stats</h2>';
+		<h2 class="tm-section-header">My Stats</h2>
+		
+		<p style="text-align: center;">
+			<a href="#" class="button" id="showstats" name="showstats">Show My Stats</a>
+		</p>
+		
+		<div id="mystats" name="mystats" style="display: none;">';
 
 		// Get data
 		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, event_sign_up.attend, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND attend = 1 AND events.closed = '1' ORDER BY events.dateEnd DESC";
@@ -920,6 +926,9 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 			echo '
 			<p><b>You have not attended any troops. Get out there and troop!</b></p>';
 		}
+		
+		echo '
+		</div>';
 	}
 
 	// Show troop tracker for everyone

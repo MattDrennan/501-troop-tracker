@@ -1,5 +1,11 @@
 **Changelog**
 
+_09/14/2021_
+
+-Added show my stats/hide my stats button
+-Fixed: A bug where setting status as Attended would not mark the trooper as attended
+-Trooper name now displays on roster
+
 _09/13/2021_
 
 -Added canceling for a friend
