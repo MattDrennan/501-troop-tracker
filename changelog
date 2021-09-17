@@ -1,5 +1,11 @@
 **Changelog**
 
+_09/17/2021_
+
+-Fixed: When creating a new user, it would ask "Would you like to create this event?"
+-Fixed: A display issue with confirming a troop
+-Added: "My Troops" section to show troopers which troops they are signed up for
+
 _09/14/2021_
 
 -Prevent double sign up on command staff portal roster

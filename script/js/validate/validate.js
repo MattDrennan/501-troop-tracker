@@ -729,7 +729,7 @@ $(function() {
     // Make sure the form is submitted to the destination defined
     // in the "action" attribute of the form when valid
     submitHandler: function(form) {
-     var r = confirm("Are you sure you want to create this event?");
+     var r = confirm("Are you sure you want to create this user?");
 
       if (r == true)
       {

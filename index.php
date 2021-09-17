@@ -3539,6 +3539,33 @@ else
 
 				echo '
 				</div>';
+				
+				// Load events that trooper is attending
+				$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND attend = 0 AND events.closed = 0";
+				$i = 0;
+				
+				// Load events trooper is attending
+				if ($result = mysqli_query($conn, $query))
+				{
+					while ($db = mysqli_fetch_object($result))
+					{
+						// If results exist and first result...
+						if($i == 0)
+						{
+							echo '
+							<br />
+							<hr />
+							<h2 class="tm-section-header">My Troops</h2>';
+						}
+						
+						echo '
+						<div style="border: 1px solid gray; margin-bottom: 10px; text-align: center;">
+							<a href="index.php?event=' . $db->eventId . '">' .date('M d, Y', strtotime($db->dateStart)). ''.'<br />' . $db->name . '</a>
+						</div>';
+						
+						$i++;
+					}
+				}
 			}
 
 			if(loggedIn())
@@ -3553,11 +3580,8 @@ else
 
 					while ($db = mysqli_fetch_object($result))
 					{
-						// If a shift exists to attest to
-						$i++;
-
 						// If data
-						if($i > 0)
+						if($i == 0)
 						{
 							echo '
 							<br />
@@ -3572,6 +3596,9 @@ else
 						<div name="confirmListBox_'.$db->eventId.'" id="confirmListBox_'.$db->eventId.'">
 							<input type="checkbox" name="confirmList[]" id="confirmList_'.$db->eventId.'" value="'.$db->eventId.'" /> '.$db->name.'<br /><br />
 						</div>';
+						
+						// If a shift exists to attest to
+						$i++;
 					}
 				}
 
