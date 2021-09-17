@@ -2,6 +2,11 @@
 
 _09/17/2021_
 
+-Fixed: A bug where an e-mail would not be sent for a password reset
+-When a password is changed, the fields will reset
+
+_09/17/2021_
+
 -Fixed: When creating a new user, it would ask "Would you like to create this event?"
 -Fixed: A display issue with confirming a troop
 -Added: "My Troops" section to show troopers which troops they are signed up for

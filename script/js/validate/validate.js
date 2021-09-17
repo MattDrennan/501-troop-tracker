@@ -1027,6 +1027,9 @@ $(function() {
         data: form.serialize() + "&changePasswordSend=1",
         success: function(data)
         {
+		  $("#oldpassword").val("");
+		  $("#newpassword").val("");
+		  $("#newpassword2").val("");
           alert(data);
         }
       });

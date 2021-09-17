@@ -2514,10 +2514,15 @@ if(isset($_GET['action']) && $_GET['action'] == "forgotpassword")
 					$newPassword = rand(100000, 900000);
 					
 					// Query the database
-					$conn->query("UPDATE troopers SET password = '".md5($newpassword)."' WHERE id = '".$db->id."'");
+					$conn->query("UPDATE troopers SET password = '".md5($newPassword)."' WHERE id = '".$db->id."'");
 					
 					// Send e-mail
 					sendEmail($db->email, readTKNumber($db->tkid), "FL 501st Troop Software Password Reset", "Your new password is:\n\n" . $newPassword . "\n\nPlease change your password as soon as possible.");
+					
+					echo '
+					<p>
+						An e-mail has been sent to your inbox with your new password. Be sure to check your spam folder. If an e-mail does not appear in your inbox within ten minutes, please contact command staff for assistance.
+					</p>';
 				}
 			}
 		}
