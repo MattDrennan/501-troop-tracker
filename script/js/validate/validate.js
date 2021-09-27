@@ -642,56 +642,6 @@ $(function() {
     }
   });
 
-  $("form[name='cancelForm']").validate({
-    // Specify validation rules
-    rules: {
-      // The key name on the left side is the name attribute
-      // of an input field. Validation rules are defined
-      // on the right side
-    },
-    // Specify validation error messages
-    messages: {
-    },
-    // Make sure the form is submitted to the destination defined
-    // in the "action" attribute of the form when valid
-    submitHandler: function(form) {
-
-      var r = confirm("Are you sure you want to cancel this troop?");
-
-      var id = $("#myId").val();
-
-      if (r == true)
-      {
-        $.ajax({
-          type: "POST",
-          url: form.action,
-          data: $(form).serialize() + "&submitCancelTroop=1&troopidC=" + $('#troopidC').val() + "&myId=" + $('#myId').val() + "&limitedevent=" + $("#limitedEventCancel").val(),
-          success: function(data)
-          {
-      			var html = `
-      			<div class="cancelFormArea">
-      			<p>
-      				<b>You have canceled this troop.</b>
-      			</p>
-      			
-      			<form action="process.php?do=undocancel" method="POST" name="undoCancelForm" id="undoCancelForm">
-      				<input type="submit" name="undoCancelButton" id="undoCancelButton" value="I changed my mind" />
-      			</form>
-      			</div>`;
-			
-      			// Change to undo cancel
-            $("#signeduparea").html(html);
-			
-      			// Change select options
-      			$("#trooperRosterCostume").html($("#modifysignupFormCostume option:selected").text());
-      			$("#trooperRosterBackup").html($("#modiftybackupcostumeForm option:selected").text());
-            $("#" + id + "Status").html("<div name='trooperRosterStatus' id='trooperRosterStatus'>Canceled</div>");
-          }
-        });
-      }
-    }
-  });
-
   $("form[name='createUserForm']").validate({
     // Specify validation rules
     rules: {

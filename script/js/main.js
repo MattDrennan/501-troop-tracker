@@ -958,133 +958,6 @@ $(document).ready(function()
 		}
 	});
 	
-	// Undo Cancel
-	
-	// Have to put this here for it to work
-	$("body").on("click", "#submitCancelTroop", function(e)
-	{
-		$("form[name='cancelForm']").validate({
-			// Specify validation rules
-			rules: {
-				// The key name on the left side is the name attribute
-				// of an input field. Validation rules are defined
-				// on the right side
-			},
-			// Specify validation error messages
-				messages: {
-			},
-			// Make sure the form is submitted to the destination defined
-			// in the "action" attribute of the form when valid
-			submitHandler: function(form) {
-
-				var r = confirm("Are you sure you want to cancel this troop?");
-
-				var id = $("#myId").val();
-
-				if (r == true)
-				{
-					$.ajax({
-					type: "POST",
-					url: form.action,
-					data: $(form).serialize() + "&submitCancelTroop=1&troopidC=" + $('#troopidC').val() + "&myId=" + $('#myId').val() + "&limitedevent=" + $("#limitedEventCancel").val(),
-					success: function(data)
-					{
-						var html = `
-						<div class="cancelFormArea">
-						<p>
-						<b>You have canceled this troop.</b>
-						</p>
-
-						<form action="process.php?do=undocancel" method="POST" name="undoCancelForm" id="undoCancelForm">
-						<input type="submit" name="undoCancelButton" id="undoCancelButton" value="I changed my mind" />
-						</form>
-						</div>`;
-
-						// Change to undo cancel
-						$("#signeduparea").html(html);
-
-						// Change select options
-						$("#trooperRosterCostume").html($("#modifysignupFormCostume2 option:selected").text());
-						$("#trooperRosterBackup").html($("#modiftybackupcostumeForm2 option:selected").text());
-						$("#" + id + "Status").html("<div name='trooperRosterStatus' id='trooperRosterStatus'>Canceled</div>");
-					}});
-				}
-			}
-		});
-	});
-	
-	$("body").on("click", "#undoCancelButton", function(e)
-	{
-		e.preventDefault();
-
-		var form = $("#undoCancelForm");
-		var url = form.attr("action");
-
-		var r = confirm("Are you sure you want to attend this event?");
-
-		if (r == true)
-		{
-			$.ajax({
-				type: "POST",
-				url: url,
-				data: form.serialize() + "&undocancel=1&limitedevent=" + $("#limitedEventCancel").val(),
-				success: function(data)
-				{
-					var json = JSON.parse(data);
-
-					// Update roster to have form fields again
-					$("#trooperRosterCostume").html(json[0].costume);
-					$("#trooperRosterBackup").html(json[0].backup);
-					$("#trooperRosterStatus").html(json[0].status);
-					
-					// Hide cancel form area
-					$(".cancelFormArea").hide();
-
-					// Display message
-					alert(json[0].data);
-				}
-			});
-		}
-	});
-	
-	$("body").on("change", "select[name=modifysignupFormCostume2], select[name=modiftybackupcostumeForm2], select[name=modifysignupStatusForm2]", function(e)
-	{
-		var signupForm1 = $("select[name=modifysignupFormCostume2][trooperid=" + $(this).attr("trooperid") + "]");
-		var signupForm2 = $("select[name=modiftybackupcostumeForm2][trooperid=" + $(this).attr("trooperid") + "]");
-		var signupForm3 = $("select[name=modifysignupStatusForm2][trooperid=" + $(this).attr("trooperid") + "]");
-			
-		// Make sure values were changed
-		if(signupForm1.val() != 0)
-		{
-			// Make sure this is not a limited event
-			if($("#modifysignupStatusForm2").val() != -1 && $("#limitedEventCancel").val() == 0)
-			{
-				$.ajax({
-					type: "POST",
-					url: "process.php?do=undocancel&do2=undofinish",
-					data: "costume=" + signupForm1.val() + "&costume_backup=" + signupForm2.val() + "&status=" + signupForm3.val() + "&troopid=" + $("#modifysignupTroopIdForm").val() + "&limitedevent=" + $("#limitedEventCancel").val() + "&trooperid=" + $(this).attr("trooperid"),
-					success: function(data)
-					{
-						alert("Status Updated!");
-						
-						var html = `
-						<p><b>You are signed up for this troop!</b></p>
-
-						<form action="index.php" method="POST" name="cancelForm" id="cancelForm">
-							<p>Reason why you are canceling:</p>
-							<input type="text" name="cancelReason" id="cancelReason" />
-							<input type="submit" name="submitCancelTroop" id="submitCancelTroop" value="Cancel Troop" />
-						</form>`;
-						
-						$("#signeduparea").html(html);
-					}
-				});
-			}
-		}
-	});
-	
-	// End of Undo Cancel
-	
 	// Modify Sign Up Form Change
 	
 	$("body").on("change", "select[name=modifysignupFormCostume], select[name=modiftybackupcostumeForm], select[name=modifysignupStatusForm]", function(e)
@@ -1099,7 +972,26 @@ $(document).ready(function()
 			data: "costume=" + signupForm1.val() + "&costume_backup=" + signupForm2.val() + "&status=" + signupForm3.val() + "&troopid=" + $("#modifysignupTroopIdForm").val() + "&limitedevent=" + $("#limitedEventCancel").val() + "&trooperid=" + $(this).attr("trooperid"),
 			success: function(data)
 			{
-				alert("Status Updated!");
+				var json = JSON.parse(data);
+				
+				if(json.success != "failed")
+				{
+					// Change text on page
+					if(signupForm3.val() == 4)
+					{
+						$("#signeduparea").html("<p><b>You have canceled this troop.</b></p>");
+					}
+					else
+					{
+						$("#signeduparea").html("<p><b>You are signed up for this troop!</b></p>");
+					}
+					
+					alert("Status Updated!");
+				}
+				else
+				{
+					alert(json.data);
+				}
 			}
 		});
 	});

@@ -2576,6 +2576,7 @@ if(isset($_GET['event']))
 			$eventClosed = $db->closed;
 			$limitedEvent = $db->limitedEvent;
 			$limitTotal = $db->limitTotal;
+			$limitTo = $db->limitTo;
 					
 			// Admin Area
 			if(isAdmin())
@@ -2715,7 +2716,7 @@ if(isset($_GET['event']))
 					}
 
 					// Allow for users to edit their status from the event, and make sure the event is not closed, and the user did not cancel
-					if(loggedIn() && ($db2->trooperId == $_SESSION['id'] || $_SESSION['id'] == $db2->addedby) && $db->closed == 0 && $db2->status != 4)
+					if(loggedIn() && ($db2->trooperId == $_SESSION['id'] || $_SESSION['id'] == $db2->addedby) && $db->closed == 0)
 					{
 						echo '
 						<tr>
@@ -2731,10 +2732,19 @@ if(isset($_GET['event']))
 							if($db->limitedEvent != 1)
 							{
 								echo '
-								<td name="trooperRosterCostume" id="trooperRosterCostume">
+								<td name="'.$db2->trooperId.'trooperRosterCostume" id="'.$db2->trooperId.'trooperRosterCostume">
 									<select name="modifysignupFormCostume" id="modifysignupFormCostume" trooperid="'.$db2->trooperId.'">';
 
-									$query3 = "SELECT * FROM costumes ORDER BY costume";
+									$query3 = "SELECT * FROM costumes";
+									
+									// If limited to certain costumes, only show certain costumes...
+									if($db->limitTo < 4)
+									{
+										$query3 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
+									}
+									
+									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff') DESC, costume";
+									
 									if ($result3 = mysqli_query($conn, $query3))
 									{
 										while ($db3 = mysqli_fetch_object($result3))
@@ -2758,11 +2768,19 @@ if(isset($_GET['event']))
 									</select>
 								</td>
 								
-								<td name="trooperRosterBackup" id="trooperRosterBackup">
+								<td name="'.$db2->trooperId.'trooperRosterBackup" id="'.$db2->trooperId.'trooperRosterBackup">
 									<select name="modiftybackupcostumeForm" id="modiftybackupcostumeForm" trooperid="'.$db2->trooperId.'">';
 
 									// Display costumes
-									$query3 = "SELECT * FROM costumes ORDER BY costume";
+									$query3 = "SELECT * FROM costumes";
+									
+									// If limited to certain costumes, only show certain costumes...
+									if($db->limitTo < 4)
+									{
+										$query3 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
+									}
+									
+									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff') DESC, costume";
 									
 									// Count results
 									$c = 0;
@@ -2784,8 +2802,9 @@ if(isset($_GET['event']))
 												echo '
 												<option value="0">N/A</option>';
 											}
+											
 											// If a costume matches
-											else if($db2->costume_backup == $db3->id)
+											if($db2->costume_backup == $db3->id)
 											{
 												echo '
 												<option value="'.$db3->id.'" SELECTED>'.$db3->costume.'</option>';
@@ -2810,34 +2829,26 @@ if(isset($_GET['event']))
 							{
 								// This is a limited event, show costume without ability to edit
 								echo '
-								<td>
+								<td name="'.$db2->trooperId.'trooperRosterCostume" id="'.$db2->trooperId.'trooperRosterCostume">
 									'.getCostume($db2->costume).'
 								</td>
 								
-								<td>
+								<td name="'.$db2->trooperId.'trooperRosterBackup" id="'.$db2->trooperId.'trooperRosterBackup">
 									'.ifEmpty(getCostume($db2->costume_backup), "N/A").'
 								</td>';
 							}
 							
 							echo '
 							<td id="'.$db2->trooperId.'Status">
-							<div name="trooperRosterStatus" id="trooperRosterStatus">';
+							<div name="'.$db2->trooperId.'trooperRosterStatus" id="'.$db2->trooperId.'trooperRosterStatus">';
 							
 								if($db->limitedEvent != 1)
 								{
 									echo '
 									<select name="modifysignupStatusForm" id="modifysignupStatusForm" trooperid="'.$db2->trooperId.'">
 										<option value="0" '.echoSelect(0, $db2->status).'>I\'ll be there!</option>
-										<option value="1" '.echoSelect(1, $db2->status).'>Tentative</option>';
-										
-										// Check if added by player
-										if($db2->addedby > 0)
-										{
-											echo '
-											<option value="4" '.echoSelect(4, $db2->status).'>Cancel</option>';
-										}
-									
-									echo '
+										<option value="1" '.echoSelect(1, $db2->status).'>Tentative</option>
+										<option value="4" '.echoSelect(4, $db2->status).'>Cancel</option>
 									</select>';
 								}
 								else
@@ -2854,34 +2865,6 @@ if(isset($_GET['event']))
 								}
 
 							echo '
-							</div>
-							</td>
-						</tr>';
-					}
-					// If this is the user, and the user canceled, allow to be edited
-					else if(loggedIn() && ($db2->trooperId == $_SESSION['id'] || $_SESSION['id'] == $db2->addedby) && $db->closed == 0 && $db2->status == 4)
-					{
-						echo '
-						<tr>
-							<td>
-								<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>
-							</td>
-								
-							<td>
-								'.readTKNumber($db2->tkid).'
-							</td>
-							
-							<td name="trooperRosterCostume" id="trooperRosterCostume">
-								'.getCostume($db2->costume).'
-							</td>
-							
-							<td name="trooperRosterBackup" id="trooperRosterBackup">
-								'.ifEmpty(getCostume($db2->costume_backup), "N/A").'
-							</td>
-							
-							<td id="'.$db2->trooperId.'Status">
-							<div name="trooperRosterStatus" id="trooperRosterStatus">
-								'.getStatus($db2->status).'
 							</div>
 							</td>
 						</tr>';
@@ -2963,23 +2946,10 @@ if(isset($_GET['event']))
 							$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' AND status != '4'");
 							
 							echo '
-							<div class="cancelFormArea">
-							<p>
-								<b>You have canceled this troop.</b>
-							</p>';
-							
-							if($getNumOfTroopers->num_rows < $db->limitTotal)
-							{
-								echo '
-								<form action="process.php?do=undocancel" method="POST" name="undoCancelForm" id="undoCancelForm">
-									<input type="submit" name="undoCancelButton" id="undoCancelButton" value="I changed my mind" />
-								</form>';
-							}
-							
-							echo '
-							</div>
-						
 							<div name="signeduparea" id="signeduparea">
+								<p>
+									<b>You have canceled this troop.</b>
+								</p>
 							</div>';
 						}
 						else
@@ -2988,13 +2958,9 @@ if(isset($_GET['event']))
 							{
 								echo '
 								<div name="signeduparea" id="signeduparea">
-									<p><b>You are signed up for this troop!</b></p>
-
-									<form action="index.php" method="POST" name="cancelForm" id="cancelForm">
-										<p>Reason why you are canceling:</p>
-										<input type="text" name="cancelReason" id="cancelReason" />
-										<input type="submit" name="submitCancelTroop" id="submitCancelTroop" value="Cancel Troop" />
-									</form>
+									<p>
+										<b>You are signed up for this troop!</b>
+									</p>
 								</div>';
 							}
 							else
@@ -3033,7 +2999,16 @@ if(isset($_GET['event']))
 											<select name="costume">
 												<option value="null" SELECTED>Please choose an option...</option>';
 
-											$query3 = "SELECT * FROM costumes ORDER BY costume";
+											$query3 = "SELECT * FROM costumes";
+											
+											// If limited to certain costumes, only show certain costumes...
+											if($db->limitTo < 4)
+											{
+												$query3 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
+											}
+											
+											$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff') DESC, costume";
+											
 											if ($result3 = mysqli_query($conn, $query3))
 											{
 												while ($db3 = mysqli_fetch_object($result3))
@@ -3073,7 +3048,15 @@ if(isset($_GET['event']))
 											<select name="backupcostume" id="backupcostume">';
 
 											// Display costumes
-											$query2 = "SELECT * FROM costumes ORDER BY costume";
+											$query2 = "SELECT * FROM costumes";
+											
+											// If limited to certain costumes, only show certain costumes...
+											if($db->limitTo < 4)
+											{
+												$query2 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
+											}
+											
+											$query2 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff') DESC, costume";
 											// Amount of costumes
 											$c = 0;
 											if ($result2 = mysqli_query($conn, $query2))
@@ -3144,9 +3127,7 @@ if(isset($_GET['event']))
 		}
 
 		echo '
-		<div class="cancelFormArea">
-		<hr />
-		</div>';
+		<hr />';
 
 		if(loggedIn() && !$isMerged)
 		{
@@ -3232,7 +3213,16 @@ if(isset($_GET['event']))
 						<select name="costume">
 							<option value="null" SELECTED>Please choose an option...</option>';
 
-						$query3 = "SELECT * FROM costumes ORDER BY costume";
+						$query3 = "SELECT * FROM costumes";
+						
+						// If limited to certain costumes, only show certain costumes...
+						if($limitTo < 4)
+						{
+							$query3 .= " WHERE era = '".$limitTo."' OR era = '4'";
+						}
+						
+						$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff') DESC, costume";
+						
 						if ($result3 = mysqli_query($conn, $query3))
 						{
 							while ($db3 = mysqli_fetch_object($result3))
@@ -3272,7 +3262,15 @@ if(isset($_GET['event']))
 						<select name="backupcostume" id="backupcostume">';
 
 						// Display costumes
-						$query2 = "SELECT * FROM costumes ORDER BY costume";
+						$query2 = "SELECT * FROM costumes";
+						
+						// If limited to certain costumes, only show certain costumes...
+						if($limitTo < 4)
+						{
+							$query2 .= " WHERE era = '".$limitTo."' OR era = '4'";
+						}
+						
+						$query2 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff') DESC, costume";
 						// Amount of costumes
 						$c = 0;
 						if ($result2 = mysqli_query($conn, $query2))
@@ -3617,7 +3615,16 @@ else
 						<p>Attended Costume:</p>
 						<select name="costume" id="costumeChoice">';
 
-						$query3 = "SELECT * FROM costumes ORDER BY costume";
+						$query3 = "SELECT * FROM costumes";
+						
+						// If limited to certain costumes, only show certain costumes...
+						if($limitTo < 4)
+						{
+							$query3 .= " WHERE era = '".$limitTo."' OR era = '4'";
+						}
+						
+						$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff') DESC, costume";
+						
 						$l = 0;
 						if ($result3 = mysqli_query($conn, $query3))
 						{

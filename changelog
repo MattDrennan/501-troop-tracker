@@ -1,5 +1,14 @@
 **Changelog**
 
+_09/27/2021_
+
+-Cancel Form removed, replaced with select box for simplification
+-When an event is limited, only the costumes allowed will be shown in the drop box
+
+_09/26/2021_
+
+-Command Staff and N/A will now show up first on troop tracker
+
 _09/19/2021_
 
 -Change profile of trooper's troops to descending order

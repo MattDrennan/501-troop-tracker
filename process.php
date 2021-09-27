@@ -48,6 +48,13 @@ if($_GET['do'] == "changepassword")
 
 if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 {
+	// Prevent if troop full
+	$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".cleanInput($_POST['troopid'])."' AND status != '4'");
+	
+	// Get limit total
+	$limitTotalGet = $conn->query("SELECT limitTotal FROM events WHERE id = '".cleanInput($_POST['troopid'])."'") or die($conn->error);
+	$limitTotalGetVal = $limitTotalGet->fetch_row();
+	
 	// Hack Check
 	$query = "SELECT * FROM event_sign_up WHERE (trooperid = '".cleanInput($_SESSION['id'])."' OR addedby = '".cleanInput($_SESSION['id'])."') AND troopid = '".cleanInput($_POST['troopid'])."'";
 	
@@ -92,92 +99,24 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 		}
 	}
 	
-	// Update SQL
-	$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costume'])."', costume_backup = '".cleanInput($_POST['costume_backup'])."', status = '".cleanInput($_POST['status'])."', reason = '".$reason."' WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['troopid'])."'");
-}
-
-/*********************** UNDO CANCEL *********************************************/
-
-if(isset($_GET['do']) && $_GET['do'] == "undocancel" && loggedIn())
-{
-	// Prevent if troop full
-	$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".cleanInput($_GET['troopid'])."' AND status != '4'");
-	
-	if($getNumOfTroopers->num_rows < $db->limitTotal)
-	{
-		// Message for user in their alert
-		$message = "Please fill in the form fields.";
-		
-		$costume = '
-		<select name="modifysignupFormCostume2" id="modifysignupFormCostume2" trooperid="'.$db->trooperid.'">
-			<option value="0" SELECTED>Please select a costume...</option>';
-
-		$query3 = "SELECT * FROM costumes ORDER BY costume";
-		if ($result3 = mysqli_query($conn, $query3))
-		{
-			while ($db3 = mysqli_fetch_object($result3))
-			{
-				// Default - Do not pre-select
-				$costume .= '
-				<option value="'. $db3->id .'">'.$db3->costume.'</option>';
-			}
-		}
-
-		$costume .= '
-		</select>';
-		
-		$backup = '
-		<select name="modiftybackupcostumeForm2" id="modiftybackupcostumeForm2" trooperid="'.$db->trooperid.'">
-			<option value="0" SELECTED>N/A</option>';
-
-		// Display costumes
-		$query3 = "SELECT * FROM costumes ORDER BY costume";
-		
-		// Amount of costumes
-		if ($result3 = mysqli_query($conn, $query3))
-		{
-			while ($db3 = mysqli_fetch_object($result3))
-			{
-				$backup .= '
-				<option value="'.$db3->id.'">'.$db3->costume.'</option>';
-			}
-		}
-
-		$backup .= '
-		</select>';
-		
-		if($_POST['limitedevent'] != 1)
-		{
-			$status = '
-			<select name="modifysignupStatusForm2" id="modifysignupStatusForm2" trooperid="'.$db->trooperid.'">
-				<option value="-1" SELECTED>Please select an option...</option>
-				<option value="0">I\'ll be there!</option>
-				<option value="1">Tentative</option>
-			</select>';
-		}
-		else
-		{
-			$status = '
-			(Pending Command Staff Approval)';								
-		}
-		
-		// Send JSON data
-		$array = array(array('data' => $message, 'costume' => $costume, 'backup' => $backup, 'status' => $status));
-		echo json_encode($array);
-	}
-}
-
-// UNDO Cancel Save
-
-if(isset($_GET['do']) && isset($_GET['do2']) && $_GET['do'] == "undocancel" && $_GET['do2'] == "undofinish" && loggedIn())
-{
-	// Prevent if troop full
-	$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".cleanInput($_GET['troopid'])."' AND status != '4'");
-	
-	if($getNumOfTroopers->num_rows < $db->limitTotal)
+	// Check if troop is full
+	if($getNumOfTroopers->num_rows < $limitTotalGetVal[0])
 	{
 		// Update SQL
-		$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costume'])."', costume_backup = '".cleanInput($_POST['costume_backup'])."', status = '".cleanInput($_POST['status'])."' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($_POST['troopid'])."'");
+		$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costume'])."', costume_backup = '".cleanInput($_POST['costume_backup'])."', status = '".cleanInput($_POST['status'])."', reason = '".$reason."' WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['troopid'])."'");
+		
+		// Send JSON
+		$array = array('success' => 'true');
+		echo json_encode($array);
+	}
+	else
+	{
+		// Troop is full
+		$data = "This troop is now full!";
+		
+		// Send JSON
+		$array = array('success' => 'failed', 'data' => $data);
+		echo json_encode($array);
 	}
 }
 
@@ -1290,7 +1229,18 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		$costumesID = array();
 		
 		// Display costumes
-		$query2 = "SELECT * FROM costumes ORDER BY costume";
+		$query2 = "SELECT * FROM costumes";
+		$limitToGet = $conn->query("SELECT limitTo FROM events WHERE id = '".cleanInput($_POST['eventId'])."'") or die($conn->error);
+		$limitToGetVal = $limitToGet->fetch_row();
+		
+		// If limited to certain costumes, only show certain costumes...
+		if(limitToGetVal[0] < 4)
+		{
+			$query2 .= " WHERE era = '".limitToGetVal[0]."' OR era = '4'";
+		}
+		
+		$query2 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff') DESC, costume";
+		
 		if ($result2 = mysqli_query($conn, $query2))
 		{
 			while ($db2 = mysqli_fetch_object($result2))
@@ -1827,7 +1777,17 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 								<td name="trooperRosterCostume" id="trooperRosterCostume">
 									<select name="modifysignupFormCostume2" id="modifysignupFormCostume2">';
 
-									$query3 = "SELECT * FROM costumes ORDER BY costume";
+									// Display costumes
+									$query3 = "SELECT * FROM costumes";
+									
+									// If limited to certain costumes, only show certain costumes...
+									if($db->limitTo < 4)
+									{
+										$query3 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
+									}
+									
+									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff') DESC, costume";
+									
 									if ($result3 = mysqli_query($conn, $query3))
 									{
 										while ($db3 = mysqli_fetch_object($result3))
@@ -1855,7 +1815,15 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 									<select name="modiftybackupcostumeForm2" id="modiftybackupcostumeForm2">';
 
 									// Display costumes
-									$query3 = "SELECT * FROM costumes ORDER BY costume";
+									$query3 = "SELECT * FROM costumes";
+									
+									// If limited to certain costumes, only show certain costumes...
+									if($db->limitTo < 4)
+									{
+										$query3 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
+									}
+									
+									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff') DESC, costume";
 									
 									// Count results
 									$c = 0;
@@ -1877,8 +1845,10 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 												$data .= '
 												<option value="0">N/A</option>';
 											}
+											
+											
 											// If a costume matches
-											else if($db2->costume_backup == $db3->id)
+											if($db2->costume_backup == $db3->id)
 											{
 												$data .= '
 												<option value="'.$db3->id.'" SELECTED>'.$db3->costume.'</option>';
@@ -2015,12 +1985,6 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 					$data .= '
 					<div name="signeduparea" id="signeduparea">
 						<p><b>You are signed up for this troop!</b></p>
-
-						<form action="index.php" method="POST" name="cancelForm" id="cancelForm">
-							<p>Reason why you are canceling:</p>
-							<input type="text" name="cancelReason" id="cancelReason" />
-							<input type="submit" name="submitCancelTroop" id="submitCancelTroop" value="Cancel Troop" />
-						</form>
 					</div>';
 				}
 
