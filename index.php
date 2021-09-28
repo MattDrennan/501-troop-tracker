@@ -1351,50 +1351,53 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				</form>';
 			}
 			
-			echo '
-			<br />
-			<hr />
-			<br />
-			
-			<h3>Delete Costume</h3>';
-
-			// Get data
-			$query = "SELECT * FROM costumes ORDER BY costume";
-
-			$i = 0;
-			if ($result = mysqli_query($conn, $query))
-			{
-				while ($db = mysqli_fetch_object($result))
-				{
-					// Formatting
-					if($i == 0)
-					{
-						echo '
-						<form action="process.php?do=managecostumes" method="POST" name="costumeDeleteForm" id="costumeDeleteForm">
-
-						<select name="costumeID" id="costumeID">';
-					}
-
-					echo '<option value="'.$db->id.'">'.$db->costume.'</option>';
-
-					// Increment
-					$i++;
-				}
-			}
-
-			if($i == 0)
-			{
-				echo 'No costumes to display.';
-			}
-			else
+			if(hasPermission(1))
 			{
 				echo '
-				<input type="submit" name="submitDeleteCostume" id="submitDeleteCostume" value="Delete Costume" />
-				</form>';
-			}
+				<br />
+				<hr />
+				<br />
 			
-			echo '
-			</div>';
+				<h3>Delete Costume</h3>';
+
+				// Get data
+				$query = "SELECT * FROM costumes ORDER BY costume";
+
+				$i = 0;
+				if ($result = mysqli_query($conn, $query))
+				{
+					while ($db = mysqli_fetch_object($result))
+					{
+						// Formatting
+						if($i == 0)
+						{
+							echo '
+							<form action="process.php?do=managecostumes" method="POST" name="costumeDeleteForm" id="costumeDeleteForm">
+
+							<select name="costumeID" id="costumeID">';
+						}
+
+						echo '<option value="'.$db->id.'">'.$db->costume.'</option>';
+
+						// Increment
+						$i++;
+					}
+				}
+
+				if($i == 0)
+				{
+					echo 'No costumes to display.';
+				}
+				else
+				{
+					echo '
+					<input type="submit" name="submitDeleteCostume" id="submitDeleteCostume" value="Delete Costume" />
+					</form>';
+				}
+				
+				echo '
+				</div>';
+			}
 		}
 		
 		/**************************** AWARDS *********************************/
@@ -1659,9 +1662,16 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				echo '
 				</select>
 
-				<br /><br />
+				<br /><br />';
 
-				<input type="submit" name="submitDelete" id="submitDelete" value="Delete" /> <input type="submit" name="submitCancel" id="submitCancel" value="Mark Canceled" /> <input type="submit" name="submitFinish" id="submitFinish" value="Mark Finished" /> <input type="submit" name="submitOpen" id="submitOpen" value="Mark Open" /> <input type="submit" name="submitEdit" id="submitEdit" value="Edit" /> <input type="submit" name="submitRoster" id="submitRoster" value="Roster" /> <input type="submit" name="submitCharity" id="submitCharity" value="Set Charity Amount" />
+				if(hasPermission(1))
+				{
+					echo '
+					<input type="submit" name="submitDelete" id="submitDelete" value="Delete" />';
+				}
+				
+				echo '
+				<input type="submit" name="submitCancel" id="submitCancel" value="Mark Canceled" /> <input type="submit" name="submitFinish" id="submitFinish" value="Mark Finished" /> <input type="submit" name="submitOpen" id="submitOpen" value="Mark Open" /> <input type="submit" name="submitEdit" id="submitEdit" value="Edit" /> <input type="submit" name="submitRoster" id="submitRoster" value="Roster" /> <input type="submit" name="submitCharity" id="submitCharity" value="Set Charity Amount" />
 
 				</form>
 
@@ -2330,9 +2340,16 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 			while ($db = mysqli_fetch_object($result))
 			{
 				$i++;
+				
+				// Check if old MD5 password
+				if(cleanInput(md5($_POST['password'])) == $db->password)
+				{
+					// Update MySQL password
+					$conn->query("UPDATE troopers SET password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."' WHERE id = '".$db->id."'");
+				}
 
 				// Check credentials
-				if(cleanInput(md5($_POST['password'])) == $db->password)
+				if(password_verify(cleanInput($_POST['password']), $db->password))
 				{
 					if($db->approved != 0)
 					{
@@ -2412,7 +2429,7 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed())
 						if ($validator->check_email_address(cleanInput($_POST['email'])))
 						{
 							// Query the database
-							$conn->query("UPDATE troopers SET email = '".$_POST['email']."', password = '".md5(cleanInput($_POST['password']))."', squad = '".cleanInput($_POST['squad'])."' WHERE tkid = '".cleanInput($_POST['tkid'])."'");
+							$conn->query("UPDATE troopers SET email = '".$_POST['email']."', password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE tkid = '".cleanInput($_POST['tkid'])."'");
 
 							// Display output
 							echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';
@@ -2514,7 +2531,7 @@ if(isset($_GET['action']) && $_GET['action'] == "forgotpassword")
 					$newPassword = rand(100000, 900000);
 					
 					// Query the database
-					$conn->query("UPDATE troopers SET password = '".md5($newPassword)."' WHERE id = '".$db->id."'");
+					$conn->query("UPDATE troopers SET password = '".password_hash($newPassword, PASSWORD_DEFAULT)."' WHERE id = '".$db->id."'");
 					
 					// Send e-mail
 					sendEmail($db->email, readTKNumber($db->tkid), "FL 501st Troop Software Password Reset", "Your new password is:\n\n" . $newPassword . "\n\nPlease change your password as soon as possible.");
@@ -2743,7 +2760,7 @@ if(isset($_GET['event']))
 										$query3 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
 									}
 									
-									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff') DESC, costume";
+									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler') DESC, costume";
 									
 									if ($result3 = mysqli_query($conn, $query3))
 									{
@@ -2780,7 +2797,7 @@ if(isset($_GET['event']))
 										$query3 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
 									}
 									
-									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff') DESC, costume";
+									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler') DESC, costume";
 									
 									// Count results
 									$c = 0;
@@ -3007,7 +3024,7 @@ if(isset($_GET['event']))
 												$query3 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
 											}
 											
-											$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff') DESC, costume";
+											$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler') DESC, costume";
 											
 											if ($result3 = mysqli_query($conn, $query3))
 											{
@@ -3056,7 +3073,7 @@ if(isset($_GET['event']))
 												$query2 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
 											}
 											
-											$query2 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff') DESC, costume";
+											$query2 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler') DESC, costume";
 											// Amount of costumes
 											$c = 0;
 											if ($result2 = mysqli_query($conn, $query2))
@@ -3221,7 +3238,7 @@ if(isset($_GET['event']))
 							$query3 .= " WHERE era = '".$limitTo."' OR era = '4'";
 						}
 						
-						$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff') DESC, costume";
+						$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler') DESC, costume";
 						
 						if ($result3 = mysqli_query($conn, $query3))
 						{
@@ -3270,7 +3287,7 @@ if(isset($_GET['event']))
 							$query2 .= " WHERE era = '".$limitTo."' OR era = '4'";
 						}
 						
-						$query2 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff') DESC, costume";
+						$query2 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler') DESC, costume";
 						// Amount of costumes
 						$c = 0;
 						if ($result2 = mysqli_query($conn, $query2))
@@ -3445,13 +3462,21 @@ else
 				<h2 class="tm-section-header">Troops</h2>
 
 				<a href="index.php"><img src="images/garrison_emblem.png" alt="Florida Garrison Troops" '.isSquadActive(0).' /></a> <a href="index.php?squad=1"><img src="images/everglades_emblem.png" alt="Everglades Squad Troops" '.isSquadActive(1).' /></a> <a href="index.php?squad=2"><img src="images/makaze_emblem.png" alt="Makaze Squad Troops" '.isSquadActive(2).' /></a> <a href="index.php?squad=3"><img src="images/parjai_emblem.png" alt="Parjai Squad Troops" '.isSquadActive(3).' /></a> <a href="index.php?squad=4"><img src="images/squad7_emblem.png" alt="Squad 7 Troops" '.isSquadActive(4).' /></a> <a href="index.php?squad=5"><img src="images/tampabay_emblem.png" alt="Tampa Bay Squad Troops" '.isSquadActive(5).' /></a>
+				<p style="text-align: center;">
+				<a href="index.php?squad=mytroops" class="button">My Troops</a>
+				</p>
 
-				<br /><br /><hr /><br />
+				<hr /><br />
 
 				<div style="text-align: center;">';
 
 				// Was a squad defined? (Prevents displays div when not needed)
-				if(isset($_GET['squad']))
+				if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
+				{
+					// Query
+					$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, events.limitTotal, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND attend = 0 AND events.closed = 0";
+				}
+				else if(isset($_GET['squad']))
 				{
 					// Query
 					$query = "SELECT * FROM events WHERE dateStart >= CURDATE() AND squad = '".cleanInput($_GET['squad'])."' AND closed = '0' ORDER BY dateStart";
@@ -3495,6 +3520,24 @@ else
 							}
 
 							$i++;
+						}
+						else if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
+						{
+							echo '<a href="index.php?event=' . $db->id . '">' .date('M d, Y', strtotime($db->dateStart)). ''.'<br />' . $db->name . '</a>';
+
+							// If not enough troopers...
+							if($getNumOfTroopers->num_rows <= 1)
+							{
+								echo '<br /><span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
+							}
+							
+							// If full
+							if($getNumOfTroopers->num_rows >= $db->limitTotal)
+							{
+								echo '<br /><span style="color:green;"><b>THIS TROOP IS FULL!</b></span>';
+							}
+
+							$i2++;
 						}
 						else
 						{
@@ -3542,33 +3585,6 @@ else
 
 				echo '
 				</div>';
-				
-				// Load events that trooper is attending
-				$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND attend = 0 AND events.closed = 0";
-				$i = 0;
-				
-				// Load events trooper is attending
-				if ($result = mysqli_query($conn, $query))
-				{
-					while ($db = mysqli_fetch_object($result))
-					{
-						// If results exist and first result...
-						if($i == 0)
-						{
-							echo '
-							<br />
-							<hr />
-							<h2 class="tm-section-header">My Troops</h2>';
-						}
-						
-						echo '
-						<div style="border: 1px solid gray; margin-bottom: 10px; text-align: center;">
-							<a href="index.php?event=' . $db->eventId . '">' .date('M d, Y', strtotime($db->dateStart)). ''.'<br />' . $db->name . '</a>
-						</div>';
-						
-						$i++;
-					}
-				}
 			}
 
 			if(loggedIn())
@@ -3623,7 +3639,7 @@ else
 							$query3 .= " WHERE era = '".$limitTo."' OR era = '4'";
 						}
 						
-						$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff') DESC, costume";
+						$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler') DESC, costume";
 						
 						$l = 0;
 						if ($result3 = mysqli_query($conn, $query3))

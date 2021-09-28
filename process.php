@@ -14,14 +14,14 @@ if($_GET['do'] == "changepassword")
 			while ($db = mysqli_fetch_object($result))
 			{
 				// Check credentials
-				if(cleanInput(md5($_POST['oldpassword'])) == $db->password)
+				if(password_verify(cleanInput($_POST['oldpassword']), $db->password))
 				{
 					if($_POST['newpassword'] == $_POST['newpassword2'])
 					{
 						if(strlen($_POST['newpassword']) >= 6)
 						{
 							// Query the database
-							$conn->query("UPDATE troopers SET password = '".md5(cleanInput($_POST['newpassword']))."' WHERE id = '".$_SESSION['id']."'");
+							$conn->query("UPDATE troopers SET password = '".password_hash(cleanInput($_POST['newpassword']), PASSWORD_DEFAULT)."' WHERE id = '".$_SESSION['id']."'");
 
 							echo 'Your password has changed!';
 						}
@@ -793,7 +793,7 @@ if(isset($_GET['do']) && $_GET['do'] == "createuser" && loggedIn())
 			else
 			{
 				// Insert into database
-				$conn->query("INSERT INTO troopers (name, email, forum_id, phone, squad, permissions, tkid, password, approved) VALUES ('".cleanInput($_POST['name'])."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['phone'])."', '".cleanInput($_POST['squad'])."', '".cleanInput($_POST['permissions'])."', '".cleanInput($_POST['tkid'])."', '".cleanInput(md5($_POST['password']))."', 1)");
+				$conn->query("INSERT INTO troopers (name, email, forum_id, phone, squad, permissions, tkid, password, approved) VALUES ('".cleanInput($_POST['name'])."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['phone'])."', '".cleanInput($_POST['squad'])."', '".cleanInput($_POST['permissions'])."', '".cleanInput($_POST['tkid'])."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', 1)");
 				
 				// Send notification to command staff
 				sendNotification(getName($_SESSION['id']) . " has added a user", cleanInput($_SESSION['id']));
@@ -992,7 +992,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			// If failed
 			if(!$failed)
 			{
-				$conn->query("INSERT INTO troopers (name, tkid, email, forum_id, phone, squad, password) VALUES ('".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['phone'])."', '".cleanInput($_POST['squad'])."', '".md5(cleanInput($_POST['password']))."')") or die($conn->error);
+				$conn->query("INSERT INTO troopers (name, tkid, email, forum_id, phone, squad, password) VALUES ('".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['phone'])."', '".cleanInput($_POST['squad'])."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."')") or die($conn->error);
 				echo '<li>Request submitted! You will receive an e-mail when your request is approved or denied.</li>';
 			}
 
@@ -1234,12 +1234,12 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		$limitToGetVal = $limitToGet->fetch_row();
 		
 		// If limited to certain costumes, only show certain costumes...
-		if(limitToGetVal[0] < 4)
+		if($limitToGetVal[0] < 4)
 		{
-			$query2 .= " WHERE era = '".limitToGetVal[0]."' OR era = '4'";
+			$query2 .= " WHERE era = '".$limitToGetVal[0]."' OR era = '4'";
 		}
 		
-		$query2 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff') DESC, costume";
+		$query2 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler') DESC, costume";
 		
 		if ($result2 = mysqli_query($conn, $query2))
 		{
@@ -1786,7 +1786,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 										$query3 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
 									}
 									
-									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff') DESC, costume";
+									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler') DESC, costume";
 									
 									if ($result3 = mysqli_query($conn, $query3))
 									{
@@ -1823,7 +1823,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 										$query3 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
 									}
 									
-									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff') DESC, costume";
+									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler') DESC, costume";
 									
 									// Count results
 									$c = 0;

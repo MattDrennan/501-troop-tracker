@@ -333,7 +333,7 @@ function isSquadActive($squad)
 {
 	if(isset($_GET['squad']))
 	{
-		if($squad == $_GET['squad'])
+		if($squad == $_GET['squad'] && $_GET['squad'] != "mytroops")
 		{
 			// Squad
 			return 'class="squadlink"';

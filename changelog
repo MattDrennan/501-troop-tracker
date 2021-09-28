@@ -1,5 +1,14 @@
 **Changelog**
 
+_09/28/2021_
+
+-Added Handler to top of costume list
+-Fixed PHP Warning, was missing a "$"
+-Changed permissions for deleting events and costumes
+-Changed My Troops to a button, instead of showing on the main page and causing clutter
+-Increased account security, converted passwords from MD5 to password_hash
+-Updated SQL
+
 _09/27/2021_
 
 -Cancel Form removed, replaced with select box for simplification
