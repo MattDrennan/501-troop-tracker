@@ -3332,8 +3332,8 @@ if(isset($_GET['event']))
 			}
 			else
 			{
-				echo '
-				<p>This event is closed for editing.</p>';
+				//echo '
+				//<p>This event is closed for editing.</p>';
 			}
 			
 			
