@@ -2,6 +2,11 @@
 
 _09/28/2021_
 
+-Fixed a display bug with add a friend
+-Fixed a bug when adding a trooper to an event, where cancel would not display
+
+_09/28/2021_
+
 -Added Handler to top of costume list
 -Fixed PHP Warning, was missing a "$"
 -Changed permissions for deleting events and costumes

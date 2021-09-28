@@ -1877,16 +1877,8 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 										$data .= '
 										<select name="modifysignupStatusForm" id="modifysignupStatusForm">
 											<option value="0" '.echoSelect(0, $db2->status).'>I\'ll be there!</option>
-											<option value="1" '.echoSelect(1, $db2->status).'>Tentative</option>';
-											
-											// Check if this is add friend
-											if(isset($_POST['addfriend']))
-											{
-												$data .= '
-												<option value="4" '.echoSelect(4, $db2->status).'>Cancel</option>';
-											}
-											
-										$data .= '	
+											<option value="1" '.echoSelect(1, $db2->status).'>Tentative</option>
+											<option value="4" '.echoSelect(4, $db2->status).'>Cancel</option>	
 										</select>';
 									}
 									else

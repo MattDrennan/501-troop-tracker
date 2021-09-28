@@ -3147,22 +3147,7 @@ if(isset($_GET['event']))
 		<hr />';
 
 		if(loggedIn() && !$isMerged)
-		{
-			// Only show add a friend if main user is in event
-			if(inEvent($_SESSION['id'], cleanInput($_GET['event']))["inTroop"] == 1)
-			{
-				echo '
-				<div id="addfriend" name="addfriend">';
-			}
-			else
-			{
-				echo '
-				<div id="addfriend" name="addfriend" style="display: none;">';
-			}
-			
-			echo '
-			<h2 class="tm-section-header">Add a Friend</h2>';
-			
+		{	
 			// Check to see if this event is full
 			$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".cleanInput($_GET['event'])."' AND status != '4'");
 			
@@ -3176,6 +3161,21 @@ if(isset($_GET['event']))
 						{
 							echo '<b>This is a locked event. When you sign up, you will be placed in a pending status until command staff approves you. Please check for updates.</b>';
 						}
+						
+						// Only show add a friend if main user is in event
+						if(inEvent($_SESSION['id'], cleanInput($_GET['event']))["inTroop"] == 1)
+						{
+							echo '
+							<div id="addfriend" name="addfriend">';
+						}
+						else
+						{
+							echo '
+							<div id="addfriend" name="addfriend" style="display: none;">';
+						}
+						
+						echo '
+						<h2 class="tm-section-header">Add a Friend</h2>';
 						
 						echo '
 						<form action="process.php?do=signup" method="POST" name="signupForm3" id="signupForm3">
@@ -3315,7 +3315,8 @@ if(isset($_GET['event']))
 						<input type="submit" value="Add Friend" name="submitSignUp" />
 						</form>
 						
-						<hr />';
+						<hr />
+						</div>';
 					}
 					else
 					{
@@ -3335,7 +3336,7 @@ if(isset($_GET['event']))
 				<p>This event is closed for editing.</p>';
 			}
 			
-			echo '</div>';
+			
 			
 			echo '
 			<form aciton="process.php?do=postcomment" name="commentForm" id="commentForm" method="POST">
