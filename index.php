@@ -349,9 +349,31 @@ if(isset($_GET['profile']))
 					<p style="text-align: center;"><a href="index.php?action=commandstaff&do=managetroopers&uid='.$db->id.'">Edit/View Member in Command Staff Area</a></p>';
 				}
 				
-				echo '
-				<h2 class="tm-section-header">'.$db->name.' - '.readTKNumber($db->tkid).'</h2>
+				// Get 501st Info
+				$thumbnail_get = $conn->query("SELECT thumbnail FROM 501st_troopers WHERE legionid = '".$db->tkid."'");
+				$thumbnail = $thumbnail_get->fetch_row();
 				
+				echo '
+				<h2 class="tm-section-header">'.$db->name.' - '.readTKNumber($db->tkid).'</h2>';
+				
+				// Avatar
+				
+				if($thumbnail[0] != "")
+				{
+					echo '
+					<p style="text-align: center;">
+						<img src="'.$thumbnail[0].'" />
+					</p>';
+				}
+				else
+				{
+					echo '
+					<p style="text-align: center;">
+						<img src="https://www.501st.com/memberdata/templates/tk_head.jpg" />
+					</p>';
+				}
+				
+				echo '
 				<p style="text-align: center;"><a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un='.urlencode($db->forum_id).'" target="_blank">View Boards Profile</a></p>
 
 				<div style="overflow-x: auto;">
