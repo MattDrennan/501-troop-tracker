@@ -78,6 +78,9 @@ function showCostumes($id)
 					<img src="'.$db->photo.'" /> <img src="'.$db->bucketoff.'" />
 				</p>
 			</div>';
+			
+			// Increment
+			$i++;
 		}
 	}
 	
