@@ -85,7 +85,7 @@ function showCostumes($id)
 	if($i == 0)
 	{
 		echo '
-		<p>
+		<p style="text-align: center;">
 			No costumes to display!
 		</p>';
 	}
