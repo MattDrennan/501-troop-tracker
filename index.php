@@ -358,7 +358,7 @@ if(isset($_GET['profile']))
 				
 				// Avatar
 				
-				if($thumbnail[0] != "")
+				if(isset($thumbnail[0]))
 				{
 					echo '
 					<p style="text-align: center;">
