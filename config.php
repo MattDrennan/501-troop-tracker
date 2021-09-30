@@ -74,8 +74,37 @@ function showCostumes($id)
 			echo '
 			<div style="text-align: center;">
 				<h3>'.$db->costumename.'<h3>
-				<p>
-					<img src="'.$db->photo.'" /> <img src="'.$db->bucketoff.'" />
+				<p>';
+					// Set up image count
+					$iC = 0;
+					
+					// Check if image is available
+					if(@getimagesize($db->photo)[0])
+					{
+						echo '
+						<img src="'.$db->photo.'" />';
+						
+						// Increment
+						$iC++;
+					}
+					
+					// Check if image is available
+					if(@getimagesize($db->bucketoff)[0])
+					{
+						echo '
+						<img src="'.$db->bucketoff.'" />';
+						
+						// Increment
+						$iC++;
+					}
+					
+					// If no image available
+					if($iC == 0)
+					{
+						echo '
+						No images available for costume.';
+					}
+				echo '
 				</p>
 			</div>';
 			
