@@ -375,7 +375,7 @@ if(isset($_GET['profile']))
 				
 				echo '
 				<p style="text-align: center;"><a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un='.urlencode($db->forum_id).'" target="_blank">View Boards Profile</a></p>
-
+				
 				<div style="overflow-x: auto;">
 				<table border="1">
 				<tr>
@@ -515,6 +515,11 @@ if(isset($_GET['profile']))
 		echo '
 		</ul>';
 	}
+	
+	echo '
+	<h2 class="tm-section-header">Costumes</h2>';
+	
+	showCostumes(getTKNumber($_GET['profile']));
 }
 
 // Show the search page

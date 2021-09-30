@@ -55,6 +55,42 @@ function email_check()
 	}
 }
 
+// showCostumes: A function which displays all the users costumes in synced database
+function showCostumes($id)
+{
+	global $conn;
+	
+	// Get data
+	$query = "SELECT * FROM 501st_costumes WHERE legionid = '".$id."'";
+	
+	// Set up count
+	$i = 0;
+	
+	// Run query...
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			echo '
+			<div style="text-align: center;">
+				<h3>'.$db->costumename.'<h3>
+				<p>
+					<img src="'.$db->photo.'" /> <img src="'.$db->bucketoff.'" />
+				</p>
+			</div>';
+		}
+	}
+	
+	// If no results
+	if($i == 0)
+	{
+		echo '
+		<p>
+			No costumes to display!
+		</p>';
+	}
+}
+
 // getSquad: Gets squad by location
 function getSquad($address)
 {

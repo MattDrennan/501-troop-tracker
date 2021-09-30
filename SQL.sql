@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Sep 29, 2021 at 03:59 PM
+-- Generation Time: Sep 30, 2021 at 01:42 PM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -24,6 +24,25 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `501st_costumes`
+--
+
+DROP TABLE IF EXISTS `501st_costumes`;
+CREATE TABLE IF NOT EXISTS `501st_costumes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `legionid` int(11) NOT NULL,
+  `costumeid` int(11) NOT NULL,
+  `prefix` varchar(2) NOT NULL,
+  `costumename` varchar(255) NOT NULL,
+  `photo` varchar(255) NOT NULL,
+  `thumbnail` varchar(255) NOT NULL,
+  `bucketoff` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `501st_troopers`
 --
 
@@ -34,6 +53,10 @@ CREATE TABLE IF NOT EXISTS `501st_troopers` (
   `thumbnail` varchar(255) NOT NULL,
   `link` varchar(255) NOT NULL,
   `squad` int(50) NOT NULL,
+  `approved` int(11) NOT NULL DEFAULT '0',
+  `status` int(11) NOT NULL DEFAULT '0',
+  `standing` int(11) NOT NULL DEFAULT '0',
+  `joindate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`legionid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
