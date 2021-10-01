@@ -1,5 +1,11 @@
 **Changelog**
 
+_10/01/2021_
+
+-Fixed favorite costume query
+-Added: getMyCostumes function which will return a string of assigned costumes to trooper
+-When available, the costumes of the trooper will show at the top of the drop down list
+
 _09/30/2021_
 
 -Added "501sync_costumes.php", which is a file that will sync main 501st costume data with troop tracker

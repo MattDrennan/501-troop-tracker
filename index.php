@@ -934,7 +934,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		if($i > 0)
 		{
 			// How many troops did the user attend
-			$favoriteCostume_get = $conn->query("SELECT costume, COUNT(*) FROM event_sign_up WHERE trooperid = '".$_SESSION['id']."' GROUP BY costume ORDER BY costume DESC LIMIT 1") or die($conn->error);
+			$favoriteCostume_get = $conn->query("SELECT costume, COUNT(*) FROM event_sign_up WHERE trooperid = '".$_SESSION['id']."' GROUP BY costume ORDER BY COUNT(costume) DESC LIMIT 1") or die($conn->error);
 
 			$favoriteCostume = mysqli_fetch_array($favoriteCostume_get);
 
@@ -1009,7 +1009,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 	if($i > 0)
 	{
 		// How many troops did the user attend
-		$favoriteCostume_get = $conn->query("SELECT costume, COUNT(*) FROM event_sign_up GROUP BY costume ORDER BY costume DESC LIMIT 1") or die($conn->error);
+		$favoriteCostume_get = $conn->query("SELECT costume, COUNT(*) FROM event_sign_up GROUP BY costume ORDER BY COUNT(costume) DESC LIMIT 1") or die($conn->error);
 		$favoriteCostume = mysqli_fetch_array($favoriteCostume_get);
 
 		// How many troops did the user attend
@@ -2787,7 +2787,7 @@ if(isset($_GET['event']))
 										$query3 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
 									}
 									
-									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler') DESC, costume";
+									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler'".getMyCostumes(getTKNumber($db2->trooperId)).") DESC, costume";
 									
 									if ($result3 = mysqli_query($conn, $query3))
 									{
@@ -2824,7 +2824,7 @@ if(isset($_GET['event']))
 										$query3 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
 									}
 									
-									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler') DESC, costume";
+									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler'".getMyCostumes(getTKNumber($db2->trooperId)).") DESC, costume";
 									
 									// Count results
 									$c = 0;
@@ -3051,7 +3051,9 @@ if(isset($_GET['event']))
 												$query3 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
 											}
 											
-											$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler') DESC, costume";
+											$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler'".getMyCostumes(getTKNumber($_SESSION['id'])).") DESC, costume";
+											
+											echo $query3;
 											
 											if ($result3 = mysqli_query($conn, $query3))
 											{
@@ -3100,7 +3102,7 @@ if(isset($_GET['event']))
 												$query2 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
 											}
 											
-											$query2 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler') DESC, costume";
+											$query2 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler'".getMyCostumes(getTKNumber($_SESSION['id'])).") DESC, costume";
 											// Amount of costumes
 											$c = 0;
 											if ($result2 = mysqli_query($conn, $query2))
@@ -3667,7 +3669,7 @@ else
 							$query3 .= " WHERE era = '".$limitTo."' OR era = '4'";
 						}
 						
-						$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler') DESC, costume";
+						$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler'".getMyCostumes(getTKNumber($_SESSION['id'])).") DESC, costume";
 						
 						$l = 0;
 						if ($result3 = mysqli_query($conn, $query3))

@@ -55,6 +55,30 @@ function email_check()
 	}
 }
 
+// getMyCostumes: A function which returns a string of costumes assigned to user in synced database
+function getMyCostumes($id)
+{
+	global $conn;
+	
+	// Setup array
+	$costume = "";
+	
+	// Get data
+	$query = "SELECT costumename FROM 501st_costumes WHERE legionid = '".$id."'";
+	
+	// Run query...
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			$costume .= ", '" . $db->costumename . "'";
+		}
+	}
+	
+	// Return
+	return $costume;
+}
+
 // showCostumes: A function which displays all the users costumes in synced database
 function showCostumes($id)
 {
