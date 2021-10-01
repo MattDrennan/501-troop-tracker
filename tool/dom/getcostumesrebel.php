@@ -23,7 +23,7 @@ function html_get($url, $search) {
 		
 		if(strlen($string) > 3)
 		{
-			$conn->query("INSERT INTO costumes (costume, era, club) VALUES ('RL: ".addslashes($string)."', 4, 1)");
+			$conn->query("INSERT INTO costumes (costume, era, club) VALUES ('RL: ".trim(addslashes($string))."', 4, 1)");
 		}
     }
     
