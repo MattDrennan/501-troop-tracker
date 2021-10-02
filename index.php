@@ -921,7 +921,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 
 				echo '
 				<tr>
-					<td><a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.ifEmpty(getCostume($db->costume), "N/A").'</td>	<td>$'.$db->moneyRaised.'</td>	<td>'.floor($time/60).'H '.($time % 60).'M</td>
+					<td><a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.ifEmpty(getCostume($db->costume), "N/A").'</td>	<td>$'.number_format($db->moneyRaised).'</td>	<td>'.floor($time/60).'H '.($time % 60).'M</td>
 				</tr>';
 
 				$troopsAttended++;
@@ -999,7 +999,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 
 			echo '
 			<tr>
-				<td><a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.$count[0].'</td>	<td>$'.$db->moneyRaised.'</td>	<td>'.floor($time/60).'H '.($time % 60).'M</td>
+				<td><a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.$count[0].'</td>	<td>$'.number_format($db->moneyRaised).'</td>	<td>'.floor($time/60).'H '.($time % 60).'M</td>
 			</tr>';
 
 			$i++;
