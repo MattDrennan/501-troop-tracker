@@ -3215,7 +3215,9 @@ if(isset($_GET['event']))
 			if($i == 0)
 			{
 				echo '
-				<b>There are no photos to display.</b>';
+				<p>
+					<b>There are no photos to display.</b>
+				</p>';
 			}
 			
 			// If trooper logged in show uploader
