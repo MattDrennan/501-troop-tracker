@@ -492,7 +492,7 @@ if(isset($_GET['profile']))
 
 		if($count[0] >= 501)
 		{
-			echo '<li>Mr./Ms. 501 Award</li>';
+			echo '<li>501 Troops Award</li>';
 		}
 
 		// Get data from custom awards - load award user data
