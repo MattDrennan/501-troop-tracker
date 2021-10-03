@@ -60,6 +60,9 @@ if(isset($_GET['do']) && $_GET['do'] == "deletephoto" && loggedIn())
 		{
 			if($db->trooperid == $_SESSION['id'] || isAdmin())
 			{
+				// Delete file
+				unlink("images/uploads/" . $db->filename);
+				
 				// Query database
 				$conn->query("DELETE FROM uploads WHERE id = '".cleanInput($_POST['photoid'])."'");
 				
