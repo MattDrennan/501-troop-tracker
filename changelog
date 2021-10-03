@@ -2,6 +2,10 @@
 
 _10/03/2021_
 
+-Added admin option to photo uploader that will allow command staff to upload instructional images to troop tracker
+
+_10/03/2021_
+
 -Added number_format to event page values
 -Added: validate_url() function
 -Check for valid website on event page

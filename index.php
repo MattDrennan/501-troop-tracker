@@ -2687,6 +2687,40 @@ if(isset($_GET['event']))
 				<p><b>Amenities available at venue:</b> '.$db->amenities.'</p>
 				<p><b>Comments:</b><br />'.ifEmpty(nl2br($db->comments), "No comments for this event.").'</p>
 				<p><b>Referred by:</b> '.ifEmpty($db->referred, "Not available").'</p>';
+				
+				// Don't show photos, if merged data
+				if(!$isMerged)
+				{
+					// Query database for photos
+					$query2 = "SELECT * FROM uploads WHERE troopid = '".cleanInput($_GET['event'])."' AND admin = '1' ORDER BY date DESC";
+					
+					// Query count
+					$j = 0;
+					
+					if ($result2 = mysqli_query($conn, $query2))
+					{
+						while ($db2 = mysqli_fetch_object($result2))
+						{
+							// If first result...
+							if($j == 0)
+							{
+								echo '
+								<hr />';
+							}
+							
+							echo '
+							<a href="images/uploads/'.$db2->filename.'" data-lightbox="photosadmin" data-title="Uploaded by '.getName($db2->trooperid).'" id="photo'.$db2->id.'"><img src="images/uploads/'.$db2->filename.'" width="200px" height="200px" /></a>';
+							
+							// If owned by trooper
+							if(loggedIn() && isAdmin())
+							{
+								echo '<a href="process.php?do=deletephoto&id='.$db2->id.'" name="deletephoto" photoid="'.$db2->id.'">Delete</a>';
+							}
+							
+							$j++;
+						}
+					}
+				}
 			
 				// If this event is limited to era
 				if($db->limitTo != 4)
@@ -3191,7 +3225,6 @@ if(isset($_GET['event']))
 			
 			// Count photos
 			$i = 0;
-			$j = 0;
 			
 			if ($result = mysqli_query($conn, $query))
 			{
@@ -3233,7 +3266,15 @@ if(isset($_GET['event']))
 				<p>
 					<form action="script/php/upload.php" class="dropzone" id="photoupload">
 						<input type="hidden" name="troopid" value="'.cleanInput($_GET['event']).'" />
-						<input type="hidden" name="trooperid" value="'.$_SESSION['id'].'" />
+						<input type="hidden" name="trooperid" value="'.$_SESSION['id'].'" />';
+						
+						if(loggedIn() && isAdmin())
+						{
+							echo '
+							<input type="checkbox" name="admin" /> Troop Instructional Image Upload (Command Staff Only)';
+						}
+						
+					echo '
 					</form>
 				</p>';
 			}

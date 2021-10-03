@@ -19,8 +19,17 @@ if (!empty($_FILES))
 	$targetFile =  $targetPath . $fileName;
 	move_uploaded_file($tempFile, $targetFile);
 	
-	// Insert file into database
-	$conn->query("INSERT INTO uploads (troopid, trooperid, filename) VALUES ('".cleanInput($_POST['troopid'])."', '".cleanInput($_POST['trooperid'])."', '".addslashes($fileName)."')");
+	// Check if admin (command staff) checkbox checked
+	if(!isset($_POST['admin']))
+	{
+		// Insert file into database
+		$conn->query("INSERT INTO uploads (troopid, trooperid, filename) VALUES ('".cleanInput($_POST['troopid'])."', '".cleanInput($_POST['trooperid'])."', '".addslashes($fileName)."')");
+	}
+	else
+	{
+		// Insert file into database - admin
+		$conn->query("INSERT INTO uploads (troopid, trooperid, filename, admin) VALUES ('".cleanInput($_POST['troopid'])."', '".cleanInput($_POST['trooperid'])."', '".addslashes($fileName)."', '1')");
+	}
 }
 
 ?> 
