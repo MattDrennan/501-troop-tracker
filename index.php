@@ -3179,6 +3179,57 @@ if(isset($_GET['event']))
 				}
 			}
 		}
+		
+		// Don't show photos, if merged data
+		if(!$isMerged)
+		{
+			echo '
+			<hr />
+			<h2 class="tm-section-header">Photos</h2>';
+			
+			// Query database for photos
+			$query = "SELECT * FROM uploads WHERE troopid = '".cleanInput($_GET['event'])."' AND admin = '0' ORDER BY date DESC";
+			
+			// Count photos
+			$i = 0;
+			$j = 0;
+			
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					echo '
+					<a href="images/uploads/'.$db->filename.'" data-lightbox="photos" data-title="Uploaded by '.getName($db->trooperid).'" id="photo'.$db->id.'"><img src="images/uploads/'.$db->filename.'" width="200px" height="200px" /></a>';
+					
+					// If owned by trooper
+					if(loggedIn() && ($db->trooperid == $_SESSION['id'] || isAdmin()))
+					{
+						echo '<a href="process.php?do=deletephoto&id='.$db->id.'" name="deletephoto" photoid="'.$db->id.'">Delete</a>';
+					}
+					
+					$i++;
+				}
+			}
+			
+			// No photos found
+			if($i == 0)
+			{
+				echo '
+				<b>There are no photos to display.</b>';
+			}
+			
+			// If trooper logged in show uploader
+			if(loggedIn())
+			{
+				echo '
+				<p>
+					<form action="script/php/upload.php" class="dropzone" id="photoupload">
+						<input type="hidden" name="troopid" value="'.cleanInput($_GET['event']).'" />
+						<input type="hidden" name="trooperid" value="'.$_SESSION['id'].'" />
+					</form>
+				</p>';
+			}
+		}
 
 		echo '
 		<hr />';
@@ -3372,48 +3423,6 @@ if(isset($_GET['event']))
 				//echo '
 				//<p>This event is closed for editing.</p>';
 			}
-			
-			echo '
-			<h2 class="tm-section-header">Photos</h2>';
-			
-			// Query database for photos
-			$query = "SELECT * FROM uploads WHERE troopid = '".cleanInput($_GET['event'])."' AND admin = '0' ORDER BY date DESC";
-			
-			// Count photos
-			$i = 0;
-			$j = 0;
-			
-			if ($result = mysqli_query($conn, $query))
-			{
-				while ($db = mysqli_fetch_object($result))
-				{
-					echo '
-					<a href="images/uploads/'.$db->filename.'" data-lightbox="photos" data-title="Uploaded by '.getName($db->trooperid).'" id="photo'.$db->id.'"><img src="images/uploads/'.$db->filename.'" width="200px" height="200px" /></a>';
-					
-					// If owned by trooper
-					if($db->trooperid == $_SESSION['id'] || isAdmin())
-					{
-						echo '<a href="process.php?do=deletephoto&id='.$db->id.'" name="deletephoto" photoid="'.$db->id.'">Delete</a>';
-					}
-					
-					$i++;
-				}
-			}
-			
-			// No photos found
-			if($i == 0)
-			{
-				echo '
-				<b>There are no photos to display.</b>';
-			}
-			
-			echo '
-			<p>
-				<form action="script/php/upload.php" class="dropzone" id="photoupload">
-					<input type="hidden" name="troopid" value="'.cleanInput($_GET['event']).'" />
-					<input type="hidden" name="trooperid" value="'.$_SESSION['id'].'" />
-				</form>
-			</p>';
 
 			echo '
 			<form aciton="process.php?do=postcomment" name="commentForm" id="commentForm" method="POST">
