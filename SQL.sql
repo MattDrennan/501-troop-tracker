@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Sep 30, 2021 at 01:42 PM
+-- Generation Time: Oct 03, 2021 at 02:57 PM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -241,6 +241,23 @@ CREATE TABLE IF NOT EXISTS `troopers` (
   `datecreated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `uploads`
+--
+
+DROP TABLE IF EXISTS `uploads`;
+CREATE TABLE IF NOT EXISTS `uploads` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `troopid` int(11) NOT NULL,
+  `trooperid` int(11) NOT NULL,
+  `filename` varchar(255) NOT NULL,
+  `admin` int(11) NOT NULL DEFAULT '0',
+  `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

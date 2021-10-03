@@ -199,6 +199,39 @@ $(document).ready(function()
 	})
 	
 	// Get Location Button
+	$("a[name='deletephoto']").click(function(e)
+	{
+		e.preventDefault();
+		
+		var elementS = $(this);
+		
+		var r = confirm("Are you sure you want to delete this photo?");
+		
+		// If confirmed
+		if(r == true)
+		{
+			// Send data
+			$.ajax({
+				type: "POST",
+				url: "process.php?do=deletephoto",
+				data: { photoid: $(this).attr("photoid") },
+				success: function(data)
+				{
+					// Get JSON
+					var json = JSON.parse(data);
+					
+					// Alert user
+					alert(json.data);
+					
+					// Remove elements
+					$("#photo" + elementS.attr("photoid")).remove();
+					elementS.remove();
+				}
+			});
+		}
+	})
+	
+	// Get Location Button
 	$("#getLocation").button().click(function(e)
 	{
 		e.preventDefault();

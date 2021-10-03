@@ -54,6 +54,8 @@ echo '
 	<!-- Style Sheets -->
 	<link rel="stylesheet" href="script/lib/jquery-ui.min.css">
 	<link rel="stylesheet" href="script/lib/jquery-ui-timepicker-addon.css">
+	<link href="css/dropzone.min.css" type="text/css" rel="stylesheet" />
+	<link href="css/lightbox.min.css" rel="stylesheet" />
 	
 	<!-- Icon -->
 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
@@ -69,6 +71,12 @@ echo '
 	<script src="script/js/validate/jquery.validate.min.js"></script>
 	<script src="script/js/validate/validate.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+	
+	<!-- Drop Zone -->
+	<script src="script/lib/dropzone.min.js"></script>
+	
+	<!-- LightBox -->
+	<script src="script/lib/lightbox.min.js"></script>
 
 	<script>
  	$( function() {
@@ -2667,9 +2675,9 @@ if(isset($_GET['event']))
 				<p><b>Address:</b> <a href="https://www.google.com/maps/search/?api=1&query='.$db->location.'" target="_blank">'.$db->location.'</a></p>
 				<p><b>Event Start:</b> '.$date1.' ('.date('l', strtotime($db->dateStart)).')</p>
 				<p><b>Event End:</b> '.$date2.' ('.date('l', strtotime($db->dateEnd)).')</p>
-				<p><b>Website:</b> <a href="'.addHttp($db->website).'" target="_blank">'.$db->website.'</a></p>
-				<p><b>Expected number of attendees:</b> '.$db->numberOfAttend.'</p>
-				<p><b>Requested number of characters:</b> '.$db->requestedNumber.'</p>
+				<p><b>Website:</b> '.validate_url($db->website).'</p>
+				<p><b>Expected number of attendees:</b> '.number_format($db->numberOfAttend).'</p>
+				<p><b>Requested number of characters:</b> '.number_format($db->requestedNumber).'</p>
 				<p><b>Requested character types:</b> '.$db->requestedCharacter.'</p>
 				<p><b>Secure changing/staging area:</b> '.yesNo($db->secureChanging).'</p>
 				<p><b>Can troopers bring blasters:</b> '.yesNo($db->blasters).'</p>
@@ -2677,8 +2685,8 @@ if(isset($_GET['event']))
 				<p><b>Is parking available:</b> '.yesNo($db->parking).'</p>
 				<p><b>Is venue accessible to those with limited mobility:</b> '.yesNo($db->mobility).'</p>
 				<p><b>Amenities available at venue:</b> '.$db->amenities.'</p>
-				<p><b>Comments:</b><br />'.nl2br($db->comments).'</p>
-				<p><b>Referred by:</b> '.$db->referred.'</p>';
+				<p><b>Comments:</b><br />'.ifEmpty(nl2br($db->comments), "No comments for this event.").'</p>
+				<p><b>Referred by:</b> '.ifEmpty($db->referred, "Not available").'</p>';
 			
 				// If this event is limited to era
 				if($db->limitTo != 4)
@@ -3365,8 +3373,48 @@ if(isset($_GET['event']))
 				//<p>This event is closed for editing.</p>';
 			}
 			
+			echo '
+			<h2 class="tm-section-header">Photos</h2>';
 			
+			// Query database for photos
+			$query = "SELECT * FROM uploads WHERE troopid = '".cleanInput($_GET['event'])."' AND admin = '0' ORDER BY date DESC";
 			
+			// Count photos
+			$i = 0;
+			$j = 0;
+			
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					echo '
+					<a href="images/uploads/'.$db->filename.'" data-lightbox="photos" data-title="Uploaded by '.getName($db->trooperid).'" id="photo'.$db->id.'"><img src="images/uploads/'.$db->filename.'" width="200px" height="200px" /></a>';
+					
+					// If owned by trooper
+					if($db->trooperid == $_SESSION['id'] || isAdmin())
+					{
+						echo '<a href="process.php?do=deletephoto&id='.$db->id.'" name="deletephoto" photoid="'.$db->id.'">Delete</a>';
+					}
+					
+					$i++;
+				}
+			}
+			
+			// No photos found
+			if($i == 0)
+			{
+				echo '
+				<b>There are no photos to display.</b>';
+			}
+			
+			echo '
+			<p>
+				<form action="script/php/upload.php" class="dropzone" id="photoupload">
+					<input type="hidden" name="troopid" value="'.cleanInput($_GET['event']).'" />
+					<input type="hidden" name="trooperid" value="'.$_SESSION['id'].'" />
+				</form>
+			</p>';
+
 			echo '
 			<form aciton="process.php?do=postcomment" name="commentForm" id="commentForm" method="POST">
 				<input type="hidden" name="eventId" id="eventId" value="'.cleanInput($_GET['event']).'" />
@@ -3760,6 +3808,18 @@ Website created and maintained by Matthew Drennan (TK52233). If you encounter an
 <a href="https://github.com/MattDrennan/501-troop-tracker" target="_blank">Help contribute on GitHub.com!</a>
 </p>
 </section>
+
+<!-- Image Uploader JS -->
+<script type="text/javascript">
+  
+    Dropzone.autoDiscover = false;
+  
+    var myDropzone = new Dropzone(".dropzone", { 
+       maxFilesize: 10,
+       acceptedFiles: ".jpeg,.jpg,.png,.gif"
+    });
+      
+</script>
 
 <!-- External JS File -->
 <script type="text/javascript" src="script/js/main.js"></script>

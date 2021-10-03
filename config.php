@@ -647,6 +647,24 @@ function getDatesFromRange($start, $end, $format = 'M-d-Y')
     return $array;
 }
 
+// validate_url: Check if URL is valid
+function validate_url($url)
+{
+	$path = parse_url($url, PHP_URL_PATH);
+	$encoded_path = array_map('urlencode', explode('/', $path));
+	$url = str_replace($path, implode('/', $encoded_path), $url);
+
+	if(filter_var(addHttp($url), FILTER_VALIDATE_URL) && strpos($url, "."))
+	{
+		return '<a href="'.addHttp($url).'" target="_blank">'.$url.'</a>';
+		
+	}
+	else
+	{
+		return 'No website available.';
+	}
+}
+
 // ifEmpty: Show empty - if no value, show message. Default is EMPTY
 function ifEmpty($value, $message = "EMPTY")
 {

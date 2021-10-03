@@ -44,6 +44,46 @@ if($_GET['do'] == "changepassword")
 	}
 }
 
+/******************** PHOTOS *******************************/
+
+if(isset($_GET['do']) && $_GET['do'] == "deletephoto" && loggedIn())
+{
+	// Query database for photos
+	$query = "SELECT * FROM uploads WHERE id = '".cleanInput($_POST['photoid'])."'";
+	
+	// Count photos
+	$i = 0;
+	
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			if($db->trooperid == $_SESSION['id'] || isAdmin())
+			{
+				// Query database
+				$conn->query("DELETE FROM uploads WHERE id = '".cleanInput($_POST['photoid'])."'");
+				
+				// Increment
+				$i++;
+			}
+		}
+	}
+	
+	// If failed...
+	if($i == 0)
+	{
+		// Send JSON
+		$array = array('data' => 'Failed to delete photo');
+		echo json_encode($array);
+	}
+	else
+	{
+		// Send JSON
+		$array = array('data' => 'Deleted!');
+		echo json_encode($array);
+	}
+}
+
 /******************** MODIFY SIGN UP FROM EVENT PAGE *******************************/
 
 if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())

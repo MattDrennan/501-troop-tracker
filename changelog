@@ -1,5 +1,15 @@
 **Changelog**
 
+_10/03/2021_
+
+-Added number_format to event page values
+-Added: validate_url() function
+-Check for valid website on event page
+-Added photo uploader to troop tracker
+-Added photo deletion
+-Added LightBox for photos
+-Updated SQL
+
 _10/02/2021_
 
 -number_format added to all money raised
