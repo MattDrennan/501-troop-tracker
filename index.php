@@ -3184,8 +3184,7 @@ if(isset($_GET['event']))
 		if(!$isMerged)
 		{
 			echo '
-			<hr />
-			<h2 class="tm-section-header">Photos</h2>';
+			<hr />';
 			
 			// Query database for photos
 			$query = "SELECT * FROM uploads WHERE troopid = '".cleanInput($_GET['event'])."' AND admin = '0' ORDER BY date DESC";
@@ -3198,6 +3197,13 @@ if(isset($_GET['event']))
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
+					// If first result
+					if($i == 0)
+					{
+						echo '
+						<h2 class="tm-section-header">Photos</h2>';
+					}
+					
 					echo '
 					<a href="images/uploads/'.$db->filename.'" data-lightbox="photos" data-title="Uploaded by '.getName($db->trooperid).'" id="photo'.$db->id.'"><img src="images/uploads/'.$db->filename.'" width="200px" height="200px" /></a>';
 					
