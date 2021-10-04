@@ -372,6 +372,7 @@ $(document).ready(function()
 		});
 	})
 
+	// Show Edit Form
 	$("#submitEdit").button().click(function(e)
 	{
 		e.preventDefault();
@@ -389,15 +390,14 @@ $(document).ready(function()
 
 				if($("#rosterInfo").is(":hidden"))
 				{
-					//$("#submitRoster").val("Close");
-					//$("#rosterInfo").html(data);
-					//$("#rosterInfo").show();
-				}
-				else
-				{
+					// Hide Roster
 					$("#submitRoster").val("Roster");
 					$("#rosterInfo").html("");
 					$("#rosterInfo").hide();
+					
+					// Hide Charity
+					$("#charityAmount").hide();
+					$("#submitCharity").val("Set Charity Amount");
 				}
 
 				if($("#editEventInfo").is(":hidden"))
@@ -456,33 +456,97 @@ $(document).ready(function()
 		});
 	})
 	
+	/************************* CHARITY *******************************/
+	
 	// Edit charity amount button
 	$("#submitCharity").button().click(function(e)
 	{
 		e.preventDefault();
-
-		var form = $("#editEvents");
-		var url = form.attr("action");
 		
-		var amount = prompt("How much money did this event raise for charity?", 0);
-
-		if(amount != null && parseInt(amount))
+		// Hide event info
+		if(!$("#editEventInfo").is(":hidden"))
 		{
+			$("#editEventInfo").hide();
+			$("#submitEdit").val("Edit");
+		}
+
+		// Hide roster info
+		if(!$("#rosterInfo").is(":hidden"))
+		{
+			$("#submitRoster").val("Roster");
+			$("#rosterInfo").html("");
+			$("#rosterInfo").hide();
+		}
+		
+		// Show charity button, when pressed
+		if($("#charityAmount").is(":hidden"))
+		{
+			// Show charity
+			$("#charityAmount").show();
+			
+			// Change button to close
+			$("#submitCharity").val("Close");
+			
+			// Get form info
+			var form = $("#editEvents");
+			var url = form.attr("action");
+
+			// Request event data
 			$.ajax({
 				type: "POST",
 				url: url,
-				data: form.serialize() + "&submitCharity=1&charity=" + amount,
+				data: form.serialize() + "&submitEdit=1",
 				success: function(data)
 				{
+					var json = JSON.parse(data);
+					
+					// Set charity field
+					$("#charityAmountField").val(json.moneyRaised);
+				}
+			});
+		}
+		else
+		{
+			// Hide charity form
+			$("#charityAmount").hide();
+			$("#submitCharity").val("Set Charity Amount");
+		}
+	})
+	
+	// Set charity amount button
+	$("#charityAmountSave").button().click(function(e)
+	{
+		e.preventDefault();
+		
+		// Get form info
+		var form = $("#editEvents");
+		var url = form.attr("action");
+
+		if(parseInt($("#charityAmountField").val()) || parseInt($("#charityAmountField").val()) === 0)
+		{
+			// Save
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitCharity=1&charity=" + $("#charityAmountField").val(),
+				success: function(data)
+				{
+					// Hide charity form
+					$("#charityAmount").hide();
+					$("#submitCharity").val("Set Charity Amount");
+			
+					// Send success message
 					alert("Success!");
 				}
 			});
 		}
 		else
 		{
-			alert("Invalid");
+			alert("Enter a valid number.");
 		}
 	})
+	
+	/************************* END CHARITY *******************************/
 
 	$("#submitRoster").button().click(function(e)
 	{
@@ -499,13 +563,13 @@ $(document).ready(function()
 			{
 				if($("#editEventInfo").is(":hidden"))
 				{
-					//$("#editEventInfo").show();
-					//$("#submitEdit").val("Close");
-				}
-				else
-				{
+					// Hide Edit Form
 					$("#editEventInfo").hide();
 					$("#submitEdit").val("Edit");
+					
+					// Hide Charity
+					$("#charityAmount").hide();
+					$("#submitCharity").val("Set Charity Amount");
 				}
 
 				if($("#rosterInfo").is(":hidden"))
@@ -1466,6 +1530,7 @@ $(document).ready(function()
 		}
 	})
 
+	// When command staff presses finish event button
 	$("#submitFinish").button().click(function(e)
 	{
 		e.preventDefault();
@@ -1477,32 +1542,18 @@ $(document).ready(function()
 
 		if (r == true)
 		{
-			$("<form>Charity Money Raised:<br /><br /><input type=\"number\" style=\"z-index:10000\" name=\"charity\" /><br /></form>").dialog({
-				modal: true,
-				dialogClass: "no-close",
-				closeOnEscape: false,
-
-				buttons: {
-					"OK": function () {
-						var charity = $("input[name=\"charity\"]").val();
-
-						// AJAX
-						$.ajax({
-							type: "POST",
-							url: url,
-							data: form.serialize() + "&submitFinish=1&charity=" + charity,
-							success: function(data)
-							{
-								// Alert to success
-						  		alert("The event was finished successfully!");
-							}
-						});
-						// END AJAX
-
-						$(this).dialog("close");
-					}
+			// AJAX
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitFinish=1",
+				success: function(data)
+				{
+					// Alert to success
+					alert("The event was finished successfully!");
 				}
 			});
+			// END AJAX
 		}
 	})
 	

@@ -1217,7 +1217,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 	if(isset($_POST['submitFinish']))
 	{
 		// Query the database
-		$conn->query("UPDATE events SET moneyRaised = '".cleanInput($_POST['charity'])."', closed = '1' WHERE id = '".cleanInput($_POST['eventId'])."'");
+		$conn->query("UPDATE events SET closed = '1' WHERE id = '".cleanInput($_POST['eventId'])."'");
 		
 		// Send notification to command staff
 		sendNotification(getName($_SESSION['id']) . " has finished event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));

@@ -1709,6 +1709,14 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<input type="submit" name="submitCancel" id="submitCancel" value="Mark Canceled" /> <input type="submit" name="submitFinish" id="submitFinish" value="Mark Finished" /> <input type="submit" name="submitOpen" id="submitOpen" value="Mark Open" /> <input type="submit" name="submitEdit" id="submitEdit" value="Edit" /> <input type="submit" name="submitRoster" id="submitRoster" value="Roster" /> <input type="submit" name="submitCharity" id="submitCharity" value="Set Charity Amount" />
 
 				</form>
+				
+				<div name="charityAmount" id="charityAmount" style="display:none;">
+					<br />
+					<form action="process.php?do=editcharity" id="editcharityForm" name="editcharityForm" method="POST">
+						Charity Amount Raised: $<input type="number" name="charityAmountField" id="charityAmountField" />
+						<input type="submit" name="charityAmountSave" id="charityAmountSave" value="Set" />
+					</form>
+				</div>
 
 				<div name="rosterInfo" id="rosterInfo" style="display:none;">
 				</div>

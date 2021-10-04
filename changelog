@@ -1,5 +1,11 @@
 **Changelog**
 
+_10/04/2021_
+
+-Fixed bug with charity amount, allowing int 0
+-Removed dialog when finishing an event to set charity amount
+-Added form for setting charity amount, rather than a pop up box
+
 _10/03/2021_
 
 -Added admin option to photo uploader that will allow command staff to upload instructional images to troop tracker
