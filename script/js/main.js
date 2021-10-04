@@ -1124,28 +1124,28 @@ $(document).ready(function()
 		$("#datepicker2").datetimepicker("option", "maxDate", $("#datepicker").val());
 	});
 
+	// When command staff event select box is changed
 	$("#eventId").on("change", function()
 	{
-		if($("#editEventInfo").is(":hidden"))
-		{
-			//$("#editEventInfo").show();
-			//$("#submitEdit").val("Close");
-		}
-		else
+		// Hide Edit Info
+		if(!$("#editEventInfo").is(":hidden"))
 		{
 			$("#editEventInfo").hide();
 			$("#submitEdit").val("Edit");
 		}
 
-		if($("#rosterInfo").is(":hidden"))
-		{
-			//$("#submitRoster").val("Close");
-			//$("#rosterInfo").show();
-		}
-		else
+		// Hide Roster Info
+		if(!$("#rosterInfo").is(":hidden"))
 		{
 			$("#submitRoster").val("Roster");
 			$("#rosterInfo").hide();	
+		}
+		
+		// Hide Charity
+		if(!$("#charityAmount").is(":hidden"))
+		{
+			$("#charityAmount").hide();
+			$("#submitCharity").val("Set Charity Amount");
 		}
 	});
 
@@ -1557,6 +1557,7 @@ $(document).ready(function()
 		}
 	})
 	
+	// When command staff presses open event button
 	$("#submitOpen").button().click(function(e)
 	{
 		e.preventDefault();
