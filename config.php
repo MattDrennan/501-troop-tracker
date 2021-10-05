@@ -33,6 +33,26 @@ if ($conn->connect_error)
 	trigger_error('Database connection failed: ' . $conn->connect_error, E_USER_ERROR);
 }
 
+// addSquadLink: Returns a href link for a squad based on selection
+function addSquadLink($squad, $match, $name)
+{
+	// Set up link
+	$link = "";
+	
+	// If squad's don't match show link
+	if($squad != $match)
+	{
+		$link = '<a href="index.php?action=trooptracker&squad='.$squad.'">'.$name.'</a>';
+	}
+	else
+	{
+		$link = $name;
+	}
+	
+	// Return
+	return $link;
+}
+
 // email_check: Checks if e-mail is verified
 function email_check()
 {

@@ -1111,13 +1111,23 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		// How many total troops
 		$total_get = $conn->query("SELECT COUNT(*) FROM events WHERE closed = '1'") or die($conn->error);
 		$count11 = $total_get->fetch_row();
+		
+		// Get squad for squadLink function
+		if(isset($_GET['squad']))
+		{
+			$squadLink = $_GET['squad'];
+		}
+		else
+		{
+			$squadLink = -1;
+		}
  
 		echo '
 		</table>
 		</div>
 		
 		<p style="text-align: right;">
-			<a href="index.php?action=trooptracker&squad=0">All</a> | <a href="index.php?action=trooptracker&squad=1">Everglades</a> | <a href="index.php?action=trooptracker&squad=2">Makaze</a> | <a href="index.php?action=trooptracker&squad=3">Parjai</a> | <a href="index.php?action=trooptracker&squad=4">Squad 7</a> | <a href="index.php?action=trooptracker&squad=5">Tampa Bay</a>
+			'.addSquadLink(0, $squadLink, "All").' | '.addSquadLink(1, $squadLink, "Everglades").' | '.addSquadLink(2, $squadLink, "Makaze").' | '.addSquadLink(3, $squadLink, "Parjai").' | '.addSquadLink(4, $squadLink, "Squad 7").' | '.addSquadLink(5, $squadLink, "Tampa Bay").'
 		</p>';
 		
 		// If squad is set
