@@ -970,11 +970,69 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 	echo '
 	<h2 class="tm-section-header">Troop Tracker</h2>';
 
-	// Get data
-	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, event_sign_up.attend, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND events.dateEnd > CURRENT_DATE - INTERVAL 60 DAY GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT 20";
+	// If squad is not set
+	if(!isset($_GET['squad']))
+	{
+		// Get data
+		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, event_sign_up.attend, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND events.dateEnd > CURRENT_DATE - INTERVAL 60 DAY GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT 20";
+	}
+	else
+	{
+		// Set up query for specific squad
+		$add = "";
+		$add2 = "";
+		
+		// Check if squad is not all
+		if($_GET['squad'] != 0)
+		{
+			// If is a squad, add to query
+			$add = "WHERE squad = '".cleanInput($_GET['squad'])."'";
+			$add2 = "AND events.squad = '".cleanInput($_GET['squad'])."'";
+		}
+		
+		// Set results per page
+		$results = 20;
+		
+		// Get total results - query
+		$sql = "SELECT COUNT(id) AS total FROM events ".$add.""; 
+		$result = $conn->query($sql);
+		$row = $result->fetch_assoc();
+		
+		// Set total pages
+		$total_pages = ceil($row["total"] / $results);
+		
+		// If page set
+		if(isset($_GET['page']))
+		{
+			// Get page
+			$page = cleanInput($_GET['page']);
+			
+			// Start from
+			$startFrom = ($page - 1) * $results;
+		}
+		else
+		{
+			// Default page
+			$page = 1;
+			
+			// Start from - default
+			$startFrom = ($page - 1) * $results;
+		}
+		
+		// Squad is set, show only that data
+		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, event_sign_up.attend, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' ".$add2." GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT ".$startFrom.", ".$results."";
+	}
+
+	// Query count
 	$i = 0;
+	
+	// Total time spent
 	$timeSpent = 0;
+	
+	// Total money raised
 	$moneyRaised = 0;
+	
+	// Query
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
@@ -1057,21 +1115,62 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		echo '
 		</table>
 		</div>
-
-		<p><b>Favorite Costume:</b> '.ifEmpty(getCostume($favoriteCostume['costume']), "N/A").'</p>
-		<p><b>Volunteers at Troops:</b> '.number_format($count1[0]).'</p>
-		<p><b>Money Raised:</b> $'.number_format($moneyRaised).'</p>
-		<p><b>Time Spent:</b> '.floor($timeSpent/60).'H '.($timeSpent % 60).'M</p>
-		<p><b>Regular Troops:</b> '.number_format($count2[0]).'</p>
- 		<p><b>Charity Troops:</b> '.number_format($count3[0]).'</p>
-		<p><b>PR Troops:</b> '.number_format($count4[0]).'</p>
-		<p><b>Disney Troops:</b> '.number_format($count5[0]).'</p>
-		<p><b>Convention Troops:</b> '.number_format($count6[0]).'</p>
-		<p><b>Wedding Troops:</b> '.number_format($count7[0]).'</p>
-		<p><b>Birthday Troops:</b> '.number_format($count8[0]).'</p>
-		<p><b>Virtual Troops:</b> '.number_format($count9[0]).'</p>
-		<p><b>Other Troops:</b> '.number_format($count10[0]).'</p>
-		<p><b>Total Finished Troops:</b> '.number_format($count11[0]).'</p>';
+		
+		<p style="text-align: right;">
+			<a href="index.php?action=trooptracker&squad=0">All</a> | <a href="index.php?action=trooptracker&squad=1">Everglades</a> | <a href="index.php?action=trooptracker&squad=2">Makaze</a> | <a href="index.php?action=trooptracker&squad=3">Parjai</a> | <a href="index.php?action=trooptracker&squad=4">Squad 7</a> | <a href="index.php?action=trooptracker&squad=5">Tampa Bay</a>
+		</p>';
+		
+		// If squad is set
+		if(isset($_GET['squad']))
+		{
+			echo '
+			<p style="margin-left: 100px; text-align: right;">';
+			
+			// Loop through pages
+			for ($i = 1; $i <= $total_pages; $i++)
+			{
+				// If we are on this page...
+				if($page == $i)
+				{
+					echo '
+					'.$i.'';
+				}
+				else
+				{
+					echo '
+					<a href="index.php?action=trooptracker&squad='.cleanInput($_GET['squad']).'&page='.$i.'">'.$i.'</a>';
+				}
+				
+				// If not that last page, add a comma
+				if($i != $total_pages)
+				{
+					echo ', ';
+				}
+			}
+			
+			echo '
+			</p>';
+		}
+		
+		// If squad is not set
+		if(!isset($_GET['squad']))
+		{
+			echo '
+			<p><b>Favorite Costume:</b> '.ifEmpty(getCostume($favoriteCostume['costume']), "N/A").'</p>
+			<p><b>Volunteers at Troops:</b> '.number_format($count1[0]).'</p>
+			<p><b>Money Raised:</b> $'.number_format($moneyRaised).'</p>
+			<p><b>Time Spent:</b> '.floor($timeSpent/60).'H '.($timeSpent % 60).'M</p>
+			<p><b>Regular Troops:</b> '.number_format($count2[0]).'</p>
+			<p><b>Charity Troops:</b> '.number_format($count3[0]).'</p>
+			<p><b>PR Troops:</b> '.number_format($count4[0]).'</p>
+			<p><b>Disney Troops:</b> '.number_format($count5[0]).'</p>
+			<p><b>Convention Troops:</b> '.number_format($count6[0]).'</p>
+			<p><b>Wedding Troops:</b> '.number_format($count7[0]).'</p>
+			<p><b>Birthday Troops:</b> '.number_format($count8[0]).'</p>
+			<p><b>Virtual Troops:</b> '.number_format($count9[0]).'</p>
+			<p><b>Other Troops:</b> '.number_format($count10[0]).'</p>
+			<p><b>Total Finished Troops:</b> '.number_format($count11[0]).'</p>';
+		}
 	}
 	else
 	{
