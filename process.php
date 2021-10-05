@@ -1147,6 +1147,17 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		// Query the database
 		$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costumeValSelect' . $_POST['trooperSelectEdit'] . ''])."', costume_backup = '".cleanInput($_POST['costumeVal' . $_POST['trooperSelectEdit'] . ''])."', status = '".cleanInput($_POST['statusVal' . $_POST['trooperSelectEdit'] . ''])."', reason = '".cleanInput($_POST['reasonVal' . $_POST['trooperSelectEdit'] . ''])."', attend = '".cleanInput($_POST['attendVal' . $_POST['trooperSelectEdit'] . ''])."', attended_costume = '".cleanInput($_POST['attendcostumeVal' . $_POST['trooperSelectEdit'] . ''])."' WHERE trooperid = '".cleanInput($_POST['trooperSelectEdit'])."' AND troopid = '".cleanInput($_POST['eventId'])."'") or die($conn->error);
 
+		// If set as attended, check trooper counts
+		if(cleanInput($_POST['statusVal' . $_POST['trooperSelectEdit'] . '']) == 3)
+		{
+			// Check troop counts for notification -  Notify how many troops did a trooper attend - 501st
+			$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['trooperSelectEdit'])."' AND attend = '1' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR EXISTS(SELECT events.id, events.oldid FROM events WHERE events.oldid != 0 AND events.id = event_sign_up.troopid))") or die($conn->error);
+			$countTroops = $trooperCount_get->fetch_row();
+			
+			// 501st
+			checkTroopCounts($countTroops[0], "501ST: " . getName(cleanInput($_POST['trooperSelectEdit'])) . " now has [COUNT] troop(s)", cleanInput($_POST['trooperSelectEdit']));
+		}
+
 		// Send notification to command staff
 		sendNotification(getName($_SESSION['id']) . " has edited event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
 
@@ -1179,7 +1190,15 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			// If status is attended
 			if(cleanInput($_POST['status']) == 3)
 			{
+				// Update attend
 				$conn->query("UPDATE event_sign_up SET attend = '1' WHERE id = '".$last_id."'");
+				
+				// Check troop counts for notification -  Notify how many troops did a trooper attend - 501st
+				$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['trooperSelect'])."' AND attend = '1' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR EXISTS(SELECT events.id, events.oldid FROM events WHERE events.oldid != 0 AND events.id = event_sign_up.troopid))") or die($conn->error);
+				$countTroops = $trooperCount_get->fetch_row();
+				
+				// 501st
+				checkTroopCounts($countTroops[0], "501ST: " . getName(cleanInput($_POST['trooperSelect'])) . " now has [COUNT] troop(s)", cleanInput($_POST['trooperSelect']));
 			}
 			
 			// Send notification to command staff
@@ -1323,6 +1342,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				echo '
 				<tr id="roster_'.$db->trooperid.'" name="roster_'.$db->trooperid.'">
 					<td>
+						<input type="hidden" name="tkid" id="tkid" value = "'.getTKNumber($db->trooperid).'" />
 						<input type="hidden" name="troopername" id="troopername" value = "'.getName(cleanInput($db->trooperid)).'" />
 						<input type="hidden" name="eventId" id="eventId" value = "'.cleanInput($_POST['eventId']).'" />
 						<input type="radio" name="trooperSelectEdit" id="trooperSelectEdit" value="'.$db->trooperid.'" />

@@ -909,16 +909,13 @@ $(document).ready(function()
 				{
 					var json = JSON.parse(data);
 					
+					var trooperid = $("#roster_" + $("input[name=trooperSelectEdit]:checked").val() + " input[name=trooperSelectEdit]").val();
 					var eventId = $("#roster_" + $("input[name=trooperSelectEdit]:checked").val() + " input[name=eventId]").val();
 					var troopername = $("#roster_" + $("input[name=trooperSelectEdit]:checked").val() + " input[name=troopername]").val();
-					var tkid = $("#tknumber1" + $("input[name=trooperSelectEdit]:checked").val()).text();
-					
-					console.log(tkid);
-					console.log(troopername);
-					console.log(eventId);
+					var tkid = $("#roster_" + $("input[name=trooperSelectEdit]:checked").val() + " input[name=tkid]").val();
 					
 					// Add to trooper list
-					$("#trooperSelect").append('<option value="' + eventId + '" troopername="' + troopername + '" tkid="' + tkid + '">' + troopername + ' - ' + tkid + '</option>');
+					$("#trooperSelect").append('<option value="' + trooperid + '" troopername="' + troopername + '" tkid="' + tkid + '">' + troopername + ' - ' + tkid + '</option>');
 
 					// Remove
 					$("#roster_" + $("input[name=trooperSelectEdit]:checked").val()).remove();

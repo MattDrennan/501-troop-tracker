@@ -2,6 +2,12 @@
 
 _10/05/2021_
 
+-When command staff adds or edits a user, troop count checks will be run
+-Fixed bug with roster, where when you removed a user and re-added them, they would duplicate their name
+-Removed TK letters from roster when adding dynamically to match other troopers
+
+_10/05/2021_
+
 -Improved squad links on troop tracker for better readability
 
 _10/05/2021_

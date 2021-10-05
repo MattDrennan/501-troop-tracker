@@ -307,14 +307,14 @@ function checkTroopCounts($count, $message, $trooperid)
 	$counts = [1, 10, 25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 501];
 	
 	// Search notifications for previous notifications, so we don't duplicate
-	$query = "SELECT * FROM notifications WHERE trooperid='".$trooperid."'";
+	$query = "SELECT * FROM notifications WHERE trooperid = '".$trooperid."'";
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
 			foreach($counts as $value)
 			{
-				if(str_contains($db->message, $value))
+				if(str_contains($db->message, "now has " . $value))
 				{
 					// Find in array
 					$pos = array_search($value, $counts);
