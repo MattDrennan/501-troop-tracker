@@ -3866,8 +3866,12 @@ echo '
 
 <section class="tm-section tm-section-small">
 <p class="tm-mb-0">
-Website created and maintained by Matthew Drennan (TK52233). If you encounter any issues with this site, please
+Website created by Matthew Drennan (TK52233). If you encounter any technical issues with this site, please
 <a href="mailto:drennanmattheww@gmail.com" class="tm-contact-link">email</a> me here.
+</p>
+
+<p class="tm-mb-0">
+If you are missing troops or notice incorrect data, please refer to your squad leader.
 </p>
 
 <p style="text-align: center;">
