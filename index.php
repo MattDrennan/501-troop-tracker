@@ -27,27 +27,27 @@ echo '
 		if(myTheme() == 0)
 		{
 			echo '
+			<link href="css/main2.css" rel="stylesheet" />
+			<link rel="stylesheet" href="css/nav2.css">';
+		}
+		else if(myTheme() == 1)
+		{
+			echo '
 			<link href="css/main.css" rel="stylesheet" />
 			<link rel="stylesheet" href="css/nav.css">';
 		}
-		else if(myTheme() == 1)
+		else if(myTheme() == 2)
 		{
 			echo '
 			<link href="css/main1.css" rel="stylesheet" />
 			<link rel="stylesheet" href="css/nav1.css">';
 		}
-		else if(myTheme() == 2)
-		{
-			echo '
-			<link href="css/main2.css" rel="stylesheet" />
-			<link rel="stylesheet" href="css/nav2.css">';
-		}
 	}
 	else
 	{
 		echo '
-		<link href="css/main.css" rel="stylesheet" />
-		<link rel="stylesheet" href="css/nav.css">';
+		<link href="css/main2.css" rel="stylesheet" />
+		<link rel="stylesheet" href="css/nav2.css">';
 	}
 	
 	echo '
@@ -206,9 +206,9 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 				while ($db = mysqli_fetch_object($result))
 				{
 					echo '
-					<option value="0" '.echoSelect(0, $db->theme).'>Everglades Theme (Default)</option>
-					<option value="1" '.echoSelect(1, $db->theme).'>Makaze Theme</option>
-					<option value="2" '.echoSelect(2, $db->theme).'>Florida Garrison Theme</option>';
+					<option value="0" '.echoSelect(0, $db->theme).'>Florida Garrison Theme (Default)</option>
+					<option value="1" '.echoSelect(1, $db->theme).'>Everglades Theme</option>
+					<option value="2" '.echoSelect(2, $db->theme).'>Makaze Theme</option>';
 				}
 			}
 		echo '

@@ -59,7 +59,7 @@ body {
 }
 
 .tm-section-header {
-  color: red;
+  color: #be3429;
   text-align: center;
   font-weight: 400;
   font-size: 1.5rem;
@@ -194,7 +194,7 @@ a { transition: all 0.3s ease; }
 
 a{
  text-decoration:none;
- color:red;
+ color:#be3429;
 }
 
 a.button,div.container{
@@ -202,7 +202,7 @@ a.button,div.container{
 }
 
 a.button{
- background-color:red;
+ background-color:#be3429;
  border:1px solid #660000;
  border-radius:5px;
  color:#fff;
@@ -212,9 +212,9 @@ a.button{
 
 /* Background for chosen squad */
 .squadlink {
-  background-color: red;
+  background-color: #be3429;
   /*border: 1px;
-  border-color: red;
+  border-color: #be3429;
   border-style: solid;*/
 }
 
@@ -283,7 +283,7 @@ label {
 /* Style the submit button */
 input[type=submit] {
   display: inline-block;
-  background-color:red;
+  background-color:#be3429;
   border:1px solid #660000;
   border-radius:5px;
   color:#fff;
