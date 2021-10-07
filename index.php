@@ -305,7 +305,7 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 		<form action="process.php?do=requestaccess" name="requestAccessForm" id="requestAccessForm" method="POST">
 			First & Last Name: <input type="text" name="name" id="name" />
 			<br /><br />
-			TKID: <input type="text" name="tkid" id="tkid" />
+			TKID (numbers only): <input type="text" name="tkid" id="tkid" />
 			<p><i>Non-501st clubs, please enter an ID number of your choosing.</i></p>
 			E-mail: <input type="text" name="email" id="email" />
 			<br /><br />
@@ -2618,7 +2618,7 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed())
 		<p style="text-align: center;">Were you already using the old trooper tracker? Set up your account by using the form below.</p>
 		
 		<form method="POST" action="index.php?action=setup" name="registerForm" id="registerForm">
-			<p>What is your TKID:</p>
+			<p>What is your TKID (numbers only):</p>
 			<input type="text" name="tkid" id="tkid" />
 
 			<p>What is your e-mail:</p>
