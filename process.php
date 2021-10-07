@@ -662,7 +662,7 @@ if(isset($_GET['do']) && $_GET['do'] == "getuser" && loggedIn())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$array = array('name' => $db->name, 'email' => $db->email, 'forum' => $db->forum_id, 'phone' => $db->phone, 'squad' => $db->squad, 'tkid' => $db->tkid);
+				$array = array('name' => $db->name, 'email' => $db->email, 'forum' => $db->forum_id, 'phone' => $db->phone, 'squad' => getSquadName($db->squad), 'tkid' => $db->tkid, 'link' => get501Info($db->tkid)['link']);
 			}
 		}
 	}

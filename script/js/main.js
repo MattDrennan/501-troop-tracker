@@ -1176,35 +1176,44 @@ $(document).ready(function()
 		});
 	});
 	
+	// Approve Trooper Requests - On Trooper Change
 	$("body").on("change", "#userID2", function(e)
 	{
-		if($("#editEventInfo").is(":hidden"))
+		// Prevent errors by user selecting first option
+		if($("#userID2").val() != -1)
 		{
-			//$("#editUserInfo").show();
-			//$("#submitEditUser").val("Close");
-		}
-		else
-		{
-			$("#editUserInfo").hide();
-			$("#submitEditUser").val("Edit");
-		}
-
-		// Only used for approving area
-		$.ajax({
-			type: "POST",
-			url: "process.php?do=getuser",
-			data: "id=" + $("#userID2").val() + "&getuser=1",
-			success: function(data)
+			if(!$("#editEventInfo").is(":hidden"))
 			{
-				var json = JSON.parse(data);
-				$("#nameTable").html(ifEmpty(json.name));
-				$("#emailTable").html(ifEmpty(json.email));
-				$("#forumTable").html('<a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un=' + json.forum + '" target="_blank">' + json.forum + '</a>');
-				$("#phoneTable").html(ifEmpty(json.phone));
-				$("#squadTable").html(ifEmpty(json.squad));
-				$("#tkTable").html(ifEmpty(json.tkid));
+				$("#editUserInfo").hide();
+				$("#submitEditUser").val("Edit");
 			}
-		});
+
+			// Only used for approving area
+			$.ajax({
+				type: "POST",
+				url: "process.php?do=getuser",
+				data: "id=" + $("#userID2").val() + "&getuser=1",
+				success: function(data)
+				{
+					var json = JSON.parse(data);
+					$("#nameTable").html(ifEmpty(json.name));
+					$("#emailTable").html(ifEmpty(json.email));
+					$("#forumTable").html('<a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un=' + json.forum + '" target="_blank">' + json.forum + '</a>');
+					$("#phoneTable").html(ifEmpty(json.phone));
+					$("#squadTable").html(ifEmpty(json.squad));
+					
+					// Check if link is valid
+					if(json.link != "")
+					{
+						$("#tkTable").html(ifEmpty('<a href="' + json.link + '" target="_blank">' + json.tkid + '</a>'));
+					}
+					else
+					{
+						$("#tkTable").html(ifEmpty(json.tkid));	
+					}
+				}
+			});
+		}
 	});
 	
 	/************ COSTUME *******************/

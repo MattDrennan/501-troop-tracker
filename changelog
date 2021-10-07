@@ -2,6 +2,10 @@
 
 _10/07/2021_
 
+-Made improvements to troopers who request access
+
+_10/07/2021_
+
 -Made TKID fields numbers only for ease of use
 -Added "checktroops.php" which will send confirmation e-mails to troopers who have opted in when they do not confirm a troop, and will send a notification to command staff on trooper milestones
 -Updated SQL

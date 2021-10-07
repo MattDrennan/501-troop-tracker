@@ -75,12 +75,37 @@ function email_check()
 	}
 }
 
+// get501Info: A function which returns an array of info about trooper
+function get501Info($id)
+{
+	global $conn;
+	
+	// Setup array
+	$array = [];
+	$array['link'] = '';
+	
+	// Get data
+	$query = "SELECT * FROM 501st_troopers WHERE legionid = '".$id."'";
+	
+	// Run query...
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			$array['link'] = $db->link;
+		}
+	}
+	
+	// Return
+	return $array;
+}
+
 // getMyCostumes: A function which returns a string of costumes assigned to user in synced database
 function getMyCostumes($id)
 {
 	global $conn;
 	
-	// Setup array
+	// Setup string
 	$costume = "";
 	
 	// Get data
