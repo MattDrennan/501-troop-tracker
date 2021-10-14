@@ -761,7 +761,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 
 				echo '
 				<tr>
-					<td><a href="index.php?event='.$db->troopid.'">'.$db->eventName.'</a></td>	<td>'.$dateFormat.'</td>	<td><a href="index.php?profile='.$db->trooperid.'">'.getTKNumber($db->trooperid).'</a></td>	<td>'.ifEmpty(getCostume($db->attended_costume), "N/A").'</td>	<td>'.didAttend($db->attend).'</td>
+					<td><a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.$dateFormat.'</td>	<td><a href="index.php?profile='.$db->trooperid.'">'.getTKNumber($db->trooperid).'</a></td>	<td>'.ifEmpty(getCostume($db->attended_costume), "N/A").'</td>	<td>'.didAttend($db->attend).'</td>
 				</tr>';
 
 				$i++;

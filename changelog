@@ -2,6 +2,10 @@
 
 _10/14/2021_
 
+-Corrected an issue with search where the event ID would not display in link when no one was in troop
+
+_10/14/2021_
+
 -Command Staff can now make new shifts from edit menu
 -Fixed bug with editing shift, where it would edit all events
 -Fixed bug with editing shift, where it would not update date or time
