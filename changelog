@@ -2,6 +2,12 @@
 
 _10/14/2021_
 
+-Command Staff can now make new shifts from edit menu
+-Fixed bug with editing shift, where it would edit all events
+-Fixed bug with editing shift, where it would not update date or time
+
+_10/14/2021_
+
 -Fixed a potential bug, where a user could insert shift events without date data
 
 _10/13/2021_

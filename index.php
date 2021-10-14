@@ -1861,6 +1861,10 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						<p>Date/Time End:</p>
 						<input type="text" name="dateEnd" id="datepicker2" />
+						
+						<div name="datetimeadd" id="datetimeadd"></div>
+						
+						<input type="submit" name="addshift" id="addshift" value="Add Shift" />
 
 						<p>Website:</p>
 						<input type="text" name="website" id="website" />
