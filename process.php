@@ -1767,7 +1767,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 					{
 						$link = cleanInput($_POST['eventLink']);
 					}
-					else if($getNumOfLinks->num_rows > 0)
+					else
 					{
 						$link = cleanInput($_POST['eventIdE']);
 					}
