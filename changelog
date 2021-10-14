@@ -1,5 +1,9 @@
 **Changelog**
 
+_10/14/2021_
+
+-Fixed a potential bug, where a user could insert shift events without date data
+
 _10/13/2021_
 
 -Added multiple shifts support
