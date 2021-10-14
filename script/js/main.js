@@ -119,6 +119,44 @@ function echoSelect(value1, value2)
 
 $(document).ready(function()
 {
+	// Add shift variable
+	var shifts = 2;
+	var pair = 1;
+	
+	// Add shift
+	$("body").on("click", "#addshift", function(e)
+	{
+		e.preventDefault();
+		
+		// Add input
+		$("#datetimeadd").append('<div id="pair' + pair + '" name="pair' + pair + '"><hr /><input type="hidden" name="shiftpost' + pair + '" value="' + pair + '" /><p>Date/Time Start:</p> <input type="text" name="adddateStart' + pair + '" id="datepicker' + (shifts + 1) + '" shifts1="' + (shifts + 1) + '" shifts2="' + (shifts + 2) + '" /> <p>Date/Time End:</p> <input type="text" name="adddateEnd' + pair + '" id="datepicker2' + (shifts + 2) + '" shifts1="' + (shifts + 1) + '" shifts2="' + (shifts + 2) + '" /> <input type="submit" name="removeshift" pair="' + pair + '" value="Remove Shift" /></div>');
+		
+		// Make date/time object
+		$("#datepicker" + (shifts + 1)).datetimepicker();
+		$("#datepicker2" + (shifts + 2)).datetimepicker();
+		
+		// Only allow one day
+		$("#datepicker" + (shifts + 1)).on("change", function()
+		{
+			// Only allow one day option
+			$("#datepicker2" + $(this).attr("shifts2")).datetimepicker("option", "minDate", $("#datepicker" + $(this).attr("shifts1")).val());
+			$("#datepicker2" + $(this).attr("shifts2")).datetimepicker("option", "maxDate", $("#datepicker" + $(this).attr("shifts1")).val());
+		});
+		
+		// Increment
+		shifts += 2;
+		pair++;
+	})
+	
+	// Remove Shift
+	$("body").on("click", "input[name=removeshift]", function(e)
+	{
+		e.preventDefault();
+		
+		// Remove shift
+		$("#pair" + $(this).attr("pair")).remove();
+	})
+	
 	// Shows / Hide Trooper Stats
 	$("body").on("click", "#showstats", function(e)
 	{
@@ -408,6 +446,7 @@ $(document).ready(function()
 					var date1 = moment(json.dateStart).format("MM/DD/YYYY HH:mm");
 					var date2 = moment(json.dateEnd).format("MM/DD/YYYY HH:mm");
 
+					$("#eventLink").val(json.eventLink);
 					$("#eventIdE").val(json.id);
 					$("#eventName").val(json.name);
 					$("#eventVenue").val(json.venue);

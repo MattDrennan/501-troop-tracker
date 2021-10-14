@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Oct 07, 2021 at 01:49 PM
+-- Generation Time: Oct 14, 2021 at 12:42 AM
 -- Server version: 5.7.31
 -- PHP Version: 8.0.11
 
@@ -161,6 +161,7 @@ CREATE TABLE IF NOT EXISTS `events` (
   `closed` tinyint(1) NOT NULL DEFAULT '0',
   `moneyRaised` int(100) NOT NULL DEFAULT '0',
   `squad` int(1) NOT NULL,
+  `link` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

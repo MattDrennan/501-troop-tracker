@@ -1832,6 +1832,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<div name="editEventInfo" id="editEventInfo" style="display:none;">
 					<form action="process.php?do=editevent" id="editEventForm" name="editEventForm" method="POST">
+						<input type="hidden" name="eventLink" id="eventLink" value="" />
 						<input type="hidden" name="eventIdE" id="eventIdE" value="" />
 
 						<p>Name of the event:</p>
@@ -2198,7 +2199,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			// Set up eid
 			$eid = 0;
 			
-			// Set up variables
+			// Set up variables for copy feature
 			$name = "";
 			$venue = "";
 			$dateStart = "";
@@ -2321,13 +2322,17 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<option value="4" '.copyEventSelect($eid, $squad, 4).'>Squad 7 Squad</option>
 					<option value="3" '.copyEventSelect($eid, $squad, 3).'>Parjai Squad</option>
 					<option value="0" '.copyEventSelect($eid, $squad, 0).'>Florida Garrison</option>
-				</select>				
+				</select>
 
 				<p>Date/Time Start:</p>
 				<input type="text" name="dateStart" id="datepicker" value="'.copyEvent($eid, $dateStart).'" />
 
 				<p>Date/Time End:</p>
 				<input type="text" name="dateEnd" id="datepicker2" value="'.copyEvent($eid, $dateEnd).'" />
+				
+				<div name="datetimeadd" id="datetimeadd"></div>
+				
+				<input type="submit" name="addshift" id="addshift" value="Add Shift" />
 
 				<p>Website:</p>
 				<input type="text" name="website" id="website" value="'.copyEvent($eid, $website).'" />
@@ -2801,9 +2806,50 @@ if(isset($_GET['event']))
 				<p><b>Can troopers bring/carry prop like lightsabers:</b> '.yesNo($db->lightsabers).'</p>
 				<p><b>Is parking available:</b> '.yesNo($db->parking).'</p>
 				<p><b>Is venue accessible to those with limited mobility:</b> '.yesNo($db->mobility).'</p>
-				<p><b>Amenities available at venue:</b> '.$db->amenities.'</p>
+				<p><b>Amenities available at venue:</b> '.ifEmpty($db->amenities, "No amenities for this event.").'</p>
 				<p><b>Comments:</b><br />'.ifEmpty(nl2br($db->comments), "No comments for this event.").'</p>
 				<p><b>Referred by:</b> '.ifEmpty($db->referred, "Not available").'</p>';
+				
+				// Get number of events with link
+				$getNumOfLinks = $conn->query("SELECT id FROM events WHERE link = '".$db->id."'");
+				
+				// If has links to event, or is linked, show shift data
+				if($getNumOfLinks->num_rows > 0 || $db->link != 0)
+				{
+					// Set link
+					$link = -1;
+					
+					// If this event is the link
+					if($getNumOfLinks->num_rows > 0)
+					{
+						$link = $db->id;
+					}
+					else if($db->link != 0)
+					{
+						$link = $db->link;
+					}
+					
+					echo '
+					<h2 class="tm-section-header">Shifts</h2>';
+					
+					// Query database for photos
+					$query2 = "SELECT * FROM events WHERE (id = '".$link."' OR link = '".$link."') AND id != '".$db->id."' ORDER BY dateStart ASC";
+					
+					if ($result2 = mysqli_query($conn, $query2))
+					{
+						while ($db2 = mysqli_fetch_object($result2))
+						{
+							echo '
+							<div style="border: 1px solid gray; margin-bottom: 10px; text-align: center;">
+							<a href="index.php?event=' . $db2->id . '">' . date('M d, Y', strtotime($db2->dateStart)) . '
+							<br />' .
+							date('H:i', strtotime($db2->dateStart)) . ' - ' . date('H:i', strtotime($db2->dateEnd)) .
+							'<br />' .
+							$db2->name . '</a>
+							</div>';
+						}
+					}
+				}
 				
 				// Don't show photos, if merged data
 				if(!$isMerged)
@@ -3752,13 +3798,28 @@ else
 					{
 						// Get number of troopers at event
 						$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".$db->id."' AND status != '4'");
+						
+						// Get number of events with link
+						$getNumOfLinks = $conn->query("SELECT id FROM events WHERE link = '".$db->id."'");
 
 						echo '<div style="border: 1px solid gray; margin-bottom: 10px;">';
 
 						// No squad set
 						if(!isset($_GET['squad']))
 						{
-							echo '<a href="index.php?event=' . $db->id . '">' .date('M d, Y', strtotime($db->dateStart)). ''.'<br />' . $db->name . '</a>';
+							echo '
+							<a href="index.php?event=' . $db->id . '">' . date('M d, Y', strtotime($db->dateStart)) . '' . '<br />';
+							
+							// If has links to event, or is linked, show shift data
+							if($getNumOfLinks->num_rows > 0 || $db->link != 0)
+							{
+								echo '
+								' . date('H:i', strtotime($db->dateStart)) . ' - ' . date('H:i', strtotime($db->dateEnd)) .
+								'<br />';
+							}
+							
+							echo '
+							' . $db->name . '</a>';
 
 							// If not enough troopers
 							if($getNumOfTroopers->num_rows <= 1)
@@ -3776,7 +3837,19 @@ else
 						}
 						else if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
 						{
-							echo '<a href="index.php?event=' . $db->id . '">' .date('M d, Y', strtotime($db->dateStart)). ''.'<br />' . $db->name . '</a>';
+							echo '
+							<a href="index.php?event=' . $db->id . '">' . date('M d, Y', strtotime($db->dateStart)) . '' . '<br />';
+							
+							// If has links to event, or is linked, show shift data
+							if($getNumOfLinks->num_rows > 0 || $db->link != 0)
+							{
+								echo '
+								' . date('H:i', strtotime($db->dateStart)) . ' - ' . date('H:i', strtotime($db->dateEnd)) .
+								'<br />';
+							}
+							
+							echo '
+							' . $db->name . '</a>';
 
 							// If not enough troopers...
 							if($getNumOfTroopers->num_rows <= 1)
@@ -3797,7 +3870,19 @@ else
 							// Squad set
 							if($db->squad == cleanInput($_GET['squad']))
 							{
-								echo '<a href="index.php?event=' . $db->id . '">' .date('M d, Y', strtotime($db->dateStart)). ''.'<br />' . $db->name . '</a>';
+								echo '
+								<a href="index.php?event=' . $db->id . '">' . date('M d, Y', strtotime($db->dateStart)) . '' . '<br />';
+								
+								// If has links to event, or is linked, show shift data
+								if($getNumOfLinks->num_rows > 0 || $db->link != 0)
+								{
+									echo '
+									' . date('H:i', strtotime($db->dateStart)) . ' - ' . date('H:i', strtotime($db->dateEnd)) .
+									'<br />';
+								}
+								
+								echo '
+								' . $db->name . '</a>';
 
 								// If not enough troopers...
 								if($getNumOfTroopers->num_rows <= 1)

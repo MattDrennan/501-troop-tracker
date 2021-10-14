@@ -1,5 +1,10 @@
 **Changelog**
 
+_10/13/2021_
+
+-Added multiple shifts support
+-Add ifEmpty() to amenities under events
+
 _10/07/2021_
 
 -Made improvements to troopers who request access
