@@ -377,6 +377,12 @@ $(function()
 
                         // Fix text when changing the title
                         $("#eventId option:selected").text($("#eventName").val());
+						
+						// Remove all shift boxes
+						$("div[name*='pair']").each(function()
+						{
+							$(this).remove();
+						});
 
                         // Alert to success
                         alert(json.data);
