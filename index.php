@@ -2782,9 +2782,14 @@ if(isset($_GET['event']))
 			if($db->venue == NULL && $db->numberOfAttend == NULL && $db->requestedCharacter == NULL && $db->secureChanging == NULL && $db->lightsabers == NULL && $db->parking == NULL && $db->mobility == NULL && $db->amenities == NULL && $db->referred == NULL)
 			{
 				echo '
-				<h2 class="tm-section-header">'.$db->name.'</h2>
-				<p><b>Event Date:</b> '.$date1.' ('.date('l', strtotime($db->dateStart)).')</p>
-				<p><b>Comments:</b> '.ifEmpty($db->comments, "N/A").'</p>';
+				<h2 class="tm-section-header">'.$db->name.'</h2>';
+				
+				if(loggedIn())
+				{
+					echo '
+					<p><b>Event Date:</b> '.$date1.' ('.date('l', strtotime($db->dateStart)).')</p>
+					<p><b>Comments:</b> '.ifEmpty($db->comments, "N/A").'</p>';
+				}
 				
 				// Set is merged
 				$isMerged = true;
@@ -2802,129 +2807,134 @@ if(isset($_GET['event']))
 			
 				// Display event info
 				echo '
-				<h2 class="tm-section-header">'.$db->name.'</h2>
-				<p><b>Venue:</b> '.$db->venue.'</p>
-				<p><b>Address:</b> <a href="https://www.google.com/maps/search/?api=1&query='.$db->location.'" target="_blank">'.$db->location.'</a></p>
-				<p><b>Event Start:</b> '.$date1.' ('.date('l', strtotime($db->dateStart)).')</p>
-				<p><b>Event End:</b> '.$date2.' ('.date('l', strtotime($db->dateEnd)).')</p>
-				<p><b>Website:</b> '.validate_url($db->website).'</p>
-				<p><b>Expected number of attendees:</b> '.number_format($db->numberOfAttend).'</p>
-				<p><b>Requested number of characters:</b> '.number_format($db->requestedNumber).'</p>
-				<p><b>Requested character types:</b> '.$db->requestedCharacter.'</p>
-				<p><b>Secure changing/staging area:</b> '.yesNo($db->secureChanging).'</p>
-				<p><b>Can troopers bring blasters:</b> '.yesNo($db->blasters).'</p>
-				<p><b>Can troopers bring/carry prop like lightsabers:</b> '.yesNo($db->lightsabers).'</p>
-				<p><b>Is parking available:</b> '.yesNo($db->parking).'</p>
-				<p><b>Is venue accessible to those with limited mobility:</b> '.yesNo($db->mobility).'</p>
-				<p><b>Amenities available at venue:</b> '.ifEmpty($db->amenities, "No amenities for this event.").'</p>
-				<p><b>Comments:</b><br />'.ifEmpty(nl2br($db->comments), "No comments for this event.").'</p>
-				<p><b>Referred by:</b> '.ifEmpty($db->referred, "Not available").'</p>';
+				<h2 class="tm-section-header">'.$db->name.'</h2>';
 				
-				// Get number of events with link
-				$getNumOfLinks = $conn->query("SELECT id FROM events WHERE link = '".$db->id."'");
-				
-				// If has links to event, or is linked, show shift data
-				if($getNumOfLinks->num_rows > 0 || $db->link != 0)
+				if(loggedIn())
 				{
-					// Set link
-					$link = -1;
-					
-					// If this event is the link
-					if($getNumOfLinks->num_rows > 0)
-					{
-						$link = $db->id;
-					}
-					else if($db->link != 0)
-					{
-						$link = $db->link;
-					}
-					
 					echo '
-					<h2 class="tm-section-header">Shifts</h2>';
-					
-					// Query database for photos
-					$query2 = "SELECT * FROM events WHERE (id = '".$link."' OR link = '".$link."') AND id != '".$db->id."' ORDER BY dateStart ASC";
-					
-					if ($result2 = mysqli_query($conn, $query2))
-					{
-						while ($db2 = mysqli_fetch_object($result2))
-						{
-							echo '
-							<div style="border: 1px solid gray; margin-bottom: 10px; text-align: center;">
-							<a href="index.php?event=' . $db2->id . '">' . date('M d, Y', strtotime($db2->dateStart)) . '
-							<br />' .
-							date('H:i', strtotime($db2->dateStart)) . ' - ' . date('H:i', strtotime($db2->dateEnd)) .
-							'<br />' .
-							$db2->name . '</a>
-							</div>';
-						}
-					}
-				}
+					<p><b>Venue:</b> '.$db->venue.'</p>
+					<p><b>Address:</b> <a href="https://www.google.com/maps/search/?api=1&query='.$db->location.'" target="_blank">'.$db->location.'</a></p>
+					<p><b>Event Start:</b> '.$date1.' ('.date('l', strtotime($db->dateStart)).')</p>
+					<p><b>Event End:</b> '.$date2.' ('.date('l', strtotime($db->dateEnd)).')</p>
+					<p><b>Website:</b> '.validate_url($db->website).'</p>
+					<p><b>Expected number of attendees:</b> '.number_format($db->numberOfAttend).'</p>
+					<p><b>Requested number of characters:</b> '.number_format($db->requestedNumber).'</p>
+					<p><b>Requested character types:</b> '.$db->requestedCharacter.'</p>
+					<p><b>Secure changing/staging area:</b> '.yesNo($db->secureChanging).'</p>
+					<p><b>Can troopers bring blasters:</b> '.yesNo($db->blasters).'</p>
+					<p><b>Can troopers bring/carry prop like lightsabers:</b> '.yesNo($db->lightsabers).'</p>
+					<p><b>Is parking available:</b> '.yesNo($db->parking).'</p>
+					<p><b>Is venue accessible to those with limited mobility:</b> '.yesNo($db->mobility).'</p>
+					<p><b>Amenities available at venue:</b> '.ifEmpty($db->amenities, "No amenities for this event.").'</p>
+					<p><b>Comments:</b><br />'.ifEmpty(nl2br($db->comments), "No comments for this event.").'</p>
+					<p><b>Referred by:</b> '.ifEmpty($db->referred, "Not available").'</p>';
 				
-				// Don't show photos, if merged data
-				if(!$isMerged)
-				{
-					// Query database for photos
-					$query2 = "SELECT * FROM uploads WHERE troopid = '".cleanInput($_GET['event'])."' AND admin = '1' ORDER BY date DESC";
+					// Get number of events with link
+					$getNumOfLinks = $conn->query("SELECT id FROM events WHERE link = '".$db->id."'");
 					
-					// Query count
-					$j = 0;
-					
-					if ($result2 = mysqli_query($conn, $query2))
+					// If has links to event, or is linked, show shift data
+					if($getNumOfLinks->num_rows > 0 || $db->link != 0)
 					{
-						while ($db2 = mysqli_fetch_object($result2))
+						// Set link
+						$link = -1;
+						
+						// If this event is the link
+						if($getNumOfLinks->num_rows > 0)
 						{
-							// If first result...
-							if($j == 0)
+							$link = $db->id;
+						}
+						else if($db->link != 0)
+						{
+							$link = $db->link;
+						}
+						
+						echo '
+						<h2 class="tm-section-header">Shifts</h2>';
+						
+						// Query database for photos
+						$query2 = "SELECT * FROM events WHERE (id = '".$link."' OR link = '".$link."') AND id != '".$db->id."' ORDER BY dateStart ASC";
+						
+						if ($result2 = mysqli_query($conn, $query2))
+						{
+							while ($db2 = mysqli_fetch_object($result2))
 							{
 								echo '
-								<hr />';
+								<div style="border: 1px solid gray; margin-bottom: 10px; text-align: center;">
+								<a href="index.php?event=' . $db2->id . '">' . date('M d, Y', strtotime($db2->dateStart)) . '
+								<br />' .
+								date('H:i', strtotime($db2->dateStart)) . ' - ' . date('H:i', strtotime($db2->dateEnd)) .
+								'<br />' .
+								$db2->name . '</a>
+								</div>';
 							}
-							
-							echo '
-							<a href="images/uploads/'.$db2->filename.'" data-lightbox="photosadmin" data-title="Uploaded by '.getName($db2->trooperid).'" id="photo'.$db2->id.'"><img src="images/uploads/'.$db2->filename.'" width="200px" height="200px" /></a>';
-							
-							// If owned by trooper
-							if(loggedIn() && isAdmin())
-							{
-								echo '<a href="process.php?do=deletephoto&id='.$db2->id.'" name="deletephoto" photoid="'.$db2->id.'">Delete</a>';
-							}
-							
-							$j++;
 						}
 					}
-				}
+				
+					// Don't show photos, if merged data
+					if(!$isMerged)
+					{
+						// Query database for photos
+						$query2 = "SELECT * FROM uploads WHERE troopid = '".cleanInput($_GET['event'])."' AND admin = '1' ORDER BY date DESC";
+						
+						// Query count
+						$j = 0;
+						
+						if ($result2 = mysqli_query($conn, $query2))
+						{
+							while ($db2 = mysqli_fetch_object($result2))
+							{
+								// If first result...
+								if($j == 0)
+								{
+									echo '
+									<hr />';
+								}
+								
+								echo '
+								<a href="images/uploads/'.$db2->filename.'" data-lightbox="photosadmin" data-title="Uploaded by '.getName($db2->trooperid).'" id="photo'.$db2->id.'"><img src="images/uploads/'.$db2->filename.'" width="200px" height="200px" /></a>';
+								
+								// If owned by trooper
+								if(loggedIn() && isAdmin())
+								{
+									echo '<a href="process.php?do=deletephoto&id='.$db2->id.'" name="deletephoto" photoid="'.$db2->id.'">Delete</a>';
+								}
+								
+								$j++;
+							}
+						}
+					}
 			
-				// If this event is limited to era
-				if($db->limitTo != 4)
-				{
-					echo '
-					<br />
-					<hr />
-					<br />
-					
-					<div style="color: red;">
-						This event is limited to ' . getEra($db->limitTo) . ' era.
-					</div>';
-				}
-			
-				// If this event is limited in troopers
-				if($db->limitTotal < 500)
-				{
-					echo '
-					<br />
-					<hr />
-					<br />
-					
-					<div style="color: red;">
-						<ul>
-							<li>This event is limited to '.$db->limitTotal.' troopers.</li>
-							<li>This event is limited to '.convertNumber($db->limit501st, $db->limitTotal).' 501st troopers.</li>
-							<li>This event is limited to '.convertNumber($db->limitRebels, $db->limitTotal).' Rebel Legion troopers.</li>
-							<li>This event is limited to '.convertNumber($db->limitMando, $db->limitTotal).' Mando Merc troopers.</li>
-							<li>This event is limited to '.convertNumber($db->limitDroid, $db->limitTotal).' Droid Builder troopers.</li>
-						</ul>
-					</div>';
+					// If this event is limited to era
+					if($db->limitTo != 4)
+					{
+						echo '
+						<br />
+						<hr />
+						<br />
+						
+						<div style="color: red;">
+							This event is limited to ' . getEra($db->limitTo) . ' era.
+						</div>';
+					}
+				
+					// If this event is limited in troopers
+					if($db->limitTotal < 500)
+					{
+						echo '
+						<br />
+						<hr />
+						<br />
+						
+						<div style="color: red;">
+							<ul>
+								<li>This event is limited to '.$db->limitTotal.' troopers.</li>
+								<li>This event is limited to '.convertNumber($db->limit501st, $db->limitTotal).' 501st troopers.</li>
+								<li>This event is limited to '.convertNumber($db->limitRebels, $db->limitTotal).' Rebel Legion troopers.</li>
+								<li>This event is limited to '.convertNumber($db->limitMando, $db->limitTotal).' Mando Merc troopers.</li>
+								<li>This event is limited to '.convertNumber($db->limitDroid, $db->limitTotal).' Droid Builder troopers.</li>
+							</ul>
+						</div>';
+					}
 				}
 			}
 			
