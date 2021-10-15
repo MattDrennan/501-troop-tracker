@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Oct 14, 2021 at 12:42 AM
+-- Generation Time: Oct 15, 2021 at 09:35 AM
 -- Server version: 5.7.31
 -- PHP Version: 8.0.11
 
@@ -129,15 +129,15 @@ CREATE TABLE IF NOT EXISTS `costumes` (
 
 DROP TABLE IF EXISTS `events`;
 CREATE TABLE IF NOT EXISTS `events` (
-  `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `oldid` int(11) NOT NULL DEFAULT '0',
   `name` varchar(255) NOT NULL,
   `venue` varchar(255) DEFAULT NULL,
   `dateStart` datetime DEFAULT NULL,
   `dateEnd` datetime DEFAULT NULL,
   `website` varchar(500) DEFAULT NULL,
-  `numberOfAttend` int(10) DEFAULT NULL,
-  `requestedNumber` int(10) DEFAULT NULL,
+  `numberOfAttend` int(11) DEFAULT NULL,
+  `requestedNumber` int(11) DEFAULT NULL,
   `requestedCharacter` text,
   `secureChanging` tinyint(1) DEFAULT NULL,
   `blasters` tinyint(1) DEFAULT NULL,
@@ -152,15 +152,15 @@ CREATE TABLE IF NOT EXISTS `events` (
   `postComment` text,
   `notes` text,
   `limitedEvent` tinyint(1) DEFAULT NULL,
-  `limitTo` int(2) DEFAULT NULL,
-  `limitRebels` int(10) NOT NULL DEFAULT '9999',
-  `limit501st` int(10) NOT NULL DEFAULT '9999',
-  `limitMando` int(10) NOT NULL DEFAULT '9999',
-  `limitDroid` int(10) NOT NULL DEFAULT '9999',
-  `limitTotal` int(10) NOT NULL DEFAULT '9999',
+  `limitTo` int(11) DEFAULT NULL,
+  `limitRebels` int(11) NOT NULL DEFAULT '9999',
+  `limit501st` int(11) NOT NULL DEFAULT '9999',
+  `limitMando` int(11) NOT NULL DEFAULT '9999',
+  `limitDroid` int(11) NOT NULL DEFAULT '9999',
+  `limitTotal` int(11) NOT NULL DEFAULT '9999',
   `closed` tinyint(1) NOT NULL DEFAULT '0',
-  `moneyRaised` int(100) NOT NULL DEFAULT '0',
-  `squad` int(1) NOT NULL,
+  `moneyRaised` int(11) NOT NULL DEFAULT '0',
+  `squad` int(11) NOT NULL,
   `link` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -227,7 +227,7 @@ CREATE TABLE IF NOT EXISTS `settings` (
 DROP TABLE IF EXISTS `troopers`;
 CREATE TABLE IF NOT EXISTS `troopers` (
   `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `oldid` int(11) NOT NULL,
+  `oldid` int(11) NOT NULL DEFAULT '0',
   `name` varchar(255) NOT NULL,
   `email` varchar(240) DEFAULT NULL,
   `phone` varchar(10) DEFAULT NULL,

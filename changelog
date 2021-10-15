@@ -1,5 +1,11 @@
 **Changelog**
 
+_10/15/2021_
+
+-When deleting shifts, they will adjust links and values to reflect changes
+-When adding an event, shift boxes will be removed
+-Hospital troop label added (User suggestion)
+
 _10/14/2021_
 
 -Corrected an issue with search where the event ID would not display in link when no one was in troop

@@ -1231,11 +1231,28 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 	// Event submitted for deletion...
 	if(isset($_POST['submitDelete']))
 	{
+		// Get number of events with link
+		$getNumOfLinks = $conn->query("SELECT id FROM events WHERE link = '".cleanInput($_POST['eventId'])."'");
+		
 		// Query the database
 		$conn->query("DELETE FROM events WHERE id = '".cleanInput($_POST['eventId'])."'");
 
 		// Delete from sign ups - event_sign_up
 		$conn->query("DELETE FROM event_sign_up WHERE troopid = '".cleanInput($_POST['eventId'])."'");
+		
+		// If this event is the main link to others
+		if($getNumOfLinks->num_rows > 0)
+		{
+			// Get lowest event for link change
+			$getLinkChange = $conn->query("SELECT id FROM events WHERE link = '".cleanInput($_POST['eventId'])."' ORDER BY id ASC LIMIT 1");
+			$getLinkVal = $getLinkChange->fetch_row()[0];
+			
+			// Set link to new main event
+			$conn->query("UPDATE events SET link = '".$getLinkVal."' WHERE link = '".cleanInput($_POST['eventId'])."'");
+			
+			// Remove link from main event
+			$conn->query("UPDATE events SET link = '0' WHERE id = '".$getLinkVal."'");
+		}
 		
 		// Send notification to command staff
 		sendNotification(getName($_SESSION['id']) . " has deleted event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));

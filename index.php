@@ -1093,6 +1093,9 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		// How many convention troops
 		$disney_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '3'") or die($conn->error);
 		$count5 = $disney_get->fetch_row();
+		// How many hospital troops
+		$hospital_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '9'") or die($conn->error);
+		$count12 = $hospital_get->fetch_row();
 		// How many wedding troops
 		$convention_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '4'") or die($conn->error);
 		$count6 = $convention_get->fetch_row();
@@ -1175,6 +1178,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 			<p><b>PR Troops:</b> '.number_format($count4[0]).'</p>
 			<p><b>Disney Troops:</b> '.number_format($count5[0]).'</p>
 			<p><b>Convention Troops:</b> '.number_format($count6[0]).'</p>
+			<p><b>Hospital Troops:</b> '.number_format($count12[0]).'</p>
 			<p><b>Wedding Troops:</b> '.number_format($count7[0]).'</p>
 			<p><b>Birthday Troops:</b> '.number_format($count8[0]).'</p>
 			<p><b>Virtual Troops:</b> '.number_format($count9[0]).'</p>
@@ -1927,6 +1931,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<option value="2">PR</option>
 							<option value="3">Disney</option>
 							<option value="4">Convention</option>
+							<option value="9">Hospital</option>
 							<option value="5">Wedding</option>
 							<option value="6">Birthday Party</option>
 							<option value="7">Virtual Troop</option>
@@ -2399,6 +2404,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<option value="2" '.copyEventSelect($eid, $label, 2).'>PR</option>
 					<option value="3" '.copyEventSelect($eid, $label, 3).'>Disney</option>
 					<option value="4" '.copyEventSelect($eid, $label, 4).'>Convention</option>
+					<option value="9" '.copyEventSelect($eid, $label, 9).'>Hospital</option>
 					<option value="5" '.copyEventSelect($eid, $label, 5).'>Wedding</option>
 					<option value="6" '.copyEventSelect($eid, $label, 6).'>Birthday Party</option>
 					<option value="7" '.copyEventSelect($eid, $label, 7).'>Virtual Troop</option>
