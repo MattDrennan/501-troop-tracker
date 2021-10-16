@@ -75,11 +75,96 @@ function email_check()
 	}
 }
 
+// drawSupportGraph: A function that draws a visual graph for troopers to see what we need to support the garrison
+function drawSupportGraph()
+{
+	global $conn;
+	
+	// Check if user is logged in
+	if(loggedIn())
+	{
+		// Count number of troopers supporting
+		$getNumOfSupport = $conn->query("SELECT id FROM troopers WHERE supporter > 0");
+		
+		// Set goal
+		$goal = 20;
+		
+		// Find percent
+		$percent = floor(($getNumOfSupport->num_rows/$goal) * 100);
+		
+		// Don't allow over 100
+		if($percent > 100)
+		{
+			$percent = 100;
+		}
+		
+		return '
+		<style>
+			.bargraph
+			{
+				background-color: rgb(192, 192, 192);
+				width: 80%;
+				border-radius: 15px;
+				margin: auto;
+			}
+		  
+			.progress
+			{
+				background-color: rgb(116, 194, 92);
+				color: white;
+				padding: 1%;
+				text-align: right;
+				font-size: 20px;
+				border-radius: 15px;
+				width: '.$percent.'%;
+			}
+		</style>
+		
+		<h2 class="tm-section-header">Donation Goal</h2>
+		
+		<p style="text-align: center;">
+			<div class="bargraph">
+				<div class="progress">'.$percent.'%</div>
+			</div>
+		</p>
+		
+		<p style="text-align: center;">
+			<a href="index.php?action=donation">The Florida Garrison needs your support! Click here to learn more.</a>
+		</p>';
+	}
+}
+
+// isSupporter: A function to determine if a trooper is a supporter
+function isSupporter($id)
+{
+	global $conn;
+	
+	// Set up value
+	$value = 0;
+	
+	// Get data
+	$query = "SELECT supporter FROM troopers WHERE id = '".$id."'";
+	
+	// Run query...
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Set
+			$value = $db->supporter;
+		}
+	}
+	
+	// Return
+	return $value;
+}
+
 // getRebelLegionUser: A function that returns a troopers Rebel Legion forum username
 function getRebelLegionUser($id)
 {
 	global $conn;
 	
+	// Set up value
 	$forumName = "";
 	
 	// Get data
@@ -90,6 +175,7 @@ function getRebelLegionUser($id)
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
+			// Set
 			$forumName = $db->rebelforum;
 		}
 	}

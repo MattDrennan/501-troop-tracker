@@ -401,6 +401,7 @@ $(document).ready(function()
 					$("#tkid").val(json.tkid);
 					$("#forumid").val(json.forumid);
 					$("#rebelforum").val(json.rebelforum);
+					$("#supporter").val(json.supporter);
 				}
 				else
 				{

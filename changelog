@@ -2,6 +2,12 @@
 
 _10/16/2021_
 
+-Added "paypal.php" for monthly donations
+-Added isSupporter to determine if a trooper is a donator
+-Added drawSupportGraph a function that draws a visual graph for troopers to see what we need to support the garrison
+
+_10/16/2021_
+
 -Added Rebel Legion thumbnail photos to profiles
 
 _10/15/2021_

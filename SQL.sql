@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Oct 16, 2021 at 02:52 AM
+-- Generation Time: Oct 16, 2021 at 09:48 PM
 -- Server version: 5.7.31
 -- PHP Version: 8.0.11
 
@@ -267,6 +267,7 @@ CREATE TABLE IF NOT EXISTS `troopers` (
   `approved` int(1) NOT NULL DEFAULT '0',
   `subscribe` int(11) NOT NULL DEFAULT '1',
   `theme` int(11) NOT NULL DEFAULT '0',
+  `supporter` int(11) NOT NULL DEFAULT '0',
   `datecreated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

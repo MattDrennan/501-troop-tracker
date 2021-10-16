@@ -561,6 +561,61 @@ if(isset($_GET['profile']))
 	showRebelCostumes(getRebelInfo(getRebelLegionUser($_GET['profile']))['id']);
 }
 
+// Show the donation page
+if(isset($_GET['action']) && $_GET['action'] == "donation" && loggedIn())
+{
+	echo '
+	<h2 class="tm-section-header">Support the Florida Garrison!</h2>';
+	
+	// If donated...
+	if(isSupporter($_SESSION['id']))
+	{
+		echo '
+		<p style="text-align: center;">
+			<b>Thank you for supporting the Florida Garrison!</b>
+		</p>';
+	}
+	else
+	{
+		// PayPal Info
+		$client_id = "AYEsakrPwwh4l-qppNKmsBnI97GA-CyKIVmspv4JRSE2uKAmlB7oVsBamjlRkWwUEXeBG9KZxkZOlHIV";
+		$plan_id = "P-0SE53795TE356831TMFVSPKA";
+		
+		// If has not donated...
+		echo '
+		<p style="text-align: center;">With a monthly contribution of only $5.00, you can help support paying for the website server, storage, and general expenses of the Florida 501st Legion. Without your assistance, other members are left to pay for all expenses out of their pocket. This subscription is only available to Florida Garrison members, and all the money goes to garrison expenses.</p>
+		
+		<h2 class="tm-section-header">What you get...</h2>
+		
+		<ul>
+			<li>"Florida Garrison Supporter" award on your troop tracker profile</li>
+		</ul>
+		
+		<div id="paypal-button-container-'.$plan_id.'"></div>
+		<script src="https://www.paypal.com/sdk/js?client-id='.$client_id.'&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
+		<script>
+		  paypal.Buttons({
+			  style: {
+				  shape: "pill",
+				  color: "gold",
+				  layout: "horizontal",
+				  label: "subscribe"
+			  },
+			  createSubscription: function(data, actions) {
+				return actions.subscription.create({
+				  /* Creates the subscription */
+				  plan_id: "'.$plan_id.'",
+				  custom_id: "'.$_SESSION['id'].'"
+				});
+			  },
+			  onApprove: function(data, actions) {
+				alert(data.subscriptionID); // You can add optional success message for the subscriber here
+			  }
+		  }).render(\'#paypal-button-container-'.$plan_id.'\'); // Renders the PayPal button
+		</script>';
+	}
+}
+
 // Show the search page
 if(isset($_GET['action']) && $_GET['action'] == "search")
 {
@@ -2178,6 +2233,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						
 						<p>Forum ID (Rebel Legion):</p>
 						<input type="text" name="rebelforum" id="rebelforum" />
+						
+						<p>Supporter:</p>
+						<select name="supporter" id="supporter">
+							<option value="0">No</option>
+							<option value="1">Yes</option>
+						</select>
 						
 						<br /><br />
 
@@ -4081,6 +4142,9 @@ echo '
 
 if(!isWebsiteClosed())
 {
+	// Show support graph
+	echo drawSupportGraph();
+	
 	echo '
 	<hr />
 	<section class="tm-section tm-section-small">
