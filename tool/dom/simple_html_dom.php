@@ -54,7 +54,7 @@ function file_get_html(
 	$lowercase = true,
 	$forceTagsClosed = true,
 	$target_charset = DEFAULT_TARGET_CHARSET,
-	$stripRN = true,
+	$stripRN = false,
 	$defaultBRText = DEFAULT_BR_TEXT,
 	$defaultSpanText = DEFAULT_SPAN_TEXT)
 {
@@ -96,7 +96,7 @@ function str_get_html(
 	$lowercase = true,
 	$forceTagsClosed = true,
 	$target_charset = DEFAULT_TARGET_CHARSET,
-	$stripRN = true,
+	$stripRN = false,
 	$defaultBRText = DEFAULT_BR_TEXT,
 	$defaultSpanText = DEFAULT_SPAN_TEXT)
 {
@@ -1462,7 +1462,7 @@ class simple_html_dom
 		$lowercase = true,
 		$forceTagsClosed = true,
 		$target_charset = DEFAULT_TARGET_CHARSET,
-		$stripRN = true,
+		$stripRN = false,
 		$defaultBRText = DEFAULT_BR_TEXT,
 		$defaultSpanText = DEFAULT_SPAN_TEXT,
 		$options = 0)
@@ -1498,7 +1498,7 @@ class simple_html_dom
 	function load(
 		$str,
 		$lowercase = true,
-		$stripRN = true,
+		$stripRN = false,
 		$defaultBRText = DEFAULT_BR_TEXT,
 		$defaultSpanText = DEFAULT_SPAN_TEXT,
 		$options = 0)

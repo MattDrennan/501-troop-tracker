@@ -2,6 +2,18 @@
 
 _10/15/2021_
 
+-Added "rebelsync.php", a file which will scrape Rebel Legion data for troop tracker use
+-Updated SQL.sql
+-Added getRebelInfo(), a function for returning data about a Rebel Legion member
+-Added getMyRebelCostumes(), a function which returns a list of a Rebel Legion member's costumes
+-Added showRebelCostumes(), a function which returns a display of a Rebel Legion member's costumes
+-Added Rebel Legion forum name field for request access
+-Added trooper search to manage troopers and assign awards
+-Added getRebelLegionUser(), a function that returns the forum username of a Rebel Legion trooper
+-When approving trooper requests, when switching back to please select a trooper, it will reset the table
+
+_10/15/2021_
+
 -When deleting shifts, they will adjust links and values to reflect changes
 -When adding an event, shift boxes will be removed
 -Hospital troop label added (User suggestion)

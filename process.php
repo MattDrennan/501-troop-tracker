@@ -662,7 +662,7 @@ if(isset($_GET['do']) && $_GET['do'] == "getuser" && loggedIn())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$array = array('name' => $db->name, 'email' => $db->email, 'forum' => $db->forum_id, 'phone' => $db->phone, 'squad' => getSquadName($db->squad), 'tkid' => readTKNumber($db->tkid), 'link' => get501Info($db->tkid)['link']);
+				$array = array('name' => $db->name, 'email' => $db->email, 'forum' => $db->forum_id, 'rebelforum' => $db->rebelforum, 'phone' => $db->phone, 'squad' => getSquadName($db->squad), 'tkid' => readTKNumber($db->tkid), 'link' => get501Info($db->tkid)['link']);
 			}
 		}
 	}
@@ -777,7 +777,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$array = array('id' => $db->id, 'name' => $db->name, 'email' => $db->email, 'phone' => $db->phone, 'squad' => $db->squad, 'permissions' => $db->permissions, 'tkid' => $db->tkid, 'forumid' => $db->forum_id);
+				$array = array('id' => $db->id, 'name' => $db->name, 'email' => $db->email, 'phone' => $db->phone, 'squad' => $db->squad, 'permissions' => $db->permissions, 'tkid' => $db->tkid, 'forumid' => $db->forum_id, 'rebelforum' => $db->rebelforum);
 
 				echo json_encode($array);
 			}
@@ -800,7 +800,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 			else
 			{
 				// Query the database
-				$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['user'])."', email =  '".cleanInput($_POST['email'])."', phone = '".cleanInput(cleanInput($_POST['phone']))."', squad = '".cleanInput($_POST['squad'])."', permissions = '".cleanInput($_POST['permissions'])."', tkid = '".cleanInput($_POST['tkid'])."', forum_id = '".cleanInput($_POST['forumid'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'") or die($conn->error);
+				$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['user'])."', email =  '".cleanInput($_POST['email'])."', phone = '".cleanInput(cleanInput($_POST['phone']))."', squad = '".cleanInput($_POST['squad'])."', permissions = '".cleanInput($_POST['permissions'])."', tkid = '".cleanInput($_POST['tkid'])."', forum_id = '".cleanInput($_POST['forumid'])."', rebelforum = '".cleanInput($_POST['rebelforum'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'") or die($conn->error);
 				
 				// Send notification to command staff
 				sendNotification(getName($_SESSION['id']) . " has updated user ID [" . cleanInput($_POST['userIDE']) . "]", cleanInput($_SESSION['id']));
@@ -966,6 +966,12 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 				$failed = true;
 				echo '<li>Please enter your FL 501st Forum Username.</li>';
 			}
+			
+			if(strlen($tkid) > 11)
+			{
+				$failed = true;
+				echo '<li>TKID must be less than eleven (11) characters.</li>';
+			}
 
 			if(cleanInput($_POST['squad']) == 6)
 			{
@@ -986,17 +992,14 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 
 			if(strlen($_POST['password']) < 6)
 			{
+				$failed = true;
 				echo '<li>Password must be 6 (six) characters.</li>';
 			}
 
 			if(!is_numeric($tkid))
 			{
-				echo '<li>TKID must be an integer,</li>';
-			}
-
-			if(strlen($tkid) > 11)
-			{
-				echo '<li>TKID must be less than eleven (11) characters.</li>';
+				$failed = true;
+				echo '<li>TKID must be an integer.</li>';
 			}
 
 			// Query ID database
@@ -1035,7 +1038,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			// If failed
 			if(!$failed)
 			{
-				$conn->query("INSERT INTO troopers (name, tkid, email, forum_id, phone, squad, password) VALUES ('".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['phone'])."', '".cleanInput($_POST['squad'])."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."')") or die($conn->error);
+				$conn->query("INSERT INTO troopers (name, tkid, email, forum_id, rebelforum, phone, squad, password) VALUES ('".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['rebelforum'])."', '".cleanInput($_POST['phone'])."', '".cleanInput($_POST['squad'])."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."')") or die($conn->error);
 				echo '<li>Request submitted! You will receive an e-mail when your request is approved or denied.</li>';
 			}
 

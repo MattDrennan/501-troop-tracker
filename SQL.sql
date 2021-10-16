@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Oct 15, 2021 at 09:35 AM
+-- Generation Time: Oct 16, 2021 at 02:52 AM
 -- Server version: 5.7.31
 -- PHP Version: 8.0.11
 
@@ -205,6 +205,32 @@ CREATE TABLE IF NOT EXISTS `notifications` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `rebel_costumes`
+--
+
+DROP TABLE IF EXISTS `rebel_costumes`;
+CREATE TABLE IF NOT EXISTS `rebel_costumes` (
+  `rebelid` int(11) NOT NULL,
+  `costumename` varchar(255) NOT NULL,
+  `costumeimage` varchar(255) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rebel_troopers`
+--
+
+DROP TABLE IF EXISTS `rebel_troopers`;
+CREATE TABLE IF NOT EXISTS `rebel_troopers` (
+  `rebelid` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `rebelforum` varchar(255) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `settings`
 --
 
@@ -235,6 +261,7 @@ CREATE TABLE IF NOT EXISTS `troopers` (
   `permissions` int(2) NOT NULL DEFAULT '0',
   `tkid` varchar(20) NOT NULL,
   `forum_id` varchar(255) NOT NULL,
+  `rebelforum` varchar(255) NOT NULL,
   `password` varchar(255) DEFAULT NULL,
   `last_active` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `approved` int(1) NOT NULL DEFAULT '0',

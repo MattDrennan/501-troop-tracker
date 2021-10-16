@@ -201,7 +201,7 @@ $(document).ready(function()
 	$("body").on("input", "input[id='trooperSearch']", function(e)
 	{
 		// Loop through options
-		$("#trooperSelect option").each(function(index)
+		$("#trooperSelect option, #userID option, #userIDAward option").each(function(index)
 		{	
 			// If contains search query
 			if($(this).is(":contains(" + $("input[id='trooperSearch']").val() + ")"))
@@ -400,6 +400,7 @@ $(document).ready(function()
 					$("#permissions").val(json.permissions);
 					$("#tkid").val(json.tkid);
 					$("#forumid").val(json.forumid);
+					$("#rebelforum").val(json.rebelforum);
 				}
 				else
 				{
@@ -1092,7 +1093,6 @@ $(document).ready(function()
 	});
 	
 	// Modify Sign Up Form Change
-	
 	$("body").on("change", "select[name=modifysignupFormCostume], select[name=modiftybackupcostumeForm], select[name=modifysignupStatusForm]", function(e)
 	{
 		var signupForm1 = $("select[name=modifysignupFormCostume][trooperid=" + $(this).attr("trooperid") + "]");
@@ -1238,6 +1238,18 @@ $(document).ready(function()
 					$("#nameTable").html(ifEmpty(json.name));
 					$("#emailTable").html(ifEmpty(json.email));
 					$("#forumTable").html('<a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un=' + json.forum + '" target="_blank">' + json.forum + '</a>');
+					
+					// If just a 501st member
+					if(json.rebelforum == "")
+					{
+						$("#forumRebelTable").html('N/A');
+					}
+					else
+					{
+						// If a Rebel Legion member
+						$("#forumRebelTable").html('<a href="https://www.forum.rebellegion.com/forum/profile.php?mode=viewprofile&u=' + json.rebelforum + '" target="_blank">' + json.rebelforum + '</a>');
+					}
+					
 					$("#phoneTable").html(ifEmpty(json.phone));
 					$("#squadTable").html(ifEmpty(json.squad));
 					
@@ -1252,6 +1264,17 @@ $(document).ready(function()
 					}
 				}
 			});
+		}
+		else
+		{
+			// Reset table
+			$("#nameTable").html("");
+			$("#emailTable").html("");
+			$("#forumTable").html("");
+			$("#forumRebelTable").html("");
+			$("#phoneTable").html("");
+			$("#squadTable").html("");
+			$("#tkTable").html("");
 		}
 	});
 	

@@ -311,7 +311,9 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 			<br /><br />
 			Phone (Optional): <input type="text" name="phone" id="phone" />
 			<br /><br />
-			Forum Username: <input type="text" name="forumid" id="forumid" />
+			FL Garrison Forum Username: <input type="text" name="forumid" id="forumid" />
+			<br /><br />
+			Rebel Legion Forum Username (if applicable): <input type="text" name="rebelforum" id="rebelforum" />
 			<br /><br />
 			Password: <input type="password" name="password" id="password" />
 			<br /><br />
@@ -527,7 +529,11 @@ if(isset($_GET['profile']))
 	echo '
 	<h2 class="tm-section-header">Costumes</h2>';
 	
+	// Show 501st costumes
 	showCostumes(getTKNumber($_GET['profile']));
+	
+	// Show Rebel Legion costumes
+	showRebelCostumes(getRebelInfo(getRebelLegionUser($_GET['profile']))['id']);
 }
 
 // Show the search page
@@ -1575,11 +1581,14 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						echo '
 						<form action="process.php?do=assignawards" method="POST" name="awardUser" id="awardUser">
+						
+						Trooper Search: <input type="text" name="trooperSearch" id="trooperSearch" style="width: 50%;" />
+						<br /><br />
 
 						<select name="userIDAward" id="userIDAward">';
 					}
 
-					echo '<option value="'.$db->id.'">'.$db->name.'</option>';
+					echo '<option value="'.$db->id.'">'.$db->name.' - '.readTKNumber($db->tkid).'</option>';
 
 					// Increment
 					$i++;
@@ -2029,10 +2038,10 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<div style="overflow-x: auto;">
 				<table border="1" id="userListTable" name="userListTable">
 				<tr>
-					<th>Name</th>	<th>E-mail</th>	<th>Forum ID</th>	<th>Phone</th>	<th>Squad</th>	<th>TKID</th>
+					<th>Name</th>	<th>E-mail</th>	<th>Forum ID (FG)</th>	<th>Forum ID (RL)</th>	<th>Phone</th>	<th>Squad</th>	<th>TKID</th>
 				</tr>
 					<tr id="userList" name="userList">
-						<td id="nameTable"></td>	<td id="emailTable"></td> <td id="forumTable"></td>	<td id="phoneTable"></td>	<td id="squadTable"></td>	<td id="tkTable"></td>
+						<td id="nameTable"></td>	<td id="emailTable"></td> <td id="forumTable"></td> <td id="forumRebelTable"></td>	<td id="phoneTable"></td>	<td id="squadTable"></td>	<td id="tkTable"></td>
 					</tr>
 				</table>
 				</div>';
@@ -2070,6 +2079,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					if($i == 0)
 					{
 						echo '
+						Trooper Search: <input type="text" name="trooperSearch" id="trooperSearch" style="width: 50%;" />
+						<br /><br />
+						
 						<form action="process.php?do=managetroopers" method="POST" name="editUser" id="editUser">
 
 						<select name="userID" id="userID">';
@@ -2136,8 +2148,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<p>TKID:</p>
 						<input type="text" name="tkid" id="tkid" />
 						
-						<p>Forum ID:</p>
+						<p>Forum ID (Florida Garrison):</p>
 						<input type="text" name="forumid" id="forumid" />
+						
+						<p>Forum ID (Rebel Legion):</p>
+						<input type="text" name="rebelforum" id="rebelforum" />
 						
 						<br /><br />
 

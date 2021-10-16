@@ -75,7 +75,57 @@ function email_check()
 	}
 }
 
-// get501Info: A function which returns an array of info about trooper
+// getRebelLegionUser: A function that returns a troopers Rebel Legion forum username
+function getRebelLegionUser($id)
+{
+	global $conn;
+	
+	$forumName = "";
+	
+	// Get data
+	$query = "SELECT rebelforum FROM troopers WHERE id = '".$id."'";
+	
+	// Run query...
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			$forumName = $db->rebelforum;
+		}
+	}
+	
+	// Return
+	return $forumName;
+}
+
+// getRebelInfo: A function which returns an array of info about trooper - Rebel Legion
+function getRebelInfo($forumid)
+{
+	global $conn;
+	
+	// Setup array
+	$array = [];
+	$array['id'] = '';
+	$array['name'] = '';
+	
+	// Get data
+	$query = "SELECT * FROM rebel_troopers WHERE rebelforum = '".$forumid."'";
+	
+	// Run query...
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			$array['id'] = $db->rebelid;
+			$array['name'] = $db->name;
+		}
+	}
+	
+	// Return
+	return $array;
+}
+
+// get501Info: A function which returns an array of info about trooper - 501st
 function get501Info($id)
 {
 	global $conn;
@@ -100,6 +150,30 @@ function get501Info($id)
 	return $array;
 }
 
+// getMyRebelCostumes: A function which returns a string of costumes assigned to user in synced database - Rebel Legion
+function getMyRebelCostumes($id)
+{
+	global $conn;
+	
+	// Setup string
+	$costume = "";
+	
+	// Get data
+	$query = "SELECT costumename FROM rebel_costumes WHERE rebelid = '".$id."'";
+	
+	// Run query...
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			$costume .= ", '" . $db->costumename . "'";
+		}
+	}
+	
+	// Return
+	return $costume;
+}
+
 // getMyCostumes: A function which returns a string of costumes assigned to user in synced database
 function getMyCostumes($id)
 {
@@ -122,6 +196,45 @@ function getMyCostumes($id)
 	
 	// Return
 	return $costume;
+}
+
+// showRebelCostumes: A function which displays all the users costumes in synced database - Rebel Legion
+function showRebelCostumes($id)
+{
+	global $conn;
+	
+	// Get data
+	$query = "SELECT * FROM rebel_costumes WHERE rebelid = '".$id."'";
+	
+	// Set up count
+	$i = 0;
+	
+	// Run query...
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			echo '
+			<div style="text-align: center;">
+				<h3>'.$db->costumename.'<h3>
+				<p>
+					<img src="'.$db->costumeimage.'" />
+				</p>
+			</div>';
+			
+			// Increment
+			$i++;
+		}
+	}
+	
+	// If no results
+	if($i == 0)
+	{
+		echo '
+		<p style="text-align: center;">
+			No Rebel Legion costumes to display!
+		</p>';
+	}
 }
 
 // showCostumes: A function which displays all the users costumes in synced database
@@ -187,7 +300,7 @@ function showCostumes($id)
 	{
 		echo '
 		<p style="text-align: center;">
-			No costumes to display!
+			No 501st Legion costumes to display!
 		</p>';
 	}
 }

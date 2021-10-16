@@ -545,6 +545,13 @@ $(function()
                 required: true,
                 email: true
             },
+			rebelforum:
+			{
+				required: function()
+				{
+					return $('#squad').val() == 6;
+				}				
+			},
             forumid: "required",
             password: "required",
             passwordC: "required",
@@ -558,7 +565,8 @@ $(function()
             password: "Please enter your password.",
             passwordC: "Please re-enter your password to confirm it.",
             email: "Please enter a valid e-mail.",
-            name: "Please enter your name."
+            name: "Please enter your name.",
+			rebelforum: "Please enter your Rebel Legion forum username."
         },
         // Make sure the form is submitted to the destination defined
         // in the "action" attribute of the form when valid
