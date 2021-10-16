@@ -359,9 +359,13 @@ if(isset($_GET['profile']))
 					<p style="text-align: center;"><a href="index.php?action=commandstaff&do=managetroopers&uid='.$db->id.'">Edit/View Member in Command Staff Area</a></p>';
 				}
 				
-				// Get 501st Info
+				// Get 501st thumbnail Info
 				$thumbnail_get = $conn->query("SELECT thumbnail FROM 501st_troopers WHERE legionid = '".$db->tkid."'");
 				$thumbnail = $thumbnail_get->fetch_row();
+				
+				// Get Rebel Legion thumbnail info
+				$thumbnail_get_rebel = $conn->query("SELECT costumeimage FROM rebel_costumes WHERE rebelid = '".getRebelInfo(getRebelLegionUser(cleanInput($_GET['profile'])))['id']."' LIMIT 1");
+				$thumbnail_rebel = $thumbnail_get_rebel->fetch_row();
 				
 				echo '
 				<h2 class="tm-section-header">'.$db->name.' - '.readTKNumber($db->tkid).'</h2>';
@@ -373,6 +377,13 @@ if(isset($_GET['profile']))
 					echo '
 					<p style="text-align: center;">
 						<img src="'.$thumbnail[0].'" />
+					</p>';
+				}
+				else if(isset($thumbnail_rebel[0]))
+				{
+					echo '
+					<p style="text-align: center;">
+						<img src="'.str_replace("-A", "sm", $thumbnail_rebel[0]).'" />
 					</p>';
 				}
 				else
