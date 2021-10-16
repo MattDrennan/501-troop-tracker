@@ -803,6 +803,7 @@ $(document).ready(function()
 					$("#nameTable").html("");
 					$("#emailTable").html("");
 					$("#forumTable").html("");
+					$("#forumRebelTable").html("");
 					$("#phoneTable").html("");
 					$("#squadTable").html("");
 					$("#tkTable").html("");
