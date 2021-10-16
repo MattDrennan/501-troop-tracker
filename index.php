@@ -372,21 +372,35 @@ if(isset($_GET['profile']))
 				
 				// Avatar
 				
+				// Does have a avatar?
+				$haveAvatar = false;
+				
+				// 501
 				if(isset($thumbnail[0]))
 				{
 					echo '
 					<p style="text-align: center;">
 						<img src="'.$thumbnail[0].'" />
 					</p>';
+					
+					// Set
+					$haveAvatar = true;
 				}
-				else if(isset($thumbnail_rebel[0]))
+				
+				// Rebel
+				if(isset($thumbnail_rebel[0]))
 				{
 					echo '
 					<p style="text-align: center;">
 						<img src="'.str_replace("-A", "sm", $thumbnail_rebel[0]).'" />
 					</p>';
+					
+					// Set
+					$haveAvatar = true;
 				}
-				else
+				
+				// If does not have an avatar
+				if(!$haveAvatar)
 				{
 					echo '
 					<p style="text-align: center;">
