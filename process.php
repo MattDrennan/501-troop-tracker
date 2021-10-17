@@ -1097,6 +1097,24 @@ if(isset($_GET['do']) && $_GET['do'] == "changesettings" && loggedIn() && isAdmi
 					$conn->query("UPDATE settings SET signupclosed = '0'");
 				}
 			}
+			
+			// Get support goal button pressed and need data
+			if(isset($_POST['getSupportGoal']))
+			{
+				$array = array('data' => $db->supportgoal);
+				echo json_encode($array);
+			}
+			
+			// Save support goal
+			if(isset($_POST['saveSupportGoal']))
+			{
+				// Check value
+				if($_POST['supportgoal'] != "" && is_numeric($_POST['supportgoal']))
+				{
+					// Query
+					$conn->query("UPDATE settings SET supportgoal = '".cleanInput($_POST['supportgoal'])."'");
+				}
+			}
 		}
 	}
 }

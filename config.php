@@ -75,63 +75,135 @@ function email_check()
 	}
 }
 
+// drawSupportBadge: A function that draws a support badge if the user is a supporter
+function drawSupportBadge($id)
+{
+	global $conn;
+	
+	// Set up value
+	$value = "";
+	
+	// Get data
+	$query = "SELECT supporter FROM troopers WHERE id = '".$id."' AND supporter = '1'";
+	
+	// Run query...
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Set
+			$value = '<img src="images/FLGHeart_small.png" width="32px" height="32px" /><br />';
+		}
+	}
+	
+	// Return
+	return $value;
+}
+
 // drawSupportGraph: A function that draws a visual graph for troopers to see what we need to support the garrison
 function drawSupportGraph()
 {
 	global $conn;
 	
-	// Check if user is logged in
+	// Set return value
+	$return = "";
+	
+	// Check if user is logged in and don't show for command staff
 	if(loggedIn())
 	{
 		// Count number of troopers supporting
 		$getNumOfSupport = $conn->query("SELECT id FROM troopers WHERE supporter > 0");
 		
+		// Get goal from site settings
+		$getGoal = $conn->query("SELECT supportgoal FROM settings");
+		$getGoal_value = $getGoal->fetch_row();
+		
 		// Set goal
-		$goal = 20;
+		$goal = $getGoal_value[0];
 		
-		// Find percent
-		$percent = floor(($getNumOfSupport->num_rows/$goal) * 100);
-		
-		// Don't allow over 100
-		if($percent > 100)
+		// Hide for command staff
+		if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		{
-			$percent = 100;
+			// Set goal to 0 to hide
+			$goal = 0;
 		}
 		
-		return '
-		<style>
-			.bargraph
+		// If goal is 0, there is no goal and do not show
+		if($goal != 0)
+		{
+			// Find percent
+			$percent = floor(($getNumOfSupport->num_rows/$goal) * 100);
+			
+			// Don't allow over 100
+			if($percent > 100)
 			{
-				background-color: rgb(192, 192, 192);
-				width: 80%;
-				border-radius: 15px;
-				margin: auto;
+				$percent = 100;
 			}
-		  
-			.progress
+			
+			$return .= '
+			<style>
+				.bargraph
+				{
+					background-color: rgb(192, 192, 192);
+					width: 80%;
+					border-radius: 15px;
+					margin: auto;
+				}
+			  
+				.progress
+				{
+					background-color: rgb(116, 194, 92);
+					color: white;
+					padding: 1%;
+					text-align: right;
+					font-size: 20px;
+					border-radius: 15px;
+					width: '.$percent.'%;
+				}
+			</style>
+			
+			<h2 class="tm-section-header">Donation Goal</h2>
+			
+			<p style="text-align: center;">
+				<div class="bargraph">
+					<div class="progress">'.$percent.'%</div>
+				</div>
+			</p>';
+			
+			// Don't show link on donation page
+			if(isset($_GET['action']) && $_GET['action'] == "donation")
 			{
-				background-color: rgb(116, 194, 92);
-				color: white;
-				padding: 1%;
-				text-align: right;
-				font-size: 20px;
-				border-radius: 15px;
-				width: '.$percent.'%;
+				// Blank
 			}
-		</style>
-		
-		<h2 class="tm-section-header">Donation Goal</h2>
-		
-		<p style="text-align: center;">
-			<div class="bargraph">
-				<div class="progress">'.$percent.'%</div>
-			</div>
-		</p>
-		
-		<p style="text-align: center;">
-			<a href="index.php?action=donation">The Florida Garrison needs your support! Click here to learn more.</a>
-		</p>';
+			else
+			{
+				// Don't show link if they are a supporter
+				if(!isSupporter($_SESSION['id']))
+				{
+					// If not 100%, show learn more
+					if($percent != 100)
+					{
+						$return .= '
+						<p style="text-align: center;">
+							<a href="index.php?action=donation">The Florida Garrison needs your support! Click here to learn more.</a>
+						</p>';
+					}
+					else
+					{
+						// Reached 100%
+						$return .= '
+						<p style="text-align: center;">
+							<a href="index.php?action=donation">Thank you for helping the garrison reach it\'s goal! Click here to help contribute.</a>
+						</p>';
+					}
+				}
+			}
+			
+			$return .= '<hr />';
+		}
 	}
+	
+	return $return;
 }
 
 // isSupporter: A function to determine if a trooper is a supporter

@@ -1,5 +1,11 @@
 **Changelog**
 
+_10/17/2021_
+
+-Added drawSupportBadge a function that draws a support badge if the user is a supporter
+-Added PayPal info to cred.php
+-Deleted "501sync_costumes" and merged with "501sync.php"
+
 _10/16/2021_
 
 -Added "paypal.php" for monthly donations

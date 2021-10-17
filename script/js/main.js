@@ -352,6 +352,62 @@ $(document).ready(function()
 		});
 	})
 	
+	// Change Site Settings - Edit Support Goal
+	$("#submitSupportGoal").button().click(function(e)
+	{
+		e.preventDefault();
+		
+		// Check it edit support goal area is clear
+		if($("#settingsEditArea").html() == "")
+		{
+			// Load data from form
+			var form = $("#changeSettingsForm");
+			var url = form.attr("action");
+			
+			// Get AJAX data
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&getSupportGoal=1",
+				success: function(data)
+				{
+					// Get JSON data
+					var json = JSON.parse(data);
+					
+					// Show setting
+					$("#settingsEditArea").html('<p><input type="number" name="supportgoal" id="supportgoal" value="' + json.data + '" /> <input type="submit" name="saveSupportGoal" id="saveSupportGoal" value="Save" /></p>');
+				}
+			});
+		}
+		else
+		{
+			// Clear
+			$("#settingsEditArea").html("");
+		}
+	})
+	
+	// Change Site Settings - Save Support Goal
+	$("body").on("click", "#saveSupportGoal", function(e)
+	{
+		e.preventDefault();
+		
+		// Load data from form
+		var form = $("#changeSettingsForm");
+		var url = form.attr("action");
+		
+		// Get AJAX data
+		$.ajax({
+			type: "POST",
+			url: url,
+			data: form.serialize() + "&saveSupportGoal=1",
+			success: function(data)
+			{
+				// Clear
+				$("#settingsEditArea").html("");	
+			}
+		});
+	})
+	
 	// Modify sign up submit button
 	$("#submitModifySignUp").button().click(function(e)
 	{

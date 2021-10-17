@@ -146,6 +146,9 @@ echo '
 <a href="javascript:void(0);" class="icon" onclick="myFunction()"><i class="fa fa-bars"></i></a>
 </div>';
 
+// Show support graph
+echo drawSupportGraph();
+
 // Show the account page
 if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 {
@@ -453,7 +456,15 @@ if(isset($_GET['profile']))
 
 		<br />
 
-		<h2 class="tm-section-header">Awards</h2>
+		<h2 class="tm-section-header">Awards</h2>';
+		
+		// Check if supporter
+		if(isSupporter(cleanInput($_GET['profile'])))
+		{
+			echo '<img src="images/flgdonate.png" />';
+		}
+		
+		echo'
 		<ul>';
 
 		if($count[0] >= 1)
@@ -577,22 +588,21 @@ if(isset($_GET['action']) && $_GET['action'] == "donation" && loggedIn())
 	}
 	else
 	{
-		// PayPal Info
-		$client_id = "AYEsakrPwwh4l-qppNKmsBnI97GA-CyKIVmspv4JRSE2uKAmlB7oVsBamjlRkWwUEXeBG9KZxkZOlHIV";
-		$plan_id = "P-0SE53795TE356831TMFVSPKA";
-		
 		// If has not donated...
 		echo '
-		<p style="text-align: center;">With a monthly contribution of only $5.00, you can help support paying for the website server, storage, and general expenses of the Florida 501st Legion. Without your assistance, other members are left to pay for all expenses out of their pocket. This subscription is only available to Florida Garrison members, and all the money goes to garrison expenses.</p>
+		<p style="text-align: center;">With a monthly contribution of only $5.00, you can help support paying for the website server, prop storage, and general expenses of the Florida 501st Legion. Without your assistance, other members are left to pay for all expenses out of their pocket. This subscription is only available to Florida Garrison members, and all the money goes to garrison expenses.</p>
 		
 		<h2 class="tm-section-header">What you get...</h2>
 		
 		<ul>
 			<li>"Florida Garrison Supporter" award on your troop tracker profile</li>
+			<li>"Florida Garrison Supporter" icon on troop sign ups</li>
 		</ul>
 		
-		<div id="paypal-button-container-'.$plan_id.'"></div>
-		<script src="https://www.paypal.com/sdk/js?client-id='.$client_id.'&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
+		<h2 class="tm-section-header">Subscribe Options</h2>
+		
+		<div id="paypal-button-container-'.plan_id.'"></div>
+		<script src="https://www.paypal.com/sdk/js?client-id='.client_id.'&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
 		<script>
 		  paypal.Buttons({
 			  style: {
@@ -604,14 +614,14 @@ if(isset($_GET['action']) && $_GET['action'] == "donation" && loggedIn())
 			  createSubscription: function(data, actions) {
 				return actions.subscription.create({
 				  /* Creates the subscription */
-				  plan_id: "'.$plan_id.'",
+				  plan_id: "'.plan_id.'",
 				  custom_id: "'.$_SESSION['id'].'"
 				});
 			  },
 			  onApprove: function(data, actions) {
 				alert(data.subscriptionID); // You can add optional success message for the subscriber here
 			  }
-		  }).render(\'#paypal-button-container-'.$plan_id.'\'); // Renders the PayPal button
+		  }).render(\'#paypal-button-container-'.plan_id.'\'); // Renders the PayPal button
 		</script>';
 	}
 }
@@ -1397,6 +1407,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						echo '
 						<input type="submit" name="submitCloseSignUps" id="submitCloseSignUps" value="Open Sign Ups" />';
 					}
+					
+					// Change donation support
+					echo '
+					<input type="submit" name="submitSupportGoal" id="submitSupportGoal" value="Change Support Goal" />
+					
+					<div id="settingsEditArea" name="settingsEditArea"></div>';
 						
 					echo '
 					</form>';
@@ -3091,6 +3107,7 @@ if(isset($_GET['event']))
 						echo '
 						<tr>
 							<td>
+								'.drawSupportBadge($db2->trooperId).'
 								<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>
 							</td>
 								
@@ -3245,6 +3262,7 @@ if(isset($_GET['event']))
 						echo '
 						<tr>
 							<td>
+								'.drawSupportBadge($db2->trooperId).'
 								<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>
 							</td>
 								
@@ -4142,9 +4160,6 @@ echo '
 
 if(!isWebsiteClosed())
 {
-	// Show support graph
-	echo drawSupportGraph();
-	
 	echo '
 	<hr />
 	<section class="tm-section tm-section-small">
