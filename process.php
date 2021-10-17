@@ -836,7 +836,7 @@ if(isset($_GET['do']) && $_GET['do'] == "createuser" && loggedIn())
 			else
 			{
 				// Insert into database
-				$conn->query("INSERT INTO troopers (name, email, forum_id, phone, squad, permissions, tkid, password, approved) VALUES ('".cleanInput($_POST['name'])."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['phone'])."', '".cleanInput($_POST['squad'])."', '".cleanInput($_POST['permissions'])."', '".cleanInput($_POST['tkid'])."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', 1)");
+				$conn->query("INSERT INTO troopers (name, email, forum_id, rebelforum, phone, squad, permissions, tkid, password, approved) VALUES ('".cleanInput($_POST['name'])."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['rebelforum'])."', '".cleanInput($_POST['phone'])."', '".cleanInput($_POST['squad'])."', '".cleanInput($_POST['permissions'])."', '".cleanInput($_POST['tkid'])."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', 1)");
 				
 				// Send notification to command staff
 				sendNotification(getName($_SESSION['id']) . " has added a user", cleanInput($_SESSION['id']));

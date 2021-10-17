@@ -170,6 +170,7 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 	<a href="#" id="changenameLink" class="button">Change Name</a> 
 	<a href="#" id="changepasswordLink" class="button">Change Password</a>
 	<a href="#" id="changethemeLink" class="button">Change Theme</a> 
+	<a href="index.php?action=donation" class="button">Donate</a> 
 	<a href="index.php?profile='.$_SESSION['id'].'" class="button">View Your Profile</a>
 	<br /><br />
 
@@ -583,14 +584,14 @@ if(isset($_GET['action']) && $_GET['action'] == "donation" && loggedIn())
 	{
 		echo '
 		<p style="text-align: center;">
-			<b>Thank you for supporting the Florida Garrison!</b>
+			<b>Thank you for supporting the Florida Garrison! To cancel your subscription, go to <a href="https://paypal.com" target="_blank">PayPal.com</a>.</b>
 		</p>';
 	}
 	else
 	{
 		// If has not donated...
 		echo '
-		<p style="text-align: center;">With a monthly contribution of only $5.00, you can help support paying for the website server, prop storage, and general expenses of the Florida 501st Legion. Without your assistance, other members are left to pay for all expenses out of their pocket. This subscription is only available to Florida Garrison members, and all the money goes to garrison expenses.</p>
+		<p style="text-align: center;">With a monthly contribution of only $5.00, you can help support paying for the website server, prop storage, and general expenses of the Florida 501st Legion. Without your assistance, other members are left to pay for all expenses out of their pocket. Donations are only available to Florida Garrison members, and all the money goes to garrison expenses.</p>
 		
 		<h2 class="tm-section-header">What you get...</h2>
 		
@@ -599,30 +600,14 @@ if(isset($_GET['action']) && $_GET['action'] == "donation" && loggedIn())
 			<li>"Florida Garrison Supporter" icon on troop sign ups</li>
 		</ul>
 		
-		<h2 class="tm-section-header">Subscribe Options</h2>
-		
-		<div id="paypal-button-container-'.plan_id.'"></div>
-		<script src="https://www.paypal.com/sdk/js?client-id='.client_id.'&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
-		<script>
-		  paypal.Buttons({
-			  style: {
-				  shape: "pill",
-				  color: "gold",
-				  layout: "horizontal",
-				  label: "subscribe"
-			  },
-			  createSubscription: function(data, actions) {
-				return actions.subscription.create({
-				  /* Creates the subscription */
-				  plan_id: "'.plan_id.'",
-				  custom_id: "'.$_SESSION['id'].'"
-				});
-			  },
-			  onApprove: function(data, actions) {
-				alert(data.subscriptionID); // You can add optional success message for the subscriber here
-			  }
-		  }).render(\'#paypal-button-container-'.plan_id.'\'); // Renders the PayPal button
-		</script>';
+		<h2 class="tm-section-header">Donate Below!</h2>
+		<form action="https://www.paypal.com/donate" method="post" target="_top" style="text-align: center;">
+			<input type="hidden" name="notify_url" value="'.ipn.'">
+			<input type="hidden" name="custom" value="'.$_SESSION['id'].'">
+			<input type="hidden" name="hosted_button_id" value="ULH54MMQKGL5Q" />
+			<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+			<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+		</form>';
 	}
 }
 
@@ -1974,6 +1959,10 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<div name="datetimeadd" id="datetimeadd"></div>
 						
 						<input type="submit" name="addshift" id="addshift" value="Add Shift" />
+						
+						<p>
+							<i>Please note: This is to add additional shifts. To edit a shift, go to the shift event page, and edit it there.</i>
+						</p>
 
 						<p>Website:</p>
 						<input type="text" name="website" id="website" />
@@ -2281,8 +2270,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<p>Phone (Optional):</p>
 				<input type="text" name="phone" id="phone" />
 				
-				<p>Forum Username:</p>
+				<p>FLG Forum Username:</p>
 				<input type="text" name="forumid" id="forumid" />
+				
+				<p>Rebel Legion Forum Username (if applicable):</p>
+				<input type="text" name="rebelforum" id="rebelforum" />
 
 				<p>Squad/Club:</p>
 				<select name="squad" id="squad">
@@ -2459,6 +2451,10 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<div name="datetimeadd" id="datetimeadd"></div>
 				
 				<input type="submit" name="addshift" id="addshift" value="Add Shift" />
+				
+				<p>
+					<i>Please note: The first date and time is considered a shift. If you add another shift with the same date and time, it will be a duplicate.</i>
+				</p>
 
 				<p>Website:</p>
 				<input type="text" name="website" id="website" value="'.copyEvent($eid, $website).'" />
@@ -4199,7 +4195,7 @@ echo '
 
 <section class="tm-section tm-section-small">
 <p class="tm-mb-0">
-Website created by Matthew Drennan (TK52233). If you encounter any technical issues with this site, please
+Website created by <a href="index.php?profile=644">Matthew Drennan (TK52233)</a>. If you encounter any technical issues with this site, please
 <a href="mailto:drennanmattheww@gmail.com" class="tm-contact-link">email</a> me here.
 </p>
 

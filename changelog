@@ -5,6 +5,7 @@ _10/17/2021_
 -Added drawSupportBadge a function that draws a support badge if the user is a supporter
 -Added PayPal info to cred.php
 -Deleted "501sync_costumes" and merged with "501sync.php"
+-Fixed a bug with creating a trooper from command staff portal
 
 _10/16/2021_
 

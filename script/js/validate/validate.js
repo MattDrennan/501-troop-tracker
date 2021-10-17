@@ -814,7 +814,7 @@ $(function()
                 {
                     type: "POST",
                     url: form.action,
-                    data: $(form).serialize() + "&submitEvent=1",
+                    data: $(form).serialize() + "&submitUser=1",
                     success: function(data)
                     {
                         var json = JSON.parse(data);
@@ -826,6 +826,7 @@ $(function()
                             $("#name").val("");
                             $("#email").val("");
                             $("#forumid").val("");
+							$("#rebelforum").val("");
                             $("#phone").val("");
                             $("#squad").val("0");
                             $("#permissions").val("0");
