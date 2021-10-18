@@ -127,7 +127,7 @@ else
 			{
 				// Update donations
 				$conn->query("INSERT INTO donations (trooperid, amount, txn_id) VALUES ('".$custom."', '".$mc_gross."', '".$txn_id."')");
-				sendNotification(getName($custom) . " donated $" . $mc_gross . ".");
+				sendNotification(getName($custom) . " donated $" . $mc_gross . ".", $custom);
 			}
 
 			// Echo
