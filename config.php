@@ -75,6 +75,27 @@ function email_check()
 	}
 }
 
+// countDonations: Count the number of donations between the two dates - can specify a user
+function countDonations($trooperid = "*", $dateStart = "1900-12-1", $dateEnd = "9999-12-1")
+{
+	global $conn;
+	
+	// Query
+	if($trooperid != "*")
+	{
+		// Trooper ID specified
+		$getNumOfDonators = $conn->query("SELECT * FROM donations WHERE trooperid = ".$trooperid." AND datetime > '".$dateStart."' AND datetime < '".$dateEnd."'");
+	}
+	else
+	{
+		// Trooper ID not specified - wild card
+		$getNumOfDonators = $conn->query("SELECT * FROM donations WHERE datetime > '".$dateStart."' AND datetime < '".$dateEnd."'");
+	}
+	
+	// Return rows
+	return $getNumOfDonators->num_rows;
+}
+
 // drawSupportBadge: A function that draws a support badge if the user is a supporter
 function drawSupportBadge($id)
 {
@@ -112,7 +133,11 @@ function drawSupportGraph()
 	if(loggedIn())
 	{
 		// Count number of troopers supporting
-		$getNumOfSupport = $conn->query("SELECT id FROM troopers WHERE supporter > 0");
+		$getNumOfSupport = $conn->query("SELECT SUM(amount) FROM donations WHERE datetime > NOW() - INTERVAL 1 MONTH");
+		$getSupportNum = $getNumOfSupport->fetch_row();
+		
+		// Count times contributed
+		$didSupportCount = $conn->query("SELECT trooperid FROM donations WHERE datetime > NOW() - INTERVAL 1 MONTH AND trooperid = '".$_SESSION['id']."'");
 		
 		// Get goal from site settings
 		$getGoal = $conn->query("SELECT supportgoal FROM settings");
@@ -132,7 +157,7 @@ function drawSupportGraph()
 		if($goal != 0)
 		{
 			// Find percent
-			$percent = floor(($getNumOfSupport->num_rows/$goal) * 100);
+			$percent = floor(($getSupportNum[0]/$goal) * 100);
 			
 			// Don't allow over 100
 			if($percent > 100)
@@ -178,7 +203,7 @@ function drawSupportGraph()
 			else
 			{
 				// Don't show link if they are a supporter
-				if(!isSupporter($_SESSION['id']))
+				if($didSupportCount->num_rows == 0)
 				{
 					// If not 100%, show learn more
 					if($percent != 100)
@@ -196,6 +221,14 @@ function drawSupportGraph()
 							<a href="index.php?action=donation">Thank you for helping the garrison reach it\'s goal! Click here to help contribute.</a>
 						</p>';
 					}
+				}
+				else
+				{
+					// Did support
+					$return .= '
+					<p style="text-align: center;">
+						<a href="index.php?action=donation">Thank you for your contribution! Click here to help contribute further.</a>
+					</p>';
 				}
 			}
 			

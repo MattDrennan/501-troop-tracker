@@ -375,7 +375,7 @@ $(document).ready(function()
 					var json = JSON.parse(data);
 					
 					// Show setting
-					$("#settingsEditArea").html('<p><input type="number" name="supportgoal" id="supportgoal" value="' + json.data + '" /> <input type="submit" name="saveSupportGoal" id="saveSupportGoal" value="Save" /></p>');
+					$("#settingsEditArea").html('<p>$<input type="number" name="supportgoal" id="supportgoal" value="' + json.data + '" /> <input type="submit" name="saveSupportGoal" id="saveSupportGoal" value="Save" /></p>');
 				}
 			});
 		}

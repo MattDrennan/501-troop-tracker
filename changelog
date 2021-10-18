@@ -1,5 +1,10 @@
 **Changelog**
 
+_10/18/2021_
+
+-countDonations a functiont that counts the number of donations between the two dates - can specify a user
+-Changed donation graph to count total donations rather than supporters
+
 _10/17/2021_
 
 -Added drawSupportBadge a function that draws a support badge if the user is a supporter
