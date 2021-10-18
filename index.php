@@ -584,7 +584,7 @@ if(isset($_GET['action']) && $_GET['action'] == "donation" && loggedIn())
 	{
 		echo '
 		<p style="text-align: center;">
-			<b>Thank you for supporting the Florida Garrison! To cancel your subscription, go to <a href="https://paypal.com" target="_blank">PayPal.com</a>.</b>
+			<b>Thank you for supporting the Florida Garrison!</b>
 		</p>';
 	}
 	else

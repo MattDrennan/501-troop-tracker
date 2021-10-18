@@ -610,7 +610,7 @@ function checkTroopCounts($count, $message, $trooperid)
 		{
 			foreach($counts as $value)
 			{
-				if(str_contains($db->message, "now has " . $value))
+				if(strpos($db->message, "now has " . $value) !== false)
 				{
 					// Find in array
 					$pos = array_search($value, $counts);

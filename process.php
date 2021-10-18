@@ -1413,7 +1413,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 					</td>
 
 					<td>
-						<div name="costume1'.$db->trooperid.'" id="costume1'.$db->trooperid.'">'.getCostume($db->costume).'</div>
+						<div name="costume1'.$db->trooperid.'" id="costume1'.$db->trooperid.'">'.ifEmpty(getCostume($db->costume), "N/A").'</div>
 						<div name="costume2'.$db->trooperid.'" id="costume2'.$db->trooperid.'" style="display:none;">
 							<select name="costumeValSelect'.$db->trooperid.'">';
 							

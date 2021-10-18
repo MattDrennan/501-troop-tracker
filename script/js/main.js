@@ -1139,7 +1139,10 @@ $(document).ready(function()
 							$("#dateAttended" + $("input[name=trooperSelectEdit]:checked").val()).html(json.data2);
 							
 							// Re-enable all input radios to prevent issues
-							$("input[name=trooperSelectEdit]").prop("disabled", false);
+							$("input[name=trooperSelectEdit]").each(function( index )
+							{
+								$(this).prop("disabled", false);
+							});
 
 							// Alert to success
 					  		alert("Roster updated!");
