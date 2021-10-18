@@ -576,39 +576,36 @@ if(isset($_GET['profile']))
 // Show the donation page
 if(isset($_GET['action']) && $_GET['action'] == "donation" && loggedIn())
 {
-	echo '
-	<h2 class="tm-section-header">Support the Florida Garrison!</h2>';
-	
 	// If donated...
 	if(isSupporter($_SESSION['id']))
 	{
 		echo '
 		<p style="text-align: center;">
 			<b>Thank you for supporting the Florida Garrison!</b>
-		</p>';
+		</p>
+		<hr />';
 	}
-	else
-	{
-		// If has not donated...
-		echo '
-		<p style="text-align: center;">With a monthly contribution of only $5.00, you can help support paying for the website server, prop storage, and general expenses of the Florida 501st Legion. Without your assistance, other members are left to pay for all expenses out of their pocket. Donations are only available to Florida Garrison members, and all the money goes to garrison expenses.</p>
-		
-		<h2 class="tm-section-header">What you get...</h2>
-		
-		<ul>
-			<li>"Florida Garrison Supporter" award on your troop tracker profile</li>
-			<li>"Florida Garrison Supporter" icon on troop sign ups</li>
-		</ul>
-		
-		<h2 class="tm-section-header">Donate Below!</h2>
-		<form action="https://www.paypal.com/donate" method="post" target="_top" style="text-align: center;">
-			<input type="hidden" name="notify_url" value="'.ipn.'">
-			<input type="hidden" name="custom" value="'.$_SESSION['id'].'">
-			<input type="hidden" name="hosted_button_id" value="ULH54MMQKGL5Q" />
-			<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
-			<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
-		</form>';
-	}
+	
+	echo '
+	<h2 class="tm-section-header">Support the Florida Garrison!</h2>
+	
+	<p style="text-align: center;">With a monthly contribution of only $5.00, you can help support paying for the website server, prop storage, and general expenses of the Florida 501st Legion. Without your assistance, other members are left to pay for all expenses out of their pocket. Donations are only available to Florida Garrison members, and all the money goes to garrison expenses.</p>
+	
+	<h2 class="tm-section-header">What you get...</h2>
+	
+	<ul>
+		<li>"Florida Garrison Supporter" award on your troop tracker profile</li>
+		<li>"Florida Garrison Supporter" icon on troop sign ups</li>
+	</ul>
+	
+	<h2 class="tm-section-header">Donate Below!</h2>
+	<form action="https://www.paypal.com/donate" method="post" target="_top" style="text-align: center;">
+		<input type="hidden" name="notify_url" value="'.ipn.'">
+		<input type="hidden" name="custom" value="'.$_SESSION['id'].'">
+		<input type="hidden" name="hosted_button_id" value="ULH54MMQKGL5Q" />
+		<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+		<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+	</form>';
 }
 
 // Show the search page
