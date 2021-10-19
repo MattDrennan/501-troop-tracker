@@ -123,6 +123,15 @@ else
 			// Don't allow duplicates
 			$txn_count = $conn->query("SELECT * FROM donations WHERE txn_id = '".$txn_id."'");
 			
+			// If custom is not set
+			if($custom == 0 || $custom == "")
+			{
+				$custom = cleanInput($_GET['trooperid']);
+				sendEmail("drennanmattheww@gmail.com", "TEST", "1", $custom);
+			}
+			
+			sendEmail("drennanmattheww@gmail.com", "TEST", "2", $_GET['trooperid']);
+			
 			if($txn_count->num_rows == 0)
 			{
 				// Update donations

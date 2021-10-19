@@ -600,7 +600,7 @@ if(isset($_GET['action']) && $_GET['action'] == "donation" && loggedIn())
 	
 	<h2 class="tm-section-header">Donate Below!</h2>
 	<form action="https://www.paypal.com/donate" method="post" target="_top" style="text-align: center;">
-		<input type="hidden" name="notify_url" value="'.ipn.'">
+		<input type="hidden" name="notify_url" value="'.ipn.'?trooperid='.$_SESSION['id'].'">
 		<input type="hidden" name="custom" value="'.$_SESSION['id'].'">
 		<input type="hidden" name="hosted_button_id" value="ULH54MMQKGL5Q" />
 		<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
