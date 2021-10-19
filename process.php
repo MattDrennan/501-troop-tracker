@@ -226,7 +226,7 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 		{
 			$data .= '
 			<br />
-			<b>No comments to display.</b>';
+			<b>No discussion to display.</b>';
 		}
 
 		$array = array('data' => $data);
@@ -826,14 +826,90 @@ if(isset($_GET['do']) && $_GET['do'] == "createuser" && loggedIn())
 		{
 			// Verify emails
 			include("script/lib/EmailAddressValidator.php");
+			
+			// Set up error message
+			$errorMessage = "";
+			
+			// Set up fail variable
+			$failed = false;
+			
+			// Get TKID
+			$tkid = cleanInput($_POST['tkid']);
+			
+			// Check length
+			if(strlen($tkid) > 11)
+			{
+				$failed = true;
+				$errorMessage .= 'TKID must be less than eleven (11) characters. ';
+			}
 
+			// Convert TKID based on club
+			if(cleanInput($_POST['squad']) == 6)
+			{
+				$tkid = "111111" . $tkid;
+			}
+			else if(cleanInput($_POST['squad']) == 7)
+			{
+				$tkid = "222222" . $tkid;
+			}
+			else if(cleanInput($_POST['squad']) == 8)
+			{
+				$tkid = "333333" . $tkid;
+			}
+			else if(cleanInput($_POST['squad']) == 9)
+			{
+				$tkid = "444444" . $tkid;
+			}
+
+			// Check password length
+			if(strlen($_POST['password']) < 6)
+			{
+				$failed = true;
+				$errorMessage .= 'Password must be 6 (six) characters. ';
+			}
+
+			// TKID is number check
+			if(!is_numeric($tkid))
+			{
+				$failed = true;
+				$errorMessage .= 'TKID must be an integer. ';
+			}
+
+			// Query ID database
+			$idcheck = $conn->query("SELECT id FROM troopers WHERE tkid = '".$tkid."'") or die($conn->error);
+			
+			// Query 501st forum
+			$forumcheck = $conn->query("SELECT forum_id FROM troopers WHERE forum_id = '".cleanInput($_POST['forumid'])."'") or die($conn->error);
+			
+			// Check if 501st forum exists
+			if($forumcheck->num_rows > 0)
+			{
+				$failed = true;
+				$errorMessage .= 'FL Garrison Forum Name is already taken. Please contact the Florida Garrison Webmaster for further assistance. ';
+			}
+			
+			// Query Rebel forum - if specified
+			if(cleanInput($_POST['rebelforum']) != "")
+			{
+				$rebelcheck = $conn->query("SELECT rebelforum FROM troopers WHERE rebelforum = '".cleanInput($_POST['rebelforum'])."'") or die($conn->error);
+				
+				// Check if Rebel exists
+				if($rebelcheck->num_rows > 0)
+				{
+					$failed = true;
+					$errorMessage .= 'Rebel Forum Name is already taken. Please contact the Florida Garrison Webmaster for further assistance. ';
+				}
+			}
+
+			// Check E-mail
 			$validator = new EmailAddressValidator;
 			if (!$validator->check_email_address(cleanInput($_POST['email'])))
 			{
-				$array = array('success' => 'failed', 'data' => 'Invalid e-mail.');
-				echo json_encode($array);
+				$failed = true;
+				$errorMessage .= 'Invalid E-mail ';
 			}
-			else
+			
+			if(!$failed)
 			{
 				// Insert into database
 				$conn->query("INSERT INTO troopers (name, email, forum_id, rebelforum, phone, squad, permissions, tkid, password, approved) VALUES ('".cleanInput($_POST['name'])."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['rebelforum'])."', '".cleanInput($_POST['phone'])."', '".cleanInput($_POST['squad'])."', '".cleanInput($_POST['permissions'])."', '".cleanInput($_POST['tkid'])."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', 1)");
@@ -842,6 +918,11 @@ if(isset($_GET['do']) && $_GET['do'] == "createuser" && loggedIn())
 				sendNotification(getName($_SESSION['id']) . " has added a user", cleanInput($_SESSION['id']));
 
 				$array = array('success' => 'success', 'data' => 'User created!');
+				echo json_encode($array);
+			}
+			else
+			{
+				$array = array('success' => 'failed', 'data' => $errorMessage);
 				echo json_encode($array);
 			}
 		}
@@ -1004,6 +1085,29 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 
 			// Query ID database
 			$idcheck = $conn->query("SELECT id FROM troopers WHERE tkid = '".$tkid."'") or die($conn->error);
+			
+			// Query 501st forum
+			$forumcheck = $conn->query("SELECT forum_id FROM troopers WHERE forum_id = '".cleanInput($_POST['forumid'])."'") or die($conn->error);
+			
+			// Check if 501st forum exists
+			if($forumcheck->num_rows > 0)
+			{
+				$failed = true;
+				echo '<li>FL Garrison Forum Name is already taken. Please contact the Florida Garrison Webmaster for further assistance.</li>';
+			}
+			
+			// Query Rebel forum - if specified
+			if(cleanInput($_POST['rebelforum']) != "")
+			{
+				$rebelcheck = $conn->query("SELECT rebelforum FROM troopers WHERE rebelforum = '".cleanInput($_POST['rebelforum'])."'") or die($conn->error);
+				
+				// Check if Rebel exists
+				if($rebelcheck->num_rows > 0)
+				{
+					$failed = true;
+					echo '<li>Rebel Forum Name is already taken. Please contact the Florida Garrison Webmaster for further assistance.</li>';
+				}
+			}
 
 			// Check if ID exists
 			if($idcheck->num_rows > 0)

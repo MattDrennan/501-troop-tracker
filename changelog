@@ -1,5 +1,13 @@
 **Changelog**
 
+_10/19/2021_
+
+-Comments renamed to discussion
+-Changed font size to prevent mobile zoom
+-You can now sign in with your 501st or Rebel forum name
+-Changed "501st Member" permission to "Regular Member", Changed "Squad Leader" to "Moderator"
+-Added better checks on create user and request access page
+
 _10/18/2021_
 
 -countDonations a functiont that counts the number of donations between the two dates - can specify a user

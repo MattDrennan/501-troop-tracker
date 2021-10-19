@@ -326,3 +326,10 @@ input[type=submit] {
 .ui-dialog-titlebar-close {
     visibility: hidden;
 }
+
+/* Prevent zoom */
+input,
+select,
+textarea {
+  font-size: 16px;
+}

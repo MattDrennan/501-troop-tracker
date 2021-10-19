@@ -2219,11 +2219,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						<p>Permissions:</p>
 						<select name="permissions" id="permissions">
-							<option value="0">501st Member</option>
+							<option value="0">Regular Member</option>
 							<option value="3">Reserve Member</option>
 							<option value="4">Retired Member</option>
 							<option value="5">Handler</option>
-							<option value="2">Squad Leader</option>
+							<option value="2">Moderator</option>
 							<option value="1">Super Admin</option>
 						</select>
 
@@ -2288,11 +2288,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<p>Permissions:</p>
 				<select name="permissions" id="permissions">
-					<option value="0">501st Member</option>
+					<option value="0">Regular Member</option>
 					<option value="3">Reserve Member</option>
 					<option value="4">Retired Member</option>
 					<option value="5">Handler</option>
-					<option value="2">Squad Leader</option>
+					<option value="2">Moderator</option>
 					<option value="1">Super Admin</option>
 				</select>
 
@@ -2610,7 +2610,7 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 		}
 
 		// Get data
-		$query = "SELECT * FROM troopers WHERE tkid='".$tkid."'";
+		$query = "SELECT * FROM troopers WHERE tkid = '".$tkid."' OR forum_id = '".cleanInput($_POST['tkid'])."' OR rebelforum = '".cleanInput($_POST['tkid'])."'";
 		$i = 0;
 		if ($result = mysqli_query($conn, $query))
 		{
@@ -2657,7 +2657,7 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 	{
 		echo '
 		<form action="index.php?action=login" method="POST" name="loginForm" id="loginForm">
-			<p>TKID:</p>
+			<p>TKID / Forum Name:</p>
 			<input type="text" name="tkid" id="tkid" />
 
 			<p>Password:</p>
@@ -3772,7 +3772,7 @@ if(isset($_GET['event']))
 			<form aciton="process.php?do=postcomment" name="commentForm" id="commentForm" method="POST">
 				<input type="hidden" name="eventId" id="eventId" value="'.cleanInput($_GET['event']).'" />
 
-				<h2 class="tm-section-header">Comments</h2>
+				<h2 class="tm-section-header">Discussion</h2>
 				<div style="text-align: center;">
 				<textarea cols="30" rows="10" name="comment" id="comment"></textarea>
 
@@ -3840,7 +3840,7 @@ if(isset($_GET['event']))
 			{
 				echo '
 				<br />
-				<b>No comments to display.</b>';
+				<b>No discussion to display.</b>';
 			}
 		}
 		else
@@ -3849,13 +3849,13 @@ if(isset($_GET['event']))
 			{
 				echo '
 				<br />
-				<b>You must <a href="index.php?action=login">login</a> to view comments.</b>';
+				<b>You must <a href="index.php?action=login">login</a> to view the discussion.</b>';
 			}
 			else
 			{
 				echo '
 				<br />
-				<b>You are unable to comment on this event.</b>';
+				<b>You are unable to participate in the dicussion on this event.</b>';
 			}
 		}
 	}

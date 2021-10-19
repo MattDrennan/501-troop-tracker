@@ -828,7 +828,7 @@ $(function()
                             $("#forumid").val("");
 							$("#rebelforum").val("");
                             $("#phone").val("");
-                            $("#squad").val("0");
+                            $("#squad").val("1");
                             $("#permissions").val("0");
                             $("#tkid").val("");
                             $("#password").val("");
