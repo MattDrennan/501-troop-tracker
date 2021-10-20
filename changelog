@@ -1,5 +1,12 @@
 **Changelog**
 
+_10/20/2021_
+
+-Improved comments and formatting
+-Changed delete button to trash icon / Added quote icon
+-Troopers can now quote comments
+-Added BB Code for comments - showBBcodes() function
+
 _10/19/2021_
 
 -Comments renamed to discussion

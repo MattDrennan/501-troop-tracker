@@ -711,6 +711,8 @@ $(document).ready(function()
 			}
 		});
 	})
+	
+	// When admin clicks delete comment icon
 	$("body").on("click", "[id^=deleteComment]", function(e)
 	{
 		e.preventDefault();
@@ -735,6 +737,18 @@ $(document).ready(function()
 				}
 			});
 		}
+	});
+	
+	// When trooper quotes a comment
+	$("body").on("click", "[id^=quoteComment]", function(e)
+	{
+		e.preventDefault();
+
+		// Get ID of comment
+		var id = $(this).attr("name");
+		
+		// Add comment to comment text area
+		$("#comment").val($("#comment").val() + "[quote]" + $("table[name=comment_" + id + "] td[name=insideComment]").text() + "[/quote]\n\n");
 	});
 
 	$("#changephoneLink").click(function(e)

@@ -3803,27 +3803,27 @@ if(isset($_GET['event']))
 					echo '
 					<div style="overflow-x: auto;" style="text-align: center;">
 					<table border="1" name="comment_'.$db->id.'" id="comment_'.$db->id.'">';
-
-					echo '
-					<tr>
-						<td><a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.getTKNumber($db->trooperid).'</a></td>
-					</tr>';
-
+					
+					// Set up admin variable
+					$admin = '';
+					
+					// If is admin, set up admin options
 					if(isAdmin())
 					{
-						echo '
-						<tr>
-							<td><a href="#" id="deleteComment_'.$db->id.'" name="'.$db->id.'" class="button">Delete Comment</a></td>
-						</tr>';
+						$admin = '<span style="margin-right: 15px;"><a href="#" id="deleteComment_'.$db->id.'" name="'.$db->id.'"><img src="images/trash.png" alt="Delete Comment" /></a></span>';
 					}
+					
+					// Convert date/time
+					$date = strtotime($db->posted);
+					$newdate = date("F j, Y, g:i a", $date);
 
 					echo '
 					<tr>
-						<td>'.$db->posted.'</td>
+						<td><span style="float: left;">'.$admin.'<a href="#" id="quoteComment_'.$db->id.'" name="'.$db->id.'"><img src="images/quote.png" alt="Quote Comment"></a></span> <a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.getTKNumber($db->trooperid).'</a><br />'.$newdate.'</td>
 					</tr>
-
+					
 					<tr>
-						<td>'.isImportant($db->important, $db->comment).'</td>
+						<td name="insideComment">'.nl2br(isImportant($db->important, showBBcodes($db->comment))).'</td>
 					</tr>
 
 					</table>

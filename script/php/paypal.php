@@ -127,10 +127,7 @@ else
 			if($custom == 0 || $custom == "")
 			{
 				$custom = cleanInput($_GET['trooperid']);
-				sendEmail("drennanmattheww@gmail.com", "TEST", "1", $custom);
 			}
-			
-			sendEmail("drennanmattheww@gmail.com", "TEST", "2", $_GET['trooperid']);
 			
 			if($txn_count->num_rows == 0)
 			{
