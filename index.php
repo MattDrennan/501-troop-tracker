@@ -3819,7 +3819,7 @@ if(isset($_GET['event']))
 
 					echo '
 					<tr>
-						<td><span style="float: left;">'.$admin.'<a href="#" id="quoteComment_'.$db->id.'" name="'.$db->id.'"><img src="images/quote.png" alt="Quote Comment"></a></span> <a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.getTKNumber($db->trooperid).'</a><br />'.$newdate.'</td>
+						<td><span style="float: left;">'.$admin.'<a href="#" id="quoteComment_'.$db->id.'" name="'.$db->id.'"><img src="images/quote.png" alt="Quote Comment"></a></span> <a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.readTKNumber(getTKNumber($db->trooperid)).'</a><br />'.$newdate.'</td>
 					</tr>
 					
 					<tr>
