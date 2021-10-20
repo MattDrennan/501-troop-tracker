@@ -181,6 +181,12 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 
 		// Return data
 		$data = "";
+		
+		// Set name comment var - used for e-mails
+		$name = "";
+		
+		// Set comment var - used for e-mails
+		$comment = "";
 
 		if ($result = mysqli_query($conn, $query))
 		{
@@ -192,6 +198,10 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 				
 				// Set up admin variable
 				$admin = '';
+				
+				// Set comment variables
+				$name = getName($db->trooperid);
+				$comment = $db->comment;
 				
 				// If is admin, set up admin options
 				if(isAdmin())
@@ -205,11 +215,11 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 
 				$data .= '
 				<tr>
-					<td><span style="float: left;">'.$admin.'<a href="#" id="quoteComment_'.$db->id.'" name="'.$db->id.'"><img src="images/quote.png" alt="Quote Comment"></a></span> <a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.readTKNumber(getTKNumber($db->trooperid)).'</a><br />'.$newdate.'</td>
+					<td><span style="float: left;">'.$admin.'<a href="#" id="quoteComment_'.$db->id.'" name="'.$db->id.'"><img src="images/quote.png" alt="Quote Comment"></a></span> <a href="index.php?profile='.$db->trooperid.'">'.$name.' - '.readTKNumber(getTKNumber($db->trooperid)).'</a><br />'.$newdate.'</td>
 				</tr>
 				
 				<tr>
-					<td>'.nl2br(isImportant($db->important, showBBcodes($db->comment))).'</td>
+					<td name="insideComment">'.nl2br(isImportant($db->important, showBBcodes($comment))).'</td>
 				</tr>
 
 				</table>
@@ -219,6 +229,17 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 
 				// Increment
 				$i++;
+			}
+		}
+		
+		// Notify e-mail for comments
+		$query = "SELECT events.id AS eventId, events.name AS eventName, event_sign_up.id AS signupId, troopers.id AS trooperId, troopers.email AS email, troopers.name AS name FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE event_sign_up.troopid = '".cleanInput($_POST['eventId'])."' AND troopers.subscribe = '1' AND troopers.email != '' GROUP BY troopers.id";
+		if ($result = mysqli_query($conn, $query))
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				// Send E-mail
+				sendEmail($db->email, $db->name, "Troop Tracker: A comment has posted on ".$db->eventName."!", $name . ": " . $comment . "\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com");
 			}
 		}
 

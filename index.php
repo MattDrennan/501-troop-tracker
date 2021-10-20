@@ -304,7 +304,7 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 	<h2 class="tm-section-header">Request Access</h2>
 	
 	<div name="requestAccessFormArea" id="requestAccessFormArea">
-		<p style="text-align: center;">New to the 501st and/or Florida Garrison? Use this form below to start signing up for troops. Command Staff will need to approve your account prior to use.</p>
+		<p style="text-align: center;">New to the 501st and/or Florida Garrison? Or are you solely a member of another club? Use this form below to start signing up for troops. Command Staff will need to approve your account prior to use.</p>
 		
 		<form action="process.php?do=requestaccess" name="requestAccessForm" id="requestAccessForm" method="POST">
 			First & Last Name: <input type="text" name="name" id="name" />
@@ -3877,7 +3877,7 @@ else
 				if(!isSignUpClosed())
 				{
 					echo '
-					<p style="text-align: center;">Welcome to the Florida Garrison troop tracker!<br /><br /><a href="index.php?action=requestaccess">Are you new to the Florida Garrison and/or 501st? Click here.</a><br /><br /><a href="index.php?action=setup">Have you used the old troop tracker and need to set up your account? Click here.</a></p>';
+					<p style="text-align: center;">Welcome to the Florida Garrison troop tracker!<br /><br /><a href="index.php?action=requestaccess">Are you new to the Florida Garrison and/or 501st? Or are you solely a member of another club? Click here.</a><br /><br /><a href="index.php?action=setup">Have you used the old troop tracker and need to set up your account? Click here.</a></p>';
 				}
 				else
 				{
@@ -3905,7 +3905,7 @@ else
 				if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
 				{
 					// Query
-					$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, events.limitTotal, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND attend = 0 AND events.closed = 0";
+					$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, events.limitTotal, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() AND event_sign_up.attend = 0 AND events.closed = 0";
 				}
 				else if(isset($_GET['squad']))
 				{
