@@ -726,7 +726,7 @@ if(isset($_GET['do']) && $_GET['do'] == "approvetroopers" && loggedIn() && isAdm
 				// Send e-mail
 				try
 				{
-					sendEmail($db->email, $db->name, "Florida Garrison Troop Tracker: Account Denied", "Your account has been denied. Please confirm that all your information is correct and try again. If you continue to have issues, please reach out on the boards.");
+					sendEmail($db->email, $db->name, "".garrison." Troop Tracker: Account Denied", "Your account has been denied. Please confirm that all your information is correct and try again. If you continue to have issues, please reach out on the boards.");
 				}
 				catch(Exception $e)
 				{
@@ -754,7 +754,7 @@ if(isset($_GET['do']) && $_GET['do'] == "approvetroopers" && loggedIn() && isAdm
 				try
 				{
 					// Send e-mail
-					sendEmail($db->email, $db->name, "Florida Garrison Troop Tracker: Account Approved", "Your account has been approved!");
+					sendEmail($db->email, $db->name, "".garrison." Troop Tracker: Account Approved", "Your account has been approved!");
 				}
 				catch(Exception $e)
 				{
@@ -906,7 +906,7 @@ if(isset($_GET['do']) && $_GET['do'] == "createuser" && loggedIn())
 			if($forumcheck->num_rows > 0)
 			{
 				$failed = true;
-				$errorMessage .= 'FL Garrison Forum Name is already taken. Please contact the Florida Garrison Webmaster for further assistance. ';
+				$errorMessage .= 'FL Garrison Forum Name is already taken. Please contact the '.garrison.' Webmaster for further assistance. ';
 			}
 			
 			// Query Rebel forum - if specified
@@ -918,7 +918,7 @@ if(isset($_GET['do']) && $_GET['do'] == "createuser" && loggedIn())
 				if($rebelcheck->num_rows > 0)
 				{
 					$failed = true;
-					$errorMessage .= 'Rebel Forum Name is already taken. Please contact the Florida Garrison Webmaster for further assistance. ';
+					$errorMessage .= 'Rebel Forum Name is already taken. Please contact the '.garrison.' Webmaster for further assistance. ';
 				}
 			}
 
@@ -1114,7 +1114,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			if($forumcheck->num_rows > 0)
 			{
 				$failed = true;
-				echo '<li>FL Garrison Forum Name is already taken. Please contact the Florida Garrison Webmaster for further assistance.</li>';
+				echo '<li>FL Garrison Forum Name is already taken. Please contact the '.garrison.' Webmaster for further assistance.</li>';
 			}
 			
 			// Query Rebel forum - if specified
@@ -1126,7 +1126,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 				if($rebelcheck->num_rows > 0)
 				{
 					$failed = true;
-					echo '<li>Rebel Forum Name is already taken. Please contact the Florida Garrison Webmaster for further assistance.</li>';
+					echo '<li>Rebel Forum Name is already taken. Please contact the '.garrison.' Webmaster for further assistance.</li>';
 				}
 			}
 

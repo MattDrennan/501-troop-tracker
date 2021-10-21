@@ -1,5 +1,12 @@
 **Changelog**
 
+_10/21/2021_
+
+-Added global squad array and garrison variable for future modular design
+-Added squadSelectList(), returns options for select tag of squads
+-Added showSquadButtons() returns garrison and squad images on front page
+-Added displaySquadLinks() returns links for each garrison for troop tracker
+
 _10/20/2021_
 
 -Home Page / Request access text changed to help other clubs

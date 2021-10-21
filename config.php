@@ -33,6 +33,138 @@ if ($conn->connect_error)
 	trigger_error('Database connection failed: ' . $conn->connect_error, E_USER_ERROR);
 }
 
+// displaySquadLinks: Returns links for each garrison for troop tracker
+function displaySquadLinks($squadLink)
+{
+	global $squadArray;
+	
+	// Return var
+	$returnVar = '';
+	
+	// Set count
+	$squadID = 1;
+	
+	// Set up garrison link
+	$returnVar .= addSquadLink(0, $squadLink, "All");
+	
+	// Loop through squads
+	foreach($squadArray as $squad => $squad_value)
+	{
+		// Add to return var
+		$returnVar .= 
+		' | ' . addSquadLink($squadID, $squadLink, $squad);
+		
+		// Increment
+		$squadID++;
+	}
+	
+	return $returnVar;
+}
+
+// showSquadButtons: Returns garrison and squad images on front page
+function showSquadButtons()
+{
+	global $squadArray;
+	
+	// Return var
+	$returnVar = '';
+	
+	// Set count
+	$squadID = 1;
+	
+	// Set up garrison link
+	$returnVar .= '<a href="index.php"><img src="images/'.garrisonImage.'" alt="'.garrison.' Troops" '.isSquadActive(0).' /></a>';
+	
+	// Loop through squads
+	foreach($squadArray as $squad => $squad_value)
+	{
+		// Add to return var
+		$returnVar .= '
+		<a href="index.php?squad='.$squadID.'"><img src="images/'.$squad_value.'" alt="'.$squad.' Troops" '.isSquadActive($squadID).' /></a>';
+		
+		// Increment
+		$squadID++;
+	}
+	
+	return $returnVar;
+}
+
+// squadSelectList: Returns options for select tag of squads
+function squadSelectList($clubs = true, $insideElement = "", $eid = 0, $squadP = 0)
+{
+	global $squadArray, $clubArray;
+	
+	// Set count
+	$squadID = 1;
+	
+	// Return var
+	$returnVar = '';
+	
+	// Loop through squads
+	foreach($squadArray as $squad => $squad_value)
+	{
+		// If insideElement is nothing
+		if($insideElement == "")
+		{
+			// Add to return var
+			$returnVar .= '
+			<option value="'.$squadID.'">'.$squad.'</option>';
+		}
+		// If insideElement is copy
+		else if($insideElement == "copy")
+		{
+			// Add to return var
+			$returnVar .= '
+			<option value="'.$squadID.'" '.copyEventSelect($eid, $squadP, $squadID).'>'.$squad.'</option>';
+		}
+		// If insideElement is select
+		else if($insideElement == "select")
+		{
+			// Add to return var
+			$returnVar .= '
+			<option value="'.$squadID.'" '.echoSelect($squadID, cleanInput($_POST['squad'])).'>'.$squad.'</option>';
+		}
+		
+		// Increment
+		$squadID++;
+	}
+	
+	// If clubs set to true, show clubs
+	if($clubs)
+	{
+		// Loop through clubs
+		foreach($clubArray as $squad => $squad_value)
+		{
+			// If insideElement is nothing
+			if($insideElement == "")
+			{
+				// Add to return var
+				$returnVar .= '
+				<option value="'.$squadID.'">'.$squad.'</option>';
+			}
+			// If insideElement is copy
+			else if($insideElement == "copy")
+			{
+				// Add to return var
+				$returnVar .= '
+				<option value="'.$squadID.'" '.copyEventSelect($eid, $squadP, $squadID).'>'.$squad.'</option>';
+			}
+			// If insideElement is select
+			else if($insideElement == "select")
+			{
+				// Add to return var
+				$returnVar .= '
+				<option value="'.$squadID.'" '.echoSelect($squadID, cleanInput($_POST['squad'])).'>'.$squad.'</option>';
+			}
+			
+			// Increment
+			$squadID++;
+		}
+	}
+	
+	return $returnVar;
+}
+
 // addSquadLink: Returns a href link for a squad based on selection
 function addSquadLink($squad, $match, $name)
 {
@@ -243,7 +375,7 @@ function drawSupportGraph()
 					{
 						$return .= '
 						<p style="text-align: center;">
-							<a href="index.php?action=donation">The Florida Garrison needs your support! Click here to learn more.</a>
+							<a href="index.php?action=donation">The '.garrison.' needs your support! Click here to learn more.</a>
 						</p>';
 					}
 					else

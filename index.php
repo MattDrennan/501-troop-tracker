@@ -14,7 +14,7 @@ echo '
 	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
 	
 	<!-- Title -->
-	<title>501st Florida Garrison - Troop Tracker</title>
+	<title>501st '.garrison.' - Troop Tracker</title>
 	
 	<!-- Fonts -->
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600&display=swap" rel="stylesheet" />
@@ -92,7 +92,7 @@ echo '
 
 <div class="tm-container">
 <div class="tm-text-white tm-page-header-container">
-<h1 class="tm-page-header">501st Florida Garrison - Troop Tracker</h1>
+<h1 class="tm-page-header">501st '.garrison.' - Troop Tracker</h1>
 </div>
 <div class="tm-main-content">
 <section class="tm-section">
@@ -304,7 +304,7 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 	<h2 class="tm-section-header">Request Access</h2>
 	
 	<div name="requestAccessFormArea" id="requestAccessFormArea">
-		<p style="text-align: center;">New to the 501st and/or Florida Garrison? Or are you solely a member of another club? Use this form below to start signing up for troops. Command Staff will need to approve your account prior to use.</p>
+		<p style="text-align: center;">New to the 501st and/or '.garrison.'? Or are you solely a member of another club? Use this form below to start signing up for troops. Command Staff will need to approve your account prior to use.</p>
 		
 		<form action="process.php?do=requestaccess" name="requestAccessForm" id="requestAccessForm" method="POST">
 			First & Last Name: <input type="text" name="name" id="name" />
@@ -325,15 +325,7 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 			<br /><br />
 			<p>Squad/Club:</p>
 			<select name="squad" id="squad">
-				<option value="1">Everglades Squad</option>
-				<option value="2">Makaze Squad</option>
-				<option value="3">Parjai Squad</option>
-				<option value="4">Squad 7</option>
-				<option value="5">Tampa Bay Squad</option>
-				<option value="6">Rebel Legion</option>
-				<option value="7">Droid Builders</option>
-				<option value="8">Mandos</option>
-				<option value="9">Other</option>
+				'.squadSelectList().'
 			</select>
 			<br /><br />
 			<input type="submit" name="submitRequest" value="Request" />
@@ -581,21 +573,21 @@ if(isset($_GET['action']) && $_GET['action'] == "donation" && loggedIn())
 	{
 		echo '
 		<p style="text-align: center;">
-			<b>Thank you for supporting the Florida Garrison!</b>
+			<b>Thank you for supporting the '.garrison.'!</b>
 		</p>
 		<hr />';
 	}
 	
 	echo '
-	<h2 class="tm-section-header">Support the Florida Garrison!</h2>
+	<h2 class="tm-section-header">Support the '.garrison.'!</h2>
 	
-	<p style="text-align: center;">With a monthly contribution of only $5.00, you can help support paying for the website server, prop storage, and general expenses of the Florida 501st Legion. Without your assistance, other members are left to pay for all expenses out of their pocket. Donations are only available to Florida Garrison members, and all the money goes to garrison expenses.</p>
+	<p style="text-align: center;">With a monthly contribution of only $5.00, you can help support paying for the website server, prop storage, and general expenses of the '.garrison.'. Without your assistance, other members are left to pay for all expenses out of their pocket. Donations are only available to '.garrison.' members, and all the money goes to garrison expenses.</p>
 	
 	<h2 class="tm-section-header">What you get...</h2>
 	
 	<ul>
-		<li>"Florida Garrison Supporter" award on your troop tracker profile</li>
-		<li>"Florida Garrison Supporter" icon on troop sign ups</li>
+		<li>"'.garrison.' Supporter" award on your troop tracker profile</li>
+		<li>"'.garrison.' Supporter" icon on troop sign ups</li>
 	</ul>
 	
 	<h2 class="tm-section-header">Donate Below!</h2>
@@ -659,14 +651,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				
 				<select name="squad" id="squad">
 					<option value="0" '.echoSelect(0, cleanInput($_POST['squad'])).'>All</option>
-					<option value="1" '.echoSelect(1, cleanInput($_POST['squad'])).'>Everglades Squad</option>
-					<option value="5" '.echoSelect(5, cleanInput($_POST['squad'])).'>Tampa Bay Squad</option>
-					<option value="2" '.echoSelect(2, cleanInput($_POST['squad'])).'>Makaze Squad</option>
-					<option value="4" '.echoSelect(4, cleanInput($_POST['squad'])).'>Squad 7 Squad</option>
-					<option value="3" '.echoSelect(3, cleanInput($_POST['squad'])).'>Parjai Squad</option>
-					<option value="6" '.echoSelect(6, cleanInput($_POST['squad'])).'>Rebel Legion</option>
-					<option value="7" '.echoSelect(7, cleanInput($_POST['squad'])).'>Mando Mercs</option>
-					<option value="8" '.echoSelect(8, cleanInput($_POST['squad'])).'>Droid Builders</option>
+					'.squadSelectList(true, "select").'
 				</select>	
 				<br /><br />';				
 			}
@@ -1208,7 +1193,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		</div>
 		
 		<p style="text-align: right;">
-			'.addSquadLink(0, $squadLink, "All").' | '.addSquadLink(1, $squadLink, "Everglades").' | '.addSquadLink(2, $squadLink, "Makaze").' | '.addSquadLink(3, $squadLink, "Parjai").' | '.addSquadLink(4, $squadLink, "Squad 7").' | '.addSquadLink(5, $squadLink, "Tampa Bay").'
+			'.displaySquadLinks($squadLink).'
 		</p>';
 		
 		// If squad is set
@@ -1299,14 +1284,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 			<div id="trooper_count_radio" style="display: none;">
 				<select name="squad" id="squad">
 					<option value="0" SELECTED>All</option>
-					<option value="1">Everglades Squad</option>
-					<option value="5">Tampa Bay Squad</option>
-					<option value="2">Makaze Squad</option>
-					<option value="4">Squad 7 Squad</option>
-					<option value="3">Parjai Squad</option>
-					<option value="6">Rebel Legion</option>
-					<option value="7">Mando Mercs</option>
-					<option value="8">Droid Builders</option>
+					'.squadSelectList().'
 				</select>	
 				<br /><br />
 			</div>
@@ -1939,12 +1917,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<p>Squad</p>
 						<select name="squadm" id="squadm">
 							<option value="null" SELECTED>Please choose an option...</option>
-							<option value="1">Everglades Squad</option>
-							<option value="5">Tampa Bay Squad</option>
-							<option value="2">Makaze Squad</option>
-							<option value="4">Squad 7 Squad</option>
-							<option value="3">Parjai Squad</option>
-							<option value="0">Florida Garrison</option>
+							'.squadSelectList(false).'
+							<option value="0">'.garrison.'</option>
 						</select>		
 
 						<p>Date/Time Start:</p>
@@ -2206,15 +2180,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						<p>Squad/Club:</p>
 						<select name="squad" id="squad">
-							<option value="1">Everglades Squad</option>
-							<option value="2">Makaze Squad</option>
-							<option value="3">Parjai Squad</option>
-							<option value="4">Squad 7</option>
-							<option value="5">Tampa Bay Squad</option>
-							<option value="6">Rebel Legion</option>
-							<option value="7">Droid Builders</option>
-							<option value="8">Mandos</option>
-							<option value="9">Other</option>
+							'.squadSelectList().'
 						</select>
 
 						<p>Permissions:</p>
@@ -2230,7 +2196,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<p>TKID:</p>
 						<input type="text" name="tkid" id="tkid" />
 						
-						<p>Forum ID (Florida Garrison):</p>
+						<p>Forum ID ('.garrison.'):</p>
 						<input type="text" name="forumid" id="forumid" />
 						
 						<p>Forum ID (Rebel Legion):</p>
@@ -2275,15 +2241,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<p>Squad/Club:</p>
 				<select name="squad" id="squad">
-					<option value="1">Everglades Squad</option>
-					<option value="2">Makaze Squad</option>
-					<option value="3">Parjai Squad</option>
-					<option value="4">Squad 7</option>
-					<option value="5">Tampa Bay Squad</option>
-					<option value="6">Rebel Legion</option>
-					<option value="7">Droid Builders</option>
-					<option value="8">Mandos</option>
-					<option value="9">Other</option>
+					'.squadSelectList().'
 				</select>
 
 				<p>Permissions:</p>
@@ -2431,12 +2389,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<p>Squad</p>
 				<select name="squadm" id="squadm">
 					<option value="null" '.copyEventSelect($eid, $squad, "null").'>Please choose an option...</option>
-					<option value="1" '.copyEventSelect($eid, $squad, 1).'>Everglades Squad</option>
-					<option value="5" '.copyEventSelect($eid, $squad, 5).'>Tampa Bay Squad</option>
-					<option value="2" '.copyEventSelect($eid, $squad, 2).'>Makaze Squad</option>
-					<option value="4" '.copyEventSelect($eid, $squad, 4).'>Squad 7 Squad</option>
-					<option value="3" '.copyEventSelect($eid, $squad, 3).'>Parjai Squad</option>
-					<option value="0" '.copyEventSelect($eid, $squad, 0).'>Florida Garrison</option>
+					'.squadSelectList(false, "copy", $eid, $squad).'
+					<option value="0" '.copyEventSelect($eid, $squad, 0).'>'.garrison.'</option>
 				</select>
 
 				<p>Date/Time Start:</p>
@@ -2758,15 +2712,7 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed())
 			<p>Squad/Club</p>
 			
 			<select name="squad" id="squad">
-				<option value="1">Everglades Squad</option>
-				<option value="2">Makaze Squad</option>
-				<option value="3">Parjai Squad</option>
-				<option value="4">Squad 7</option>
-				<option value="5">Tampa Bay Squad</option>
-				<option value="6">Rebel Legion</option>
-				<option value="7">Droid Builders</option>
-				<option value="8">Mandos</option>
-				<option value="9">Other</option>
+				'.squadSelectList().'
 			</select>
 			
 			<br /><br />
@@ -3877,7 +3823,7 @@ else
 				if(!isSignUpClosed())
 				{
 					echo '
-					<p style="text-align: center;">Welcome to the Florida Garrison troop tracker!<br /><br /><a href="index.php?action=requestaccess">Are you new to the Florida Garrison and/or 501st? Or are you solely a member of another club? Click here.</a><br /><br /><a href="index.php?action=setup">Have you used the old troop tracker and need to set up your account? Click here.</a></p>';
+					<p style="text-align: center;">Welcome to the '.garrison.' troop tracker!<br /><br /><a href="index.php?action=requestaccess">Are you new to the '.garrison.' and/or 501st? Or are you solely a member of another club? Click here.</a><br /><br /><a href="index.php?action=setup">Have you used the old troop tracker and need to set up your account? Click here.</a></p>';
 				}
 				else
 				{
@@ -3890,11 +3836,12 @@ else
 			if(loggedIn())
 			{
 				echo '
-				<h2 class="tm-section-header">Troops</h2>
-
-				<a href="index.php"><img src="images/garrison_emblem.png" alt="Florida Garrison Troops" '.isSquadActive(0).' /></a> <a href="index.php?squad=1"><img src="images/everglades_emblem.png" alt="Everglades Squad Troops" '.isSquadActive(1).' /></a> <a href="index.php?squad=2"><img src="images/makaze_emblem.png" alt="Makaze Squad Troops" '.isSquadActive(2).' /></a> <a href="index.php?squad=3"><img src="images/parjai_emblem.png" alt="Parjai Squad Troops" '.isSquadActive(3).' /></a> <a href="index.php?squad=4"><img src="images/squad7_emblem.png" alt="Squad 7 Troops" '.isSquadActive(4).' /></a> <a href="index.php?squad=5"><img src="images/tampabay_emblem.png" alt="Tampa Bay Squad Troops" '.isSquadActive(5).' /></a>
+				<h2 class="tm-section-header">Troops</h2>'
+				
+				. showSquadButtons() . '
+				
 				<p style="text-align: center;">
-				<a href="index.php?squad=mytroops" class="button">My Troops</a>
+					<a href="index.php?squad=mytroops" class="button">My Troops</a>
 				</p>
 
 				<hr /><br />
