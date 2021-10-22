@@ -325,7 +325,7 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 			<br /><br />
 			<p>Squad/Club:</p>
 			<select name="squad" id="squad">
-				'.squadSelectList(false).'
+				'.squadSelectList().'
 			</select>
 			<br /><br />
 			<input type="submit" name="submitRequest" value="Request" />
@@ -2686,7 +2686,7 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed())
 			<p>Squad/Club</p>
 			
 			<select name="squad" id="squad">
-				'.squadSelectList().'
+				'.squadSelectList(false).'
 			</select>
 			
 			<br /><br />
