@@ -325,10 +325,12 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 			<br /><br />
 			<p>Squad/Club:</p>
 			<select name="squad" id="squad">
-				'.squadSelectList().'
+				'.squadSelectList(false).'
 			</select>
 			<br /><br />
 			<input type="submit" name="submitRequest" value="Request" />
+			<br />
+			<b>If you are a dual member, you will only need one account. Make sure your account is registered as a 501st Legion member.</b>
 		</form>
 	</div>
 
@@ -2529,39 +2531,11 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 	// Display submission for register account, otherwise show the form
 	if(isset($_POST['loginWithTK']))
 	{
+		// Get TKID
 		$tkid = cleanInput($_POST['tkid']);
 
-		// Format id for non members
-		// Rebel
-		if(substr(cleanInput($_POST['tkid']), 0, 1) === 'R')
-		{
-			$tkid = substr($tkid, 1);
-			$tkid = "111111" . $tkid;
-		}
-		// Droid
-		else if(substr(cleanInput($_POST['tkid']), 0, 1) === 'D')
-		{
-			$tkid = substr($tkid, 1);
-			$tkid = "222222" . $tkid;
-		}
-		// Mandos
-		else if(substr(cleanInput($_POST['tkid']), 0, 1) === 'M')
-		{
-			$tkid = substr($tkid, 1);
-			$tkid = "333333" . $tkid;
-		}
-		// Other
-		else if(substr(cleanInput($_POST['tkid']), 0, 1) === 'O')
-		{
-			$tkid = substr($tkid, 1);
-			$tkid = "444444" . $tkid;
-		}
-		// TK
-		else if(substr(cleanInput($_POST['tkid']), 0, 2) === 'TK')
-		{
-			$tkid = substr($tkid, 2);
-			$tkid = $tkid;
-		}
+		// Format id
+		$tkid = loginWithTKID($tkid);
 
 		// Get data
 		$query = "SELECT * FROM troopers WHERE tkid = '".$tkid."' OR forum_id = '".cleanInput($_POST['tkid'])."' OR rebelforum = '".cleanInput($_POST['tkid'])."'";

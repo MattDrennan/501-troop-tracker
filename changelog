@@ -6,6 +6,13 @@ _10/21/2021_
 -Added squadSelectList(), returns options for select tag of squads
 -Added showSquadButtons() returns garrison and squad images on front page
 -Added displaySquadLinks() returns links for each garrison for troop tracker
+-Added loginWithTKID() a function that converts TK number into readable id by database
+-Updated readTKNumber() to support modular design
+-Added convertToTKLogin() a function that converts an ID number to the loginable ID number for database
+-Request access, now only shows squads
+-Added "api.php"
+-Improved editing troopers and TKIDs
+-Fixed bug where TKID would not show after editing trooper
 
 _10/20/2021_
 

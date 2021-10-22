@@ -236,7 +236,7 @@ $(function()
                         $("#editUserInfo").hide();
 
                         // Fix text when changing the title
-                        $("#userID option:selected").text($("#user").val());
+                        $("#userID option:selected").text(json.newname);
 
                         // Alert to success
                         alert(json.data);

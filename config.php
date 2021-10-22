@@ -717,47 +717,26 @@ function getSquad($address)
 // getSquadName: Returns the squad name
 function getSquadName($value)
 {
+	global $squadArray;
+	
+	// Set return value
 	$returnValue = "";
-
-	if($value == 0)
+	
+	// Set squad ID
+	$squadID = 1;
+	
+	// Loop through squads
+	foreach($squadArray as $squad => $squad_value)
 	{
-		$returnValue = 'Florida Garrison';
-	}
-	else if($value == 1)
-	{
-		$returnValue = 'Everglades Squad';
-	}
-	else if($value == 2)
-	{
-		$returnValue = 'Makaze Squad';
-	}
-	else if($value == 3)
-	{
-		$returnValue = 'Parjai Squad';
-	}
-	else if($value == 4)
-	{
-		$returnValue = 'Squad 7';
-	}
-	else if($value == 5)
-	{
-		$returnValue = 'Tampa Bay Squad';
-	}
-	else if($value == 6)
-	{
-		$returnValue = 'Rebel Legion';
-	}
-	else if($value == 7)
-	{
-		$returnValue = 'Droid Builders';
-	}
-	else if($value == 8)
-	{
-		$returnValue = 'Mando Mercs';
-	}
-	else if($value == 9)
-	{
-		$returnValue = 'Other';
+		// Check if squad ID matches value
+		if($squadID == $value)
+		{
+			// Set
+			$returnValue = $squad;
+		}
+		
+		// Increment
+		$squadID++;
 	}
 
 	return $returnValue;
@@ -879,35 +858,139 @@ function getEventTitle($id)
 	}
 }
 
-// Converts other club ID numbers to a readable format
+// trimTKNumber(): Trims the extra numbers off a TK number
+function trimTKNumber($tkid)
+{
+	// Loop through numbers
+	for($i = 0; $i <= 9; $i++)
+	{
+		// If pattern found
+		if(substr($tkid, 0, 6) === str_repeat($i, 6))
+		{
+			// Remove from TKID
+			$tkid = substr($tkid, 6);
+			$tkid = $tkid;
+		}
+	}
+	
+	// Return
+	return $tkid;
+}
+
+// convertToTKLogin(): Converts an ID number to the loginable ID number for database
+function convertToTKLogin($tkid, $squadID)
+{
+	global $clubArray, $squadArray;
+	
+	// Set club count
+	$clubCount = 0;
+	
+	// Check if in club
+	$inClub = false;
+	
+	// Loop through squads
+	foreach($clubArray as $club => $club_value)
+	{
+		// Check if ID starts with a club
+		if((($clubCount + 1) + count($squadArray)) == $squadID)
+		{
+			// Set up numbers in front of ID
+			$numbers = str_repeat(($clubCount + 1), 6);
+			
+			// Set TKID
+			$tkid = $numbers . $tkid;
+		}
+		
+		// Increment
+		$clubCount++;
+	}
+	
+	// Return
+	return $tkid;
+}
+
+// loginWithTKID: Converts TK number into readable id by database
+function loginWithTKID($tkid)
+{
+	global $clubArray;
+	
+	// Set club count
+	$clubCount = 0;
+	
+	// Check if in club
+	$inClub = false;
+	
+	// Loop through squads
+	foreach($clubArray as $club => $club_value)
+	{
+		// Get first letter of club
+		$firstLetter = strtoupper(substr($club, 0, 1));
+		
+		// Check if ID starts with a club
+		if(substr($tkid, 0, 1) === $firstLetter)
+		{
+			// Set up numbers in front of ID
+			$numbers = str_repeat(($clubCount + 1), 6);
+			
+			// Set TKID
+			$tkid = substr($tkid, 1);
+			$tkid = $numbers . $tkid;
+		}
+		
+		// Increment
+		$clubCount++;
+	}
+	
+	// If not in club, set default
+	if(!$inClub)
+	{
+		if(substr(cleanInput($_POST['tkid']), 0, 2) === 'TK')
+		{
+			$tkid = substr($tkid, 2);
+			$tkid = $tkid;
+		}
+	}
+	
+	// Return
+	return $tkid;
+}
+
+// readTKNumber: Converts other club ID numbers to a readable format
 function readTKNumber($tkid)
 {
-	// Format id for non members
-	// Rebel
-	if(substr($tkid, 0, 6) === '111111')
+	global $clubArray;
+	
+	// Set club count
+	$clubCount = 0;
+	
+	// Check if in club
+	$inClub = false;
+	
+	// Loop through squads
+	foreach($clubArray as $club => $club_value)
 	{
-		$tkid = substr($tkid, 6);
-		$tkid = "R" . $tkid;
+		// Get first letter of club
+		$firstLetter = strtoupper(substr($club, 0, 1));
+		
+		// Set up numbers in front of ID
+		$numbers = str_repeat(($clubCount + 1), 6);
+		
+		if(substr($tkid, 0, 6) === $numbers)
+		{
+			// Change TKID to readable
+			$tkid = substr($tkid, 6);
+			$tkid = $firstLetter . $tkid;
+			
+			// Set
+			$inClub = true;
+		}
+		
+		// Increment
+		$clubCount++;
 	}
-	// Droid
-	else if(substr($tkid, 0, 6) === '222222')
-	{
-		$tkid = substr($tkid, 6);
-		$tkid = "D" . $tkid;
-	}
-	// Mandos
-	else if(substr($tkid, 0, 6) === '333333')
-	{
-		$tkid = substr($tkid, 6);
-		$tkid = "M" . $tkid;
-	}
-	// Other
-	else if(substr($tkid, 0, 6) === '444444')
-	{
-		$tkid = substr($tkid, 6);
-		$tkid = "O" . $tkid;
-	}
-	else
+	
+	// If not in club, set default
+	if(!$inClub)
 	{
 		$tkid = "TK" . $tkid;
 	}

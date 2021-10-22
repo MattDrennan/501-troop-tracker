@@ -798,7 +798,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$array = array('id' => $db->id, 'name' => $db->name, 'email' => $db->email, 'phone' => $db->phone, 'squad' => $db->squad, 'permissions' => $db->permissions, 'tkid' => $db->tkid, 'forumid' => $db->forum_id, 'rebelforum' => $db->rebelforum, 'supporter' => $db->supporter);
+				$array = array('id' => $db->id, 'name' => $db->name, 'email' => $db->email, 'phone' => $db->phone, 'squad' => $db->squad, 'permissions' => $db->permissions, 'tkid' => trimTKNumber($db->tkid), 'forumid' => $db->forum_id, 'rebelforum' => $db->rebelforum, 'supporter' => $db->supporter);
 
 				echo json_encode($array);
 			}
@@ -820,13 +820,19 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 			}
 			else
 			{
+				// Set up TKID
+				$tkid = cleanInput($_POST['tkid']);
+				
+				// Convert TKID
+				$tkid = convertToTKLogin($tkid, cleanInput($_POST['squad']));
+				
 				// Query the database
-				$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['user'])."', email =  '".cleanInput($_POST['email'])."', phone = '".cleanInput(cleanInput($_POST['phone']))."', squad = '".cleanInput($_POST['squad'])."', permissions = '".cleanInput($_POST['permissions'])."', tkid = '".cleanInput($_POST['tkid'])."', forum_id = '".cleanInput($_POST['forumid'])."', rebelforum = '".cleanInput($_POST['rebelforum'])."', supporter = '".cleanInput($_POST['supporter'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'") or die($conn->error);
+				$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['user'])."', email =  '".cleanInput($_POST['email'])."', phone = '".cleanInput(cleanInput($_POST['phone']))."', squad = '".cleanInput($_POST['squad'])."', permissions = '".cleanInput($_POST['permissions'])."', tkid = '".$tkid."', forum_id = '".cleanInput($_POST['forumid'])."', rebelforum = '".cleanInput($_POST['rebelforum'])."', supporter = '".cleanInput($_POST['supporter'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'") or die($conn->error);
 				
 				// Send notification to command staff
 				sendNotification(getName($_SESSION['id']) . " has updated user ID [" . cleanInput($_POST['userIDE']) . "]", cleanInput($_SESSION['id']));
 
-				$array = array('success' => 'true', 'data' => 'User has been updated!');
+				$array = array('success' => 'true', 'newname' => cleanInput($_POST['user']) . " - " . readTKNumber($tkid), 'data' => 'User has been updated!');
 				echo json_encode($array);
 			}
 		}
@@ -865,22 +871,7 @@ if(isset($_GET['do']) && $_GET['do'] == "createuser" && loggedIn())
 			}
 
 			// Convert TKID based on club
-			if(cleanInput($_POST['squad']) == 6)
-			{
-				$tkid = "111111" . $tkid;
-			}
-			else if(cleanInput($_POST['squad']) == 7)
-			{
-				$tkid = "222222" . $tkid;
-			}
-			else if(cleanInput($_POST['squad']) == 8)
-			{
-				$tkid = "333333" . $tkid;
-			}
-			else if(cleanInput($_POST['squad']) == 9)
-			{
-				$tkid = "444444" . $tkid;
-			}
+			$tkid = convertToTKLogin($tkid, cleanInput($_POST['squad']));
 
 			// Check password length
 			if(strlen($_POST['password']) < 6)
@@ -1055,49 +1046,41 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 
 			echo '<ul>';
 
+			// If name empty
 			if(cleanInput($_POST['name']) == "")
 			{
 				$failed = true;
 				echo '<li>Please enter your name.</li>';
 			}
 
+			// Set TKID
 			$tkid = cleanInput($_POST['tkid']);
 			
+			// If Forum ID empty
 			if(cleanInput($_POST['forumid']) == "")
 			{
 				$failed = true;
 				echo '<li>Please enter your FL 501st Forum Username.</li>';
 			}
 			
+			// If TKID is greather than 11 characters
 			if(strlen($tkid) > 11)
 			{
 				$failed = true;
 				echo '<li>TKID must be less than eleven (11) characters.</li>';
 			}
 
-			if(cleanInput($_POST['squad']) == 6)
-			{
-				$tkid = "111111" . $tkid;
-			}
-			else if(cleanInput($_POST['squad']) == 7)
-			{
-				$tkid = "222222" . $tkid;
-			}
-			else if(cleanInput($_POST['squad']) == 8)
-			{
-				$tkid = "333333" . $tkid;
-			}
-			else if(cleanInput($_POST['squad']) == 9)
-			{
-				$tkid = "444444" . $tkid;
-			}
+			// Convert TKID based on club
+			$tkid = convertToTKLogin($tkid, cleanInput($_POST['squad']));
 
+			// If password is less than six characters
 			if(strlen($_POST['password']) < 6)
 			{
 				$failed = true;
 				echo '<li>Password must be 6 (six) characters.</li>';
 			}
 
+			// If TKID is not numeric
 			if(!is_numeric($tkid))
 			{
 				$failed = true;
