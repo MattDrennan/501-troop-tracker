@@ -1,5 +1,11 @@
 **Changelog**
 
+_10/22/2021_
+
+-Removed time spent statistic
+-Fixed troop tracker search errors when searching other clubs
+-Added other to troop tracker search
+
 _10/21/2021_
 
 -Added global squad array and garrison variable for future modular design

@@ -714,10 +714,10 @@ function getSquad($address)
     return $squad;
 }
 
-// getSquadName: Returns the squad name
+// getSquadName: Returns the squad name / club name
 function getSquadName($value)
 {
-	global $squadArray;
+	global $squadArray, $clubArray;
 	
 	// Set return value
 	$returnValue = "";
@@ -733,6 +733,20 @@ function getSquadName($value)
 		{
 			// Set
 			$returnValue = $squad;
+		}
+		
+		// Increment
+		$squadID++;
+	}
+	
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
+	{
+		// Check if squad ID matches value
+		if($squadID == $value)
+		{
+			// Set
+			$returnValue = $club;
 		}
 		
 		// Increment
