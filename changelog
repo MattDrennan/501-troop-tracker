@@ -7,6 +7,9 @@ _10/26/2021_
 -Removed: getIdNumberFromTK(), trimTKNumber(), getIDNumberFromTK()
 -Added: removeLetters a function that removes all non-numeric characters from a string
 -The following functions have been modified to work with the new TKID database rules: convertToTKLogin(), readTKNumber(), doesTKExist(), isTKRegistered(), showCostumes(), getMyCostumes()
+-Removed clutter on home page
+-Added: Troopers attending under troop
+-Added: troopCheck() Checks the troop counts of all clubs
 
 _10/22/2021_
 

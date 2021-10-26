@@ -1304,12 +1304,8 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		// If set as attended, check trooper counts
 		if(cleanInput($_POST['statusVal' . $_POST['trooperSelectEdit'] . '']) == 3)
 		{
-			// Check troop counts for notification -  Notify how many troops did a trooper attend - 501st
-			$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['trooperSelectEdit'])."' AND attend = '1' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR EXISTS(SELECT events.id, events.oldid FROM events WHERE events.oldid != 0 AND events.id = event_sign_up.troopid))") or die($conn->error);
-			$countTroops = $trooperCount_get->fetch_row();
-			
-			// 501st
-			checkTroopCounts($countTroops[0], "501ST: " . getName(cleanInput($_POST['trooperSelectEdit'])) . " now has [COUNT] troop(s)", cleanInput($_POST['trooperSelectEdit']));
+			// Check troops for notification
+			troopCheck(cleanInput($_POST['trooperSelectEdit']));
 		}
 
 		// Send notification to command staff
@@ -1347,12 +1343,8 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				// Update attend
 				$conn->query("UPDATE event_sign_up SET attend = '1' WHERE id = '".$last_id."'");
 				
-				// Check troop counts for notification -  Notify how many troops did a trooper attend - 501st
-				$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['trooperSelect'])."' AND attend = '1' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR EXISTS(SELECT events.id, events.oldid FROM events WHERE events.oldid != 0 AND events.id = event_sign_up.troopid))") or die($conn->error);
-				$countTroops = $trooperCount_get->fetch_row();
-				
-				// 501st
-				checkTroopCounts($countTroops[0], "501ST: " . getName(cleanInput($_POST['trooperSelect'])) . " now has [COUNT] troop(s)", cleanInput($_POST['trooperSelect']));
+				// Check troops for notification
+				troopCheck(cleanInput($_POST['trooperSelect']));
 			}
 			
 			// Send notification to command staff
@@ -2306,7 +2298,8 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmList")
 			$list = $_POST['confirmList'];
 		}
 
-		if(!empty($list)) 
+		// Make sure troop list and costume is not blank
+		if(!empty($list) && $_POST['costume'] != "") 
 		{
 			$n = count($list);
 
@@ -2316,33 +2309,8 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmList")
 				$conn->query("UPDATE event_sign_up SET attended_costume = '".cleanInput($_POST['costume'])."', attend = '1', status = '3' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($list[$i])."'") or die($conn->error);
 			}
 			
-			// Notify how many troops did a trooper attend - 501st
-			$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$_SESSION['id']."' AND attend = '1' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR EXISTS(SELECT events.id, events.oldid FROM events WHERE events.oldid != 0 AND events.id = event_sign_up.troopid))") or die($conn->error);
-			$count = $trooperCount_get->fetch_row();
-			
-			// 501st
-			checkTroopCounts($count[0], "501ST: " . getName($_SESSION['id']) . " now has [COUNT] troop(s)", $_SESSION['id']);
-			
-			// Notify how many troops did a trooper attend - Rebel Legion
-			$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$_SESSION['id']."' AND attend = '1' AND ('1' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume))") or die($conn->error);
-			$count = $trooperCount_get->fetch_row();
-			
-			// Rebel Legion
-			checkTroopCounts($count[0], "REBEL LEGION: " . getName($_SESSION['id']) . " now has [COUNT] troop(s)", $_SESSION['id']);
-			
-			// Notify how many troops did a trooper attend - Mando Mercs
-			$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$_SESSION['id']."' AND attend = '1' AND ('2' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume))") or die($conn->error);
-			$count = $trooperCount_get->fetch_row();
-			
-			// Mando Mercs
-			checkTroopCounts($count[0], "MANDO MERCS: " . getName($_SESSION['id']) . " now has [COUNT] troop(s)", $_SESSION['id']);
-			
-			// Notify how many troops did a trooper attend - Droid Builders
-			$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$_SESSION['id']."' AND attend = '1' AND ('3' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume))") or die($conn->error);
-			$count = $trooperCount_get->fetch_row();
-			
-			// Droid Builders
-			checkTroopCounts($count[0], "DROID BUILDERS: " . getName($_SESSION['id']) . " now has [COUNT] troop(s)", $_SESSION['id']);
+			// Check troops for notification
+			troopCheck($_SESSION['id']);
 		}
 	}
 

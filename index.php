@@ -3853,8 +3853,6 @@ else
 
 				// Number of events loaded
 				$i = 0;
-				// Number of squad events loaded
-				$i2 = 0;
 
 				// Load events that are today or in the future
 				if ($result = mysqli_query($conn, $query))
@@ -3867,124 +3865,56 @@ else
 						// Get number of events with link
 						$getNumOfLinks = $conn->query("SELECT id FROM events WHERE link = '".$db->id."'");
 
-						echo '<div style="border: 1px solid gray; margin-bottom: 10px;">';
-
-						// No squad set
-						if(!isset($_GET['squad']))
+						echo '
+						<div style="border: 1px solid gray; margin-bottom: 10px;">
+						
+						<a href="index.php?event=' . $db->id . '">' . date('M d, Y', strtotime($db->dateStart)) . '' . '<br />';
+						
+						// If has links to event, or is linked, show shift data
+						if($getNumOfLinks->num_rows > 0 || $db->link != 0)
 						{
 							echo '
-							<a href="index.php?event=' . $db->id . '">' . date('M d, Y', strtotime($db->dateStart)) . '' . '<br />';
-							
-							// If has links to event, or is linked, show shift data
-							if($getNumOfLinks->num_rows > 0 || $db->link != 0)
-							{
-								echo '
-								' . date('H:i', strtotime($db->dateStart)) . ' - ' . date('H:i', strtotime($db->dateEnd)) .
-								'<br />';
-							}
-							
-							echo '
-							' . $db->name . '</a>';
-
-							// If not enough troopers
-							if($getNumOfTroopers->num_rows <= 1)
-							{
-								echo '<br /><span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
-							}
-							
-							// If full
-							if($getNumOfTroopers->num_rows >= $db->limitTotal)
-							{
-								echo '<br /><span style="color:green;"><b>THIS TROOP IS FULL!</b></span>';
-							}
-
-							$i++;
+							' . date('H:i', strtotime($db->dateStart)) . ' - ' . date('H:i', strtotime($db->dateEnd)) .
+							'<br />';
 						}
-						else if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
+						
+						echo '
+						' . $db->name . '</a>';
+
+						// If not enough troopers
+						if($getNumOfTroopers->num_rows <= 1)
 						{
 							echo '
-							<a href="index.php?event=' . $db->id . '">' . date('M d, Y', strtotime($db->dateStart)) . '' . '<br />';
-							
-							// If has links to event, or is linked, show shift data
-							if($getNumOfLinks->num_rows > 0 || $db->link != 0)
-							{
-								echo '
-								' . date('H:i', strtotime($db->dateStart)) . ' - ' . date('H:i', strtotime($db->dateEnd)) .
-								'<br />';
-							}
-							
-							echo '
-							' . $db->name . '</a>';
-
-							// If not enough troopers...
-							if($getNumOfTroopers->num_rows <= 1)
-							{
-								echo '<br /><span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
-							}
-							
-							// If full
-							if($getNumOfTroopers->num_rows >= $db->limitTotal)
-							{
-								echo '<br /><span style="color:green;"><b>THIS TROOP IS FULL!</b></span>';
-							}
-
-							$i2++;
+							<br />
+							<span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
 						}
+						// If full
+						else if($getNumOfTroopers->num_rows >= $db->limitTotal)
+						{
+							echo '
+							<br />
+							<span style="color:green;"><b>THIS TROOP IS FULL!</b></span>';
+						}
+						// Everything else
 						else
 						{
-							// Squad set
-							if($db->squad == cleanInput($_GET['squad']))
-							{
-								echo '
-								<a href="index.php?event=' . $db->id . '">' . date('M d, Y', strtotime($db->dateStart)) . '' . '<br />';
-								
-								// If has links to event, or is linked, show shift data
-								if($getNumOfLinks->num_rows > 0 || $db->link != 0)
-								{
-									echo '
-									' . date('H:i', strtotime($db->dateStart)) . ' - ' . date('H:i', strtotime($db->dateEnd)) .
-									'<br />';
-								}
-								
-								echo '
-								' . $db->name . '</a>';
-
-								// If not enough troopers...
-								if($getNumOfTroopers->num_rows <= 1)
-								{
-									echo '<br /><span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
-								}
-								
-								// If full
-								if($getNumOfTroopers->num_rows >= $db->limitTotal)
-								{
-									echo '<br /><span style="color:green;"><b>THIS TROOP IS FULL!</b></span>';
-								}
-
-								$i2++;
-							}
+							echo '
+							<br />
+							<span>'.$getNumOfTroopers->num_rows.' Troopers Attending</span>';
 						}
 
-						echo '</div>';
+						$i++;
+
+						echo '
+						</div>';
 					}
 				}
 
-				// If squad pressed
-				if(isset($_GET['squad']))
+				// Home page, no events
+				if($i == 0)
 				{
-					if($i2 == 0)
-					{
-						echo 'There are no events to display.';
-					}
-				}
-				else
-				{
-					// Home page, no events
-					if($i == 0)
-					{
-						echo 'There are no events to display.';
-					}			
-				}
+					echo 'There are no events to display.';
+				}			
 
 				echo '
 				</div>';
@@ -4034,15 +3964,7 @@ else
 						<p>Attended Costume:</p>
 						<select name="costume" id="costumeChoice">';
 
-						$query3 = "SELECT * FROM costumes";
-						
-						// If limited to certain costumes, only show certain costumes...
-						if($limitTo < 4)
-						{
-							$query3 .= " WHERE era = '".$limitTo."' OR era = '4'";
-						}
-						
-						$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler'".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
+						$query3 = "SELECT * FROM costumes ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler'".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
 						
 						$l = 0;
 						if ($result3 = mysqli_query($conn, $query3))

@@ -797,16 +797,57 @@ function sendNotification($message, $trooperid)
 	$conn->query("INSERT INTO notifications (message, trooperid) VALUES ('".$message."', '".$trooperid."')");
 }
 
+// troopCheck: Checks the troop counts of all clubs
+function troopCheck($id)
+{
+	global $conn;
+	
+	// Notify how many troops did a trooper attend - 501st
+	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND attend = '1' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR EXISTS(SELECT events.id, events.oldid FROM events WHERE events.oldid != 0 AND events.id = event_sign_up.troopid))") or die($conn->error);
+	$count = $trooperCount_get->fetch_row();
+	
+	// 501st
+	checkTroopCounts($count[0], "501ST: " . getName($id) . " now has [COUNT] troop(s)", $id, "501ST");
+	
+	// Notify how many troops did a trooper attend - Rebel Legion
+	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND attend = '1' AND ('1' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume))") or die($conn->error);
+	$count = $trooperCount_get->fetch_row();
+	
+	// Rebel Legion
+	checkTroopCounts($count[0], "REBEL LEGION: " . getName($id) . " now has [COUNT] troop(s)", $id, "REBEL LEGION");
+	
+	// Notify how many troops did a trooper attend - Mando Mercs
+	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND attend = '1' AND ('2' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume))") or die($conn->error);
+	$count = $trooperCount_get->fetch_row();
+	
+	// Mando Mercs
+	checkTroopCounts($count[0], "MANDO MERCS: " . getName($id) . " now has [COUNT] troop(s)", $id, "MANDO MERCS");
+	
+	// Notify how many troops did a trooper attend - Droid Builders
+	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND attend = '1' AND ('3' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume))") or die($conn->error);
+	$count = $trooperCount_get->fetch_row();
+	
+	// Droid Builders
+	checkTroopCounts($count[0], "DROID BUILDERS: " . getName($id) . " now has [COUNT] troop(s)", $id, "DROID BUILDERS");
+	
+	// Notify how many troops did a trooper attend - Other
+	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND attend = '1' AND ('5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume))") or die($conn->error);
+	$count = $trooperCount_get->fetch_row();
+	
+	// Other
+	checkTroopCounts($count[0], "OTHER: " . getName($id) . " now has [COUNT] troop(s)", $id, "OTHER");
+}
+
 // checkTroopCounts: Checks the troop counts, and puts the information into notifications
-function checkTroopCounts($count, $message, $trooperid)
+function checkTroopCounts($count, $message, $trooperid, $club)
 {
 	global $conn;
 	
 	// Counts to check
 	$counts = [1, 10, 25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 501];
 	
-	// Search notifications for previous notifications, so we don't duplicate
-	$query = "SELECT * FROM notifications WHERE trooperid = '".$trooperid."'";
+	// Search notifications for previous notifications, so we don't duplicate - check message for club name
+	$query = "SELECT * FROM notifications WHERE trooperid = '".$trooperid."' AND message LIKE '%".$club."%'";
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))

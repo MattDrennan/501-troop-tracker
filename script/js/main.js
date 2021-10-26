@@ -1739,7 +1739,7 @@ $(document).ready(function()
 
 		if (r == true)
 		{
-			if($("#costumeChoice").val() != "" || $("#costumeChoice").val() !== undefined || $("#costumeChoice").val() !== null)
+			if($("#costumeChoice option:selected").val() != "" && $("#costumeChoice option:selected").val() !== undefined && $("#costumeChoice option:selected").val() !== null)
 			{
 				$.ajax({
 					type: "POST",
