@@ -341,7 +341,7 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 if(isset($_GET['profile']))
 {
 	// Get data
-	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, event_sign_up.attend, event_sign_up.attended_costume, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.forum_id, troopers.tkid FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".cleanInput($_GET['profile'])."' AND events.closed = '1' AND event_sign_up.status = '3' ORDER BY events.dateEnd DESC";
+	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, event_sign_up.attend, event_sign_up.attended_costume, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.forum_id, troopers.tkid, troopers.squad FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".cleanInput($_GET['profile'])."' AND events.closed = '1' AND event_sign_up.status = '3' ORDER BY events.dateEnd DESC";
 	$i = 0;
 	if ($result = mysqli_query($conn, $query))
 	{
@@ -357,16 +357,20 @@ if(isset($_GET['profile']))
 					<p style="text-align: center;"><a href="index.php?action=commandstaff&do=managetroopers&uid='.$db->id.'">Edit/View Member in Command Staff Area</a></p>';
 				}
 				
-				// Get 501st thumbnail Info
-				$thumbnail_get = $conn->query("SELECT thumbnail FROM 501st_troopers WHERE legionid = '".$db->tkid."'");
-				$thumbnail = $thumbnail_get->fetch_row();
+				// Only show 501st thumbnail, if a 501st member
+				if(getTrooperSquad($db->tkid) <= count($squadArray))
+				{
+					// Get 501st thumbnail Info
+					$thumbnail_get = $conn->query("SELECT thumbnail FROM 501st_troopers WHERE legionid = '".$db->tkid."'");
+					$thumbnail = $thumbnail_get->fetch_row();
+				}
 				
 				// Get Rebel Legion thumbnail info
 				$thumbnail_get_rebel = $conn->query("SELECT costumeimage FROM rebel_costumes WHERE rebelid = '".getRebelInfo(getRebelLegionUser(cleanInput($_GET['profile'])))['id']."' LIMIT 1");
 				$thumbnail_rebel = $thumbnail_get_rebel->fetch_row();
 				
 				echo '
-				<h2 class="tm-section-header">'.$db->name.' - '.readTKNumber($db->tkid).'</h2>';
+				<h2 class="tm-section-header">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</h2>';
 				
 				// Avatar
 				
@@ -433,7 +437,7 @@ if(isset($_GET['profile']))
 
 	if($i == 0)
 	{
-		echo '<br /><b>Nothing to show yet!</b>';
+		echo '<p style="text-align: center;"><b>Nothing to show yet!</b></p>';
 	}
 	else
 	{
@@ -561,7 +565,7 @@ if(isset($_GET['profile']))
 	<h2 class="tm-section-header">Costumes</h2>';
 	
 	// Show 501st costumes
-	showCostumes(getTKNumber($_GET['profile']));
+	showCostumes(getTKNumber($_GET['profile']), getTrooperSquad($_GET['profile']));
 	
 	// Show Rebel Legion costumes
 	showRebelCostumes(getRebelInfo(getRebelLegionUser($_GET['profile']))['id']);
@@ -675,7 +679,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		
 		if(strlen($_POST['tkID']) > 0)
 		{
-			$query .= " event_sign_up.trooperid = '".getIDNumberFromTK(cleanInput($_POST['tkID']))."'";
+			$query .= " troopers.tkid = '".cleanInput($_POST['tkID'])."'";
 		}
 
 		if(strlen($_POST['searchName']) > 0)
@@ -930,7 +934,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				}
 				
 				// Create an array of our count
-				$tempArray = array($db->tkid, $count[0], $db->name, $db->id);
+				$tempArray = array($db->tkid, $count[0], $db->name, $db->id, $db->squad);
 				
 				// Push to main array
 				array_push($troopArray, $tempArray);
@@ -947,7 +951,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			// Display
 			echo '
 			<tr>
-				<td><a href="index.php?profile='.$value[3].'">'.readTKNumber($value[0]).'</a> - '.$value[2].'</td>	<td>'.$value[1].'</td>
+				<td><a href="index.php?profile='.$value[3].'">'.readTKNumber($value[0], $value[4]).'</a> - '.$value[2].'</td>	<td>'.$value[1].'</td>
 			</tr>';
 		}
 	}
@@ -1654,7 +1658,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<select name="userIDAward" id="userIDAward">';
 					}
 
-					echo '<option value="'.$db->id.'">'.$db->name.' - '.readTKNumber($db->tkid).'</option>';
+					echo '<option value="'.$db->id.'">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</option>';
 
 					// Increment
 					$i++;
@@ -2153,7 +2157,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<select name="userID" id="userID">';
 					}
 
-					echo '<option value="'.$db->id.'" '.echoSelect($db->id, $uid).'>'.$db->name.' - '.readTKNumber($db->tkid).'</option>';
+					echo '<option value="'.$db->id.'" '.echoSelect($db->id, $uid).'>'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</option>';
 
 					// Increment
 					$i++;
@@ -2542,11 +2546,11 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 		// Get TKID
 		$tkid = cleanInput($_POST['tkid']);
 
-		// Format id
-		$tkid = loginWithTKID($tkid);
+		// Get squad from TKID
+		$squad = loginWithTKID($tkid);
 
 		// Get data
-		$query = "SELECT * FROM troopers WHERE tkid = '".$tkid."' OR forum_id = '".cleanInput($_POST['tkid'])."' OR rebelforum = '".cleanInput($_POST['tkid'])."'";
+		$query = "SELECT * FROM troopers WHERE (tkid = '".removeLetters($tkid)."' AND squad = '".$squad."') OR forum_id = '".cleanInput($_POST['tkid'])."' OR rebelforum = '".cleanInput($_POST['tkid'])."'";
 		$i = 0;
 		if ($result = mysqli_query($conn, $query))
 		{
@@ -2739,7 +2743,7 @@ if(isset($_GET['action']) && $_GET['action'] == "forgotpassword")
 					$conn->query("UPDATE troopers SET password = '".password_hash($newPassword, PASSWORD_DEFAULT)."' WHERE id = '".$db->id."'");
 					
 					// Send e-mail
-					sendEmail($db->email, readTKNumber($db->tkid), "FL 501st Troop Software Password Reset", "Your new password is:\n\n" . $newPassword . "\n\nPlease change your password as soon as possible.");
+					sendEmail($db->email, readTKNumber($db->tkid, $db->squad), "FL 501st Troop Software Password Reset", "Your new password is:\n\n" . $newPassword . "\n\nPlease change your password as soon as possible.");
 					
 					echo '
 					<p>
@@ -2984,7 +2988,7 @@ if(isset($_GET['event']))
 			</div>';
 
 			// Query database for roster info
-			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attend, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' ORDER BY status";
+			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attend, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' ORDER BY status";
 			$i = 0;
 			
 			if ($result2 = mysqli_query($conn, $query2))
@@ -3033,7 +3037,7 @@ if(isset($_GET['event']))
 							</td>
 								
 							<td>
-								'.readTKNumber($db2->tkid).'
+								'.readTKNumber($db2->tkid, $db2->squad).'
 							</td>';
 							
 							// If not a limited event, show select boxes to change costumes
@@ -3051,7 +3055,7 @@ if(isset($_GET['event']))
 										$query3 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
 									}
 									
-									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler'".getMyCostumes(getTKNumber($db2->trooperId)).") DESC, costume";
+									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler'".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
 									
 									if ($result3 = mysqli_query($conn, $query3))
 									{
@@ -3088,7 +3092,7 @@ if(isset($_GET['event']))
 										$query3 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
 									}
 									
-									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler'".getMyCostumes(getTKNumber($db2->trooperId)).") DESC, costume";
+									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler'".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
 									
 									// Count results
 									$c = 0;
@@ -3188,7 +3192,7 @@ if(isset($_GET['event']))
 							</td>
 								
 							<td>
-								'.readTKNumber($db2->tkid).'
+								'.readTKNumber($db2->tkid, $db2->squad).'
 							</td>
 							
 							<td>
@@ -3316,7 +3320,7 @@ if(isset($_GET['event']))
 												$query3 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
 											}
 											
-											$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler'".getMyCostumes(getTKNumber($_SESSION['id'])).") DESC, costume";
+											$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler'".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
 											
 											echo $query3;
 											
@@ -3367,7 +3371,7 @@ if(isset($_GET['event']))
 												$query2 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
 											}
 											
-											$query2 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler'".getMyCostumes(getTKNumber($_SESSION['id'])).") DESC, costume";
+											$query2 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler'".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
 											// Amount of costumes
 											$c = 0;
 											if ($result2 = mysqli_query($conn, $query2))
@@ -3565,7 +3569,7 @@ if(isset($_GET['event']))
 								}
 								
 								// Get TKID
-								$tkid = readTKNumber($db->tkid);
+								$tkid = readTKNumber($db->tkid, $db->squad);
 
 								// List troopers
 								echo '
@@ -3747,7 +3751,7 @@ if(isset($_GET['event']))
 
 					echo '
 					<tr>
-						<td><span style="float: left;">'.$admin.'<a href="#" id="quoteComment_'.$db->id.'" name="'.$db->id.'"><img src="images/quote.png" alt="Quote Comment"></a></span> <a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.readTKNumber(getTKNumber($db->trooperid)).'</a><br />'.$newdate.'</td>
+						<td><span style="float: left;">'.$admin.'<a href="#" id="quoteComment_'.$db->id.'" name="'.$db->id.'"><img src="images/quote.png" alt="Quote Comment"></a></span> <a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.readTKNumber(getTKNumber($db->trooperid), getTrooperSquad($db->trooperid)).'</a><br />'.$newdate.'</td>
 					</tr>
 					
 					<tr>
@@ -4038,7 +4042,7 @@ else
 							$query3 .= " WHERE era = '".$limitTo."' OR era = '4'";
 						}
 						
-						$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler'".getMyCostumes(getTKNumber($_SESSION['id'])).") DESC, costume";
+						$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler'".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
 						
 						$l = 0;
 						if ($result3 = mysqli_query($conn, $query3))
@@ -4100,7 +4104,7 @@ if(!isWebsiteClosed())
 				echo ', ';
 			}
 
-			echo '<a href="index.php?profile='.$db->id.'">' . readTKNumber($db->tkid) . '</a>';
+			echo '<a href="index.php?profile='.$db->id.'">' . readTKNumber($db->tkid, $db->squad) . '</a>';
 
 			$i++;
 		}

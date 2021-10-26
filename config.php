@@ -482,23 +482,27 @@ function getRebelInfo($forumid)
 }
 
 // get501Info: A function which returns an array of info about trooper - 501st
-function get501Info($id)
+function get501Info($id, $squad)
 {
-	global $conn;
+	global $conn, $squadArray;
 	
 	// Setup array
 	$array = [];
 	$array['link'] = '';
 	
-	// Get data
-	$query = "SELECT * FROM 501st_troopers WHERE legionid = '".$id."'";
-	
-	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	// Check if 501st member
+	if($squad <= count($squadArray))
 	{
-		while ($db = mysqli_fetch_object($result))
+		// Get data
+		$query = "SELECT * FROM 501st_troopers WHERE legionid = '".$id."'";
+		
+		// Run query...
+		if ($result = mysqli_query($conn, $query))
 		{
-			$array['link'] = $db->link;
+			while ($db = mysqli_fetch_object($result))
+			{
+				$array['link'] = $db->link;
+			}
 		}
 	}
 	
@@ -531,22 +535,26 @@ function getMyRebelCostumes($id)
 }
 
 // getMyCostumes: A function which returns a string of costumes assigned to user in synced database
-function getMyCostumes($id)
+function getMyCostumes($id, $squad)
 {
-	global $conn;
+	global $conn, $squadArray;
 	
 	// Setup string
 	$costume = "";
 	
-	// Get data
-	$query = "SELECT costumename FROM 501st_costumes WHERE legionid = '".$id."'";
-	
-	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	// Check if 501st member
+	if($squad <= count($squadArray))
 	{
-		while ($db = mysqli_fetch_object($result))
+		// Get data
+		$query = "SELECT costumename FROM 501st_costumes WHERE legionid = '".$id."'";
+		
+		// Run query...
+		if ($result = mysqli_query($conn, $query))
 		{
-			$costume .= ", '" . $db->costumename . "'";
+			while ($db = mysqli_fetch_object($result))
+			{
+				$costume .= ", '" . $db->costumename . "'";
+			}
 		}
 	}
 	
@@ -594,9 +602,9 @@ function showRebelCostumes($id)
 }
 
 // showCostumes: A function which displays all the users costumes in synced database
-function showCostumes($id)
+function showCostumes($id, $squad)
 {
-	global $conn;
+	global $conn, $squadArray;
 	
 	// Get data
 	$query = "SELECT * FROM 501st_costumes WHERE legionid = '".$id."'";
@@ -604,50 +612,54 @@ function showCostumes($id)
 	// Set up count
 	$i = 0;
 	
-	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	// Check if 501st member
+	if($squad <= count($squadArray))
 	{
-		while ($db = mysqli_fetch_object($result))
+		// Run query...
+		if ($result = mysqli_query($conn, $query))
 		{
-			echo '
-			<div style="text-align: center;">
-				<h3>'.$db->costumename.'<h3>
-				<p>';
-					// Set up image count
-					$iC = 0;
-					
-					// Check if image is available
-					if(@getimagesize($db->photo)[0])
-					{
-						echo '
-						<img src="'.$db->photo.'" />';
-						
-						// Increment
-						$iC++;
-					}
-					
-					// Check if image is available
-					if(@getimagesize($db->bucketoff)[0])
-					{
-						echo '
-						<img src="'.$db->bucketoff.'" />';
-						
-						// Increment
-						$iC++;
-					}
-					
-					// If no image available
-					if($iC == 0)
-					{
-						echo '
-						No images available for costume.';
-					}
+			while ($db = mysqli_fetch_object($result))
+			{
 				echo '
-				</p>
-			</div>';
-			
-			// Increment
-			$i++;
+				<div style="text-align: center;">
+					<h3>'.$db->costumename.'<h3>
+					<p>';
+						// Set up image count
+						$iC = 0;
+						
+						// Check if image is available
+						if(@getimagesize($db->photo)[0])
+						{
+							echo '
+							<img src="'.$db->photo.'" />';
+							
+							// Increment
+							$iC++;
+						}
+						
+						// Check if image is available
+						if(@getimagesize($db->bucketoff)[0])
+						{
+							echo '
+							<img src="'.$db->bucketoff.'" />';
+							
+							// Increment
+							$iC++;
+						}
+						
+						// If no image available
+						if($iC == 0)
+						{
+							echo '
+							No images available for costume.';
+						}
+					echo '
+					</p>
+				</div>';
+				
+				// Increment
+				$i++;
+			}
 		}
 	}
 	
@@ -872,67 +884,19 @@ function getEventTitle($id)
 	}
 }
 
-// trimTKNumber(): Trims the extra numbers off a TK number
-function trimTKNumber($tkid)
-{
-	// Loop through numbers
-	for($i = 0; $i <= 9; $i++)
-	{
-		// If pattern found
-		if(substr($tkid, 0, 6) === str_repeat($i, 6))
-		{
-			// Remove from TKID
-			$tkid = substr($tkid, 6);
-			$tkid = $tkid;
-		}
-	}
-	
-	// Return
-	return $tkid;
-}
-
-// convertToTKLogin(): Converts an ID number to the loginable ID number for database
-function convertToTKLogin($tkid, $squadID)
-{
-	global $clubArray, $squadArray;
-	
-	// Set club count
-	$clubCount = 0;
-	
-	// Check if in club
-	$inClub = false;
-	
-	// Loop through squads
-	foreach($clubArray as $club => $club_value)
-	{
-		// Check if ID starts with a club
-		if((($clubCount + 1) + count($squadArray)) == $squadID)
-		{
-			// Set up numbers in front of ID
-			$numbers = str_repeat(($clubCount + 1), 6);
-			
-			// Set TKID
-			$tkid = $numbers . $tkid;
-		}
-		
-		// Increment
-		$clubCount++;
-	}
-	
-	// Return
-	return $tkid;
-}
-
-// loginWithTKID: Converts TK number into readable id by database
+// loginWithTKID: Converts TK number into squad
 function loginWithTKID($tkid)
 {
-	global $clubArray;
+	global $clubArray, $squadArray, $conn;
 	
 	// Set club count
 	$clubCount = 0;
 	
 	// Check if in club
 	$inClub = false;
+	
+	// Set squad return
+	$squad = 0;
 	
 	// Loop through squads
 	foreach($clubArray as $club => $club_value)
@@ -943,12 +907,11 @@ function loginWithTKID($tkid)
 		// Check if ID starts with a club
 		if(substr($tkid, 0, 1) === $firstLetter)
 		{
-			// Set up numbers in front of ID
-			$numbers = str_repeat(($clubCount + 1), 6);
+			// Set club
+			$squad = count($squadArray) + ($clubCount) + 1;
 			
-			// Set TKID
-			$tkid = substr($tkid, 1);
-			$tkid = $numbers . $tkid;
+			// Set club check
+			$inClub = true;
 		}
 		
 		// Increment
@@ -958,49 +921,53 @@ function loginWithTKID($tkid)
 	// If not in club, set default
 	if(!$inClub)
 	{
-		if(substr(cleanInput($_POST['tkid']), 0, 2) === 'TK')
+		if(substr($tkid, 0, 2) === 'TK')
 		{
+			// Remove TK
 			$tkid = substr($tkid, 2);
-			$tkid = $tkid;
+		}
+		
+		// Get squad from database
+		$getSquad = $conn->query("SELECT squad FROM troopers WHERE tkid = '".$tkid."'");
+		$getSquad_value = $getSquad->fetch_row();
+		
+		// To prevent warnings, make sure value is set
+		if(isset($getSquad_value[0]))
+		{
+			// Set squad
+			$squad = $getSquad_value[0];
 		}
 	}
 	
 	// Return
-	return $tkid;
+	return $squad;
+}
+
+// removeLetters: Removes letters from string
+function removeLetters($string)
+{
+	return preg_replace('/[^0-9,.]+/', '', $string);
 }
 
 // readTKNumber: Converts other club ID numbers to a readable format
-function readTKNumber($tkid)
+function readTKNumber($tkid, $squad)
 {
-	global $clubArray;
+	global $clubArray, $squadArray;
 	
-	// Set club count
-	$clubCount = 0;
-	
-	// Check if in club
+	// Is the trooper in a club?
 	$inClub = false;
-	
-	// Loop through squads
-	foreach($clubArray as $club => $club_value)
+
+	// Based on squad ID, is the trooper in a club
+	if($squad > count($squadArray))
 	{
 		// Get first letter of club
-		$firstLetter = strtoupper(substr($club, 0, 1));
+		$firstLetter = strtoupper(substr(getSquadName($squad), 0, 1));
 		
-		// Set up numbers in front of ID
-		$numbers = str_repeat(($clubCount + 1), 6);
+		// Set TKID return
+		$tkid = $firstLetter . $tkid;
 		
-		if(substr($tkid, 0, 6) === $numbers)
-		{
-			// Change TKID to readable
-			$tkid = substr($tkid, 6);
-			$tkid = $firstLetter . $tkid;
-			
-			// Set
-			$inClub = true;
-		}
-		
-		// Increment
-		$clubCount++;
+		// Set inClub
+		$inClub = true;
 	}
 	
 	// If not in club, set default
@@ -1067,6 +1034,21 @@ function getTKNumber($id)
 	}
 }
 
+// getTrooperSquad: gets squad of trooper
+function getTrooperSquad($id)
+{
+	global $conn;
+	
+	$query = "SELECT * FROM troopers WHERE id='".$id."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			return $db->squad;
+		}
+	}
+}
+
 // getName: gets the user's name
 function getName($id)
 {
@@ -1078,21 +1060,6 @@ function getName($id)
 		while ($db = mysqli_fetch_object($result))
 		{
 			return $db->name;
-		}
-	}
-}
-
-// getIdNumberFromTK: gets ID number from TK number
-function getIDNumberFromTK($tk)
-{
-	global $conn;
-	
-	$query = "SELECT * FROM troopers WHERE tkid='".$tk."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->id;
 		}
 	}
 }
@@ -1474,11 +1441,11 @@ function isSignUpClosed()
 // Does the TK ID exist?
 function doesTKExist($tk)
 {
-	global $conn;
+	global $conn, $squadArray;
 	
 	$exist = false;
 	
-	$query = "SELECT * FROM troopers WHERE tkid='".$tk."'";
+	$query = "SELECT * FROM troopers WHERE tkid='".$tk."' AND squad <= ".count($squadArray)."";
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
@@ -1493,11 +1460,11 @@ function doesTKExist($tk)
 // Is the TK ID registered?
 function isTKRegistered($tk)
 {
-	global $conn;
+	global $conn, $squadArray;
 	
 	$registered = false;
 	
-	$query = "SELECT * FROM troopers WHERE tkid='".$tk."'";
+	$query = "SELECT * FROM troopers WHERE tkid='".$tk."' AND squad <= ".count($squadArray)."";
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))

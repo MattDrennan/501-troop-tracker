@@ -215,7 +215,7 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 
 				$data .= '
 				<tr>
-					<td><span style="float: left;">'.$admin.'<a href="#" id="quoteComment_'.$db->id.'" name="'.$db->id.'"><img src="images/quote.png" alt="Quote Comment"></a></span> <a href="index.php?profile='.$db->trooperid.'">'.$name.' - '.readTKNumber(getTKNumber($db->trooperid)).'</a><br />'.$newdate.'</td>
+					<td><span style="float: left;">'.$admin.'<a href="#" id="quoteComment_'.$db->id.'" name="'.$db->id.'"><img src="images/quote.png" alt="Quote Comment"></a></span> <a href="index.php?profile='.$db->trooperid.'">'.$name.' - '.readTKNumber(getTKNumber($db->trooperid), getTrooperSquad($db->trooperid)).'</a><br />'.$newdate.'</td>
 				</tr>
 				
 				<tr>
@@ -683,7 +683,7 @@ if(isset($_GET['do']) && $_GET['do'] == "getuser" && loggedIn())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$array = array('name' => $db->name, 'email' => $db->email, 'forum' => $db->forum_id, 'rebelforum' => $db->rebelforum, 'phone' => $db->phone, 'squad' => getSquadName($db->squad), 'tkid' => readTKNumber($db->tkid), 'link' => get501Info($db->tkid)['link']);
+				$array = array('name' => $db->name, 'email' => $db->email, 'forum' => $db->forum_id, 'rebelforum' => $db->rebelforum, 'phone' => $db->phone, 'squad' => getSquadName($db->squad), 'tkid' => readTKNumber($db->tkid, $db->squad), 'link' => get501Info($db->tkid, $db->squad)['link']);
 			}
 		}
 	}
@@ -798,7 +798,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$array = array('id' => $db->id, 'name' => $db->name, 'email' => $db->email, 'phone' => $db->phone, 'squad' => $db->squad, 'permissions' => $db->permissions, 'tkid' => trimTKNumber($db->tkid), 'forumid' => $db->forum_id, 'rebelforum' => $db->rebelforum, 'supporter' => $db->supporter);
+				$array = array('id' => $db->id, 'name' => $db->name, 'email' => $db->email, 'phone' => $db->phone, 'squad' => $db->squad, 'permissions' => $db->permissions, 'tkid' => $db->tkid, 'forumid' => $db->forum_id, 'rebelforum' => $db->rebelforum, 'supporter' => $db->supporter);
 
 				echo json_encode($array);
 			}
@@ -823,16 +823,13 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 				// Set up TKID
 				$tkid = cleanInput($_POST['tkid']);
 				
-				// Convert TKID
-				$tkid = convertToTKLogin($tkid, cleanInput($_POST['squad']));
-				
 				// Query the database
 				$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['user'])."', email =  '".cleanInput($_POST['email'])."', phone = '".cleanInput(cleanInput($_POST['phone']))."', squad = '".cleanInput($_POST['squad'])."', permissions = '".cleanInput($_POST['permissions'])."', tkid = '".$tkid."', forum_id = '".cleanInput($_POST['forumid'])."', rebelforum = '".cleanInput($_POST['rebelforum'])."', supporter = '".cleanInput($_POST['supporter'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'") or die($conn->error);
 				
 				// Send notification to command staff
 				sendNotification(getName($_SESSION['id']) . " has updated user ID [" . cleanInput($_POST['userIDE']) . "]", cleanInput($_SESSION['id']));
 
-				$array = array('success' => 'true', 'newname' => cleanInput($_POST['user']) . " - " . readTKNumber($tkid), 'data' => 'User has been updated!');
+				$array = array('success' => 'true', 'newname' => cleanInput($_POST['user']) . " - " . readTKNumber($tkid, getTrooperSquad(cleanInput($_POST['userIDE']))), 'data' => 'User has been updated!');
 				echo json_encode($array);
 			}
 		}
@@ -869,9 +866,6 @@ if(isset($_GET['do']) && $_GET['do'] == "createuser" && loggedIn())
 				$failed = true;
 				$errorMessage .= 'TKID must be less than eleven (11) characters. ';
 			}
-
-			// Convert TKID based on club
-			$tkid = convertToTKLogin($tkid, cleanInput($_POST['squad']));
 
 			// Check password length
 			if(strlen($_POST['password']) < 6)
@@ -1070,9 +1064,6 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 				echo '<li>TKID must be less than eleven (11) characters.</li>';
 			}
 
-			// Convert TKID based on club
-			$tkid = convertToTKLogin($tkid, cleanInput($_POST['squad']));
-
 			// If password is less than six characters
 			if(strlen($_POST['password']) < 6)
 			{
@@ -1086,9 +1077,21 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 				$failed = true;
 				echo '<li>TKID must be an integer.</li>';
 			}
-
-			// Query ID database
-			$idcheck = $conn->query("SELECT id FROM troopers WHERE tkid = '".$tkid."'") or die($conn->error);
+			
+			// Set squad variable
+			$squad = cleanInput($_POST['squad']);
+			
+			// Check if 501st
+			if($squad <= count($squadArray))
+			{
+				// Query ID database
+				$idcheck = $conn->query("SELECT id FROM troopers WHERE tkid = '".$tkid."' AND squad <= ".count($squadArray)."") or die($conn->error);
+			}
+			else
+			{
+				// In a club - query by club
+				$idcheck = $conn->query("SELECT id FROM troopers WHERE tkid = '".$tkid."' AND squad = ".$squad."") or die($conn->error);
+			}
 			
 			// Query 501st forum
 			$forumcheck = $conn->query("SELECT forum_id FROM troopers WHERE forum_id = '".cleanInput($_POST['forumid'])."'") or die($conn->error);
@@ -1146,7 +1149,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			// If failed
 			if(!$failed)
 			{
-				$conn->query("INSERT INTO troopers (name, tkid, email, forum_id, rebelforum, phone, squad, password) VALUES ('".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['rebelforum'])."', '".cleanInput($_POST['phone'])."', '".cleanInput($_POST['squad'])."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."')") or die($conn->error);
+				$conn->query("INSERT INTO troopers (name, tkid, email, forum_id, rebelforum, phone, squad, password) VALUES ('".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['rebelforum'])."', '".cleanInput($_POST['phone'])."', '".$squad."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."')") or die($conn->error);
 				echo '<li>Request submitted! You will receive an e-mail when your request is approved or denied.</li>';
 			}
 
@@ -1701,7 +1704,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		}
 
 		// Load all users
-		$query = "SELECT troopers.id AS troopida, troopers.name AS troopername, troopers.tkid FROM troopers WHERE NOT EXISTS (SELECT event_sign_up.trooperid FROM event_sign_up WHERE event_sign_up.trooperid = troopers.id AND event_sign_up.troopid = '".cleanInput($_POST['eventId'])."') ORDER BY troopers.name";
+		$query = "SELECT troopers.id AS troopida, troopers.name AS troopername, troopers.tkid, troopers.squad FROM troopers WHERE NOT EXISTS (SELECT event_sign_up.trooperid FROM event_sign_up WHERE event_sign_up.trooperid = troopers.id AND event_sign_up.troopid = '".cleanInput($_POST['eventId'])."') ORDER BY troopers.name";
 
 		$i = 0;
 		if ($result = mysqli_query($conn, $query) or die($conn->error))
@@ -1724,7 +1727,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				}
 				
 				// Get TKID
-				$tkid = readTKNumber($db->tkid);
+				$tkid = readTKNumber($db->tkid, $db->squad);
 
 				// List troopers
 				echo '
@@ -2033,7 +2036,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 			{
 
 				// Query database for roster info
-				$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attend, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".cleanInput($_POST['event'])."' ORDER BY status";
+				$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attend, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".cleanInput($_POST['event'])."' ORDER BY status";
 				$i = 0;
 
 				if ($result2 = mysqli_query($conn, $query2))
@@ -2072,7 +2075,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 								</td>
 									
 								<td>
-									'.readTKNumber($db2->tkid).'
+									'.readTKNumber($db2->tkid, $db2->squad).'
 								</td>
 								
 								<td name="trooperRosterCostume" id="trooperRosterCostume">
@@ -2087,7 +2090,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 										$query3 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
 									}
 									
-									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler'".getMyCostumes(getTKNumber($db2->trooperId)).") DESC, costume";
+									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler'".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
 									
 									if ($result3 = mysqli_query($conn, $query3))
 									{
@@ -2124,7 +2127,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 										$query3 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
 									}
 									
-									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler'".getMyCostumes(getTKNumber($db2->trooperId)).") DESC, costume";
+									$query3 .= " ORDER BY FIELD(costume, 'N/A', 'Command Staff', 'Handler'".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
 									
 									// Count results
 									$c = 0;
@@ -2203,7 +2206,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 								</td>
 									
 								<td>
-									'.readTKNumber($db2->tkid).'
+									'.readTKNumber($db2->tkid, $db2->squad).'
 								</td>
 								
 								<td name="trooperRosterCostume" id="trooperRosterCostume">
@@ -2231,7 +2234,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 								</td>
 									
 								<td>
-									'.readTKNumber($db2->tkid).'
+									'.readTKNumber($db2->tkid, $db2->squad).'
 								</td>
 								
 								<td>
@@ -2250,7 +2253,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 
 						/*$data .= '
 						<tr>
-							<td><a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a></td>	<td>'.readTKNumber($db2->tkid).'</td>	<td>'.getCostume($db2->costume).'</td>	<td>'.getCostume($db2->costume_backup).'</td>	<td id="'.$db2->trooperId.'Status">'.getStatus($db2->status).'
+							<td><a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a></td>	<td>'.readTKNumber($db2->tkid, $db2->squad).'</td>	<td>'.getCostume($db2->costume).'</td>	<td>'.getCostume($db2->costume_backup).'</td>	<td id="'.$db2->trooperId.'Status">'.getStatus($db2->status).'
 						</td>
 						
 						</tr>';*/
