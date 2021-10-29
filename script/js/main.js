@@ -174,6 +174,25 @@ $(document).ready(function()
 		}
 	})
 	
+	// List/Calendar View
+	$("#changeview").click(function(e)
+	{
+		e.preventDefault();
+		
+		if($("#calendarview").is(":hidden"))
+		{
+			$("#calendarview").show();
+			$("#listview").hide();
+			$("#changeview").text("List View");
+		}
+		else
+		{
+			$("#listview").show();
+			$("#calendarview").hide();
+			$("#changeview").text("Calendar View");
+		}
+	})
+	
 	// Easy Fill Button: Show/Hide
 	$("#easyfilltoolbutton").click(function(e)
 	{

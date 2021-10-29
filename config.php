@@ -19,6 +19,16 @@ require 'script/lib/phpmail/src/PHPMailer.php';
 /* SMTP class, needed if you want to use SMTP. */
 require 'script/lib/phpmail/src/SMTP.php';
 
+// Calendar
+require 'script/lib/php-calendar/src/phpCalendar/Calendar.php';
+
+// Calendar Namespace
+use benhall14\phpCalendar\Calendar;
+
+// Start Calendar
+$calendar = new Calendar();
+
+
 // Include credential file
 require 'cred.php';
 

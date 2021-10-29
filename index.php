@@ -56,6 +56,7 @@ echo '
 	<link rel="stylesheet" href="script/lib/jquery-ui-timepicker-addon.css">
 	<link href="css/dropzone.min.css" type="text/css" rel="stylesheet" />
 	<link href="css/lightbox.min.css" rel="stylesheet" />
+	<link href="css/calendar.css" rel="stylesheet" />
 	
 	<!-- Icon -->
 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
@@ -3875,7 +3876,7 @@ else
 				<hr /><br />
 
 				<div style="text-align: center;">';
-
+				
 				// Was a squad defined? (Prevents displays div when not needed)
 				if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
 				{
@@ -3895,6 +3896,13 @@ else
 
 				// Number of events loaded
 				$i = 0;
+				
+				echo '
+				<a href="#" id="changeview" class="button">Calendar View</a>
+				
+				<br /><br />
+				
+				<div id="listview">';
 
 				// Load events that are today or in the future
 				if ($result = mysqli_query($conn, $query))
@@ -3946,11 +3954,37 @@ else
 						}
 
 						$i++;
+						
+						// Add to calendar
+						$calendar->addEvent(
+							date('Y-m-d', strtotime($db->dateStart)),   # start date in Y-m-d format
+							date('Y-m-d', strtotime($db->dateEnd)),   # end date in Y-m-d format
+							'<a href="index.php?event='.$db->id.'" title="'.$db->name.'">' . $db->name . '</a><br /><br />',  # event name text
+							true           # should the date be masked - boolean default true
+						);
 
 						echo '
 						</div>';
 					}
 				}
+				
+				// One month from today
+				$datec1 = date('Y-m-d', strtotime('+1 month'));
+				
+				// Two months from today
+				$datec2 = date('Y-m-d', strtotime('+2 month'));
+				
+				// Show calendars
+				echo '
+				</div>
+				
+				<div id="calendarview" style="display: none;">'
+				. $calendar->draw(date('Y-m-d'))
+				. '<br />' .
+				$calendar->draw($datec1)
+				. '<br />' .
+				$calendar->draw($datec2)
+				. '</div>';
 
 				// Home page, no events
 				if($i == 0)
