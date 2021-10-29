@@ -84,7 +84,7 @@ class Calendar
                     $classes = isset($event['classes']) ? $event['classes'] : false;
                     $mask = isset($event['mask']) ? (bool) $event['mask'] : false;
                     $summary = isset($event['summary']) ? $event['summary'] : false;
-                    $this->addEvent($event['start'], $event['end'], $summary . 'lol', $mask, $classes);
+                    $this->addEvent($event['start'], $event['end'], $summary . '', $mask, $classes);
                 }
             }
         }

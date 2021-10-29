@@ -3903,6 +3903,9 @@ else
 				<br /><br />
 				
 				<div id="listview">';
+				
+				// Event calendar
+				$events = array();
 
 				// Load events that are today or in the future
 				if ($result = mysqli_query($conn, $query))
@@ -3956,17 +3959,20 @@ else
 						$i++;
 						
 						// Add to calendar
-						$calendar->addEvent(
-							date('Y-m-d', strtotime($db->dateStart)),   # start date in Y-m-d format
-							date('Y-m-d', strtotime($db->dateEnd)),   # end date in Y-m-d format
-							'<a href="index.php?event='.$db->id.'" title="'.$db->name.'">' . $db->name . '</a><br /><br />',  # event name text
-							true           # should the date be masked - boolean default true
+						$events[] = array(
+							'start' => date('Y-m-d', strtotime($db->dateStart)),
+							'end' => date('Y-m-d', strtotime($db->dateEnd)),
+							'summary' => '<a href="index.php?event='.$db->id.'" title="'.$db->name.'">' . $db->name . '</a><br /><br />',
+							'mask' => true,
 						);
 
 						echo '
 						</div>';
 					}
 				}
+				
+				// Add events to calendar
+				$calendar->addEvents($events);
 				
 				// One month from today
 				$datec1 = date('Y-m-d', strtotime('+1 month'));
