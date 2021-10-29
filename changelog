@@ -1,5 +1,10 @@
 **Changelog**
 
+_10/29/2021_
+
+-Better handling if profile or event does not exist
+-Money raised will show on each event when logged in
+
 _10/26/2021_
 
 -Changed TKID database rules, other club TKIDs will no longer have leading characters
