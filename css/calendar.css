@@ -85,4 +85,6 @@
 .calendar tbody tr td.mask,
 .calendar tbody tr td.mask-end {
     background: #c6c6bc;
+	overflow-wrap: break-word;
+	hyphens: auto;
 }

@@ -3,6 +3,8 @@
 _10/31/2021_
 
 -Corrected "My Troops" query due to an issue where troops would not display day of
+-Fixed calendar when day is 31st and requesting next month and two months from now
+-Calendar adjustments
 
 _10/29/2021_
 

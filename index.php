@@ -3975,10 +3975,10 @@ else
 				$calendar->addEvents($events);
 				
 				// One month from today
-				$datec1 = date('Y-m-d', strtotime('+1 month'));
+				$datec1 = date('Y-m-d', strtotime('first day of +1 month'));
 				
 				// Two months from today
-				$datec2 = date('Y-m-d', strtotime('+2 month'));
+				$datec2 = date('Y-m-d', strtotime('first day of +2 month'));
 				
 				// Show calendars
 				echo '
