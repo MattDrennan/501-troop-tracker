@@ -6,7 +6,8 @@ You are free to download, modify, and use freely for non-commerical purposes.
 
 ## How to setup
 
-Upload all the files to your web server, execute "SQL.sql" on your database, and create a "cred.php" file in the root directory. Cred.php should look like this:
+<ol>
+<li>Upload all the files to your web server, execute "SQL.sql" on your database, and create a "cred.php" file in the root directory. Cred.php should look like this:</li>
  
 ```
 <?php
@@ -59,8 +60,9 @@ $clubArray = array("Rebel Legion" => "test", "Droid Builders" => "test", "Mando 
 ?>
 ```
 
--Set file permissions to 'images/uploads' to 777
--Manually modify getSquad() function in 'config.php' to fit your needs
+<li>Set file permissions to 'images/uploads' to 777</li>
+<li>Manually modify getSquad() function in 'config.php' to fit your needs</li>
+</ol>
 
 
 ## Please contact me with any questions, comments, or concerns
