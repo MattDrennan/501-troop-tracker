@@ -1008,7 +1008,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		<div id="mystats" name="mystats" style="display: none;">';
 
 		// Get data
-		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, event_sign_up.attend, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND attend = 1 AND events.closed = '1' ORDER BY events.dateEnd DESC";
+		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.attend, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND attend = 1 AND events.closed = '1' ORDER BY events.dateEnd DESC";
 		$i = 0;
 		$troopsAttended = 0;
 		$moneyRaised = 0;
@@ -1023,26 +1023,18 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 					<div style="overflow-x: auto;">
 					<table border="1">
 					<tr>
-						<th>Troop</th>	<th>Costume</th>	<th>Money Raised</th>	<th>Time Spent</th>
+						<th>Troop</th>	<th>Costume</th>	<th>Money Raised</th>
 					</tr>';
 				}
 
-				// Output data - calculate time spent at troops
-				$date1 = new DateTime($db->dateStart);
-				$date2 = new DateTime($db->dateEnd);
-				$getDiff = $date1->diff($date2);
-				$time = $getDiff->days * 24 * 60;
-				$time += $getDiff->h * 60;
-				$time += $getDiff->i;
-
 				echo '
 				<tr>
-					<td><a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.ifEmpty(getCostume($db->costume), "N/A").'</td>	<td>$'.number_format($db->moneyRaised).'</td>	<td>'.floor($time/60).'H '.($time % 60).'M</td>
+					<td><a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.ifEmpty(getCostume($db->attended_costume), "N/A").'</td>	<td>$'.number_format($db->moneyRaised).'</td>
 				</tr>';
 
+				// Increment
 				$troopsAttended++;
 				$moneyRaised += $db->moneyRaised;
-				$timeSpent += $time;
 				$i++;
 			}
 		}
@@ -1050,7 +1042,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		if($i > 0)
 		{
 			// How many troops did the user attend
-			$favoriteCostume_get = $conn->query("SELECT costume, COUNT(*) FROM event_sign_up WHERE trooperid = '".$_SESSION['id']."' GROUP BY costume ORDER BY COUNT(costume) DESC LIMIT 1") or die($conn->error);
+			$favoriteCostume_get = $conn->query("SELECT attended_costume, COUNT(*) FROM event_sign_up WHERE trooperid = '".$_SESSION['id']."' GROUP BY costume ORDER BY COUNT(costume) DESC LIMIT 1") or die($conn->error);
 
 			$favoriteCostume = mysqli_fetch_array($favoriteCostume_get);
 
@@ -1058,10 +1050,9 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 			</table>
 			</div>
 
-			<p><b>Favorite Costume:</b> '.ifEmpty(getCostume($favoriteCostume['costume']), "N/A").'</p>
+			<p><b>Favorite Costume:</b> '.ifEmpty(getCostume($favoriteCostume['attended_costume']), "N/A").'</p>
 			<p><b>Attended:</b> '.number_format($troopsAttended).'</p>
-			<p><b>Money Raised:</b> $'.number_format($moneyRaised).'</p>
-			<p><b>Time Spent:</b> '.floor($timeSpent/60).'H '.($timeSpent % 60).'</p>';
+			<p><b>Money Raised:</b> $'.number_format($moneyRaised).'</p>';
 		}
 		else
 		{
@@ -1169,7 +1160,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 	if($i > 0)
 	{
 		// How many troops did the user attend
-		$favoriteCostume_get = $conn->query("SELECT costume, COUNT(*) FROM event_sign_up GROUP BY costume ORDER BY COUNT(costume) DESC LIMIT 1") or die($conn->error);
+		$favoriteCostume_get = $conn->query("SELECT attended_costume, COUNT(*) FROM event_sign_up GROUP BY costume ORDER BY COUNT(costume) DESC LIMIT 1") or die($conn->error);
 		$favoriteCostume = mysqli_fetch_array($favoriteCostume_get);
 
 		// How many troops did the user attend
@@ -1266,7 +1257,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		if(!isset($_GET['squad']))
 		{
 			echo '
-			<p><b>Favorite Costume:</b> '.ifEmpty(getCostume($favoriteCostume['costume']), "N/A").'</p>
+			<p><b>Favorite Costume:</b> '.ifEmpty(getCostume($favoriteCostume['attended_costume']), "N/A").'</p>
 			<p><b>Volunteers at Troops:</b> '.number_format($count1[0]).'</p>
 			<p><b>Money Raised:</b> $'.number_format($countMoney[0]).'</p>
 			<p><b>Regular Troops:</b> '.number_format($count2[0]).'</p>
