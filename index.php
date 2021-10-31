@@ -3881,7 +3881,7 @@ else
 				if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
 				{
 					// Query
-					$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, events.limitTotal, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() AND event_sign_up.attend = 0 AND events.closed = 0";
+					$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, events.limitTotal, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() - INTERVAL 1 DAY AND event_sign_up.attend = 0 AND events.closed = 0";
 				}
 				else if(isset($_GET['squad']))
 				{

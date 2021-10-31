@@ -1,5 +1,9 @@
 **Changelog**
 
+_10/31/2021_
+
+-Corrected "My Troops" query due to an issue where troops would not display day of
+
 _10/29/2021_
 
 -Better handling if profile or event does not exist
