@@ -341,82 +341,19 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 // Show the search page
 if(isset($_GET['profile']))
 {
-	// Does profile exist?
-	$profileExist = false;
-	
 	// Get data
 	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, event_sign_up.attend, event_sign_up.attended_costume, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.forum_id, troopers.tkid, troopers.squad FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".cleanInput($_GET['profile'])."' AND events.closed = '1' AND event_sign_up.status = '3' ORDER BY events.dateEnd DESC";
 	$i = 0;
+	
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
 			if($i == 0)
 			{
-				// Command Staff Edit Link
-				if(isAdmin())
-				{
-					echo '
-					<h2 class="tm-section-header">Admin Controls</h2>
-					<p style="text-align: center;"><a href="index.php?action=commandstaff&do=managetroopers&uid='.$db->id.'">Edit/View Member in Command Staff Area</a></p>';
-				}
-				
-				// Only show 501st thumbnail, if a 501st member
-				if(getTrooperSquad($db->tkid) <= count($squadArray))
-				{
-					// Get 501st thumbnail Info
-					$thumbnail_get = $conn->query("SELECT thumbnail FROM 501st_troopers WHERE legionid = '".$db->tkid."'");
-					$thumbnail = $thumbnail_get->fetch_row();
-				}
-				
-				// Get Rebel Legion thumbnail info
-				$thumbnail_get_rebel = $conn->query("SELECT costumeimage FROM rebel_costumes WHERE rebelid = '".getRebelInfo(getRebelLegionUser(cleanInput($_GET['profile'])))['id']."' LIMIT 1");
-				$thumbnail_rebel = $thumbnail_get_rebel->fetch_row();
-				
-				echo '
-				<h2 class="tm-section-header">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</h2>';
-				
-				// Avatar
-				
-				// Does have a avatar?
-				$haveAvatar = false;
-				
-				// 501
-				if(isset($thumbnail[0]))
-				{
-					echo '
-					<p style="text-align: center;">
-						<img src="'.$thumbnail[0].'" />
-					</p>';
-					
-					// Set
-					$haveAvatar = true;
-				}
-				
-				// Rebel
-				if(isset($thumbnail_rebel[0]))
-				{
-					echo '
-					<p style="text-align: center;">
-						<img src="'.str_replace("-A", "sm", $thumbnail_rebel[0]).'" />
-					</p>';
-					
-					// Set
-					$haveAvatar = true;
-				}
-				
-				// If does not have an avatar
-				if(!$haveAvatar)
-				{
-					echo '
-					<p style="text-align: center;">
-						<img src="https://www.501st.com/memberdata/templates/tk_head.jpg" />
-					</p>';
-				}
-				
-				echo '
-				<p style="text-align: center;"><a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un='.urlencode($db->forum_id).'" target="_blank">View Boards Profile</a></p>
-				
+				// Show profile information
+				echo 
+				profileTop($db->id, $db->tkid, $db->name, $db->squad, $db->forum_id) . '
 				<div style="overflow-x: auto;">
 				<table border="1">
 				<tr>
@@ -436,14 +373,11 @@ if(isset($_GET['profile']))
 
 			// Increment i
 			$i++;
-			
-			// Set profile exist
-			$profileExist = true;
 		}
 	}
 
 	// If profile does not exist
-	if(!$profileExist)
+	if(!profileExist($_GET['profile']))
 	{
 		echo '
 		<p style="text-align: center;">
@@ -455,7 +389,7 @@ if(isset($_GET['profile']))
 		// Profile exists - if nothing to show
 		if($i == 0)
 		{
-			echo '<p style="text-align: center;"><b>Nothing to show yet!</b></p>';
+			echo profileTop($_GET['profile'], getTKNumber($_GET['profile']), getName($_GET['profile']), getTrooperSquad($_GET['profile']), getTrooperForum($_GET['profile']));
 		}
 		else
 		{
@@ -1501,9 +1435,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<option value="1">Rebel Legion</option>
 					<option value="2">Mando Mercs</option>
 					<option value="3">Droid Builders</option>
-					<option value="4">Rebel + 501st</option>
-					<option value="5">Other</option>
-					<option value="6">All</option>
+					<option value="4">Other</option>
+					<option value="5">All</option>
 				</select>
 				
 				<input type="submit" name="addCostumeButton" id="addCostumeButton" value="Add Costume" />
@@ -1574,9 +1507,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<option value="1">Rebel Legion</option>
 					<option value="2">Mando Mercs</option>
 					<option value="3">Droid Builders</option>
-					<option value="4">Rebel + 501st</option>
-					<option value="5">Other</option>
-					<option value="6">All</option>
+					<option value="4">Other</option>
+					<option value="5">All</option>
 				</select>
 
 				<input type="submit" name="submitEditCostume" id="submitEditCostume" value="Edit Costume" />
@@ -2055,6 +1987,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<p>Limit of Droid Builders:</p>
 						<input type="number" name="limitDroid" value="500" id="limitDroid" />
 						
+						<p>Limit of Others:</p>
+						<input type="number" name="limitOther" value="500" id="limitOther" />
+						
 						<p>Limit Total:</p>
 						<input type="number" name="limitTotal" value="500" id="limitTotal" />
 
@@ -2323,6 +2258,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			$limit501st = "";
 			$limitMando = "";
 			$limitDroid = "";
+			$limitOther = "";
 			$limitTotal = "";
 			$closed = "";
 			$moneyRaised = "";
@@ -2369,6 +2305,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						$limit501st = $db->limit501st;
 						$limitMando = $db->limitMando;
 						$limitDroid = $db->limitDroid;
+						$limitOther = $db->limitOther;
 						$limitTotal = $db->limitTotal;
 						$closed = $db->closed;
 						$moneyRaised = $db->moneyRaised;
@@ -2526,6 +2463,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<p>Limit of Droid Builders:</p>
 				<input type="number" name="limitDroid" value="'.copyEvent($eid, $limitDroid, 500).'" id="limitDroid" />
+				
+				<p>Limit of Others:</p>
+				<input type="number" name="limitOther" value="'.copyEvent($eid, $limitOther, 500).'" id="limitOther" />
 				
 				<p>Limit Total:</p>
 				<input type="number" name="limitTotal" value="'.copyEvent($eid, $limitTotal, 500).'" id="limitTotal" />
@@ -2997,6 +2937,7 @@ if(isset($_GET['event']))
 								<li>This event is limited to '.convertNumber($db->limitRebels, $db->limitTotal).' Rebel Legion troopers.</li>
 								<li>This event is limited to '.convertNumber($db->limitMando, $db->limitTotal).' Mando Merc troopers.</li>
 								<li>This event is limited to '.convertNumber($db->limitDroid, $db->limitTotal).' Droid Builder troopers.</li>
+								<li>This event is limited to '.convertNumber($db->limitOther, $db->limitTotal).' Other troopers.</li>
 							</ul>
 						</div>';
 					}
@@ -3011,7 +2952,7 @@ if(isset($_GET['event']))
 			</div>';
 
 			// Query database for roster info
-			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attend, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' ORDER BY status";
+			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attend, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' ORDER BY event_sign_up.id ASC";
 			$i = 0;
 			
 			if ($result2 = mysqli_query($conn, $query2))
@@ -3756,9 +3697,42 @@ if(isset($_GET['event']))
 				</form>
 
 				<div name="commentArea" id="commentArea">';
+				
+				// Set up query string
+				$troops = "";
+				
+				// Make sure this is a linked event
+				if(isset($link))
+				{
+					// Query database for shifts to display all comments for linked events
+					$query = "SELECT * FROM events WHERE link = '".$link."'";
+					
+					// Set up count so we don't start with an operator
+					$j = 0;
+					
+					// Query loop
+					if ($result = mysqli_query($conn, $query))
+					{
+						while ($db = mysqli_fetch_object($result))
+						{
+							// If not first result
+							if($j != 0)
+							{
+								$troops .= "OR ";
+							}
+							
+							// Add to query
+							$troops .= "troopid = '".$db->id."' ";
+							
+							// Increment j
+							$j++;
+						}
+					}
+				}
 
 				// Query database for event info
-				$query = "SELECT * FROM comments WHERE troopid = '".cleanInput($_GET['event'])."' ORDER BY posted DESC";
+				$query = "SELECT * FROM comments WHERE ".$troops."troopid = '".cleanInput($_GET['event'])."' ORDER BY posted DESC";
+				
 				// Count comments
 				$i = 0;
 				if ($result = mysqli_query($conn, $query))

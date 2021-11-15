@@ -1100,6 +1100,113 @@ function getTrooperSquad($id)
 	}
 }
 
+// getTrooperForum: gets forum of trooper
+function getTrooperForum($id)
+{
+	global $conn;
+	
+	$query = "SELECT * FROM troopers WHERE id='".$id."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			return $db->forum_id;
+		}
+	}
+}
+
+// profileTop: Display's user information at top of profile page
+function profileTop($id, $tkid, $name, $squad, $forum)
+{
+	global $conn, $squadArray;
+	
+	// Command Staff Edit Link
+	if(isAdmin())
+	{
+		echo '
+		<h2 class="tm-section-header">Admin Controls</h2>
+		<p style="text-align: center;"><a href="index.php?action=commandstaff&do=managetroopers&uid='.$id.'">Edit/View Member in Command Staff Area</a></p>';
+	}
+	
+	// Only show 501st thumbnail, if a 501st member
+	if(getTrooperSquad($tkid) <= count($squadArray))
+	{
+		// Get 501st thumbnail Info
+		$thumbnail_get = $conn->query("SELECT thumbnail FROM 501st_troopers WHERE legionid = '".$tkid."'");
+		$thumbnail = $thumbnail_get->fetch_row();
+	}
+	
+	// Get Rebel Legion thumbnail info
+	$thumbnail_get_rebel = $conn->query("SELECT costumeimage FROM rebel_costumes WHERE rebelid = '".getRebelInfo(getRebelLegionUser(cleanInput($id)))['id']."' LIMIT 1");
+	$thumbnail_rebel = $thumbnail_get_rebel->fetch_row();
+	
+	echo '
+	<h2 class="tm-section-header">'.$name.' - '.readTKNumber($tkid, $squad).'</h2>';
+	
+	// Avatar
+	
+	// Does have a avatar?
+	$haveAvatar = false;
+	
+	// 501
+	if(isset($thumbnail[0]))
+	{
+		echo '
+		<p style="text-align: center;">
+			<img src="'.$thumbnail[0].'" />
+		</p>';
+		
+		// Set
+		$haveAvatar = true;
+	}
+	
+	// Rebel
+	if(isset($thumbnail_rebel[0]))
+	{
+		echo '
+		<p style="text-align: center;">
+			<img src="'.str_replace("-A", "sm", $thumbnail_rebel[0]).'" />
+		</p>';
+		
+		// Set
+		$haveAvatar = true;
+	}
+	
+	// If does not have an avatar
+	if(!$haveAvatar)
+	{
+		echo '
+		<p style="text-align: center;">
+			<img src="https://www.501st.com/memberdata/templates/tk_head.jpg" />
+		</p>';
+	}
+	
+	echo '
+	<p style="text-align: center;"><a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un='.urlencode($forum).'" target="_blank">View Boards Profile</a></p>';
+}
+
+// profileExist: get's if user exists
+function profileExist($id)
+{
+	global $conn;
+	
+	// Set up return var
+	$doesExist = false;
+	
+	$query = "SELECT * FROM troopers WHERE id='".$id."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Found
+			$doesExist = true;
+		}
+	}
+	
+	// Return
+	return $doesExist;
+}
+
 // getName: gets the user's name
 function getName($id)
 {
@@ -1726,21 +1833,14 @@ function isEventFull($eventID, $costumeID)
 								$droidb++;
 								$total++;
 							}
-							// Rebel + 501st
-							else if($db4->club == 4)
-							{
-								$i++;
-								$rl++;
-								$total++;
-							}
 							// Other
-							else if($db4->club == 5)
+							else if($db4->club == 4)
 							{
 								$other++;
 								$total++;
 							}
 							// All
-							else if($db4->club == 6)
+							else if($db4->club == 5)
 							{
 								$i++;
 								$rl++;
@@ -1794,17 +1894,22 @@ function isEventFull($eventID, $costumeID)
 						}
 					}
 					// Other
-					else if(($other + 1) > ($db->limit501st + $db->limitRebels + $db->limitDroid + $db->limitMando))
+					else if($db4->club == 4)
 					{
-						$eventFull = true;
-					}							
+						else if(($other + 1) > $db->limitOther)
+						{
+							$eventFull = true;
+						}
+					}
+					// All
+					else if($db4->club == 5)
+					{
+						else if(($total + 1) > ($db->limit501st + $db->limitRebels + $db->limitDroid + $db->limitMando + $db->limitOther))
+						{
+							$eventFull = true;
+						}
+					}					
 				}
-			}
-			
-			// Total trooper count check
-			if($total >= $db->limitTotal)
-			{
-				$eventFull = true;
 			}
 		}
 	}

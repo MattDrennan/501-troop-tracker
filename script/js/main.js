@@ -174,6 +174,20 @@ $(document).ready(function()
 		}
 	})
 	
+	// Hide calendar view if screen is too small
+	$(window).resize(function()
+	{
+		if($(window).width() < 800)
+		{
+			$("a[id=changeview]").hide();
+		}
+		else
+		{
+			console.log();
+			$("a[id=changeview]").show();
+		}
+	});
+	
 	// List/Calendar View
 	$("#changeview").click(function(e)
 	{
@@ -549,6 +563,7 @@ $(document).ready(function()
 					$("#limit501st").val(json.limit501st);
 					$("#limitMando").val(json.limitMando);
 					$("#limitDroid").val(json.limitDroid);
+					$("#limitOther").val(json.limitOther);
 					$("#limitTotal").val(json.limitTotal);
 					$("#referred").val(json.referred);
 					

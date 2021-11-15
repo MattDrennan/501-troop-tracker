@@ -59,7 +59,7 @@ $(function()
             label:
             {
                 required: true,
-                range: [0, 7]
+                range: [0, 9]
             },
             limitedEvent:
             {
@@ -72,6 +72,11 @@ $(function()
                 digits: true
             },
             limitDroid:
+            {
+                required: false,
+                digits: true
+            },
+            limitOther:
             {
                 required: false,
                 digits: true
@@ -156,6 +161,7 @@ $(function()
                             $("#limitRebels").val("500");
                             $("#limitMando").val("500");
                             $("#limitDroid").val("500");
+							$("#limitOther").val("500");
                             $("#limitTotal").val("500");
                             $("#referred").val("");
 
@@ -302,7 +308,7 @@ $(function()
             label:
             {
                 required: true,
-                range: [0, 7]
+                range: [0, 9]
             },
             limitedEvent:
             {
@@ -315,6 +321,11 @@ $(function()
                 digits: true
             },
             limitDroid:
+            {
+                required: false,
+                digits: true
+            },
+            limitOther:
             {
                 required: false,
                 digits: true

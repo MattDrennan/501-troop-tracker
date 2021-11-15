@@ -1,5 +1,16 @@
 **Changelog**
 
+_11/15/2021_
+
+-Event roster is ordered by sign up ID, changed from status
+-Profiles now display, even with no troops
+-Fixed: "trooper does not exist" issue
+-Added: getTrooperForum(), profileExist(), profileTop()
+-Comments will display on all shifts
+-Calendar view is hidden if display is too small
+-Fixed issue where other label could not be used
+-Add other to limit
+
 _10/31/2021_
 
 -Corrected "My Troops" query due to an issue where troops would not display day of
