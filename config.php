@@ -1031,7 +1031,7 @@ function readTKNumber($tkid, $squad)
 		$getPrefix_value = $getPrefix->fetch_row();
 		
 		// Make sure TK prefix was found
-		if($getPrefix_value[0] != "")
+		if(isset($getPrefix_value[0]) && $getPrefix_value[0] != "")
 		{
 			$prefix = $getPrefix_value[0];
 		}
