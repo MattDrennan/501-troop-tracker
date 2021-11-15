@@ -10,6 +10,11 @@ _11/15/2021_
 -Calendar view is hidden if display is too small
 -Fixed issue where other label could not be used
 -Add other to limit
+-Added other to troop tracker search
+-Added: eventClubCount()
+-Remaining spots added to event page
+-Removed limitTotal, now adds all other totals together
+-Troopers attending is now more accurate
 
 _10/31/2021_
 

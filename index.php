@@ -726,11 +726,11 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		else if($_POST['squad'] == 6)
 		{
 			// Get troop counts - Rebel Legion
-			$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('1' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
+			$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('1' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
 			$troop_count = $troops_get->fetch_row();
 			
 			// Get charity counts - Rebel Legion
-			$charity_get = $conn->query("SELECT SUM(events.moneyRaised), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('1' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
+			$charity_get = $conn->query("SELECT SUM(events.moneyRaised), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('1' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
 			$charity_count = $charity_get->fetch_row();
 		}
 		
@@ -738,11 +738,11 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		else if($_POST['squad'] == 7)
 		{
 			// Get troop counts - Mando Mercs
-			$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('2' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
+			$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('2' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
 			$troop_count = $troops_get->fetch_row();
 			
 			// Get charity counts - Mando Mercs
-			$charity_get = $conn->query("SELECT SUM(events.moneyRaised), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('2' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
+			$charity_get = $conn->query("SELECT SUM(events.moneyRaised), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('2' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
 			$charity_count = $charity_get->fetch_row();
 		}
 		
@@ -750,11 +750,23 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		else if($_POST['squad'] == 8)
 		{
 			// Get troop counts - Droid Builders
-			$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('3' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
+			$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('3' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
 			$troop_count = $troops_get->fetch_row();
 			
 			// Get charity counts - Droid Builders
-			$charity_get = $conn->query("SELECT SUM(events.moneyRaised), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('3' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
+			$charity_get = $conn->query("SELECT SUM(events.moneyRaised), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('3' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
+			$charity_count = $charity_get->fetch_row();
+		}
+		
+		// If Other
+		else if($_POST['squad'] == 9)
+		{
+			// Get troop counts - Other
+			$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
+			$troop_count = $troops_get->fetch_row();
+			
+			// Get charity counts - Other
+			$charity_get = $conn->query("SELECT SUM(events.moneyRaised), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
 			$charity_count = $charity_get->fetch_row();
 		}
 	}
@@ -850,7 +862,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				else if(($_POST['squad'] >= 1 && $_POST['squad'] <= count($squadArray)))
 				{
 					// Get troop counts - 501st
-					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR EXISTS(SELECT events.id, events.oldid FROM events WHERE events.oldid != 0 AND events.id = event_sign_up.troopid))") or die($conn->error);
+					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR EXISTS(SELECT events.id, events.oldid FROM events WHERE events.oldid != 0 AND events.id = event_sign_up.troopid))") or die($conn->error);
 					$count = $troops_get->fetch_row();
 				}
 				
@@ -858,7 +870,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				else if(getSquadName($_POST['squad']) == "Rebel Legion")
 				{
 					// Get troop counts - Rebel Legion
-					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('1' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume))") or die($conn->error);
+					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('1' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume))") or die($conn->error);
 					$count = $troops_get->fetch_row();
 				}
 				
@@ -866,7 +878,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				else if(getSquadName($_POST['squad']) == "Mando Mercs")
 				{
 					// Get troop counts - Mando Mercs
-					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('2' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume))") or die($conn->error);
+					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('2' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume))") or die($conn->error);
 					$count = $troops_get->fetch_row();
 				}
 				
@@ -874,15 +886,15 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				else if(getSquadName($_POST['squad']) == "Droid Builders")
 				{
 					// Get troop counts - Droid Builders
-					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('3' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume))") or die($conn->error);
+					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('3' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume))") or die($conn->error);
 					$count = $troops_get->fetch_row();
 				}
 				
 				// If Other
 				else if(getSquadName($_POST['squad']) == "Other")
 				{
-					// Get troop counts - Droid Builders
-					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '6' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume))") or die($conn->error);
+					// Get troop counts - Other
+					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume))") or die($conn->error);
 					$count = $troops_get->fetch_row();
 				}
 				
@@ -1989,9 +2001,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						
 						<p>Limit of Others:</p>
 						<input type="number" name="limitOther" value="500" id="limitOther" />
-						
-						<p>Limit Total:</p>
-						<input type="number" name="limitTotal" value="500" id="limitTotal" />
 
 						<p>Referred By:</p>
 						<input type="text" name="referred" id="referred" />
@@ -2259,7 +2268,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			$limitMando = "";
 			$limitDroid = "";
 			$limitOther = "";
-			$limitTotal = "";
 			$closed = "";
 			$moneyRaised = "";
 			$squad = "";
@@ -2306,7 +2314,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						$limitMando = $db->limitMando;
 						$limitDroid = $db->limitDroid;
 						$limitOther = $db->limitOther;
-						$limitTotal = $db->limitTotal;
 						$closed = $db->closed;
 						$moneyRaised = $db->moneyRaised;
 						$squad = $db->squad;
@@ -2466,9 +2473,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				
 				<p>Limit of Others:</p>
 				<input type="number" name="limitOther" value="'.copyEvent($eid, $limitOther, 500).'" id="limitOther" />
-				
-				<p>Limit Total:</p>
-				<input type="number" name="limitTotal" value="'.copyEvent($eid, $limitTotal, 500).'" id="limitTotal" />
 
 				<p>Referred By:</p>
 				<input type="text" name="referred" id="referred" value="'.copyEvent($eid, $referred).'" />
@@ -2740,7 +2744,6 @@ if(isset($_GET['event']))
 	// Globals
 	$eventClosed = 0;
 	$limitedEvent = 0;
-	$limitTotal = 0;
 	
 	// Merged troop
 	$isMerged = false;
@@ -2757,7 +2760,6 @@ if(isset($_GET['event']))
 			// Update globals
 			$eventClosed = $db->closed;
 			$limitedEvent = $db->limitedEvent;
-			$limitTotal = $db->limitTotal;
 			$limitTo = $db->limitTo;
 			
 			// Set event exist
@@ -2923,8 +2925,11 @@ if(isset($_GET['event']))
 					}
 				
 					// If this event is limited in troopers
-					if($db->limitTotal < 500)
+					if($db->limit501st < 500 || $db->limitRebels < 500 || $db->limitMando < 500 || $db->limitDroid < 500 || $limitOther < 500)
 					{
+						// Count total
+						$limitTotal = $db->limit501st + $db->limitRebels + $db->limitMando + $db->limitDroid + $db->limitOther;
+						
 						echo '
 						<br />
 						<hr />
@@ -2932,12 +2937,12 @@ if(isset($_GET['event']))
 						
 						<div style="color: red;">
 							<ul>
-								<li>This event is limited to '.$db->limitTotal.' troopers.</li>
-								<li>This event is limited to '.convertNumber($db->limit501st, $db->limitTotal).' 501st troopers.</li>
-								<li>This event is limited to '.convertNumber($db->limitRebels, $db->limitTotal).' Rebel Legion troopers.</li>
-								<li>This event is limited to '.convertNumber($db->limitMando, $db->limitTotal).' Mando Merc troopers.</li>
-								<li>This event is limited to '.convertNumber($db->limitDroid, $db->limitTotal).' Droid Builder troopers.</li>
-								<li>This event is limited to '.convertNumber($db->limitOther, $db->limitTotal).' Other troopers.</li>
+								<li>This event is limited to '.$limitTotal.' troopers.</li>
+								<li>This event is limited to '.$db->limit501st.' 501st troopers. '.troopersRemaining($db->limit501st, eventClubCount($db->id, 0)).' </li>
+								<li>This event is limited to '.$db->limitRebels.' Rebel Legion troopers. '.troopersRemaining($db->limitRebels, eventClubCount($db->id, 1)).'</li>
+								<li>This event is limited to '.$db->limitMando.' Mando Merc troopers. '.troopersRemaining($db->limitMando, eventClubCount($db->id, 2)).'</li>
+								<li>This event is limited to '.$db->limitDroid.' Droid Builder troopers. '.troopersRemaining($db->limitDroid, eventClubCount($db->id, 3)).'</li>
+								<li>This event is limited to '.$db->limitOther.' Other troopers. '.troopersRemaining($db->limitOther, eventClubCount($db->id, 4)).'</li>
 							</ul>
 						</div>';
 					}
@@ -3261,7 +3266,7 @@ if(isset($_GET['event']))
 						{
 							if(hasPermission(0, 1, 2, 3))
 							{
-								if($getNumOfTroopers->num_rows < $db->limitTotal)
+								if($getNumOfTroopers->num_rows < ($db->limit501st + $db->limitRebels + $db->limitMando + $db->limitDroid + $db->limitOther))
 								{
 									if($db->limitedEvent == 1)
 									{
@@ -3846,7 +3851,7 @@ else
 				if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
 				{
 					// Query
-					$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, events.limitTotal, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() - INTERVAL 1 DAY AND event_sign_up.attend = 0 AND events.closed = 0";
+					$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() - INTERVAL 1 DAY AND event_sign_up.attend = 0 AND events.closed = 0";
 				}
 				else if(isset($_GET['squad']))
 				{
@@ -3878,7 +3883,7 @@ else
 					while ($db = mysqli_fetch_object($result))
 					{
 						// Get number of troopers at event
-						$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".$db->id."' AND status != '4'");
+						$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".$db->id."' AND status < '4'");
 						
 						// Get number of events with link
 						$getNumOfLinks = $conn->query("SELECT id FROM events WHERE link = '".$db->id."'");
@@ -3907,7 +3912,7 @@ else
 							<span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
 						}
 						// If full
-						else if($getNumOfTroopers->num_rows >= $db->limitTotal)
+						else if($getNumOfTroopers->num_rows >= ($db->limit501st + $db->limitRebels + $db->limitMando + $db->limitDroid + $db->limitOther))
 						{
 							echo '
 							<br />

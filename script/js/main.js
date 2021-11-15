@@ -564,7 +564,6 @@ $(document).ready(function()
 					$("#limitMando").val(json.limitMando);
 					$("#limitDroid").val(json.limitDroid);
 					$("#limitOther").val(json.limitOther);
-					$("#limitTotal").val(json.limitTotal);
 					$("#referred").val(json.referred);
 					
 					// Prevent an issue with old data, convert blank selects to have a value

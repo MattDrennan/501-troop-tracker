@@ -81,11 +81,6 @@ $(function()
                 required: false,
                 digits: true
             },
-            limitTotal:
-            {
-                required: false,
-                digits: true
-            },
             limitRebels:
             {
                 required: false,
@@ -162,7 +157,6 @@ $(function()
                             $("#limitMando").val("500");
                             $("#limitDroid").val("500");
 							$("#limitOther").val("500");
-                            $("#limitTotal").val("500");
                             $("#referred").val("");
 
                             // Remove all shift boxes
@@ -326,11 +320,6 @@ $(function()
                 digits: true
             },
             limitOther:
-            {
-                required: false,
-                digits: true
-            },
-            limitTotal:
             {
                 required: false,
                 digits: true
