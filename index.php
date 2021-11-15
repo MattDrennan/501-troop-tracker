@@ -1986,6 +1986,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<option value="3">Expanded</option>
 							<option value="4" SELECTED>All</option>
 						</select>
+						
+						<p>
+							<a href="#" class="button" id="limitChange">Change Limits</a>
+						</p>
+						
+						<div id="limitChangeArea" style="display: none;">
 
 						<p>Limit of 501st Troopers:</p>
 						<input type="number" name="limit501st" value="500" id="limit501st" />
@@ -2001,6 +2007,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						
 						<p>Limit of Others:</p>
 						<input type="number" name="limitOther" value="500" id="limitOther" />
+						
+						</div>
 
 						<p>Referred By:</p>
 						<input type="text" name="referred" id="referred" />
@@ -2458,7 +2466,13 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<option value="3" '.copyEventSelect($eid, $limitTo, 3).'>Expanded</option>
 					<option value="4" '.copyEventSelect($eid, $limitTo, 4, 4).'>All</option>
 				</select>
+				
+				<p>
+					<a href="#" class="button" id="limitChange">Change Limits</a>
+				</p>
 
+				<div id="limitChangeArea" style="display: none;">
+				
 				<p>Limit of 501st Troopers:</p>
 				<input type="number" name="limit501st" value="'.copyEvent($eid, $limit501st, 500).'" id="limit501st" />
 
@@ -2473,6 +2487,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				
 				<p>Limit of Others:</p>
 				<input type="number" name="limitOther" value="'.copyEvent($eid, $limitOther, 500).'" id="limitOther" />
+				
+				</div>
 
 				<p>Referred By:</p>
 				<input type="text" name="referred" id="referred" value="'.copyEvent($eid, $referred).'" />

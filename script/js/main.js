@@ -119,6 +119,23 @@ function echoSelect(value1, value2)
 
 $(document).ready(function()
 {
+	// Shows / Hide Change Limits
+	$("body").on("click", "#limitChange", function(e)
+	{
+		e.preventDefault();
+		
+		if($("#limitChangeArea").is(":hidden"))
+		{
+			$("#limitChangeArea").show();
+			$("#limitChange").text("Hide Limits");
+		}
+		else
+		{
+			$("#limitChangeArea").hide();
+			$("#limitChange").text("Change Limits");
+		}
+	})
+	
 	// Add shift variable
 	var shifts = 2;
 	var pair = 1;

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Nov 15, 2021 at 09:09 PM
+-- Generation Time: Nov 15, 2021 at 09:31 PM
 -- Server version: 5.7.31
 -- PHP Version: 8.0.11
 
@@ -165,10 +165,10 @@ CREATE TABLE IF NOT EXISTS `events` (
   `notes` text,
   `limitedEvent` tinyint(1) DEFAULT NULL,
   `limitTo` int(11) DEFAULT NULL,
-  `limitRebels` int(11) NOT NULL DEFAULT '9999',
-  `limit501st` int(11) NOT NULL DEFAULT '9999',
-  `limitMando` int(11) NOT NULL DEFAULT '9999',
-  `limitDroid` int(11) NOT NULL DEFAULT '9999',
+  `limitRebels` int(11) NOT NULL DEFAULT '500',
+  `limit501st` int(11) NOT NULL DEFAULT '500',
+  `limitMando` int(11) NOT NULL DEFAULT '500',
+  `limitDroid` int(11) NOT NULL DEFAULT '500',
   `limitOther` int(11) NOT NULL DEFAULT '500',
   `closed` tinyint(1) NOT NULL DEFAULT '0',
   `moneyRaised` int(11) NOT NULL DEFAULT '0',
