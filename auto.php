@@ -138,7 +138,7 @@ if ($result = mysqli_query($conn2, $query))
 		}
 		
 		// Insert into database
-		$conn->query("INSERT INTO event_sign_up (trooperid, troopid, status, attend) VALUES ('".$trooperId."', '".$eventId."', 3, 1)") or die(error_log($conn->error));
+		$conn->query("INSERT INTO event_sign_up (trooperid, troopid, status) VALUES ('".$trooperId."', '".$eventId."', 3)") or die(error_log($conn->error));
 		
 		// Update records count
 		$linkRecords++;

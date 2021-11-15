@@ -342,7 +342,7 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 if(isset($_GET['profile']))
 {
 	// Get data
-	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, event_sign_up.attend, event_sign_up.attended_costume, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.forum_id, troopers.tkid, troopers.squad FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".cleanInput($_GET['profile'])."' AND events.closed = '1' AND event_sign_up.status = '3' ORDER BY events.dateEnd DESC";
+	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, event_sign_up.attended_costume, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.forum_id, troopers.tkid, troopers.squad FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".cleanInput($_GET['profile'])."' AND events.closed = '1' AND event_sign_up.status = '3' ORDER BY events.dateEnd DESC";
 	$i = 0;
 	
 	if ($result = mysqli_query($conn, $query))
@@ -393,7 +393,7 @@ if(isset($_GET['profile']))
 		}
 		else
 		{
-			$troops_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE attend = '1' AND trooperid = '".cleanInput($_GET['profile'])."'") or die($conn->error);
+			$troops_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE status = '3' AND trooperid = '".cleanInput($_GET['profile'])."'") or die($conn->error);
 			$count = $troops_get->fetch_row();
 			$j = 0;
 
@@ -628,7 +628,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 	if($_POST['searchType'] == "regular")
 	{
 		// Query for search
-		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.attend, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE";
+		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.attended_costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE";
 		
 		if(strlen($_POST['tkID']) > 0)
 		{
@@ -954,7 +954,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		<div id="mystats" name="mystats" style="display: none;">';
 
 		// Get data
-		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.attend, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND attend = 1 AND events.closed = '1' ORDER BY events.dateEnd DESC";
+		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.attended_costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND status = 3 AND events.closed = '1' ORDER BY events.dateEnd DESC";
 		$i = 0;
 		$troopsAttended = 0;
 		$moneyRaised = 0;
@@ -1019,7 +1019,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 	if(!isset($_GET['squad']))
 	{
 		// Get data
-		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, event_sign_up.attend, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND events.dateEnd > CURRENT_DATE - INTERVAL 60 DAY GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT 20";
+		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND events.dateEnd > CURRENT_DATE - INTERVAL 60 DAY GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT 20";
 	}
 	else
 	{
@@ -1065,7 +1065,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		}
 		
 		// Squad is set, show only that data
-		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, event_sign_up.attend, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' ".$add2." GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT ".$startFrom.", ".$results."";
+		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' ".$add2." GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT ".$startFrom.", ".$results."";
 	}
 
 	// Query count
@@ -1090,7 +1090,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 			}
 
 			// How many troopers attended
-			$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE troopid = '".$db->troopid."' AND attend = '1'") or die($conn->error);
+			$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE troopid = '".$db->troopid."' AND status = '3'") or die($conn->error);
 			
 			$count = $trooperCount_get->fetch_row();
 
@@ -1110,7 +1110,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		$favoriteCostume = mysqli_fetch_array($favoriteCostume_get);
 
 		// How many troops did the user attend
-		$attended_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE attend = '1'") or die($conn->error);
+		$attended_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE status = '3'") or die($conn->error);
 		$count1 = $attended_get->fetch_row();
 		// How many regular troops
 		$regular_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '0'") or die($conn->error);
@@ -2925,7 +2925,7 @@ if(isset($_GET['event']))
 					}
 				
 					// If this event is limited in troopers
-					if($db->limit501st < 500 || $db->limitRebels < 500 || $db->limitMando < 500 || $db->limitDroid < 500 || $limitOther < 500)
+					if($db->limit501st < 500 || $db->limitRebels < 500 || $db->limitMando < 500 || $db->limitDroid < 500 || $db->limitOther < 500)
 					{
 						// Count total
 						$limitTotal = $db->limit501st + $db->limitRebels + $db->limitMando + $db->limitDroid + $db->limitOther;
@@ -2957,7 +2957,7 @@ if(isset($_GET['event']))
 			</div>';
 
 			// Query database for roster info
-			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attend, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' ORDER BY event_sign_up.id ASC";
+			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' ORDER BY event_sign_up.id ASC";
 			$i = 0;
 			
 			if ($result2 = mysqli_query($conn, $query2))
@@ -2995,7 +2995,7 @@ if(isset($_GET['event']))
 						</tr>';
 					}
 
-					// Allow for users to edit their status from the event, and make sure the event is not closed, and the user did not cancel
+					// Allow for users to edit their status from the event, and make sure the event is not closed
 					if(loggedIn() && ($db2->trooperId == $_SESSION['id'] || $_SESSION['id'] == $db2->addedby) && $db->closed == 0)
 					{
 						echo '
@@ -3164,8 +3164,18 @@ if(isset($_GET['event']))
 								'.readTKNumber($db2->tkid, $db2->squad).'
 							</td>
 							
-							<td>
-								'.ifEmpty(getCostume($db2->costume), "N/A").'
+							<td>';
+							
+							if($db2->attended_costume != 0)
+							{
+								echo ifEmpty(getCostume($db2->attended_costume), "N/A");
+							}
+							else
+							{
+								echo ifEmpty(getCostume($db2->costume), "N/A");
+							}
+							
+							echo '
 							</td>
 							
 							<td>
@@ -3851,7 +3861,7 @@ else
 				if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
 				{
 					// Query
-					$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() - INTERVAL 1 DAY AND event_sign_up.attend = 0 AND events.closed = 0";
+					$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() - INTERVAL 1 DAY AND event_sign_up.status < 3 AND events.closed = 0";
 				}
 				else if(isset($_GET['squad']))
 				{
@@ -3975,7 +3985,7 @@ else
 			if(loggedIn())
 			{
 				// Load events that need confirmation
-				$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND attend = 0 AND events.closed = 1";
+				$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1";
 
 				if ($result = mysqli_query($conn, $query))
 				{

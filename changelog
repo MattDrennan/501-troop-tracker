@@ -15,6 +15,10 @@ _11/15/2021_
 -Remaining spots added to event page
 -Removed limitTotal, now adds all other totals together
 -Troopers attending is now more accurate
+-Removed attended value for less confusion
+-When an event is finished and the user confirms a costume, that costume will show on the roster
+-Updated SQL
+-TK number now shows proper prefix for 501st members if in database
 
 _10/31/2021_
 

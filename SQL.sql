@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Oct 17, 2021 at 11:18 PM
+-- Generation Time: Nov 15, 2021 at 09:09 PM
 -- Server version: 5.7.31
 -- PHP Version: 8.0.11
 
@@ -169,7 +169,7 @@ CREATE TABLE IF NOT EXISTS `events` (
   `limit501st` int(11) NOT NULL DEFAULT '9999',
   `limitMando` int(11) NOT NULL DEFAULT '9999',
   `limitDroid` int(11) NOT NULL DEFAULT '9999',
-  `limitTotal` int(11) NOT NULL DEFAULT '9999',
+  `limitOther` int(11) NOT NULL DEFAULT '500',
   `closed` tinyint(1) NOT NULL DEFAULT '0',
   `moneyRaised` int(11) NOT NULL DEFAULT '0',
   `squad` int(11) NOT NULL,
@@ -192,7 +192,6 @@ CREATE TABLE IF NOT EXISTS `event_sign_up` (
   `costume_backup` varchar(50) NOT NULL DEFAULT '0',
   `reason` text,
   `status` int(2) NOT NULL DEFAULT '0',
-  `attend` int(2) NOT NULL DEFAULT '0',
   `attended_costume` varchar(100) NOT NULL DEFAULT '0',
   `addedby` int(11) NOT NULL DEFAULT '0',
   `signuptime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,

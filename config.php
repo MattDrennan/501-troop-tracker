@@ -1003,7 +1003,7 @@ function removeLetters($string)
 // readTKNumber: Converts other club ID numbers to a readable format
 function readTKNumber($tkid, $squad)
 {
-	global $clubArray, $squadArray;
+	global $conn, $clubArray, $squadArray;
 	
 	// Is the trooper in a club?
 	$inClub = false;
@@ -1024,7 +1024,19 @@ function readTKNumber($tkid, $squad)
 	// If not in club, set default
 	if(!$inClub)
 	{
-		$tkid = "TK" . $tkid;
+		$prefix = "TK";
+		
+		// Get TK prefix from database
+		$getPrefix = $conn->query("SELECT prefix FROM 501st_costumes WHERE legionid = '".$tkid."' LIMIT 1");
+		$getPrefix_value = $getPrefix->fetch_row();
+		
+		// Make sure TK prefix was found
+		if($getPrefix_value[0] != "")
+		{
+			$prefix = $getPrefix_value[0];
+		}
+		
+		$tkid = $prefix . $tkid;
 	}
 
 	return $tkid;
@@ -1802,7 +1814,7 @@ function eventClubCount($eventID, $club)
 	$returnVal = 0; // Number to return
 
 	// Query database for roster info
-	$query = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attend, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".$eventID."' AND status != '4'";
+	$query = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".$eventID."' AND status != '4'";
 
 	if ($result = mysqli_query($conn, $query))
 	{
@@ -1909,7 +1921,7 @@ function isEventFull($eventID, $costumeID)
 		while ($db = mysqli_fetch_object($result))
 		{
 			// Query database for roster info
-			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attend, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".$eventID."' AND status != '4'";
+			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".$eventID."' AND status != '4'";
 
 			if ($result2 = mysqli_query($conn, $query2))
 			{

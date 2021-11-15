@@ -1094,7 +1094,6 @@ $(document).ready(function()
 				$("#backup2" + $("input[name=trooperSelectEdit]:checked").val()).show();
 				$("#status2" + $("input[name=trooperSelectEdit]:checked").val()).show();
 				$("#reason2" + $("input[name=trooperSelectEdit]:checked").val()).show();
-				$("#attend2" + $("input[name=trooperSelectEdit]:checked").val()).show();
 				$("#attendcostume2" + $("input[name=trooperSelectEdit]:checked").val()).show();
 				$("#dateAttending" + $("input[name=trooperSelectEdit]:checked").val() + "Edit").show();
 				$("#dateAttended" + $("input[name=trooperSelectEdit]:checked").val() + "Edit").show();
@@ -1104,7 +1103,6 @@ $(document).ready(function()
 				$("#backup1" + $("input[name=trooperSelectEdit]:checked").val()).hide();
 				$("#status1" + $("input[name=trooperSelectEdit]:checked").val()).hide();
 				$("#reason1" + $("input[name=trooperSelectEdit]:checked").val()).hide();
-				$("#attend1" + $("input[name=trooperSelectEdit]:checked").val()).hide();
 				$("#attendcostume1" + $("input[name=trooperSelectEdit]:checked").val()).hide();
 				$("#dateAttending" + $("input[name=trooperSelectEdit]:checked").val()).hide();
 				$("#dateAttended" + $("input[name=trooperSelectEdit]:checked").val()).hide();
@@ -1145,7 +1143,6 @@ $(document).ready(function()
 							$("#backup2" + $("input[name=trooperSelectEdit]:checked").val()).hide();
 							$("#status2" + $("input[name=trooperSelectEdit]:checked").val()).hide();
 							$("#reason2" + $("input[name=trooperSelectEdit]:checked").val()).hide();
-							$("#attend2" + $("input[name=trooperSelectEdit]:checked").val()).hide();
 							$("#attendcostume2" + $("input[name=trooperSelectEdit]:checked").val()).hide();
 							$("#dateAttending" + $("input[name=trooperSelectEdit]:checked").val() + "Edit").hide();
 							$("#dateAttended" + $("input[name=trooperSelectEdit]:checked").val() + "Edit").hide();
@@ -1161,7 +1158,6 @@ $(document).ready(function()
 							$("#backup1" + $("input[name=trooperSelectEdit]:checked").val()).html($("#backup2" + $("input[name=trooperSelectEdit]:checked").val()).find("select :selected").text());
 							$("#status1" + $("input[name=trooperSelectEdit]:checked").val()).html($("#status2" + $("input[name=trooperSelectEdit]:checked").val()).find("select :selected").text());
 							$("#reason1" + $("input[name=trooperSelectEdit]:checked").val()).html($("#reason2" + $("input[name=trooperSelectEdit]:checked").val()).find("input").val());
-							$("#attend1" + $("input[name=trooperSelectEdit]:checked").val()).html($("#attend2" + $("input[name=trooperSelectEdit]:checked").val()).find("select :selected").text());
 							$("#attendcostume1" + $("input[name=trooperSelectEdit]:checked").val()).html($("#attendcostume2" + $("input[name=trooperSelectEdit]:checked").val()).find("select :selected").text());
 							
 							// Set attended text
@@ -1175,7 +1171,6 @@ $(document).ready(function()
 							$("#backup1" + $("input[name=trooperSelectEdit]:checked").val()).show();
 							$("#status1" + $("input[name=trooperSelectEdit]:checked").val()).show();
 							$("#reason1" + $("input[name=trooperSelectEdit]:checked").val()).show();
-							$("#attend1" + $("input[name=trooperSelectEdit]:checked").val()).show();
 							$("#attendcostume1" + $("input[name=trooperSelectEdit]:checked").val()).show();
 							$("#dateAttending" + $("input[name=trooperSelectEdit]:checked").val()).show();
 							$("#dateAttended" + $("input[name=trooperSelectEdit]:checked").val()).show();
