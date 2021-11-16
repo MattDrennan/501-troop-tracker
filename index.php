@@ -2760,6 +2760,7 @@ if(isset($_GET['event']))
 	// Globals
 	$eventClosed = 0;
 	$limitedEvent = 0;
+	$limitTotal = 0;
 	
 	// Merged troop
 	$isMerged = false;
@@ -2777,6 +2778,9 @@ if(isset($_GET['event']))
 			$eventClosed = $db->closed;
 			$limitedEvent = $db->limitedEvent;
 			$limitTo = $db->limitTo;
+			
+			// Set total
+			$limitTotal = $db->limit501st + $db->limitRebels + $db->limitMando + $db->limitDroid + $db->limitOther;
 			
 			// Set event exist
 			$eventExist = true;
@@ -2943,9 +2947,6 @@ if(isset($_GET['event']))
 					// If this event is limited in troopers
 					if($db->limit501st < 500 || $db->limitRebels < 500 || $db->limitMando < 500 || $db->limitDroid < 500 || $db->limitOther < 500)
 					{
-						// Count total
-						$limitTotal = $db->limit501st + $db->limitRebels + $db->limitMando + $db->limitDroid + $db->limitOther;
-						
 						echo '
 						<br />
 						<hr />
@@ -3525,12 +3526,7 @@ if(isset($_GET['event']))
 					if(hasPermission(0, 1, 2, 3))
 					{
 						if($getNumOfTroopers->num_rows < $limitTotal)
-						{
-							if($limitedEvent == 1)
-							{
-								echo '<b>This is a locked event. When you sign up, you will be placed in a pending status until command staff approves you. Please check for updates.</b>';
-							}
-							
+						{	
 							// Only show add a friend if main user is in event
 							if(inEvent($_SESSION['id'], cleanInput($_GET['event']))["inTroop"] == 1)
 							{
