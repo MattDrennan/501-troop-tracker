@@ -21,6 +21,7 @@ _11/15/2021_
 -TK number now shows proper prefix for 501st members if in database
 -Updated SQL
 -Change Limits button added
+-Removed didAttend()
 
 _10/31/2021_
 
