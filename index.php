@@ -1415,6 +1415,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					{
 						echo '
 						<form action="process.php?do=troopercheck" method="POST" name="trooperCheckForm" id="trooperCheckForm">
+						<div style="overflow-x: auto;">
 						<table>
 							<tr>
 								<th>Selection</th>	<th>Name</th>	<th>TKID</th>	<th>Tracker Status</th>
@@ -1451,6 +1452,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			{
 				echo '
 				</table>
+				</div>
 				
 				<input type="submit" name="submitTroopCheckReserve" id="submitTroopCheckReserve" value="Change to Reserve" />
 				<input type="submit" name="submitTroopCheckRetired" id="submitTroopCheckRetired" value="Change to Retired" />
