@@ -1429,7 +1429,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						</td>
 						
 						<td>
-							'.$db->name.'
+							<a href="index.php?profile='.$db->id.'">'.$db->name.'</a>
 						</td>
 						
 						<td>
