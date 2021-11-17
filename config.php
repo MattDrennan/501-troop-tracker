@@ -28,10 +28,10 @@ use benhall14\phpCalendar\Calendar;
 // Start Calendar
 $calendar = new Calendar();
 
-
 // Include credential file
 require 'cred.php';
 
+// Start session
 session_start();
 
 // Connect to server
@@ -1234,6 +1234,21 @@ function getName($id)
 	}
 }
 
+// getPhone: gets the user's phone
+function getPhone($id)
+{
+	global $conn;
+	
+	$query = "SELECT * FROM troopers WHERE id='".$id."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			return $db->phone;
+		}
+	}
+}
+
 // copyEvent: Helps with copying event values to create an event page
 function copyEvent($eid, $value, $default = -1)
 {
@@ -1424,23 +1439,6 @@ function ifEmpty($value, $message = "EMPTY")
 	{
 		return $value;
 	}
-}
-
-// didAttend: Did the trooper attend?
-function didAttend($value)
-{
-	$returnValue = "";
-
-	if($value == 0)
-	{
-		$returnValue = "Did not attend";
-	}
-	else if($value == 1)
-	{
-		$returnValue = "Attended";
-	}
-
-	return $returnValue;
 }
 
 // getCostume: What was the costume?
@@ -2042,6 +2040,39 @@ function isEventFull($eventID, $costumeID)
 	return $eventFull;
 }
 
+// getPermissionName: Converts value to title string of permission
+function getPermissionName($value)
+{
+	if($value == 0)
+	{
+		return 'Regular Member';
+	}
+	else if($value == 1)
+	{
+		return 'Super Admin';
+	}
+	else if($value == 2)
+	{
+		return 'Moderator';
+	}
+	else if($value == 3)
+	{
+		return 'Reserve Member';
+	}
+	else if($value == 4)
+	{
+		return 'Retired Member';
+	}
+	else if($value == 5)
+	{
+		return 'Handler';
+	}
+	else
+	{
+		return 'Unknown';
+	}
+}
+
 // If logged in, update active status
 if(loggedIn())
 {
@@ -2049,7 +2080,7 @@ if(loggedIn())
 }
 
 // Check for events that need to be closed
-$query = "SELECT * FROM events WHERE dateEnd < NOW() - INTERVAL 1 DAY and closed = '0'";
+$query = "SELECT * FROM events WHERE dateEnd < NOW() - INTERVAL 1 HOUR and closed = '0'";
 if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))

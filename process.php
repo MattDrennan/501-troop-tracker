@@ -44,6 +44,52 @@ if($_GET['do'] == "changepassword")
 	}
 }
 
+/******************** TROOPER CHECK *******************************/
+
+// Set reserve
+if(isset($_GET['do']) && $_GET['do'] == "troopercheckreserve" && loggedIn() && isAdmin())
+{
+	if(empty($_POST['trooper']))
+	{
+		// Send JSON
+		$array = array('data' => 'No troopers selected!');
+		echo json_encode($array);
+	}
+	else
+	{
+		foreach($_POST['trooper'] as $trooper)
+		{
+			$conn->query("UPDATE troopers SET permissions = '3' WHERE id = '".cleanInput($trooper)."'");
+		}
+		
+		// Send JSON
+		$array = array('data' => 'Success!');
+		echo json_encode($array);
+	}
+}
+
+// Set retired
+if(isset($_GET['do']) && $_GET['do'] == "troopercheckretired" && loggedIn() && isAdmin())
+{
+	if(empty($_POST['trooper']))
+	{
+		// Send JSON
+		$array = array('data' => 'No troopers selected!');
+		echo json_encode($array);
+	}
+	else
+	{
+		foreach($_POST['trooper'] as $trooper)
+		{
+			$conn->query("UPDATE troopers SET permissions = '4' WHERE id = '".cleanInput($trooper)."'");
+		}
+		
+		// Send JSON
+		$array = array('data' => 'Success!');
+		echo json_encode($array);
+	}
+}
+
 /******************** PHOTOS *******************************/
 
 if(isset($_GET['do']) && $_GET['do'] == "deletephoto" && loggedIn())

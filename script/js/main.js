@@ -286,6 +286,82 @@ $(document).ready(function()
 		}
 	})
 	
+	// Trooper Check - Reserve Member Button
+	$("#submitTroopCheckReserve").click(function(e)
+	{
+		e.preventDefault();
+		
+		var r = confirm("Are you sure you want to makes these troopers RESERVE status?");
+		
+		// If confirmed
+		if(r == true)
+		{
+			// Send data
+			var form = $("#trooperCheckForm");
+
+			$.ajax({
+				type: "POST",
+				url: "process.php?do=troopercheckreserve",
+				data: form.serialize(),
+				success: function(data)
+				{
+					// Get JSON
+					var json = JSON.parse(data);
+					
+					// Loop through checkboxes
+					$(":checkbox:checked").each(function() {
+						// Change permission
+						$("tr[name=row_" + $(this).val() + "] td[name=permission]").text("Reserve Member");
+						
+						// Uncheck
+						$(this).prop("checked", false);
+					});
+					
+					// Alert user
+					alert(json.data);
+				}
+			});
+		}
+	})
+	
+	// Trooper Check - Retired Member Button
+	$("#submitTroopCheckRetired").click(function(e)
+	{
+		e.preventDefault();
+		
+		var r = confirm("Are you sure you want to makes these troopers RETIRED status?");
+		
+		// If confirmed
+		if(r == true)
+		{
+			// Send data
+			var form = $("#trooperCheckForm");
+
+			$.ajax({
+				type: "POST",
+				url: "process.php?do=troopercheckretired",
+				data: form.serialize(),
+				success: function(data)
+				{
+					// Get JSON
+					var json = JSON.parse(data);
+					
+					// Loop through checkboxes
+					$(":checkbox:checked").each(function() {
+						// Remove row
+						$("tr[name=row_" + $(this).val() + "]").remove();
+						
+						// Uncheck
+						$(this).prop("checked", false);
+					});
+					
+					// Alert user
+					alert(json.data);
+				}
+			});
+		}
+	})
+	
 	// Get Location Button
 	$("a[name='deletephoto']").click(function(e)
 	{

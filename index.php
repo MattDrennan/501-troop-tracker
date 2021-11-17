@@ -342,7 +342,7 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 if(isset($_GET['profile']))
 {
 	// Get data
-	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, event_sign_up.attended_costume, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.forum_id, troopers.tkid, troopers.squad FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".cleanInput($_GET['profile'])."' AND events.closed = '1' AND event_sign_up.status = '3' ORDER BY events.dateEnd DESC";
+	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, event_sign_up.attended_costume, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.forum_id, troopers.tkid, troopers.squad, troopers.phone FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".cleanInput($_GET['profile'])."' AND events.closed = '1' AND event_sign_up.status = '3' ORDER BY events.dateEnd DESC";
 	$i = 0;
 	
 	if ($result = mysqli_query($conn, $query))
@@ -353,7 +353,9 @@ if(isset($_GET['profile']))
 			{
 				// Show profile information
 				echo 
-				profileTop($db->id, $db->tkid, $db->name, $db->squad, $db->forum_id) . '
+				profileTop($db->id, $db->tkid, $db->name, $db->squad, $db->forum_id);
+				
+				echo '
 				<div style="overflow-x: auto;">
 				<table border="1">
 				<tr>
@@ -1278,6 +1280,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<a href="index.php?action=commandstaff&do=createevent" class="button">Create an Event</a> 
 			<a href="index.php?action=commandstaff&do=editevent" class="button">Edit an Event</a> 
 			<a href="index.php?action=commandstaff&do=notifications" class="button">Notifications</a> 
+			<a href="index.php?action=commandstaff&do=troopercheck" class="button">Trooper Check</a> 
 			<a href="index.php?action=commandstaff&do=managecostumes" class="button">Costume Management</a> ';
 			
 			if(hasPermission(1))
@@ -1354,6 +1357,105 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			if($i == 0)
 			{
 				echo '<p>ERROR: Settings not correctly set. Check database.</p>';
+			}
+		}
+		
+		/**************************** Trooper Check *********************************/
+		
+		if(isset($_GET['do']) && $_GET['do'] == "troopercheck")
+		{
+			echo '
+			<h3>Trooper Check</h3>
+			
+			<p>
+				<i>The following troopers do not have a documented troop from the past year. Retired members do not show on this list.</i>
+			</p>';
+			
+			// Squad count
+			$i = 1;
+			
+			echo '
+			<a href="index.php?action=commandstaff&do=troopercheck" class="button">All</a>';
+			
+			foreach($squadArray as $squad => $squad_value)
+			{
+				echo '<a href="index.php?action=commandstaff&do=troopercheck&squad='.$i.'" class="button">' . $squad . '</a> ';
+				$i++;
+			}
+			
+			foreach($clubArray as $club => $club_value)
+			{
+				echo '<a href="index.php?action=commandstaff&do=troopercheck&squad='.$i.'" class="button">' . $club . '</a> ';
+				$i++;
+			}
+			
+			echo '<br /><hr />';
+			
+			// Set up
+			$queryAdd = "";
+			
+			// Check if squad is requested
+			if(isset($_GET['squad']))
+			{
+				$queryAdd = "troopers.squad = '".cleanInput($_GET['squad'])."' AND";
+			}
+			
+			// Query database
+			$query = "SELECT * FROM troopers WHERE ".$queryAdd." troopers.permissions != 4 AND troopers.id NOT IN (SELECT event_sign_up.trooperid FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.dateEnd > NOW() - INTERVAL 1 YEAR) ORDER BY troopers.name";
+			
+			// Query count
+			$i = 0;
+			
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					// If first data
+					if($i == 0)
+					{
+						echo '
+						<form action="process.php?do=troopercheck" method="POST" name="trooperCheckForm" id="trooperCheckForm">
+						<table>
+							<tr>
+								<th>Selection</th>	<th>Name</th>	<th>TKID</th>	<th>Tracker Status</th>
+							</tr>';
+					}
+					
+					echo '
+					<tr name="row_'.$db->id.'">
+						<td>
+							<input type="checkbox" name="trooper[]" value="'.$db->id.'" />
+						</td>
+						
+						<td>
+							'.$db->name.'
+						</td>
+						
+						<td>
+							'.readTKNumber($db->tkid, $db->squad).'
+						</td>
+						
+						<td name="permission">
+							'.getPermissionName($db->permissions).'
+						</td>
+					</tr>
+					';
+					
+					// Increment
+					$i++;
+				}
+			}
+			
+			// If data exists
+			if($i > 0)
+			{
+				echo '
+				</table>
+				
+				<input type="submit" name="submitTroopCheckReserve" id="submitTroopCheckReserve" value="Change to Reserve" />
+				<input type="submit" name="submitTroopCheckRetired" id="submitTroopCheckRetired" value="Change to Retired" />
+				
+				</form>';
 			}
 		}
 		
@@ -3996,6 +4098,43 @@ else
 
 			if(loggedIn())
 			{
+				echo '
+				<h2 class="tm-section-header">Recently Finished</h2>
+				
+				<ul>';
+				
+				// If on my troops
+				if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
+				{
+					// Query
+					$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, events.limitRebels, events.limitMando, events.limitDroid, events.limitOther FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.closed = 1 ORDER BY dateEnd DESC LIMIT 20";
+				}
+				// If on squad
+				else if(isset($_GET['squad']))
+				{
+					// Get recently closed troops by squad
+					$query = "SELECT * FROM events WHERE closed = '1' AND squad = '".cleanInput($_GET['squad'])."' ORDER BY dateEnd DESC LIMIT 20";
+				}
+				// If on default
+				else
+				{
+					// Get recently closed troops
+					$query = "SELECT * FROM events WHERE closed = '1' ORDER BY dateEnd DESC LIMIT 20";
+				}
+				
+				// Load events that are today or in the future
+				if ($result = mysqli_query($conn, $query))
+				{
+					while ($db = mysqli_fetch_object($result))
+					{
+						echo '
+						<li><a href="index.php?event='.$db->id.'">'.$db->name.'</a></li>';
+					}
+				}
+				
+				echo '
+				</ul>';
+				
 				// Load events that need confirmation
 				$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1";
 

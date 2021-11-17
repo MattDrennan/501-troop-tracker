@@ -1,5 +1,12 @@
 **Changelog**
 
+_11/17/2021_
+
+-Automatic close set to one hour after event, from one day
+-Added "Recently Finished" which will show all troops that were recently closed
+-Added getPermissionName(), getPhone()
+-Added "Trooper Check" to Command Staff Portal, this will allow command staff to view inactive troopers and set them to the appropriate permission level
+
 _11/15/2021_
 
 -Event roster is ordered by sign up ID, changed from status
