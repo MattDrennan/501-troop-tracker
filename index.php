@@ -4205,6 +4205,22 @@ else
 					</div>';
 				}
 			}
+			
+			echo '
+			<h2 class="tm-section-header">Recent Photos</h2>';
+			
+			// Load photos
+			$query = "SELECT * FROM uploads WHERE admin = '0' ORDER BY id DESC LIMIT 10";
+			
+			// Loop through photos
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					echo '
+					<a href="images/uploads/'.$db->filename.'" data-lightbox="photo" data-title="Uploaded by '.getName($db->trooperid).'"><img src="images/uploads/'.$db->filename.'" width="200px" height="200px" /></a>';
+				}
+			}
 		}
 		else
 		{
