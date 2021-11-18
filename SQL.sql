@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Nov 17, 2021 at 07:22 PM
+-- Generation Time: Nov 18, 2021 at 12:30 PM
 -- Server version: 5.7.31
 -- PHP Version: 8.0.11
 
@@ -128,9 +128,10 @@ CREATE TABLE IF NOT EXISTS `costumes` (
 DROP TABLE IF EXISTS `donations`;
 CREATE TABLE IF NOT EXISTS `donations` (
   `trooperid` int(11) NOT NULL,
-  `amount` int(11) NOT NULL,
+  `amount` decimal(11,2) NOT NULL,
   `txn_id` varchar(255) NOT NULL,
-  `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`txn_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
