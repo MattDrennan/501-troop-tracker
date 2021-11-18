@@ -1070,7 +1070,33 @@ $(document).ready(function()
 			});
 		}
 	})
+	
+	// Manage Trooper - Reset Password
+	$("#submitResetPasswordUser").button().click(function(e)
+	{
+		e.preventDefault();
 
+		var form = $("#editUser");
+		var url = form.attr("action");
+
+		var r = confirm("Are you sure you want to reset this user's password?");
+
+		if (r == true)
+		{
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitResetUser=1",
+				success: function(data)
+				{
+					// Alert to success
+			  		alert("The user's password was reset! New password: ineedanewpassword123");
+				}
+			});
+		}
+	})
+
+	// Manage Trooper - Delete Trooper
 	$("#submitDeleteUser").button().click(function(e)
 	{
 		e.preventDefault();

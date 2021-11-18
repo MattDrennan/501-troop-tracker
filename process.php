@@ -866,6 +866,16 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 		// Send notification to command staff
 		sendNotification(getName($_SESSION['id']) . " has deleted user ID [" . cleanInput($_POST['userID']) . "]", cleanInput($_SESSION['id']));
 	}
+	
+	// User password reset...
+	if(isset($_POST['submitResetUser']))
+	{
+		// Query the database
+		$conn->query("UPDATE troopers SET password = '".password_hash("ineedanewpassword123", PASSWORD_DEFAULT)."' WHERE id = '".cleanInput($_POST['userID'])."'");
+		
+		// Send notification to command staff
+		sendNotification(getName($_SESSION['id']) . " has reset the password of user ID [" . cleanInput($_POST['userID']) . "]", cleanInput($_SESSION['id']));
+	}
 
 	// User submitted for edit...
 	if(isset($_POST['submitEditUser']))
