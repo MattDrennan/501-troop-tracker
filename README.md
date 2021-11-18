@@ -24,7 +24,10 @@ define('dbName', 'DB_NAME_HERE');
 define('dbServer2', 'MY_SERVER_HERE');
 define('dbUser2', 'DB_USER_HERE');
 define('dbPassword2', 'DB_PASSWORD_HERE');
-define('dbName2', 'DB_NAME_HERE'); 
+define('dbName2', 'DB_NAME_HERE');
+
+// Forum User Database
+define('forum_user_database', 'DATABASE.TABLE HERE');
 
 // E-mail Creds
 // This is the email server and account you are going to send e-mails from
