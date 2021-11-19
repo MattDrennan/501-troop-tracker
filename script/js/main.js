@@ -583,6 +583,7 @@ $(document).ready(function()
 					$("#tkid").val(json.tkid);
 					$("#forumid").val(json.forumid);
 					$("#rebelforum").val(json.rebelforum);
+					$("#mandoid").val(json.mandoid);
 					$("#supporter").val(json.supporter);
 				}
 				else
@@ -1001,6 +1002,7 @@ $(document).ready(function()
 					$("#emailTable").html("");
 					$("#forumTable").html("");
 					$("#forumRebelTable").html("");
+					$("#mandoTable").html("");
 					$("#phoneTable").html("");
 					$("#squadTable").html("");
 					$("#tkTable").html("");
@@ -1461,7 +1463,7 @@ $(document).ready(function()
 					$("#emailTable").html(ifEmpty(json.email));
 					$("#forumTable").html('<a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un=' + json.forum + '" target="_blank">' + json.forum + '</a>');
 					
-					// If just a 501st member
+					// If not a Rebel Legion member
 					if(json.rebelforum == "")
 					{
 						$("#forumRebelTable").html('N/A');
@@ -1470,6 +1472,17 @@ $(document).ready(function()
 					{
 						// If a Rebel Legion member
 						$("#forumRebelTable").html('<a href="https://www.forum.rebellegion.com/forum/profile.php?mode=viewprofile&u=' + json.rebelforum + '" target="_blank">' + json.rebelforum + '</a>');
+					}
+					
+					// If not a Mando member
+					if(json.mandoid == 0)
+					{
+						$("#mandoTable").html('N/A');
+					}
+					else
+					{
+						// If a Rebel Legion member
+						$("#mandoTable").html('CAT #' + json.mandoid);
 					}
 					
 					$("#phoneTable").html(ifEmpty(json.phone));
@@ -1494,6 +1507,7 @@ $(document).ready(function()
 			$("#emailTable").html("");
 			$("#forumTable").html("");
 			$("#forumRebelTable").html("");
+			$("#mandoTable").html("");
 			$("#phoneTable").html("");
 			$("#squadTable").html("");
 			$("#tkTable").html("");

@@ -491,6 +491,59 @@ function getRebelInfo($forumid)
 	return $array;
 }
 
+// getMandoLegionUser: A function that returns a troopers Mando Mercs CAT #
+function getMandoLegionUser($id)
+{
+	global $conn;
+	
+	// Set up value
+	$mandoid = 0;
+	
+	// Get data
+	$query = "SELECT mandoid FROM troopers WHERE id = '".$id."'";
+	
+	// Run query...
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Set
+			$mandoid = $db->mandoid;
+		}
+	}
+	
+	// Return
+	return $mandoid;
+}
+
+// getMandoInfo: A function which returns an array of info about trooper - Mando Mercs
+function getMandoInfo($mandoid)
+{
+	global $conn;
+	
+	// Setup array
+	$array = [];
+	$array['id'] = '';
+	$array['name'] = '';
+	
+	// Get data
+	$query = "SELECT * FROM mando_troopers WHERE mandoid = '".$mandoid."'";
+	
+	// Run query...
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			$array['id'] = $db->mandoid;
+			$array['name'] = $db->name;
+			$array['costume'] = $db->name;
+		}
+	}
+	
+	// Return
+	return $array;
+}
+
 // get501Info: A function which returns an array of info about trooper - 501st
 function get501Info($id, $squad)
 {
@@ -607,6 +660,44 @@ function showRebelCostumes($id)
 		echo '
 		<p style="text-align: center;">
 			No Rebel Legion costumes to display!
+		</p>';
+	}
+}
+
+// showMandoCostumes: A function which displays all the users costumes in synced database - Mando Mercs
+function showMandoCostumes($id)
+{
+	global $conn;
+	
+	// Get data
+	$query = "SELECT * FROM mando_costumes WHERE mandoid = '".$id."'";
+	
+	// Set up count
+	$i = 0;
+	
+	// Run query...
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			echo '
+			<div style="text-align: center;">
+				<p>
+					<img src="'.$db->costumeurl.'" />
+				</p>
+			</div>';
+			
+			// Increment
+			$i++;
+		}
+	}
+	
+	// If no results
+	if($i == 0)
+	{
+		echo '
+		<p style="text-align: center;">
+			No Mando Mercs costumes to display!
 		</p>';
 	}
 }

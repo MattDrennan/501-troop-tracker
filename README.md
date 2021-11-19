@@ -65,7 +65,17 @@ $clubArray = array("Rebel Legion" => "test", "Droid Builders" => "test", "Mando 
 
 <li>Set file permissions to 'images/uploads' to 777</li>
 <li>Manually modify getSquad() function in 'config.php' to fit your needs</li>
+<li>To use 'nodescraper', create a '.env' file in same directory. Add the following:</li>
 </ol>
+
+```
+USERNAME_FORUM=
+PASSWORD_FORUM=
+MYSQL_HOST=
+MYSQL_USER=
+MYSQL_PASSWORD=
+MYSQL_TABLE=
+```
 
 
 ## Please contact me with any questions, comments, or concerns

@@ -552,6 +552,14 @@ $(function()
 					return $('#squad').val() == 6;
 				}				
 			},
+			mandoid:
+			{
+				digits: true,
+				required: function()
+				{
+					return $('#squad').val() == 8;
+				}				
+			},
             forumid: "required",
             password: "required",
             passwordC: "required",
@@ -566,7 +574,8 @@ $(function()
             passwordC: "Please re-enter your password to confirm it.",
             email: "Please enter a valid e-mail.",
             name: "Please enter your name.",
-			rebelforum: "Please enter your Rebel Legion forum username."
+			rebelforum: "Please enter your Rebel Legion forum username.",
+			mandoid: "Please enter your Mando Mercs CAT #."
         },
         // Make sure the form is submitted to the destination defined
         // in the "action" attribute of the form when valid
@@ -786,6 +795,10 @@ $(function()
                 required: true,
                 digits: true
             },
+			mandoid:
+			{
+				digits: true
+			},
             password:
             {
                 required: true,
@@ -827,6 +840,7 @@ $(function()
                             $("#email").val("");
                             $("#forumid").val("");
 							$("#rebelforum").val("");
+							$("#mandoid").val("");
                             $("#phone").val("");
                             $("#squad").val("1");
                             $("#permissions").val("0");
