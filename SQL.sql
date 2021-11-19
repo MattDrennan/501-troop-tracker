@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Nov 18, 2021 at 12:30 PM
+-- Generation Time: Nov 19, 2021 at 09:54 PM
 -- Server version: 5.7.31
 -- PHP Version: 8.0.11
 
@@ -198,6 +198,32 @@ CREATE TABLE IF NOT EXISTS `event_sign_up` (
   `signuptime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mando_costumes`
+--
+
+DROP TABLE IF EXISTS `mando_costumes`;
+CREATE TABLE IF NOT EXISTS `mando_costumes` (
+  `mandoid` int(11) NOT NULL,
+  `costumeurl` varchar(255) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mando_troopers`
+--
+
+DROP TABLE IF EXISTS `mando_troopers`;
+CREATE TABLE IF NOT EXISTS `mando_troopers` (
+  `mandoid` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `costume` varchar(255) NOT NULL,
+  PRIMARY KEY (`mandoid`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
