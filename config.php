@@ -774,6 +774,70 @@ function showCostumes($id, $squad)
 	}
 }
 
+// sendEventNotifty: Send's a notification to the event channel
+function sendEventNotify($id, $name, $description, $squad)
+{
+	$webhookurl = discordWeb1;
+
+	//=======================================================================================================
+	// Compose message. You can use Markdown
+	// Message Formatting -- https://discordapp.com/developers/docs/reference#message-formatting
+	//========================================================================================================
+
+	$timestamp = date("c", strtotime("now"));
+
+	$json_data = json_encode([
+	    // Message
+	    //"content" => "Hello World! This is message line ;) And here is the mention, use userID <@12341234123412341>",
+
+	    "content" => "".$name." has been added in ".getSquadName($squad).".",
+	    
+	    // Username
+	    "username" => "Event Bot",
+
+	    // Text-to-speech
+	    "tts" => false,
+
+	    // Embeds Array
+	    "embeds" => [
+	        [
+	            // Embed Title
+	            "title" => $name,
+
+	            // Embed Type
+	            "type" => "rich",
+
+	            // Embed Description
+	            "description" => $description,
+
+	            // URL of title link
+	            "url" => "https://www.fl501st.com/troop-tracker/index.php?event=" . $id,
+
+	            // Timestamp of embed must be formatted as ISO8601
+	            "timestamp" => $timestamp,
+
+	            // Embed left border color in HEX
+	            "color" => hexdec("3366ff")
+	        ]
+	    ]
+
+	], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+
+
+	$ch = curl_init( $webhookurl );
+	curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
+	curl_setopt( $ch, CURLOPT_POST, 1);
+	curl_setopt( $ch, CURLOPT_POSTFIELDS, $json_data);
+	curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
+	curl_setopt( $ch, CURLOPT_HEADER, 0);
+	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+
+	$response = curl_exec( $ch );
+	// If you need to debug, or find out why you can't send message uncomment line below, and execute script.
+	// echo $response;
+	curl_close( $ch );
+}
+
 // getSquad: Gets squad by location
 function getSquad($address)
 {

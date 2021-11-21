@@ -5,6 +5,8 @@ _11/21/2021_
 -Added formatPhoneNumber()
 -Added phone number to profile for admin only
 -Added nothing to display for trooper check and recent photos if no data
+-Added sendEventNotifty() to send notifications to Discord
+-Added Discord event notifications
 
 _11/20/2021_
 

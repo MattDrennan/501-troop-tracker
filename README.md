@@ -44,6 +44,9 @@ define('googleKey', 'GOOGLE_MAP_API_KEY_HERE');
 // See PayPal IPN documentation for more information. This file is used to store donations into the database for tracking.
 define('ipn', 'script/php/paypal.php');
 
+// Discord Web Hook
+define('discordWeb1', 'WEBHOOK_HERE');
+
 // Garrison
 // Your garrison and the logo image file name in the images folders
 define('garrison', 'Florida Garrison');

@@ -1372,6 +1372,9 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 			
 			// Event ID - Last insert from database
 			$eventId = $conn->insert_id;
+
+			// Send notification to Discord
+			sendEventNotify($eventId, cleanInput($_POST['eventName']), cleanInput($_POST['comments']), cleanInput($_POST['squadm']));
 			
 			// Loop through shifts
 			foreach($_POST as $key => $value)
