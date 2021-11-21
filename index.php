@@ -4267,6 +4267,14 @@ echo '
 
 if(!isWebsiteClosed())
 {
+	// Discord link - logged in only
+	if(loggedIn())
+	{
+		echo '
+		<p style="text-align: center;"><a href="https://discord.gg/C6bCB33gp3">Join '.garrison.' on Discord for event notifications and more! Click here to join.</a></p>';
+	}
+
+	// User's online
 	echo '
 	<hr />
 	<section class="tm-section tm-section-small">
