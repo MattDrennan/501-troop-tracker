@@ -340,7 +340,7 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 	<div name="requestAccessFormArea2" id="requestAccessFormArea2"></div>';
 }
 
-// Show the search page
+// Show the profile page
 if(isset($_GET['profile']))
 {
 	// Get data
@@ -355,7 +355,7 @@ if(isset($_GET['profile']))
 			{
 				// Show profile information
 				echo 
-				profileTop($db->id, $db->tkid, $db->name, $db->squad, $db->forum_id);
+				profileTop($db->id, $db->tkid, $db->name, $db->squad, $db->forum_id, $db->phone);
 				
 				echo '
 				<div style="overflow-x: auto;">
@@ -393,7 +393,7 @@ if(isset($_GET['profile']))
 		// Profile exists - if nothing to show
 		if($i == 0)
 		{
-			echo profileTop($_GET['profile'], getTKNumber($_GET['profile']), getName($_GET['profile']), getTrooperSquad($_GET['profile']), getTrooperForum($_GET['profile']));
+			echo profileTop($_GET['profile'], getTKNumber($_GET['profile']), getName($_GET['profile']), getTrooperSquad($_GET['profile']), getTrooperForum($_GET['profile']), getPhone($_GET['profile']));
 		}
 		else
 		{
@@ -1463,6 +1463,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<input type="submit" name="submitTroopCheckRetired" id="submitTroopCheckRetired" value="Change to Retired" />
 				
 				</form>';
+			}
+			else
+			{
+				echo '
+				<p style="text-align: center;">Nothing to display for this squad / club.</p>';
 			}
 		}
 		
@@ -4223,6 +4228,9 @@ else
 			// Load photos
 			$query = "SELECT * FROM uploads WHERE admin = '0' ORDER BY id DESC LIMIT 10";
 			
+			// Setup count
+			$i = 0;
+			
 			// Loop through photos
 			if ($result = mysqli_query($conn, $query))
 			{
@@ -4230,7 +4238,16 @@ else
 				{
 					echo '
 					<a href="images/uploads/'.$db->filename.'" data-lightbox="photo" data-title="Uploaded by '.getName($db->trooperid).'"><img src="images/uploads/'.$db->filename.'" width="200px" height="200px" /></a>';
+					
+					// Increment
+					$i++;
 				}
+			}
+			
+			// If no photos
+			if($i == 0)
+			{
+				echo '<p style="text-align: center;">No photos to display.</p>';
 			}
 		}
 		else

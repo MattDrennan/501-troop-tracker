@@ -1,5 +1,11 @@
 **Changelog**
 
+_11/21/2021_
+
+-Added formatPhoneNumber()
+-Added phone number to profile for admin only
+-Added nothing to display for trooper check and recent photos if no data
+
 _11/20/2021_
 
 -Created "rebelauto.php" to convert old troop data to new troop tracker
