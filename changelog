@@ -1,5 +1,10 @@
 **Changelog**
 
+_11/20/2021_
+
+-Created "rebelauto.php" to convert old troop data to new troop tracker
+-Added more folder organization
+
 _11/19/2021_
 
 -Updated SQL
