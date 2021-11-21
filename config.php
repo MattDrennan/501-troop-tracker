@@ -544,6 +544,62 @@ function getMandoInfo($mandoid)
 	return $array;
 }
 
+// getSGUser: A function that returns a troopers SG #
+function getSGUser($id)
+{
+	global $conn;
+	
+	// Set up value
+	$sgid = 0;
+	
+	// Get data
+	$query = "SELECT sgid FROM troopers WHERE id = '".$id."'";
+	
+	// Run query...
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Set
+			$sgid = $db->sgid;
+		}
+	}
+	
+	// Return
+	return $sgid;
+}
+
+// getSGINfo: A function which returns an array of info about trooper - Saber Guild
+function getSGINfo($sgid)
+{
+	global $conn;
+	
+	// Setup array
+	$array = [];
+	$array['sgid'] = '';
+	$array['name'] = '';
+	$array['image'] = '';
+	$array['link'] = '';
+	
+	// Get data
+	$query = "SELECT * FROM sg_troopers WHERE sgid = '".$sgid."'";
+	
+	// Run query...
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			$array['sgid'] = $db->sgid;
+			$array['name'] = $db->name;
+			$array['image'] = $db->image;
+			$array['link'] = $db->link;
+		}
+	}
+	
+	// Return
+	return $array;
+}
+
 // get501Info: A function which returns an array of info about trooper - 501st
 function get501Info($id, $squad)
 {
@@ -698,6 +754,47 @@ function showMandoCostumes($id)
 		echo '
 		<p style="text-align: center;">
 			No Mando Mercs costumes to display!
+		</p>';
+	}
+}
+
+// showSGCostumes: A function which displays all the users costumes in synced database - Saber Guild
+function showSGCostumes($id)
+{
+	global $conn;
+	
+	// Get data
+	$query = "SELECT * FROM sg_troopers WHERE sgid = '".$id."'";
+	
+	// Set up count
+	$i = 0;
+	
+	// Run query...
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			echo '
+			<div style="text-align: center;">
+					<h3>
+						<a href="'.$db->link.'" target="_blank">'.$db->name.'</a>
+					</h3>
+					
+					<img src="'.$db->image.'" />
+				</p>
+			</div>';
+			
+			// Increment
+			$i++;
+		}
+	}
+	
+	// If no results
+	if($i == 0)
+	{
+		echo '
+		<p style="text-align: center;">
+			No Saber Guild costumes to display!
 		</p>';
 	}
 }

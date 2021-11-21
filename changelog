@@ -7,6 +7,7 @@ _11/21/2021_
 -Added nothing to display for trooper check and recent photos if no data
 -Added sendEventNotifty() to send notifications to Discord
 -Added Discord event notifications
+-Added Saber Guild sync, ability to set SG #, and SG costume pictures on profile
 
 _11/20/2021_
 

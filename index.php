@@ -322,6 +322,8 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 			<br /><br />
 			Mando Mercs CAT # (if applicable): <input type="text" name="mandoid" id="mandoid" />
 			<br /><br />
+			Saber Guild SG # (if applicable): <input type="text" name="sgid" id="sgid" />
+			<br /><br />
 			Password: <input type="password" name="password" id="password" />
 			<br /><br />
 			Password (Confirm): <input type="password" name="passwordC" id="passwordC" />
@@ -528,6 +530,9 @@ if(isset($_GET['profile']))
 		
 		// Show Mando Mercs costumes
 		showMandoCostumes(getMandoLegionUser($_GET['profile']));
+
+		// Show Saber Guild costumes
+		showSGCostumes(getSGUser($_GET['profile']));
 	}
 }
 
@@ -2187,7 +2192,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<th>Name</th>	<th>E-mail</th>	<th>Forum ID (FG)</th>	<th>Forum ID (RL)</th>	<th>Mando CAT</th>	<th>Phone</th>	<th>Squad</th>	<th>TKID</th>
 				</tr>
 					<tr id="userList" name="userList">
-						<td id="nameTable"></td>	<td id="emailTable"></td> <td id="forumTable"></td> <td id="forumRebelTable"></td> <td id="mandoTable"></td>	<td id="phoneTable"></td>	<td id="squadTable"></td>	<td id="tkTable"></td>
+						<td id="nameTable"></td>	<td id="emailTable"></td> <td id="forumTable"></td> <td id="forumRebelTable"></td> <td id="mandoTable"></td>	<td id="sgTable"></td>	<td id="phoneTable"></td>	<td id="squadTable"></td>	<td id="tkTable"></td>
 					</tr>
 				</table>
 				</div>';
@@ -2294,6 +2299,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						
 						<p>Mando Mercs CAT #:</p>
 						<input type="text" name="mandoid" id="mandoid" />
+
+						<p>Saber Guild SG #:</p>
+						<input type="text" name="sgid" id="sgid" />
 						
 						<p>Supporter:</p>
 						<select name="supporter" id="supporter">
@@ -2334,6 +2342,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				
 				<p>Mando Mercs CAT # (if applicable):</p>
 				<input type="text" name="mandoid" id="mandoid" />
+
+				<p>Saber Guild SG # (if applicable):</p>
+				<input type="text" name="sgid" id="sgid" />
 
 				<p>Squad/Club:</p>
 				<select name="squad" id="squad">

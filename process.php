@@ -761,7 +761,7 @@ if(isset($_GET['do']) && $_GET['do'] == "getuser" && loggedIn())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$array = array('name' => $db->name, 'email' => $db->email, 'forum' => $db->forum_id, 'rebelforum' => $db->rebelforum, 'mandoid' => $db->mandoid, 'phone' => $db->phone, 'squad' => getSquadName($db->squad), 'tkid' => readTKNumber($db->tkid, $db->squad), 'link' => get501Info($db->tkid, $db->squad)['link']);
+				$array = array('name' => $db->name, 'email' => $db->email, 'forum' => $db->forum_id, 'rebelforum' => $db->rebelforum, 'mandoid' => $db->mandoid, 'sgid' => $db->sgid, 'phone' => $db->phone, 'squad' => getSquadName($db->squad), 'tkid' => readTKNumber($db->tkid, $db->squad), 'link' => get501Info($db->tkid, $db->squad)['link']);
 			}
 		}
 	}
@@ -886,7 +886,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$array = array('id' => $db->id, 'name' => $db->name, 'email' => $db->email, 'phone' => $db->phone, 'squad' => $db->squad, 'permissions' => $db->permissions, 'tkid' => $db->tkid, 'forumid' => $db->forum_id, 'rebelforum' => $db->rebelforum, 'mandoid' => $db->mandoid, 'supporter' => $db->supporter);
+				$array = array('id' => $db->id, 'name' => $db->name, 'email' => $db->email, 'phone' => $db->phone, 'squad' => $db->squad, 'permissions' => $db->permissions, 'tkid' => $db->tkid, 'forumid' => $db->forum_id, 'rebelforum' => $db->rebelforum, 'mandoid' => $db->mandoid, 'sgid' => $db->sgid, 'supporter' => $db->supporter);
 
 				echo json_encode($array);
 			}
@@ -912,7 +912,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 				$tkid = cleanInput($_POST['tkid']);
 				
 				// Query the database
-				$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['user'])."', email =  '".cleanInput($_POST['email'])."', phone = '".cleanInput(cleanInput($_POST['phone']))."', squad = '".cleanInput($_POST['squad'])."', permissions = '".cleanInput($_POST['permissions'])."', tkid = '".$tkid."', forum_id = '".cleanInput($_POST['forumid'])."', rebelforum = '".cleanInput($_POST['rebelforum'])."', mandoid = '".cleanInput($_POST['mandoid'])."', supporter = '".cleanInput($_POST['supporter'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'") or die($conn->error);
+				$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['user'])."', email =  '".cleanInput($_POST['email'])."', phone = '".cleanInput(cleanInput($_POST['phone']))."', squad = '".cleanInput($_POST['squad'])."', permissions = '".cleanInput($_POST['permissions'])."', tkid = '".$tkid."', forum_id = '".cleanInput($_POST['forumid'])."', rebelforum = '".cleanInput($_POST['rebelforum'])."', mandoid = '".cleanInput($_POST['mandoid'])."', sgid = '".cleanInput($_POST['sgid'])."', supporter = '".cleanInput($_POST['supporter'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'") or die($conn->error);
 				
 				// Send notification to command staff
 				sendNotification(getName($_SESSION['id']) . " has updated user ID [" . cleanInput($_POST['userIDE']) . "]", cleanInput($_SESSION['id']));
@@ -1008,6 +1008,19 @@ if(isset($_GET['do']) && $_GET['do'] == "createuser" && loggedIn())
 				}
 			}
 
+			// Query SG ID - if specified
+			if(cleanInput($_POST['sgid']) != "")
+			{
+				$rebelcheck = $conn->query("SELECT sgid FROM troopers WHERE sgid = '".cleanInput($_POST['sgid'])."'") or die($conn->error);
+				
+				// Check if Rebel exists
+				if($sgid->num_rows > 0)
+				{
+					$failed = true;
+					$errorMessage .= 'Saber Guild ID is already taken. Please contact the '.garrison.' Webmaster for further assistance. ';
+				}
+			}
+
 			// Check E-mail
 			$validator = new EmailAddressValidator;
 			if (!$validator->check_email_address(cleanInput($_POST['email'])))
@@ -1019,7 +1032,7 @@ if(isset($_GET['do']) && $_GET['do'] == "createuser" && loggedIn())
 			if(!$failed)
 			{
 				// Insert into database
-				$conn->query("INSERT INTO troopers (name, email, forum_id, rebelforum, mandoid, phone, squad, permissions, tkid, password, approved) VALUES ('".cleanInput($_POST['name'])."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['rebelforum'])."', '".cleanInput($_POST['mandoid'])."', '".cleanInput($_POST['phone'])."', '".cleanInput($_POST['squad'])."', '".cleanInput($_POST['permissions'])."', '".cleanInput($_POST['tkid'])."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', 1)");
+				$conn->query("INSERT INTO troopers (name, email, forum_id, rebelforum, mandoid, sgid, phone, squad, permissions, tkid, password, approved) VALUES ('".cleanInput($_POST['name'])."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['rebelforum'])."', '".cleanInput($_POST['mandoid'])."', '".cleanInput($_POST['sgid'])."', '".cleanInput($_POST['phone'])."', '".cleanInput($_POST['squad'])."', '".cleanInput($_POST['permissions'])."', '".cleanInput($_POST['tkid'])."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', 1)");
 				
 				// Send notification to command staff
 				sendNotification(getName($_SESSION['id']) . " has added a user", cleanInput($_SESSION['id']));
@@ -1240,6 +1253,19 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 				}
 			}
 
+			// Query Saber Guild ID - if specified
+			if(cleanInput($_POST['sgid']) != "")
+			{
+				$sgid = $conn->query("SELECT sgid FROM troopers WHERE sgid = '".cleanInput($_POST['sgid'])."'") or die($conn->error);
+				
+				// Check if Rebel exists
+				if($sgid->num_rows > 0)
+				{
+					$failed = true;
+					echo '<li>Saber Guild ID is already taken. Please contact the '.garrison.' Webmaster for further assistance.</li>';
+				}
+			}
+
 			// Check if ID exists
 			if($idcheck->num_rows > 0)
 			{
@@ -1273,7 +1299,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			// If failed
 			if(!$failed)
 			{
-				$conn->query("INSERT INTO troopers (name, tkid, email, forum_id, rebelforum, mandoid, phone, squad, password) VALUES ('".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['rebelforum'])."', '".cleanInput($_POST['mandoid'])."', '".cleanInput($_POST['phone'])."', '".$squad."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."')") or die($conn->error);
+				$conn->query("INSERT INTO troopers (name, tkid, email, forum_id, rebelforum, mandoid, sgid, phone, squad, password) VALUES ('".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['rebelforum'])."', '".cleanInput($_POST['mandoid'])."', '".cleanInput($_POST['sgid'])."', '".cleanInput($_POST['phone'])."', '".$squad."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."')") or die($conn->error);
 				echo '<li>Request submitted! You will receive an e-mail when your request is approved or denied.</li>';
 			}
 

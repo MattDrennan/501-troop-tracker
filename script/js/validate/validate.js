@@ -186,7 +186,7 @@ $(function()
             forumid: "required",
             email:
             {
-                required: true,
+                //required: true,
                 email: true
             },
             squad:
@@ -560,6 +560,10 @@ $(function()
 					return $('#squad').val() == 8;
 				}				
 			},
+            sgid:
+            {
+                digits: true,             
+            },
             forumid: "required",
             password: "required",
             passwordC: "required",
@@ -799,6 +803,10 @@ $(function()
 			{
 				digits: true
 			},
+            sgid:
+            {
+                digits: true
+            },
             password:
             {
                 required: true,
@@ -841,6 +849,7 @@ $(function()
                             $("#forumid").val("");
 							$("#rebelforum").val("");
 							$("#mandoid").val("");
+                            $("#sgid").val("");
                             $("#phone").val("");
                             $("#squad").val("1");
                             $("#permissions").val("0");

@@ -584,6 +584,7 @@ $(document).ready(function()
 					$("#forumid").val(json.forumid);
 					$("#rebelforum").val(json.rebelforum);
 					$("#mandoid").val(json.mandoid);
+					$("#sgid").val(json.sgid);
 					$("#supporter").val(json.supporter);
 				}
 				else
@@ -1483,6 +1484,17 @@ $(document).ready(function()
 					{
 						// If a Rebel Legion member
 						$("#mandoTable").html('CAT #' + json.mandoid);
+					}
+
+					// If not a Saber Guild member
+					if(json.sgid == 0)
+					{
+						$("#sgTable").html('N/A');
+					}
+					else
+					{
+						// If a Rebel Legion member
+						$("#sgTable").html('SG #' + json.sgid);
 					}
 					
 					$("#phoneTable").html(ifEmpty(json.phone));
