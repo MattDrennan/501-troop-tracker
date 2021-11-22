@@ -4313,7 +4313,7 @@ if(!isWebsiteClosed())
 		<p style="text-align: center;">
 			<a href="https://discord.gg/C6bCB33gp3" target="_blank">Join '.garrison.' on Discord for event notifications and more! Click here to join.</a>
 			<br /><br />
-			<a href="https://twitter.com/FLGUpdates" target="_blank">Follow @FLGUpdates on Twitter for event notifications and updates!</a>
+			<a href="https://twitter.com/FLTroopUpdates" target="_blank">Follow @FLGUpdates on Twitter for event notifications and updates!</a>
 		</p>';
 	}
 
