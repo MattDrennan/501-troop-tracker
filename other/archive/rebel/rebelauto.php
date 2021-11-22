@@ -34,7 +34,7 @@ $conn->query("UPDATE troopers SET oldid = 0");
 $conn->query("UPDATE events SET oldid = 0");
 
 // Go through the users on old database
-$query = "SELECT * FROM troopers WHERE forum_id NOT IN (SELECT rebelforum FROM troop.troopers WHERE rebelforum != 'NULL')";
+$query = "SELECT * FROM troopers WHERE forum_id NOT IN (SELECT rebelforum FROM ".dbName2.".troopers WHERE rebelforum != 'NULL')";
 if ($result = mysqli_query($conn2, $query) or die($conn2->error))
 {
 	while ($db = mysqli_fetch_object($result))
@@ -47,13 +47,13 @@ if ($result = mysqli_query($conn2, $query) or die($conn2->error))
 }
 
 // Go through the users on old database
-$query = "SELECT * FROM troopers WHERE forum_id IN (SELECT rebelforum FROM troop.troopers WHERE rebelforum != 'NULL')";
+$query = "SELECT * FROM troopers WHERE forum_id IN (SELECT rebelforum FROM ".dbName2.".troopers WHERE rebelforum != 'NULL')";
 if ($result = mysqli_query($conn2, $query) or die($conn2->error))
 {
 	while ($db = mysqli_fetch_object($result))
 	{
 		// Update database
-		$conn->query("UPDATE troop.troopers, rebeltracker.troopers SET troop.troopers.oldid = '".$db->id."' WHERE rebelforum = '".addslashes($db->forum_id)."'");
+		$conn->query("UPDATE ".dbName2.".troopers, rebeltracker.troopers SET ".dbName2.".troopers.oldid = '".$db->id."' WHERE rebelforum = '".addslashes($db->forum_id)."'");
 		
 		echo $db->id . ' UPDATED' . '<br />';
 	}

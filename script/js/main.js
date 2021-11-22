@@ -1098,6 +1098,17 @@ $(document).ready(function()
 			});
 		}
 	})
+	
+	// Manage Trooper - View Profile
+	$("#submitViewProfile").button().click(function(e)
+	{
+		e.preventDefault();
+
+		var form = $("#editUser");
+		var url = form.attr("action");
+		
+		window.location = 'index.php?profile=' + $("#userID option:selected").val();
+	})
 
 	// Manage Trooper - Delete Trooper
 	$("#submitDeleteUser").button().click(function(e)

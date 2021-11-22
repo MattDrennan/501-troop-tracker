@@ -8,6 +8,8 @@ _11/21/2021_
 -Added sendEventNotifty() to send notifications to Discord
 -Added Discord event notifications
 -Added Saber Guild sync, ability to set SG #, and SG costume pictures on profile
+-Added "View Profile" button to manage troopers
+-Only admin can sign in when website closed
 
 _11/20/2021_
 

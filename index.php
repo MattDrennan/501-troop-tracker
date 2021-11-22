@@ -2257,7 +2257,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<br /><br />
 
-				<input type="submit" name="submitDeleteUser" id="submitDeleteUser" value="Delete" /> <input type="submit" name="submitResetPasswordUser" id="submitResetPasswordUser" value="Reset Password" /> <input type="submit" name="submitEditUser" id="submitEditUser" value="Edit" />
+				<input type="submit" name="submitDeleteUser" id="submitDeleteUser" value="Delete" /> <input type="submit" name="submitResetPasswordUser" id="submitResetPasswordUser" value="Reset Password" /> <input type="submit" name="submitViewProfile" id="submitViewProfile" value="View Profile" /> <input type="submit" name="submitEditUser" id="submitEditUser" value="Edit" />
 				</form>
 
 				<div name="editUserInfo" id="editUserInfo" style="display:none;">

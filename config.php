@@ -1868,6 +1868,11 @@ function isWebsiteClosed()
 			if($db->siteclosed)
 			{
 				$isWebsiteClosed = true;
+				
+				if(loggedIn() && !hasPermission(1))
+				{
+					session_destroy();
+				}
 			}
 		}
 	}
