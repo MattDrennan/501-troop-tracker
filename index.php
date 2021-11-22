@@ -3706,7 +3706,7 @@ if(isset($_GET['event']))
 								<input type="hidden" name="event" value="'.cleanInput($_GET["event"]).'" />';
 									
 							// Load all users
-							$query = "SELECT troopers.id AS troopida, troopers.name AS troopername, troopers.tkid FROM troopers WHERE NOT EXISTS (SELECT event_sign_up.trooperid FROM event_sign_up WHERE event_sign_up.trooperid = troopers.id AND event_sign_up.troopid = '".cleanInput($_GET['event'])."') ORDER BY troopers.name";
+							$query = "SELECT troopers.id AS troopida, troopers.name AS troopername, troopers.tkid FROM troopers WHERE NOT EXISTS (SELECT event_sign_up.trooperid FROM event_sign_up WHERE event_sign_up.trooperid = troopers.id AND event_sign_up.troopid = '".cleanInput($_GET['event'])."') AND troopers.approved = 1 ORDER BY troopers.name";
 
 							$i = 0;
 							if ($result = mysqli_query($conn, $query) or die($conn->error))
@@ -4032,17 +4032,17 @@ else
 				if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
 				{
 					// Query
-					$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, events.limitRebels, events.limitMando, events.limitDroid, events.limitOther FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() - INTERVAL 1 DAY AND event_sign_up.status < 3 AND events.closed = 0";
+					$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, events.limitRebels, events.limitMando, events.limitDroid, events.limitOther FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() - INTERVAL 1 DAY AND event_sign_up.status < 3 AND (events.closed = 0 OR events.closed = 3)";
 				}
 				else if(isset($_GET['squad']))
 				{
 					// Query
-					$query = "SELECT * FROM events WHERE dateStart >= CURDATE() AND squad = '".cleanInput($_GET['squad'])."' AND closed = '0' ORDER BY dateStart";
+					$query = "SELECT * FROM events WHERE dateStart >= CURDATE() AND squad = '".cleanInput($_GET['squad'])."' AND (closed = '0' OR closed = '3') ORDER BY dateStart";
 				}
 				else
 				{
 					// Query
-					$query = "SELECT * FROM events WHERE dateStart >= CURDATE() AND closed = '0' ORDER BY dateStart";
+					$query = "SELECT * FROM events WHERE dateStart >= CURDATE() AND (closed = '0' OR closed = '3') ORDER BY dateStart";
 				}
 
 				// Number of events loaded

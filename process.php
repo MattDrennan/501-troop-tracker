@@ -813,7 +813,7 @@ if(isset($_GET['do']) && $_GET['do'] == "approvetroopers" && loggedIn() && isAdm
 			}
 		}
 		
-		// Query the database
+		// Query the database - troopers
 		$conn->query("DELETE FROM troopers WHERE id = '".cleanInput($_POST['userID2'])."'");
 		
 		// Send notification to command staff
@@ -1675,7 +1675,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 					</td>
 
 					<td>
-						<div name="tknumber1'.$db->trooperid.'" id="tknumber1'.$db->trooperid.'">'.getTKNumber($db->trooperid).' - '.getName($db->trooperid).'</div>
+						<div name="tknumber1'.$db->trooperid.'" id="tknumber1'.$db->trooperid.'"><a href="index.php?profile='.$db->trooperid.'" target="_blank">'.readTKNumber(getTKNumber($db->trooperid), getSquadID($db->trooperid)).' - '.getName($db->trooperid).'</a></div>
 					</td>
 
 					<td>

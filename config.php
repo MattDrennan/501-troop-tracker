@@ -1560,6 +1560,21 @@ function getPhone($id)
 	}
 }
 
+// getSquadID: gets the user's squad
+function getSquadID($id)
+{
+	global $conn;
+	
+	$query = "SELECT * FROM troopers WHERE id='".$id."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			return $db->squad;
+		}
+	}
+}
+
 // copyEvent: Helps with copying event values to create an event page
 function copyEvent($eid, $value, $default = -1)
 {

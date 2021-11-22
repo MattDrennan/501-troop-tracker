@@ -7,6 +7,11 @@ _11/22/2021_
 -Added Twitter updates
 -Added postTweet()
 -Added alerts to comments
+-Added getSquadID()
+-Added links to roster names
+-Added readTKNumber() to roster
+-Only approved troopers for add a friend
+-Added "rebelaccountfix.php" a file that can fix Rebel Legion / 501st accounts that were not set up
 
 _11/21/2021_
 
