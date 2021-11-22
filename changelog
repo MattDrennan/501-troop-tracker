@@ -1,5 +1,13 @@
 **Changelog**
 
+_11/22/2021_
+
+-Added ability to lock events to prevent sign ups
+-Added alert when trooper posts comment, due to troopers posting comments multiple times
+-Added Twitter updates
+-Added postTweet()
+-Added alerts to comments
+
 _11/21/2021_
 
 -Added formatPhoneNumber()

@@ -905,6 +905,9 @@ $(function()
                     // Return vars to default
                     $("#comment").val("");
                     $("#important").val("0");
+					
+					// Alert trooper
+					alert("Comment posted!");
                 }
             });
         }

@@ -1402,6 +1402,9 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 			// Send notification to Discord
 			sendEventNotify($eventId, cleanInput($_POST['eventName']), cleanInput($_POST['comments']), cleanInput($_POST['squadm']));
 			
+			// Post to Twitter
+			postTweet("".cleanInput($_POST['eventName'])." has been added in ".getSquadName(cleanInput($_POST['squadm'])).".");
+			
 			// Loop through shifts
 			foreach($_POST as $key => $value)
 			{
@@ -1530,6 +1533,16 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		
 		// Send notification to command staff
 		sendNotification(getName($_SESSION['id']) . " has deleted event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
+	}
+	
+	// Event submitted for lock...
+	if(isset($_POST['submitLock']))
+	{
+		// Query the database
+		$conn->query("UPDATE events SET closed = '3' WHERE id = '".cleanInput($_POST['eventId'])."'");
+		
+		// Send notification to command staff
+		sendNotification(getName($_SESSION['id']) . " has locked event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
 	}
 
 	// Event submitted for cancelation...

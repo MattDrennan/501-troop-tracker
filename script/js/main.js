@@ -1857,7 +1857,7 @@ $(document).ready(function()
 		}
 	})
 
-	// When command staff presses finish event button
+	// Edit Event - Finish Event
 	$("#submitFinish").button().click(function(e)
 	{
 		e.preventDefault();
@@ -1884,7 +1884,7 @@ $(document).ready(function()
 		}
 	})
 	
-	// When command staff presses open event button
+	// Edit Event - Open Event
 	$("#submitOpen").button().click(function(e)
 	{
 		e.preventDefault();
@@ -1905,6 +1905,33 @@ $(document).ready(function()
 				{
 					// Alert to success
 					alert("The event was opened successfully!");
+				}
+			});
+			// END AJAX
+		}
+	})
+	
+	// Edit Event - Lock Event
+	$("#submitLock").button().click(function(e)
+	{
+		e.preventDefault();
+
+		var form = $("#editEvents");
+		var url = form.attr("action");
+
+		var r = confirm("Are you sure you want to lock this event?");
+
+		if (r == true)
+		{
+			// AJAX
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitLock=1",
+				success: function(data)
+				{
+					// Alert to success
+					alert("The event was locked successfully!");
 				}
 			});
 			// END AJAX

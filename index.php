@@ -1971,7 +1971,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				}
 				
 				echo '
-				<input type="submit" name="submitCancel" id="submitCancel" value="Mark Canceled" /> <input type="submit" name="submitFinish" id="submitFinish" value="Mark Finished" /> <input type="submit" name="submitOpen" id="submitOpen" value="Mark Open" /> <input type="submit" name="submitEdit" id="submitEdit" value="Edit" /> <input type="submit" name="submitRoster" id="submitRoster" value="Roster" /> <input type="submit" name="submitCharity" id="submitCharity" value="Set Charity Amount" />
+				<input type="submit" name="submitCancel" id="submitCancel" value="Mark Canceled" /> <input type="submit" name="submitFinish" id="submitFinish" value="Mark Finished" /> <input type="submit" name="submitOpen" id="submitOpen" value="Mark Open" /> <input type="submit" name="submitLock" id="submitLock" value="Mark Locked" /> <input type="submit" name="submitEdit" id="submitEdit" value="Edit" /> <input type="submit" name="submitRoster" id="submitRoster" value="Roster" /> <input type="submit" name="submitCharity" id="submitCharity" value="Set Charity Amount" />
 
 				</form>
 				
@@ -2947,12 +2947,22 @@ if(isset($_GET['event']))
 			}
 			else
 			{
-				// If canceled, show user
+				// If canceled, show trooper
 				if($db->closed == 2)
 				{
 					echo '
 					<div style="text-align:center; color: red; margin-top: 25px;">
-						<b>This event was canceled by Command Staff. See comments for more details.</b>
+						<b>This event was CANCELED by Command Staff.</b>
+					</div>';
+				}
+				// If locked, show trooper
+				else if($db->closed == 3)
+				{
+					echo '
+					<div style="text-align:center; color: red; margin-top: 25px;">
+						<b>This event was LOCKED by Command Staff.</b>
+						<br />
+						<i>You will be unable to sign up at this time.</i>
 					</div>';
 				}
 			
@@ -3144,7 +3154,7 @@ if(isset($_GET['event']))
 					}
 
 					// Allow for users to edit their status from the event, and make sure the event is not closed
-					if(loggedIn() && ($db2->trooperId == $_SESSION['id'] || $_SESSION['id'] == $db2->addedby) && $db->closed == 0)
+					if(loggedIn() && ($db2->trooperId == $_SESSION['id'] || $_SESSION['id'] == $db2->addedby) && ($db->closed == 0 || $db->closed == 3))
 					{
 						echo '
 						<tr>
@@ -3379,6 +3389,7 @@ if(isset($_GET['event']))
 				}
 				else
 				{
+					// TROOPER IN TROOP
 					if($eventCheck['inTroop'] == 1)
 					{
 						if($eventCheck['status'] == 4)
@@ -3394,7 +3405,8 @@ if(isset($_GET['event']))
 						}
 						else
 						{
-							if($db->closed == 0)
+							// If open or locked
+							if($db->closed == 0 || $db->closed == 3)
 							{
 								echo '
 								<div name="signeduparea" id="signeduparea">
@@ -3405,6 +3417,7 @@ if(isset($_GET['event']))
 							}
 							else
 							{
+								// Closed for editing
 								echo '
 								<p>This event is closed for editing.</p>';
 							}
@@ -3412,7 +3425,7 @@ if(isset($_GET['event']))
 					}
 					else
 					{
-						// Sign up area
+						// Sign up area - NOT IN TROOP
 						echo '
 						<div name="signuparea" id="signuparea">
 							<h2 class="tm-section-header">Sign Up</h2>';
@@ -4282,7 +4295,11 @@ if(!isWebsiteClosed())
 	if(loggedIn())
 	{
 		echo '
-		<p style="text-align: center;"><a href="https://discord.gg/C6bCB33gp3">Join '.garrison.' on Discord for event notifications and more! Click here to join.</a></p>';
+		<p style="text-align: center;">
+			<a href="https://discord.gg/C6bCB33gp3" target="_blank">Join '.garrison.' on Discord for event notifications and more! Click here to join.</a>
+			<br /><br />
+			<a href="https://twitter.com/FLGUpdates" target="_blank">Follow @FLGUpdates on Twitter for event notifications and updates!</a>
+		</p>';
 	}
 
 	// User's online

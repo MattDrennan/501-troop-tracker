@@ -7,17 +7,20 @@ error_reporting(E_ALL);
 ini_set('max_execution_time', '0');
 set_time_limit(0);
 
+// PHP Mail namespace
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-/* Exception class. */
+// PHP Mail
 require 'script/lib/phpmail/src/Exception.php';
-
-/* The main PHPMailer class. */
 require 'script/lib/phpmail/src/PHPMailer.php';
-
-/* SMTP class, needed if you want to use SMTP. */
 require 'script/lib/phpmail/src/SMTP.php';
+
+// Twitter namespace
+use DG\Twitter\Twitter;
+
+// Twitter
+require_once 'script/lib/twitter/twitter.class.php';
 
 // Calendar
 require 'script/lib/php-calendar/src/phpCalendar/Calendar.php';
@@ -868,6 +871,23 @@ function showCostumes($id, $squad)
 		<p style="text-align: center;">
 			No 501st Legion costumes to display!
 		</p>';
+	}
+}
+
+// postTweet: Posts a tweet to Twitter (FLGUPDATES)
+function postTweet($message)
+{
+	// Credentials
+	$twitter = new Twitter(consumerKey, consumerSecret, accessToken, accessTokenSecret);
+
+	try
+	{
+		// Send tweet
+		$tweet = $twitter->send($message);
+	}
+	catch (DG\Twitter\TwitterException $e)
+	{
+		// Do nothing
 	}
 }
 

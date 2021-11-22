@@ -36,6 +36,13 @@ define('emailPassword', 'EMAIL_PASSWORD');
 define('emailServer', 'EMAIL_SERVER');
 define('emailPort', 587);
 
+// Twitter
+define('consumerKey', 'consumer_key_here');
+define('consumerSecret', 'consumer_secret_here');
+define('bearerToken', 'bearer_token_here');
+define('accessToken', 'access_token_here');
+define('accessTokenSecret', 'access_secret_here');
+
 // Google Maps
 // Make sure you get a Google Maps API key to use the Google API. The Google Maps API is used to automatically detect where an event is located
 define('googleKey', 'GOOGLE_MAP_API_KEY_HERE');
