@@ -2189,7 +2189,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<div style="overflow-x: auto;">
 				<table border="1" id="userListTable" name="userListTable">
 				<tr>
-					<th>Name</th>	<th>E-mail</th>	<th>Forum ID (FG)</th>	<th>Forum ID (RL)</th>	<th>Mando CAT</th>	<th>Phone</th>	<th>Squad</th>	<th>TKID</th>
+					<th>Name</th>	<th>E-mail</th>	<th>Forum ID (FG)</th>	<th>Forum ID (RL)</th>	<th>Mando CAT</th>	<th>SG #</th>	<th>Phone</th>	<th>Squad</th>	<th>TKID</th>
 				</tr>
 					<tr id="userList" name="userList">
 						<td id="nameTable"></td>	<td id="emailTable"></td> <td id="forumTable"></td> <td id="forumRebelTable"></td> <td id="mandoTable"></td>	<td id="sgTable"></td>	<td id="phoneTable"></td>	<td id="squadTable"></td>	<td id="tkTable"></td>
