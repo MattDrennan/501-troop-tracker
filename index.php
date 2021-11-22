@@ -807,7 +807,22 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 
 				echo '
 				<tr>
-					<td><a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.$dateFormat.'</td>	<td><a href="index.php?profile='.$db->trooperid.'">'.readTKNumber(getTKNumber($db->trooperid), getTrooperSquad($db->trooperid)).'</a></td>	<td>'.ifEmpty(getCostume($db->attended_costume), "N/A").'</td>	<td>'.getStatus($db->status).'</td>
+					<td><a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.$dateFormat.'</td>';
+					
+					// Prevent search from showing blank trooper
+					if(isset($db->trooperid))
+					{
+						echo '
+						<td><a href="index.php?profile='.$db->trooperid.'">'.readTKNumber(getTKNumber($db->trooperid), getTrooperSquad($db->trooperid)).'</a></td>';
+					}
+					else
+					{
+						echo '
+						<td>N/A</td>';
+					}
+					
+					echo '
+					<td>'.ifEmpty(getCostume($db->attended_costume), "N/A").'</td>	<td>'.getStatus($db->status).'</td>
 				</tr>';
 
 				$i++;
