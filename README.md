@@ -31,10 +31,11 @@ define('forum_user_database', 'DATABASE.TABLE HERE');
 
 // E-mail Creds
 // This is the email server and account you are going to send e-mails from
-define('emailUser', 'EMAIL_USERNAME');
-define('emailPassword', 'EMAIL_PASSWORD');
-define('emailServer', 'EMAIL_SERVER');
-define('emailPort', 587);
+define('emailFrom', 'EMAIL_ADDRESS');
+define('emailUser', 'SMTP_USER');
+define('emailPassword', 'SMTP_PASSWORD');
+define('emailServer', 'SMTP_SERVER');
+define('emailPort', SMTP_PORT);
 
 // Twitter
 define('consumerKey', 'consumer_key_here');

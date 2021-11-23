@@ -46,6 +46,8 @@ if ($conn->connect_error)
 	trigger_error('Database connection failed: ' . $conn->connect_error, E_USER_ERROR);
 }
 
+sendEmail("drennanmattheww@gmail.com", "Matthew Drennan", "Troop Tracker: Troops need your attention!", "test");
+
 // displaySquadLinks: Returns links for each garrison for troop tracker
 function displaySquadLinks($squadLink)
 {
@@ -1991,7 +1993,7 @@ function sendEmail($SendTo, $Name, $Subject, $Message)
 	$mail = new PHPMailer(TRUE);
 
 	/* Set the mail sender. */
-	$mail->setFrom(emailUser, 'Troop Tracker');
+	$mail->setFrom(emailFrom, 'Troop Tracker');
 
 	/* Add a recipient. */
 	$mail->addAddress($SendTo, $Name);
