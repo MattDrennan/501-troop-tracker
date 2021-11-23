@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Nov 19, 2021 at 10:51 PM
+-- Generation Time: Nov 23, 2021 at 10:01 PM
 -- Server version: 5.7.31
 -- PHP Version: 8.0.11
 
@@ -46,11 +46,11 @@ CREATE TABLE IF NOT EXISTS `501st_costumes` (
 
 DROP TABLE IF EXISTS `501st_troopers`;
 CREATE TABLE IF NOT EXISTS `501st_troopers` (
-  `legionid` int(50) NOT NULL,
+  `legionid` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `thumbnail` varchar(255) NOT NULL,
   `link` varchar(255) NOT NULL,
-  `squad` int(50) NOT NULL,
+  `squad` int(11) NOT NULL,
   `approved` int(11) NOT NULL DEFAULT '0',
   `status` int(11) NOT NULL DEFAULT '0',
   `standing` int(11) NOT NULL DEFAULT '0',
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `501st_troopers` (
 
 DROP TABLE IF EXISTS `awards`;
 CREATE TABLE IF NOT EXISTS `awards` (
-  `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL,
   `icon` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
@@ -95,11 +95,11 @@ CREATE TABLE IF NOT EXISTS `award_troopers` (
 
 DROP TABLE IF EXISTS `comments`;
 CREATE TABLE IF NOT EXISTS `comments` (
-  `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `troopid` int(100) NOT NULL,
-  `trooperid` int(100) NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `troopid` int(11) NOT NULL,
+  `trooperid` int(11) NOT NULL,
   `comment` text NOT NULL,
-  `important` int(1) NOT NULL,
+  `important` int(11) NOT NULL,
   `posted` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -112,10 +112,10 @@ CREATE TABLE IF NOT EXISTS `comments` (
 
 DROP TABLE IF EXISTS `costumes`;
 CREATE TABLE IF NOT EXISTS `costumes` (
-  `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `costume` varchar(50) NOT NULL,
-  `era` int(2) NOT NULL,
-  `club` int(2) NOT NULL,
+  `era` int(11) NOT NULL,
+  `club` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -186,13 +186,13 @@ CREATE TABLE IF NOT EXISTS `events` (
 
 DROP TABLE IF EXISTS `event_sign_up`;
 CREATE TABLE IF NOT EXISTS `event_sign_up` (
-  `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `trooperid` int(100) DEFAULT NULL,
-  `troopid` int(100) NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `trooperid` int(11) DEFAULT NULL,
+  `troopid` int(11) NOT NULL,
   `costume` varchar(50) DEFAULT NULL,
   `costume_backup` varchar(50) NOT NULL DEFAULT '0',
   `reason` text,
-  `status` int(2) NOT NULL DEFAULT '0',
+  `status` int(11) NOT NULL DEFAULT '0',
   `attended_costume` varchar(100) NOT NULL DEFAULT '0',
   `addedby` int(11) NOT NULL DEFAULT '0',
   `signuptime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -280,8 +280,24 @@ CREATE TABLE IF NOT EXISTS `settings` (
   `siteclosed` int(11) NOT NULL DEFAULT '0',
   `signupclosed` int(11) NOT NULL DEFAULT '0',
   `lastnotification` int(11) NOT NULL DEFAULT '0',
-  `supportgoal` int(11) NOT NULL DEFAULT '0'
+  `supportgoal` int(11) NOT NULL DEFAULT '0',
+  `notifyevent` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sg_troopers`
+--
+
+DROP TABLE IF EXISTS `sg_troopers`;
+CREATE TABLE IF NOT EXISTS `sg_troopers` (
+  `sgid` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `image` varchar(255) NOT NULL,
+  `link` varchar(255) NOT NULL,
+  PRIMARY KEY (`sgid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -291,20 +307,21 @@ CREATE TABLE IF NOT EXISTS `settings` (
 
 DROP TABLE IF EXISTS `troopers`;
 CREATE TABLE IF NOT EXISTS `troopers` (
-  `id` int(100) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `oldid` int(11) NOT NULL DEFAULT '0',
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `oldid` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `email` varchar(240) DEFAULT NULL,
   `phone` varchar(10) DEFAULT NULL,
-  `squad` int(10) NOT NULL,
-  `permissions` int(2) NOT NULL DEFAULT '0',
+  `squad` int(11) NOT NULL,
+  `permissions` int(11) NOT NULL DEFAULT '0',
   `tkid` varchar(20) NOT NULL,
   `forum_id` varchar(255) NOT NULL,
   `rebelforum` varchar(255) NOT NULL,
   `mandoid` int(11) NOT NULL,
+  `sgid` varchar(10) NOT NULL DEFAULT '0',
   `password` varchar(255) DEFAULT NULL,
   `last_active` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `approved` int(1) NOT NULL DEFAULT '0',
+  `approved` int(11) NOT NULL DEFAULT '0',
   `subscribe` int(11) NOT NULL DEFAULT '1',
   `theme` int(11) NOT NULL DEFAULT '0',
   `supporter` int(11) NOT NULL DEFAULT '0',

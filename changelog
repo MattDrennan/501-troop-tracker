@@ -1,5 +1,9 @@
 **Changelog**
 
+_11/23/2021_
+
+-Fixed/improved "checktroops.php" (E-mail notifications)
+
 _11/22/2021_
 
 -Added ability to lock events to prevent sign ups
