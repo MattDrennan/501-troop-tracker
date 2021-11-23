@@ -216,8 +216,15 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 {
 	if(strlen($_POST['comment']) > 0 && ($_POST['important'] == 0 || $_POST['important'] == 1))
 	{
-		// Query the database
-		$conn->query("INSERT INTO comments (troopid, trooperid, comment, important) VALUES ('".cleanInput($_POST['eventId'])."', '".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['comment'])."', '".cleanInput($_POST['important'])."')") or die($conn->error);
+		// Query - check if a comment has been recently posted by this trooper
+		$commentCheck = $conn->query("SELECT id FROM comments WHERE comment = '".cleanInput($_POST['comment'])."' AND posted > NOW() - INTERVAL 5 MINUTE") or die($conn->error);
+
+		// Check comment check
+		if($commentCheck->num_rows == 0)
+		{
+			// Query the database
+			$conn->query("INSERT INTO comments (troopid, trooperid, comment, important) VALUES ('".cleanInput($_POST['eventId'])."', '".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['comment'])."', '".cleanInput($_POST['important'])."')") or die($conn->error);
+		}
 
 		// Set up query string
 		$troops = "";

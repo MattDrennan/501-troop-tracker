@@ -12,6 +12,7 @@ _11/22/2021_
 -Added readTKNumber() to roster
 -Only approved troopers for add a friend
 -Added "rebelaccountfix.php" a file that can fix Rebel Legion / 501st accounts that were not set up
+-Prevent duplicate messages from posting
 
 _11/21/2021_
 

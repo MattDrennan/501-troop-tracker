@@ -907,7 +907,7 @@ $(function()
                     $("#important").val("0");
 					
 					// Alert trooper
-					alert("Comment posted!");
+					alert("Message posted!");
                 }
             });
         }
