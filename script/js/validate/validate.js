@@ -890,6 +890,10 @@ $(function()
         // in the "action" attribute of the form when valid
         submitHandler: function(form)
         {
+			// Disable button
+			$("input[name=submitComment]").prop("disabled", true);
+			
+			// Send data
             $.ajax(
             {
                 type: "POST",
@@ -905,6 +909,9 @@ $(function()
                     // Return vars to default
                     $("#comment").val("");
                     $("#important").val("0");
+					
+					// Re-enable button
+					$("input[name=submitComment]").prop("disabled", false);
 					
 					// Alert trooper
 					alert("Message posted!");
