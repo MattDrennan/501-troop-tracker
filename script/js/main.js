@@ -119,6 +119,15 @@ function echoSelect(value1, value2)
 
 $(document).ready(function()
 {
+	// Before / After Ajax
+	$(document).ajaxStart(function ()
+	{
+		$.LoadingOverlay("show");
+	})
+	$(document).ajaxStop(function ()
+	{
+		$.LoadingOverlay("hide");
+	});
 	// Shows / Hide Change Limits
 	$("body").on("click", "#limitChange", function(e)
 	{
