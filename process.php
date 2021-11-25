@@ -256,10 +256,22 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 					$j++;
 				}
 			}
+
+			// Add a last OR at end if linked data
+			if($j > 0)
+			{
+				$troops .= "OR ";
+			}
+		}
+		
+		// Check which type of link
+		if(!isset($link) || isset($link) && $link <= 0)
+		{
+			$link = cleanInput($_GET['event']);
 		}
 
 		// Load comments for return data
-		$query = "SELECT * FROM comments WHERE ".$troops."troopid = '".cleanInput($_POST['eventId'])."' ORDER BY posted DESC";
+		$query = "SELECT * FROM comments WHERE ".$troops."troopid = '".$link."' ORDER BY posted DESC";
 
 		// Count comments
 		$i = 0;

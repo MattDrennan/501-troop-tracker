@@ -3044,11 +3044,10 @@ if(isset($_GET['event']))
 							{
 								echo '
 								<div style="border: 1px solid gray; margin-bottom: 10px; text-align: center;">
-								<a href="index.php?event=' . $db2->id . '">' . date('M d, Y', strtotime($db2->dateStart)) . '
+								<a href="index.php?event=' . $db2->id . '"><b>'.date('l', strtotime($db2->dateStart)).'</b> - ' . date('M d, Y', strtotime($db2->dateStart)) . '
 								<br />' .
 								date('H:i', strtotime($db2->dateStart)) . ' - ' . date('H:i', strtotime($db2->dateEnd)) .
-								'<br />' .
-								$db2->name . '</a>
+								'</a>
 								</div>';
 							}
 						}
@@ -3673,20 +3672,19 @@ if(isset($_GET['event']))
 				}
 			}
 
-			echo '
-			<hr />';
+			echo '<hr />';
 
 			if(loggedIn() && !$isMerged)
 			{
 				// Check to see if this event is full
 				$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".cleanInput($_GET['event'])."' AND status != '4'");
-				
+
 				if($eventClosed == 0)
 				{
 					if(hasPermission(0, 1, 2, 3))
 					{
 						if($getNumOfTroopers->num_rows < $limitTotal)
-						{	
+						{
 							// Only show add a friend if main user is in event
 							if(inEvent($_SESSION['id'], cleanInput($_GET['event']))["inTroop"] == 1)
 							{
@@ -3707,7 +3705,7 @@ if(isset($_GET['event']))
 								<input type="hidden" name="event" value="'.cleanInput($_GET["event"]).'" />';
 									
 							// Load all users
-							$query = "SELECT troopers.id AS troopida, troopers.name AS troopername, troopers.tkid FROM troopers WHERE NOT EXISTS (SELECT event_sign_up.trooperid FROM event_sign_up WHERE event_sign_up.trooperid = troopers.id AND event_sign_up.troopid = '".cleanInput($_GET['event'])."') AND troopers.approved = 1 ORDER BY troopers.name";
+							$query = "SELECT troopers.id AS troopida, troopers.name AS troopername, troopers.tkid, troopers.squad FROM troopers WHERE NOT EXISTS (SELECT event_sign_up.trooperid FROM event_sign_up WHERE event_sign_up.trooperid = troopers.id AND event_sign_up.troopid = '".cleanInput($_GET['event'])."') AND troopers.approved = 1 ORDER BY troopers.name";
 
 							$i = 0;
 							if ($result = mysqli_query($conn, $query) or die($conn->error))
@@ -3922,6 +3920,12 @@ if(isset($_GET['event']))
 						$troops .= "OR ";
 					}
 				}
+				
+				// Check which type of link
+				if(!isset($link) || isset($link) && $link <= 0)
+				{
+					$link = cleanInput($_GET['event']);
+				}
 
 				// Query database for event info
 				$query = "SELECT * FROM comments WHERE ".$troops."troopid = '".$link."' ORDER BY posted DESC";
@@ -4085,7 +4089,7 @@ else
 						if($getNumOfLinks->num_rows > 0 || $db->link != 0)
 						{
 							echo '
-							' . date('H:i', strtotime($db->dateStart)) . ' - ' . date('H:i', strtotime($db->dateEnd)) .
+							<b>' . date('l', strtotime($db->dateStart)) . '</b> - ' . date('H:i', strtotime($db->dateStart)) . ' - ' . date('H:i', strtotime($db->dateEnd)) .
 							'<br />';
 						}
 						
