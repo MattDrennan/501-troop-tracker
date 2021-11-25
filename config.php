@@ -2027,7 +2027,7 @@ function sendEmail($SendTo, $Name, $Subject, $Message)
 	if (!$mail->send())
 	{
 	   /* PHPMailer error. */
-	   echo $mail->ErrorInfo;
+	   //echo $mail->ErrorInfo;
 	}
 	// END MAIL
 }
