@@ -3677,7 +3677,7 @@ if(isset($_GET['event']))
 			<hr />';
 
 			if(loggedIn() && !$isMerged)
-			{	
+			{
 				// Check to see if this event is full
 				$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".cleanInput($_GET['event'])."' AND status != '4'");
 				
@@ -3915,10 +3915,16 @@ if(isset($_GET['event']))
 							$j++;
 						}
 					}
+
+					// Add a last OR at end if linked data
+					if($j > 0)
+					{
+						$troops .= "OR ";
+					}
 				}
 
 				// Query database for event info
-				$query = "SELECT * FROM comments WHERE ".$troops."troopid = '".cleanInput($_GET['event'])."' ORDER BY posted DESC";
+				$query = "SELECT * FROM comments WHERE ".$troops."troopid = '".$link."' ORDER BY posted DESC";
 				
 				// Count comments
 				$i = 0;
