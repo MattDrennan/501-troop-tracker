@@ -2942,12 +2942,12 @@ if(isset($_GET['event']))
 			}
 			
 			// Format dates
-			$date1 = date("m/d/Y - H:i", strtotime($db->dateStart)); 
-			$date2 = date("m/d/Y - H:i", strtotime($db->dateEnd)); 
+			$date1 = date("m/d/Y - h:i A", strtotime($db->dateStart)); 
+			$date2 = date("m/d/Y - h:i A", strtotime($db->dateEnd)); 
 			
 			// Is this merged data?
 			if($db->venue == NULL && $db->numberOfAttend == NULL && $db->requestedCharacter == NULL && $db->secureChanging == NULL && $db->lightsabers == NULL && $db->parking == NULL && $db->mobility == NULL && $db->amenities == NULL && $db->referred == NULL)
-			{
+			{	
 				echo '
 				<h2 class="tm-section-header">'.$db->name.'</h2>';
 				
@@ -2981,10 +2981,18 @@ if(isset($_GET['event']))
 						<i>You will be unable to sign up at this time.</i>
 					</div>';
 				}
+				
+				// Set add to title
+				$add = "";
+				
+				if(isLink($db->id) > 0)
+				{
+					$add = "<b>" . date("l", strtotime($db->dateStart)) . "</b><br />".date("m/d - h:i A", strtotime($db->dateStart))." - ".date("h:i A", strtotime($db->dateEnd))."<br />";
+				}
 			
 				// Display event info
 				echo '
-				<h2 class="tm-section-header">'.$db->name.'</h2>';
+				<h2 class="tm-section-header">'.$add.''.$db->name.'</h2>';
 				
 				if(loggedIn())
 				{
@@ -4089,7 +4097,7 @@ else
 						if($getNumOfLinks->num_rows > 0 || $db->link != 0)
 						{
 							echo '
-							<b>' . date('l', strtotime($db->dateStart)) . '</b> - ' . date('H:i', strtotime($db->dateStart)) . ' - ' . date('H:i', strtotime($db->dateEnd)) .
+							<b>' . date('l', strtotime($db->dateStart)) . '</b> - ' . date('h:i A', strtotime($db->dateStart)) . ' - ' . date('h:i A', strtotime($db->dateEnd)) .
 							'<br />';
 						}
 						

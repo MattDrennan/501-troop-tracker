@@ -1,5 +1,11 @@
 **Changelog**
 
+_11/26/2021_
+
+-Improved donation tracking for troopers (by month, not last 30 days)
+-Added isLink() to check if an event is a linked event
+-Improved formatting for shifts
+
 _11/23/2021_
 
 -Fixed/improved "checktroops.php" (E-mail notifications)

@@ -315,7 +315,7 @@ function drawSupportGraph()
 		$getSupportNum = $getNumOfSupport->fetch_row();
 		
 		// Count times contributed
-		$didSupportCount = $conn->query("SELECT trooperid FROM donations WHERE datetime > NOW() - INTERVAL 1 MONTH AND trooperid = '".$_SESSION['id']."'");
+		$didSupportCount = $conn->query("SELECT trooperid FROM donations WHERE datetime > date_add(date_add(LAST_DAY(NOW()),interval 1 DAY),interval -1 MONTH) AND trooperid = '".$_SESSION['id']."'");
 		
 		// Get goal from site settings
 		$getGoal = $conn->query("SELECT supportgoal FROM settings");
@@ -365,7 +365,7 @@ function drawSupportGraph()
 				}
 			</style>
 			
-			<h2 class="tm-section-header">Donation Goal</h2>
+			<h2 class="tm-section-header">'.date("F", strtotime('m')).' - Donation Goal</h2>
 			
 			<p style="text-align: center;">
 				<div class="bargraph">
@@ -2402,6 +2402,38 @@ function getPermissionName($value)
 	{
 		return 'Unknown';
 	}
+}
+
+// isLink: Is this a linked event?
+function isLink($id)
+{
+	global $conn;
+	
+	// Set link
+	$link = 0;
+	
+	// Get number of events with link
+	$getNumOfLinks = $conn->query("SELECT id FROM events WHERE link = '".$id."'");
+	
+	// Get link ID
+	$getLinkID = $conn->query("SELECT link FROM events WHERE id = '".$id."'");
+	$getLinkID_get = $getLinkID->fetch_row();
+	
+	// If has links to event, or is linked, show shift data
+	if($getNumOfLinks->num_rows > 0 || $id != 0)
+	{
+		// If this event is the link
+		if($getNumOfLinks->num_rows > 0)
+		{
+			$link = $id;
+		}
+		else if($getLinkID_get[0] != 0)
+		{
+			$link = $getLinkID_get[0];
+		}
+	}
+	
+	return $link;
 }
 
 // If logged in, update active status
