@@ -78,8 +78,8 @@ if ($result = mysqli_query($conn, $query))
 	while ($db = mysqli_fetch_object($result))
 	{
 		// Dates
-		$d1 = date('m-d-Y', strtotime($db->dateStart));
-		$d2 = date('m-d-Y', strtotime($db->dateEnd));
+		$d1 = date('m-d-Y h:i A', strtotime($db->dateStart));
+		$d2 = date('h:i A', strtotime($db->dateEnd));
 		
 		// Add to e-mail
 		$emailBody .= $db->name . "\n\n" . $d1 . " - " . $d2 . "\n\n" . getSquadName($db->squad) . "\n\nhttps://www.fl501st.com/troop-tracker/index.php?event=".$db->id."\n\n\n\n";
