@@ -3054,7 +3054,7 @@ if(isset($_GET['event']))
 								<div style="border: 1px solid gray; margin-bottom: 10px; text-align: center;">
 								<a href="index.php?event=' . $db2->id . '"><b>'.date('l', strtotime($db2->dateStart)).'</b> - ' . date('M d, Y', strtotime($db2->dateStart)) . '
 								<br />' .
-								date('H:i', strtotime($db2->dateStart)) . ' - ' . date('H:i', strtotime($db2->dateEnd)) .
+								date('h:i A', strtotime($db2->dateStart)) . ' - ' . date('h:i A', strtotime($db2->dateEnd)) .
 								'</a>
 								</div>';
 							}
