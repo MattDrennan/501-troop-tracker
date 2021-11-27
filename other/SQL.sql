@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Nov 23, 2021 at 10:01 PM
+-- Generation Time: Nov 27, 2021 at 01:23 PM
 -- Server version: 5.7.31
 -- PHP Version: 8.0.11
 
@@ -132,6 +132,19 @@ CREATE TABLE IF NOT EXISTS `donations` (
   `txn_id` varchar(255) NOT NULL,
   `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`txn_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `droid_troopers`
+--
+
+DROP TABLE IF EXISTS `droid_troopers`;
+CREATE TABLE IF NOT EXISTS `droid_troopers` (
+  `forum_id` varchar(255) NOT NULL,
+  `droidname` varchar(255) NOT NULL,
+  `imageurl` varchar(255) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------

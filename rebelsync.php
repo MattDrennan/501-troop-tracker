@@ -150,7 +150,7 @@ for($i = 0; $i <= 1000; $i += 10)
 }
 
 // Pull extra data from spreadsheet - Troopers
-$url = 'https://sheets.googleapis.com/v4/spreadsheets/1I3FuS_uPg2nuC80PEA6tKYaVBd1Qh1allTOdVz3M6x0/values/Troopers?key=AIzaSyAcI_mT1-bXgz9WW3kzDE_Z6DVcBYUKJII';
+$url = 'https://sheets.googleapis.com/v4/spreadsheets/1I3FuS_uPg2nuC80PEA6tKYaVBd1Qh1allTOdVz3M6x0/values/Troopers?key=' . googleSheets;
 $json = json_decode(file_get_contents($url));
 $rows = $json->values;
 $i = 0;
@@ -169,7 +169,7 @@ foreach($rows as $row)
 }
 
 // Pull extra data from spreadsheet - Costumes
-$url = 'https://sheets.googleapis.com/v4/spreadsheets/1I3FuS_uPg2nuC80PEA6tKYaVBd1Qh1allTOdVz3M6x0/values/Costumes?key=AIzaSyAcI_mT1-bXgz9WW3kzDE_Z6DVcBYUKJII';
+$url = 'https://sheets.googleapis.com/v4/spreadsheets/1I3FuS_uPg2nuC80PEA6tKYaVBd1Qh1allTOdVz3M6x0/values/Costumes?key=' . googleSheets;
 $json = json_decode(file_get_contents($url));
 $rows = $json->values;
 $i = 0;

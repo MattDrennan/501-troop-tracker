@@ -12,6 +12,7 @@
     "cheerio": "^1.0.0-rc.10",
     "dotenv": "^10.0.0",
     "mysql": "^2.18.1",
+    "node-sheets": "^1.2.0",
     "puppeteer": "^11.0.0"
   }
 }

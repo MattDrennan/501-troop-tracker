@@ -2,6 +2,7 @@
 const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
 var mysql = require('mysql');
+const Sheets = require("node-sheets").default;
 require('dotenv').config()
 
 // URL variables
@@ -196,6 +197,35 @@ con.query("DELETE FROM " + process.env.MYSQL_TABLE + ".mando_costumes", function
 		console.log(name);
 		
 		console.log("=====================================================");
+	}
+	
+	// Get Google Sheets
+	const gs = new Sheets("1ImwIUou5Chc0WyEV9C4Zc2UoP23xeS6Eai5s7GtQrWs");
+	await gs.authorizeApiKey(process.env.GOOGLE_SHEET_KEY);
+	const table = await gs.tables("Costumes");
+	console.log(table.rows);
+	
+	// Loop through Google Sheets
+	for(var i in table.rows)
+	{
+		// Insert
+		con.query("INSERT INTO " + process.env.MYSQL_TABLE + ".mando_costumes (mandoid, costumeurl) VALUES (" + mysql_real_escape_string(table.rows[i]['ID']['value']) + ", '" + mysql_real_escape_string(table.rows[i]['Costume Image URL']['value']) + "')", function (err, result) {
+			if (err) throw err;
+			console.log("Result: " + result);
+		});
+	}
+	
+	const table2 = await gs.tables("Troopers");
+	console.log(table2.rows);
+	
+	// Loop through Google Sheets
+	for(var i in table2.rows)
+	{
+		// Insert
+		con.query("INSERT INTO " + process.env.MYSQL_TABLE + ".mando_troopers (mandoid, name, costume) VALUES (" + mysql_real_escape_string(table2.rows[i]['ID']['value']) + ", '" + mysql_real_escape_string(table2.rows[i]['Name']['value']) + "', '" + mysql_real_escape_string(table2.rows[i]['Costume Name']['value']) + "')", function (err, result) {
+			if (err) throw err;
+			console.log("Result: " + result);
+		});
 	}
 	
 	// Output

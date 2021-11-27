@@ -48,6 +48,9 @@ define('accessTokenSecret', 'access_secret_here');
 // Make sure you get a Google Maps API key to use the Google API. The Google Maps API is used to automatically detect where an event is located
 define('googleKey', 'GOOGLE_MAP_API_KEY_HERE');
 
+// Google API - Sheets
+define('googleSheets', 'GOOGLE_CLOUD_API_HERE');
+
 // PayPal Info
 // See PayPal IPN documentation for more information. This file is used to store donations into the database for tracking.
 define('ipn', 'script/php/paypal.php');

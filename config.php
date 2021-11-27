@@ -802,6 +802,47 @@ function showSGCostumes($id)
 	}
 }
 
+// showDroids: A function which displays all the users droids in synced database - Droid Builders
+function showDroids($forum)
+{
+	global $conn;
+	
+	// Get data
+	$query = "SELECT * FROM droid_troopers WHERE forum_id = '".$forum."'";
+	
+	// Set up count
+	$i = 0;
+	
+	// Run query...
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			echo '
+			<div style="text-align: center;">
+					<h3>
+						'.$db->droidname.'
+					</h3>
+					
+					<img src="'.$db->imageurl.'" />
+				</p>
+			</div>';
+			
+			// Increment
+			$i++;
+		}
+	}
+	
+	// If no results
+	if($i == 0)
+	{
+		echo '
+		<p style="text-align: center;">
+			No Droid Builder droids to display!
+		</p>';
+	}
+}
+
 // showCostumes: A function which displays all the users costumes in synced database
 function showCostumes($id, $squad)
 {

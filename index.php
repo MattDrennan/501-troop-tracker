@@ -534,6 +534,9 @@ if(isset($_GET['profile']))
 
 		// Show Saber Guild costumes
 		showSGCostumes(getSGUser($_GET['profile']));
+		
+		// Show Droid Builder costumes
+		showDroids(getTrooperForum($_GET['profile']));
 	}
 }
 

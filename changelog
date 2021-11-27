@@ -1,5 +1,11 @@
 **Changelog**
 
+_11/27/2021_
+
+-Improved costume sync
+-Updated SQL
+-Added Droid Builder "costume" support
+
 _11/26/2021_
 
 -Improved donation tracking for troopers (by month, not last 30 days)

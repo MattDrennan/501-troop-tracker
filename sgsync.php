@@ -59,7 +59,7 @@ foreach($html->find('div.single-team-area') as $a)
 }
 
 // Pull extra data from spreadsheet
-$url = 'https://sheets.googleapis.com/v4/spreadsheets/1PcveycMujakkKeG2m4y8iFunrFbo2KVpQJ00GyPI3b8/values/Sheet1?key=AIzaSyAcI_mT1-bXgz9WW3kzDE_Z6DVcBYUKJII';
+$url = 'https://sheets.googleapis.com/v4/spreadsheets/1PcveycMujakkKeG2m4y8iFunrFbo2KVpQJ00GyPI3b8/values/Sheet1?key=' . googleSheets;
 $json = json_decode(file_get_contents($url));
 $rows = $json->values;
 $i = 0;
