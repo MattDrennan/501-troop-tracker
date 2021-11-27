@@ -58,4 +58,23 @@ foreach($html->find('div.single-team-area') as $a)
 	echo '<hr />';
 }
 
+// Pull extra data from spreadsheet
+$url = 'https://sheets.googleapis.com/v4/spreadsheets/1PcveycMujakkKeG2m4y8iFunrFbo2KVpQJ00GyPI3b8/values/Sheet1?key=AIzaSyAcI_mT1-bXgz9WW3kzDE_Z6DVcBYUKJII';
+$json = json_decode(file_get_contents($url));
+$rows = $json->values;
+$i = 0;
+
+foreach($rows as $row)
+{
+	// If not first
+	if($i != 0)
+	{
+		// Insert into database
+		$conn->query("INSERT INTO sg_troopers (sgid, name, image, link) VALUES ('".$row[0]."', '".$row[1]."', '".$row[2]."', '')") or die($conn->error);
+	}
+
+	// Increment
+	$i++;
+}
+
 ?>

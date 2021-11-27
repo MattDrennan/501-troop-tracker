@@ -149,6 +149,44 @@ for($i = 0; $i <= 1000; $i += 10)
 	}
 }
 
+// Pull extra data from spreadsheet - Troopers
+$url = 'https://sheets.googleapis.com/v4/spreadsheets/1I3FuS_uPg2nuC80PEA6tKYaVBd1Qh1allTOdVz3M6x0/values/Troopers?key=AIzaSyAcI_mT1-bXgz9WW3kzDE_Z6DVcBYUKJII';
+$json = json_decode(file_get_contents($url));
+$rows = $json->values;
+$i = 0;
+
+foreach($rows as $row)
+{
+	// If not first
+	if($i != 0)
+	{
+		// Query
+		$conn->query("INSERT INTO rebel_troopers (rebelid, name, rebelforum) VALUES ('".$row[0]."', '".$row[1]."', '".$row[2]."')") or die($conn->error);
+	}
+
+	// Increment
+	$i++;
+}
+
+// Pull extra data from spreadsheet - Costumes
+$url = 'https://sheets.googleapis.com/v4/spreadsheets/1I3FuS_uPg2nuC80PEA6tKYaVBd1Qh1allTOdVz3M6x0/values/Costumes?key=AIzaSyAcI_mT1-bXgz9WW3kzDE_Z6DVcBYUKJII';
+$json = json_decode(file_get_contents($url));
+$rows = $json->values;
+$i = 0;
+
+foreach($rows as $row)
+{
+	// If not first
+	if($i != 0)
+	{
+		// Insert into database
+		$conn->query("INSERT INTO rebel_costumes (rebelid, costumename, costumeimage) VALUES ('".$row[0]."', '".$row[1]."', '".$row[2]."')") or die($conn->error);
+	}
+
+	// Increment
+	$i++;
+}
+
 // print_r_reverse: Convert a string (print_r) back to a value
 function print_r_reverse($input)
 {
