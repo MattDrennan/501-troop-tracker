@@ -10,7 +10,7 @@ if ($result = mysqli_query($conn, $query))
 	while ($db = mysqli_fetch_object($result))
 	{
 		// Get total troops that need attention
-		$troops_get = $conn->query("SELECT COUNT(*) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE events.closed = '1' AND event_sign_up.status = '3' AND troopers.subscribe = '1' AND troopers.id = '".$db->trooperId."'") or die($conn->error);
+		$troops_get = $conn->query("SELECT COUNT(*) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE events.closed = '0' AND event_sign_up.status = '0' AND troopers.subscribe = '1' AND troopers.id = '".$db->trooperId."'") or die($conn->error);
 		$count = $troops_get->fetch_row();
 		
 		// Set up message
