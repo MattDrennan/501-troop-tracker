@@ -4165,13 +4165,23 @@ else
 							<span>'.$getNumOfTroopers->num_rows.' Troopers Attending</span>';
 						}
 
+						// Increment number of events
 						$i++;
+						
+						// Set up string to add to title if a linked event
+						$add = "";
+						
+						// If this a linked event?
+						if(isLink($db->id) > 0)
+						{
+							$add .= "[" . date("h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "] ";
+						}
 						
 						// Add to calendar
 						$events[] = array(
 							'start' => date('Y-m-d', strtotime($db->dateStart)),
 							'end' => date('Y-m-d', strtotime($db->dateEnd)),
-							'summary' => '<a href="index.php?event='.$db->id.'" title="'.$db->name.'">' . $db->name . '</a><br /><br />',
+							'summary' => '<a href="index.php?event='.$db->id.'" title="'.$db->name.'">' . $add . '' . $db->name . '</a><br /><br />',
 							'mask' => true,
 						);
 

@@ -209,7 +209,6 @@ $(document).ready(function()
 		}
 		else
 		{
-			console.log();
 			$("a[id=changeview]").show();
 		}
 	});
