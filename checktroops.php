@@ -57,7 +57,7 @@ if($i > 0)
 		while ($db = mysqli_fetch_object($result))
 		{
 			// Send E-mail
-			sendEmail($db->email, $db->name, "Troop Tracker: Trooper(s) has hit a milestone!", $message);
+			//sendEmail($db->email, $db->name, "Troop Tracker: Trooper(s) has hit a milestone!", $message);
 		}
 	}
 }
