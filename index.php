@@ -367,10 +367,19 @@ if(isset($_GET['profile']))
 					<th>Event Name</th>	<th>Date</th>	<th>Attended Costume</th>
 				</tr>';
 			}
+			
+			// Set add to title if linked event
+			$add = "";
+			
+			// If linked event
+			if(isLink($db->eventId) > 0)
+			{
+				$add = "[<b>" . date("l", strtotime($db->dateStart)) . "</b> : ".date("m/d - h:i A", strtotime($db->dateStart))." - ".date("h:i A", strtotime($db->dateEnd))."] ";
+			}
 
 			echo '
 			<tr>
-				<td><a href="index.php?event='.$db->troopid.'">'.$db->eventName.'</a></td>';
+				<td><a href="index.php?event='.$db->troopid.'">'.$add.''.$db->eventName.'</a></td>';
 				
 			$dateFormat = date('m-d-Y', strtotime($db->dateEnd));
 
@@ -1003,10 +1012,19 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 						<th>Troop</th>	<th>Costume</th>	<th>Money Raised</th>
 					</tr>';
 				}
+				
+				// Set add to title if linked event
+				$add = "";
+				
+				// If linked event
+				if(isLink($db->eventId) > 0)
+				{
+					$add = "[<b>" . date("l", strtotime($db->dateStart)) . "</b> : ".date("m/d - h:i A", strtotime($db->dateStart))." - ".date("h:i A", strtotime($db->dateEnd))."] ";
+				}
 
 				echo '
 				<tr>
-					<td><a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.ifEmpty(getCostume($db->attended_costume), "N/A").'</td>	<td>$'.number_format($db->moneyRaised).'</td>
+					<td><a href="index.php?event='.$db->eventId.'">'.$add.''.$db->eventName.'</a></td>	<td>'.ifEmpty(getCostume($db->attended_costume), "N/A").'</td>	<td>$'.number_format($db->moneyRaised).'</td>
 				</tr>';
 
 				// Increment
@@ -1124,10 +1142,19 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 			$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE troopid = '".$db->troopid."' AND status = '3'") or die($conn->error);
 			
 			$count = $trooperCount_get->fetch_row();
+			
+			// Set up text for linked event
+			$add = "";
+			
+			// If linked event
+			if(isLink($db->eventId) > 0)
+			{
+				$add = "[<b>" . date("l", strtotime($db->dateStart)) . "</b> : ".date("m/d - h:i A", strtotime($db->dateStart))." - ".date("h:i A", strtotime($db->dateEnd))."] ";
+			}
 
 			echo '
 			<tr>
-				<td><a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.$count[0].'</td>	<td>$'.number_format($db->moneyRaised).'</td>
+				<td><a href="index.php?event='.$db->eventId.'">'.$add.''.$db->eventName.'</a></td>	<td>'.$count[0].'</td>	<td>$'.number_format($db->moneyRaised).'</td>
 			</tr>';
 
 			$i++;
@@ -1963,8 +1990,17 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						<select name="eventId" id="eventId">';
 					}
+					
+					// Set up string to add to title if a linked event
+					$add = "";
+					
+					// If this a linked event?
+					if(isLink($db->id) > 0)
+					{
+						$add .= "[" . date("l", strtotime($db->dateStart)) . " : " . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "] ";
+					}
 
-					echo '<option value="'.$db->id.'" '.echoSelect($db->id, $eid).'>'.$db->name.'</option>';
+					echo '<option value="'.$db->id.'" '.echoSelect($db->id, $eid).'>'.$add.''.$db->name.'</option>';
 
 					// Increment
 					$i++;
@@ -4206,8 +4242,17 @@ else
 				{
 					while ($db = mysqli_fetch_object($result))
 					{
+						// Set up string to add to title if a linked event
+						$add = "";
+						
+						// If this a linked event?
+						if(isLink($db->id) > 0)
+						{
+							$add .= "[<b>" . date("l", strtotime($db->dateStart)) . "</b> : <i>" . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "</i>] ";
+						}
+						
 						echo '
-						<li><a href="index.php?event='.$db->id.'">'.$db->name.'</a></li>';
+						<li><a href="index.php?event='.$db->id.'">'.$add.''.$db->name.'</a></li>';
 					}
 				}
 				
@@ -4235,10 +4280,19 @@ else
 							<form action="process.php?do=confirmList" method="POST" name="confirmListForm" id="confirmListForm">
 							<div name="confirmArea2" id="confirmArea2">';
 						}
+						
+						// Set up string to add to title if a linked event
+						$add = "";
+						
+						// If this a linked event?
+						if(isLink($db->eventId) > 0)
+						{
+							$add .= "[<b>" . date("l", strtotime($db->dateStart)) . "</b> : <i>" . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "</i>] ";
+						}
 
 						echo '
 						<div name="confirmListBox_'.$db->eventId.'" id="confirmListBox_'.$db->eventId.'">
-							<input type="checkbox" name="confirmList[]" id="confirmList_'.$db->eventId.'" value="'.$db->eventId.'" /> '.$db->name.'<br /><br />
+							<input type="checkbox" name="confirmList[]" id="confirmList_'.$db->eventId.'" value="'.$db->eventId.'" /> '.$add.''.$db->name.'<br /><br />
 						</div>';
 						
 						// If a shift exists to attest to
