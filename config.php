@@ -932,6 +932,36 @@ function postTweet($message)
 	}
 }
 
+
+// squadToDiscord: Converts squad ID to Discord
+function squadToDiscord($squad)
+{
+	if($squad == 1)
+	{
+		return '<@&914344158678900766>';
+	}
+	else if($squad == 2)
+	{
+		return '<@&914343663474200597>';
+	}
+	else if($squad == 3)
+	{
+		return '<@&914344264253718568>';
+	}
+	else if($squad == 4)
+	{
+		return '<@&914344334776737822>';
+	}
+	else if($squad == 5)
+	{
+		return '<@&914344438472527912>';
+	}
+	else
+	{
+		return 'Florida Garrison';
+	}
+}
+
 // sendEventNotifty: Send's a notification to the event channel
 function sendEventNotify($id, $name, $description, $squad)
 {
@@ -946,9 +976,7 @@ function sendEventNotify($id, $name, $description, $squad)
 
 	$json_data = json_encode([
 	    // Message
-	    //"content" => "Hello World! This is message line ;) And here is the mention, use userID <@12341234123412341>",
-
-	    "content" => "".$name." has been added in ".getSquadName($squad).".",
+	    "content" => "".$name." has been added in ".squadToDiscord($squad).".",
 	    
 	    // Username
 	    "username" => "Event Bot",
