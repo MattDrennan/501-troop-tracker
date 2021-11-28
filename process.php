@@ -1422,11 +1422,15 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 			// Event ID - Last insert from database
 			$eventId = $conn->insert_id;
 
-			// Send notification to Discord
-			sendEventNotify($eventId, cleanInput($_POST['eventName']), cleanInput($_POST['comments']), cleanInput($_POST['squadm']));
-			
-			// Post to Twitter
-			postTweet("".cleanInput($_POST['eventName'])." has been added in ".getSquadName(cleanInput($_POST['squadm'])).".");
+			// Only notify if event is in the future
+			if(strtotime($date1) > strtotime("now"))
+			{
+				// Send notification to Discord
+				sendEventNotify($eventId, cleanInput($_POST['eventName']), cleanInput($_POST['comments']), cleanInput($_POST['squadm']));
+				
+				// Post to Twitter
+				postTweet("".cleanInput($_POST['eventName'])." has been added in ".getSquadName(cleanInput($_POST['squadm'])).".");
+			}
 			
 			// Loop through shifts
 			foreach($_POST as $key => $value)
