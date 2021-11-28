@@ -72,7 +72,7 @@ $lastEventID = 0;
 $i = 0;
 
 // Loop through all all events that are larger than the last event posted
-$query = "SELECT * FROM events, settings WHERE events.id > settings.notifyevent";
+$query = "SELECT * FROM events, settings WHERE events.id > settings.notifyevent AND events.dateStart > NOW()";
 if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))
