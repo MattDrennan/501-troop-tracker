@@ -1234,7 +1234,7 @@ function myTheme()
 }
 
 // getEventTitle: gets event title
-function getEventTitle($id)
+function getEventTitle($id, $link = false)
 {
 	global $conn;
 	
@@ -1243,7 +1243,14 @@ function getEventTitle($id)
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
-			return $db->name;
+			if($link)
+			{
+				return '<a href=\'index.php?event='. $db->id .'\'>' . $db->name . '</a>';
+			}
+			else
+			{
+				return $db->name;
+			}
 		}
 	}
 }
@@ -2484,7 +2491,7 @@ if(loggedIn())
 }
 
 // Check for events that need to be closed
-$query = "SELECT * FROM events WHERE dateEnd < NOW() - INTERVAL 1 HOUR and closed = '0'";
+$query = "SELECT * FROM events WHERE dateEnd < NOW() - INTERVAL 1 HOUR AND closed != '2' AND closed != '1'";
 if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))

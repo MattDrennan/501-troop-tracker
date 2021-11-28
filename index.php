@@ -4298,7 +4298,7 @@ else
 				while ($db = mysqli_fetch_object($result))
 				{
 					echo '
-					<a href="images/uploads/'.$db->filename.'" data-lightbox="photo" data-title="Uploaded by '.getName($db->trooperid).'"><img src="images/uploads/'.$db->filename.'" width="200px" height="200px" /></a>';
+					<a href="images/uploads/'.$db->filename.'" data-lightbox="photo" data-title="Uploaded by '.getName($db->trooperid).' on '.getEventTitle($db->troopid, true).'."><img src="images/uploads/'.$db->filename.'" width="200px" height="200px" /></a>';
 					
 					// Increment
 					$i++;
