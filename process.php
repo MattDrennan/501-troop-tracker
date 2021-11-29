@@ -214,7 +214,7 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 // Enter comment into database
 if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitComment']) && loggedIn())
 {
-	if(strlen($_POST['comment']) > 0 && ($_POST['important'] == 0 || $_POST['important'] == 1))
+	if(strlen(trim($_POST['comment'])) > 0 && ($_POST['important'] == 0 || $_POST['important'] == 1))
 	{
 		// Query - check if a comment has been recently posted by this trooper
 		$commentCheck = $conn->query("SELECT id FROM comments WHERE comment = '".cleanInput($_POST['comment'])."' AND posted > NOW() - INTERVAL 5 MINUTE") or die($conn->error);
@@ -267,7 +267,7 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 		// Check which type of link
 		if(!isset($link) || isset($link) && $link <= 0)
 		{
-			$link = cleanInput($_GET['event']);
+			$link = cleanInput($_POST['eventId']);
 		}
 
 		// Load comments for return data
