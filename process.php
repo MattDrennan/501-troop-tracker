@@ -339,7 +339,7 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 				while ($db = mysqli_fetch_object($result))
 				{
 					// Send E-mail
-					@sendEmail($db->email, $db->name, "Troop Tracker: A comment has posted on ".$db->eventName."!", getName(cleanInput($_SESSION['id'])) . ": " . cleanInput($_POST['comment']) . "\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com");
+					@sendEmail($db->email, $db->name, "Troop Tracker: A comment has posted on ".$db->eventName."!", getName(cleanInput($_SESSION['id'])) . ": " . cleanInput($_POST['comment']) . "\n\nhttps://www.fl501st.com/troop-tracker/index.php?event=".$db->eventId."\n\n\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com");
 				}
 			}
 		}

@@ -2183,6 +2183,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<option value="1">Yes</option>
 							<option value="0">No</option>
 						</select>
+						
+						<p>
+							<a href="#" class="button" id="limitChange">Change Limits</a>
+						</p>
+						
+						<div id="limitChangeArea" style="display: none;">
 
 						<p>Do you wish to limit the era of the costume?</p>
 						<select name="era" id="era">
@@ -2192,12 +2198,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<option value="3">Expanded</option>
 							<option value="4" SELECTED>All</option>
 						</select>
-						
-						<p>
-							<a href="#" class="button" id="limitChange">Change Limits</a>
-						</p>
-						
-						<div id="limitChangeArea" style="display: none;">
 
 						<p>Limit of 501st Troopers:</p>
 						<input type="number" name="limit501st" value="500" id="limit501st" />
@@ -2675,6 +2675,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<option value="1" '.copyEventSelect($eid, $limitedEvent, 1).'>Yes</option>
 					<option value="0" '.copyEventSelect($eid, $limitedEvent, 0).'>No</option>
 				</select>
+				
+				<p>
+					<a href="#" class="button" id="limitChange">Change Limits</a>
+				</p>
+
+				<div id="limitChangeArea" style="display: none;">
 
 				<p>Do you wish to limit the era of the costume?</p>
 				<select name="era" id="era">
@@ -2684,12 +2690,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<option value="3" '.copyEventSelect($eid, $limitTo, 3).'>Expanded</option>
 					<option value="4" '.copyEventSelect($eid, $limitTo, 4, 4).'>All</option>
 				</select>
-				
-				<p>
-					<a href="#" class="button" id="limitChange">Change Limits</a>
-				</p>
-
-				<div id="limitChangeArea" style="display: none;">
 				
 				<p>Limit of 501st Troopers:</p>
 				<input type="number" name="limit501st" value="'.copyEvent($eid, $limit501st, 500).'" id="limit501st" />
@@ -2800,7 +2800,7 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 		
 		<p>
 			<small>
-				<b>Remember:</b><br />If you are in a club other than the 501st, enter the first letter of your club, and then your TKID.
+				<b>Remember:</b><br />If you are in a club other than the 501st, enter the first letter of your club, and then your TKID, or use your forum username.
 				<br />
 				<b>Example:</b><br />Rebel Legion: R1234
 			</small>
@@ -2916,28 +2916,24 @@ if(isset($_GET['action']) && $_GET['action'] == "forgotpassword")
 	if(isset($_POST['forgotPasswordSend']))
 	{
 		// Get data
-		$query = "SELECT * FROM troopers WHERE tkid='".cleanInput($_POST['tkid'])."'";
+		$query = "SELECT * FROM troopers WHERE tkid = '".cleanInput($_POST['tkid'])."' OR forum_id = '".cleanInput($_POST['tkid'])."' OR rebelforum = '".cleanInput($_POST['tkid'])."'";
 		if ($result = mysqli_query($conn, $query))
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				// Does the password match from what the user provided
-				if($db->email == cleanInput($_POST['email']))
-				{
-					// Generate a new password
-					$newPassword = rand(100000, 900000);
-					
-					// Query the database
-					$conn->query("UPDATE troopers SET password = '".password_hash($newPassword, PASSWORD_DEFAULT)."' WHERE id = '".$db->id."'");
-					
-					// Send e-mail
-					sendEmail($db->email, readTKNumber($db->tkid, $db->squad), "FL 501st Troop Software Password Reset", "Your new password is:\n\n" . $newPassword . "\n\nPlease change your password as soon as possible.");
-					
-					echo '
-					<p>
-						An e-mail has been sent to your inbox with your new password. Be sure to check your spam folder. If an e-mail does not appear in your inbox within ten minutes, please contact command staff for assistance.
-					</p>';
-				}
+				// Generate a new password
+				$newPassword = rand(100000, 900000);
+				
+				// Query the database
+				$conn->query("UPDATE troopers SET password = '".password_hash($newPassword, PASSWORD_DEFAULT)."' WHERE id = '".$db->id."'");
+				
+				// Send e-mail
+				sendEmail($db->email, readTKNumber($db->tkid, $db->squad), "FL 501st Troop Software Password Reset", "Your new password is:\n\n" . $newPassword . "\n\nPlease change your password as soon as possible.");
+				
+				echo '
+				<p>
+					An e-mail has been sent to your inbox with your new password. Be sure to check your spam folder. If an e-mail does not appear in your inbox within ten minutes, please contact command staff for assistance.
+				</p>';
 			}
 		}
 	}
@@ -2947,11 +2943,8 @@ if(isset($_GET['action']) && $_GET['action'] == "forgotpassword")
 		<h2 class="tm-section-header">Forgot Your Password</h2>
 
 		<form action="index.php?action=forgotpassword" method="POST" name="forgotPasswordForm" id="forgotPasswordForm">
-			<p>TKID:</p>
+			<p>TKID / Forum Name:</p>
 			<input type="text" name="tkid" id="tkid" />
-
-			<p>E-mail:</p>
-			<input type="text" name="email" id="email" />
 
 			<br /><br />
 

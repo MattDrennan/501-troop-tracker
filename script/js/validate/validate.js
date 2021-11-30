@@ -1180,12 +1180,7 @@ $(function()
             // The key name on the left side is the name attribute
             // of an input field. Validation rules are defined
             // on the right side
-            tkid: "required",
-            email:
-            {
-                required: true,
-                email: true
-            }
+            tkid: "required"
         },
         // Specify validation error messages
         messages:
