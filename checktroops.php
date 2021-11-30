@@ -62,9 +62,6 @@ if($i > 0)
 	}
 }
 
-// Set up e-mail
-$emailBody = "New events posted:\n\n";
-
 // Set up squad count
 $i = 1;
 
@@ -122,6 +119,9 @@ if($i > 0)
 
 			// Check something to send
 			$k = 0;
+
+			// Set up e-mail
+			$emailBody = "New events posted:\n\n";
 
 			// Loop through squads
 			foreach($squadArray as $squad => $squad_value)
