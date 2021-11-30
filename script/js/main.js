@@ -827,6 +827,7 @@ $(document).ready(function()
 		});
 	})
 
+	// E-mail settings - unsubscribe / subscribe all button
 	$("#unsubscribeButton").button().click(function(e)
 	{
 		e.preventDefault();
@@ -840,19 +841,51 @@ $(document).ready(function()
 			data: form.serialize() + "&unsubscribeButton=1",
 			success: function(data)
 			{
-				if($("#unsubscribeButton").val() == "Unsubscribe")
+				if($("#unsubscribeButton").val() == "Unsubscribe All")
 				{
 					alert(data);
 					$("#unsubscribeButton").val("Subscribe");
+					$("#emailSettingsOptions").hide();
 				}
 				else
 				{
 					alert(data);
-					$("#unsubscribeButton").val("Unsubscribe");
+					$("#unsubscribeButton").val("Unsubscribe All");
+					$("#emailSettingsOptions").show();
 				}
 			}
 		});
 	})
+	
+	// E-mail settings - click checkbox
+	$("body").on("click", "#emailsettingsForm input", function(e)
+	{
+		e.preventDefault();
+
+		var form = $("#emailsettingsForm");
+		var url = form.attr("action");
+		
+		var checkbox = $(this);
+		var name = $(this).attr("name");
+
+		$.ajax({
+			type: "POST",
+			url: url,
+			data: form.serialize() + "&setemailsettings=1&setting=" + name,
+			success: function(data)
+			{
+				// Is checked?
+				if(checkbox.is(":checked"))
+				{
+					checkbox.prop("checked", false);
+				}
+				else
+				{
+					checkbox.prop("checked", true);
+				}
+			}
+		});
+	});
 	
 	// When admin clicks delete comment icon
 	$("body").on("click", "[id^=deleteComment]", function(e)
@@ -948,7 +981,7 @@ $(document).ready(function()
 		$("#changetheme").hide();
 	});
 
-	$("#unsubscribeLink").click(function(e)
+	$("#emailSettingLink").click(function(e)
 	{
 		e.preventDefault();
 		$("#changephone").hide();

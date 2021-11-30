@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Nov 27, 2021 at 01:23 PM
+-- Generation Time: Nov 30, 2021 at 02:29 AM
 -- Server version: 5.7.31
 -- PHP Version: 8.0.11
 
@@ -338,6 +338,12 @@ CREATE TABLE IF NOT EXISTS `troopers` (
   `subscribe` int(11) NOT NULL DEFAULT '1',
   `theme` int(11) NOT NULL DEFAULT '0',
   `supporter` int(11) NOT NULL DEFAULT '0',
+  `esquad1` tinyint(1) DEFAULT '1',
+  `esquad2` tinyint(1) DEFAULT '1',
+  `esquad3` tinyint(1) DEFAULT '1',
+  `esquad4` tinyint(1) DEFAULT '1',
+  `esquad5` tinyint(1) DEFAULT '1',
+  `ecomments` tinyint(1) NOT NULL DEFAULT '1',
   `datecreated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

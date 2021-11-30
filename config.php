@@ -2480,6 +2480,36 @@ function getPermissionName($value)
 	}
 }
 
+// emailSettingStatus: Is the setting on or off
+function emailSettingStatus($column, $print = false)
+{
+	global $conn;
+	
+	// Set status
+	$status = 0;
+	
+	// Get email setting
+	$getStatus = $conn->query("SELECT ".$column." FROM troopers WHERE id = '".$_SESSION['id']."'");
+	$getStatus_get = $getStatus->fetch_row();
+	
+	// Set status to query
+	$status = $getStatus_get[0];
+	
+	// If print not set, return status
+	if(!$print)
+	{
+		return $status;
+	}
+	else
+	{
+		// If print set, print checked
+		if($status == 1)
+		{
+			return 'CHECKED';
+		}
+	}
+}
+
 // isLink: Is this a linked event?
 function isLink($id)
 {

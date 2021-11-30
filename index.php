@@ -166,7 +166,7 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 	echo '
 	<h2 class="tm-section-header">Manage Account</h2>
 
-	<a href="#" id="unsubscribeLink" class="button">Unsubscribe From E-mail</a> 
+	<a href="#" id="emailSettingLink" class="button">E-mail Settings</a> 
 	<a href="#" id="changeemailLink" class="button">Change E-mail</a> 
 	<a href="#" id="changephoneLink" class="button">Change Phone</a> 
 	<a href="#" id="changenameLink" class="button">Change Name</a> 
@@ -180,6 +180,9 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 		<h2 class="tm-section-header">E-mail Subscription</h2>
 		<form action="process.php?do=unsubscribe" method="POST" name="unsubscribeForm" id="unsubscribeForm">';
 		$query = "SELECT subscribe FROM troopers WHERE id = '".$_SESSION['id']."'";
+		
+		// Is the trooper subscribed to e-mail?
+		$subscribe = "";
 
 		if ($result = mysqli_query($conn, $query) or die($conn->error))
 		{
@@ -188,17 +191,43 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 				if($db->subscribe == 1)
 				{
 					echo '
-					<input type="submit" name="unsubscribeButton" id="unsubscribeButton" value="Unsubscribe" />';
+					<input type="submit" name="unsubscribeButton" id="unsubscribeButton" value="Unsubscribe All" />';
 				}
 				else
 				{
 					echo '
 					<input type="submit" name="unsubscribeButton" id="unsubscribeButton" value="Subscribe" />';
+					
+					// Set is subscribed
+					$subscribe = "style = \"display: none;\"";
 				}
 			}
 		}
 		echo '
 		</form>
+		
+		<div id="emailSettingsOptions" '.$subscribe.'>
+			<h3>Squads</h3>
+			<form action="process.php?do=emailsettings" method="POST" id="emailsettingsForm" name="emailsettingsForm">';
+			
+			// Squad count
+			$i = 1;
+			
+			// Loop through squads
+			foreach($squadArray as $squad => $squad_value)
+			{
+				echo '
+				<input type="checkbox" name="esquad'.$i.'" id="esquad'.$i.'" ' . emailSettingStatus("esquad" . $i, true) . ' />' . $squad . '<br />';
+				
+				// Increment squad count
+				$i++;
+			}
+			
+			echo '
+				<h3>Website</h3>
+				<input type="checkbox" name="ecomments" id="ecomments" ' . emailSettingStatus("ecomments", true) . ' />Comments<br />
+			</form>
+		</div>
 	</div>
 	
 	<div id="changetheme" style="display:none;">

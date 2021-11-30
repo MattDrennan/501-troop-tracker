@@ -1165,6 +1165,17 @@ if(isset($_GET['do']) && $_GET['do'] == "unsubscribe" && loggedIn())
 	}
 }
 
+// E-mail settings
+if(isset($_GET['do']) && $_GET['do'] == "emailsettings" && loggedIn())
+{
+	// Check for post request
+	if(isset($_POST['setemailsettings']))
+	{
+		// Check which setting we are changing
+		$conn->query("UPDATE troopers SET " . cleanInput($_POST['setting']) . " = CASE " . cleanInput($_POST['setting']) . " WHEN 1 THEN 0 WHEN 0 THEN 1 END") or die($conn->error);
+	}
+}
+
 // Request access
 if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 {
