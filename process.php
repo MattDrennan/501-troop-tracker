@@ -333,7 +333,7 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 		if($commentCheck->num_rows == 0)
 		{
 			// Notify e-mail for comments
-			$query = "SELECT events.id AS eventId, events.name AS eventName, event_sign_up.id AS signupId, troopers.id AS trooperId, troopers.email AS email, troopers.name AS name FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE event_sign_up.troopid = '".cleanInput($_POST['eventId'])."' AND troopers.subscribe = '1' AND troopers.email != '' GROUP BY troopers.id";
+			$query = "SELECT events.id AS eventId, events.name AS eventName, event_sign_up.id AS signupId, troopers.id AS trooperId, troopers.email AS email, troopers.name AS name FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE event_sign_up.troopid = '".cleanInput($_POST['eventId'])."' AND troopers.subscribe = '1' AND troopers.email != '' AND troopers.ecomments = '1' GROUP BY troopers.id";
 			if ($result = mysqli_query($conn, $query))
 			{
 				while ($db = mysqli_fetch_object($result))
@@ -1441,6 +1441,22 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 				
 				// Post to Twitter
 				postTweet("".cleanInput($_POST['eventName'])." has been added in ".getSquadName(cleanInput($_POST['squadm'])).".");
+
+				// Build e-mail
+				$emailBody = "";
+				$emailBody .= cleanInput($_POST['eventName']) . " has been added in " . getSquadName(cleanInput($_POST['squadm'])) . "\n\nhttps://www.fl501st.com/troop-tracker/index.php?event=".$eventId."\n\n\n\n";
+				$emailBody .= "You can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com";
+
+				// Send e-mails - Loop through all troopers who are subscribed to e-mails
+				$query = "SELECT * FROM troopers WHERE troopers.email != '' AND troopers.subscribe = '1' AND troopers.efast = '1' AND troopers.esquad".$cleanInput($_POST['squadm'])." = '1'";
+				if ($result = mysqli_query($conn, $query))
+				{
+					while ($db = mysqli_fetch_object($result))
+					{
+						// Send e-mail
+						sendEmail($db->email, $db->name, "Troop Tracker: " . cleanInput($_POST['eventName']) . " posted!", $emailBody);
+					}
+				}
 			}
 			
 			// Loop through shifts

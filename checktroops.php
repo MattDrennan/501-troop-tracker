@@ -4,7 +4,7 @@
 include "config.php";
 
 // Loop through all troopers
-$query = "SELECT events.id AS eventId, event_sign_up.id AS signupId, troopers.id AS trooperId, troopers.email AS email, troopers.name AS name FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE events.closed = '1' AND event_sign_up.status = '0' AND troopers.subscribe = '1' AND troopers.email != '' GROUP BY troopers.id";
+$query = "SELECT events.id AS eventId, event_sign_up.id AS signupId, troopers.id AS trooperId, troopers.email AS email, troopers.name AS name FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE events.closed = '1' AND event_sign_up.status = '0' AND troopers.subscribe = '1' AND troopers.email != '' AND troopers.econfirm = '1' GROUP BY troopers.id";
 if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))
@@ -51,7 +51,7 @@ $message .= "You can opt out of e-mails under: \"Manage Account\"\n\nhttps://tro
 if($i > 0)
 {
 	// Loop through all members with admin
-	$query = "SELECT troopers.email, troopers.name, troopers.permissions FROM troopers WHERE (troopers.permissions = '1' OR troopers.permissions = '2') AND troopers.email != '' AND troopers.subscribe = '1'";
+	$query = "SELECT troopers.email, troopers.name, troopers.permissions FROM troopers WHERE (troopers.permissions = '1' OR troopers.permissions = '2') AND troopers.email != '' AND troopers.subscribe = '1' AND troopers.ecommandnotify = '1'";
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
@@ -64,6 +64,19 @@ if($i > 0)
 
 // Set up e-mail
 $emailBody = "New events posted:\n\n";
+
+// Set up squad count
+$i = 1;
+
+// Loop through squads
+foreach($squadArray as $squad => $squad_value)
+{
+	// Set up troops for e-mail
+	${"s" . $i} = "";
+
+	// Increment
+	$i++;
+}
 
 // Set up last event
 $lastEventID = 0;
@@ -82,7 +95,7 @@ if ($result = mysqli_query($conn, $query))
 		$d2 = date('h:i A', strtotime($db->dateEnd));
 		
 		// Add to e-mail
-		$emailBody .= $db->name . "\n\n" . $d1 . " - " . $d2 . "\n\n" . getSquadName($db->squad) . "\n\nhttps://www.fl501st.com/troop-tracker/index.php?event=".$db->id."\n\n\n\n";
+		${"s" . $db->squad} .= $db->name . "\n\n" . $d1 . " - " . $d2 . "\n\n" . getSquadName($db->squad) . "\n\nhttps://www.fl501st.com/troop-tracker/index.php?event=".$db->id."\n\n\n\n";
 		
 		// Set
 		$lastEventID = $db->id;
@@ -92,8 +105,6 @@ if ($result = mysqli_query($conn, $query))
 	}
 }
 
-$emailBody .= "You can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com";
-
 // If events
 if($i > 0)
 {
@@ -101,13 +112,43 @@ if($i > 0)
 	$conn->query("UPDATE settings SET notifyevent = '".$lastEventID."'");
 
 	// Loop through all troopers who are subscribed to e-mails
-	$query = "SELECT troopers.email, troopers.name FROM troopers WHERE troopers.email != '' AND troopers.subscribe = '1'";
+	$query = "SELECT * FROM troopers WHERE troopers.email != '' AND troopers.subscribe = '1'";
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
-			// Send E-mail
-			sendEmail($db->email, $db->name, "Troop Tracker: New events posted!", $emailBody);
+			// Set up squad count
+			$l = 1;
+
+			// Check something to send
+			$k = 0;
+
+			// Loop through squads
+			foreach($squadArray as $squad => $squad_value)
+			{
+				// Check allow e-mails for squad
+				if($db->{"esquad" . $l} == 1)
+				{
+					// Add squad information to e-mail
+					$emailBody .= ${"s" . $l};
+
+					// Increment something to send
+					$k++;
+				}
+
+				// Increment squad count
+				$l++;
+			}
+
+			// Add footer of e-mail
+			$emailBody .= "You can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com";
+
+			// Check if to send e-mail
+			if($k > 0)
+			{
+				// Send E-mail
+				sendEmail($db->email, $db->name, "Troop Tracker: New events posted!", $emailBody);
+			}
 		}
 	}
 }
