@@ -406,7 +406,7 @@ $(function()
         // Specify validation error messages
         messages:
         {
-            tkid: "Please enter your TKID.",
+            tkid: "Please enter your TKID or forum username.",
             password: "Please enter your password."
         },
         // Make sure the form is submitted to the destination defined
@@ -1185,7 +1185,7 @@ $(function()
         // Specify validation error messages
         messages:
         {
-            tkid: "Please enter your TK ID.",
+            tkid: "Please enter your TK ID or forum username.",
             email: "Please enter a valid e-mail address.",
         },
         // Make sure the form is submitted to the destination defined

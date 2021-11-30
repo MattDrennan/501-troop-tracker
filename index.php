@@ -2915,6 +2915,9 @@ if(isset($_GET['action']) && $_GET['action'] == "forgotpassword")
 	// Display submission for forgot your password, otherwise show the form
 	if(isset($_POST['forgotPasswordSend']))
 	{
+		// Does data exist
+		$i = 0;
+
 		// Get data
 		$query = "SELECT * FROM troopers WHERE tkid = '".cleanInput($_POST['tkid'])."' OR forum_id = '".cleanInput($_POST['tkid'])."' OR rebelforum = '".cleanInput($_POST['tkid'])."'";
 		if ($result = mysqli_query($conn, $query))
@@ -2934,7 +2937,16 @@ if(isset($_GET['action']) && $_GET['action'] == "forgotpassword")
 				<p>
 					An e-mail has been sent to your inbox with your new password. Be sure to check your spam folder. If an e-mail does not appear in your inbox within ten minutes, please contact command staff for assistance.
 				</p>';
+
+				// Increment data exist
+				$i++;
 			}
+		}
+
+		if($i == 0)
+		{
+			echo '
+			<p>Account not found.</p>';
 		}
 	}
 	else

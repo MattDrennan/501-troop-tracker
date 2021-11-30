@@ -1,7 +1,7 @@
 // Add methods to validator
 jQuery.validator.addMethod("noSpace", function(value, element)
 { 
-	return value.indexOf(" ") < 0 && value != ""; 
+	return value.trim().replace(/[\t\n]+/g,' ').length > 1; 
 }, "Please enter a comment.");
 
 /* Toggle between adding and removing the "responsive" class to topnav when the user clicks on the icon */
