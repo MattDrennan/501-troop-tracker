@@ -1172,7 +1172,7 @@ if(isset($_GET['do']) && $_GET['do'] == "emailsettings" && loggedIn())
 	if(isset($_POST['setemailsettings']))
 	{
 		// Check which setting we are changing
-		$conn->query("UPDATE troopers SET " . cleanInput($_POST['setting']) . " = CASE " . cleanInput($_POST['setting']) . " WHEN 1 THEN 0 WHEN 0 THEN 1 END") or die($conn->error);
+		$conn->query("UPDATE troopers SET " . cleanInput($_POST['setting']) . " = CASE " . cleanInput($_POST['setting']) . " WHEN 1 THEN 0 WHEN 0 THEN 1 END WHERE id = '".$_SESSION['id']."'") or die($conn->error);
 	}
 }
 
@@ -1448,7 +1448,7 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 				$emailBody .= "You can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com";
 
 				// Send e-mails - Loop through all troopers who are subscribed to e-mails
-				$query = "SELECT * FROM troopers WHERE troopers.email != '' AND troopers.subscribe = '1' AND troopers.efast = '1' AND troopers.esquad".$cleanInput($_POST['squadm'])." = '1'";
+				$query = "SELECT * FROM troopers WHERE troopers.email != '' AND troopers.subscribe = '1' AND troopers.efast = '1' AND troopers.esquad".cleanInput($_POST['squadm'])." = '1'";
 				if ($result = mysqli_query($conn, $query))
 				{
 					while ($db = mysqli_fetch_object($result))
