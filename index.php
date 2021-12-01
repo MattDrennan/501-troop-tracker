@@ -4123,6 +4123,20 @@ else
 
 				<div style="text-align: center;">';
 				
+				// Get number of troops that need confirmed
+				$numberOfConfirmTroops = $conn->query("SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1");
+				
+				// Show need to confirm if exist
+				if($numberOfConfirmTroops->num_rows > 0)
+				{
+					echo '
+					<p>
+						<a href="#confirmtroops">You have '.$numberOfConfirmTroops->num_rows.' troops to confirm. Click to confirm.</a>
+					</p>
+					<br />
+					<hr />';
+				}
+				
 				// Was a squad defined? (Prevents displays div when not needed)
 				if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
 				{
@@ -4323,7 +4337,7 @@ else
 							<br />
 							<hr />
 							<div name="confirmArea" id="confirmArea">
-							<h2 class="tm-section-header">Confirm Troops</h2>
+							<h2 class="tm-section-header" id="confirmtroops">Confirm Troops</h2>
 							<form action="process.php?do=confirmList" method="POST" name="confirmListForm" id="confirmListForm">
 							<div name="confirmArea2" id="confirmArea2">';
 						}

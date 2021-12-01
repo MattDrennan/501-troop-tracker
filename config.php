@@ -1821,7 +1821,7 @@ function validate_url($url)
 
 	if(filter_var(addHttp($url), FILTER_VALIDATE_URL) && strpos($url, "."))
 	{
-		return '<a href="'.addHttp($url).'" target="_blank">'.$url.'</a>';
+		return '<span style="word-wrap: break-word;"><a href="'.addHttp($url).'" target="_blank">'.$url.'</a></span>';
 		
 	}
 	else
