@@ -129,6 +129,7 @@ function selectAdd()
 {
 	// Search select boxes
 	$("#costumeIDEdit").select2();
+	$("#costumeChoice").select2();
 	$("#costumeID").select2();
 	$("#userIDAward").select2();
 	$("#awardIDAssign").select2();
@@ -642,7 +643,7 @@ $(document).ready(function()
 		});
 	})
 
-	// Show Edit Form
+	// Edit Event Drop Down - Show Edit Form
 	$("#submitEdit").button().click(function(e)
 	{
 		e.preventDefault();
