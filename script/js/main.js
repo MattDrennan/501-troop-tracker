@@ -141,6 +141,7 @@ function selectAdd()
 	$("select[name^=modiftybackupcostumeForm]").select2();
 	$("#costume").select2();
 	$("#backupcostume").select2();
+	$("#costumebackup").select2();
 	$("select[name^=trooperSelect]").select2();
 	$("select[name^=costumeChoice]").select2();
 	$("select[name^=attendedcostume]").select2();
