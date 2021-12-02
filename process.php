@@ -369,10 +369,10 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 		
 		// Update other databases that are affected
 		$conn->query("UPDATE event_sign_up SET attended_costume = '0' WHERE attended_costume = '".cleanInput($_POST['costumeID'])."'");
-		$conn->query("UPDATE event_sign_up SET costume_backup = '0' WHERE attended_costume = '".cleanInput($_POST['costumeID'])."'");
+		$conn->query("UPDATE event_sign_up SET costume_backup = '0' WHERE costume_backup = '".cleanInput($_POST['costumeID'])."'");
 		
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has deleted costume: " . getCostume(cleanInput($_POST['costumeID'])), cleanInput($_SESSION['id']));
+		sendNotification(getName($_SESSION['id']) . " has deleted costume ID: " . cleanInput($_POST['costumeID']) . "", cleanInput($_SESSION['id']));
 	}
 	
 	// Add costume...
@@ -503,6 +503,8 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 		else
 		{
 			$returnMessage .= '
+			</select>
+
 			<input type="submit" name="submitDeleteCostume" id="submitDeleteCostume" value="Delete Costume" />
 			</form>';
 		}
@@ -645,6 +647,8 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 		else
 		{
 			$returnMessage .= '
+			</select>
+
 			<input type="submit" name="submitDeleteAward" id="submitDeleteAward" value="Delete Award" />
 			</form>';
 		}
@@ -1735,7 +1739,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 					<td>
 						<div name="costume1'.$db->trooperid.'" id="costume1'.$db->trooperid.'">'.ifEmpty(getCostume($db->costume), "N/A").'</div>
 						<div name="costume2'.$db->trooperid.'" id="costume2'.$db->trooperid.'" style="display:none;">
-							<select name="costumeValSelect'.$db->trooperid.'">';
+							<select name="costumeValSelect'.$db->trooperid.'" id="costumeValSelect'.$db->trooperid.'">';
 							
 							// Array count
 							$a = 0;
@@ -1867,6 +1871,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 
 						echo '
 						</select>
+
 						</div>
 						</td>
 					</td>
@@ -1917,10 +1922,6 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 					echo '
 					<form action="process.php?do=editevent" method="POST" name="troopRosterFormAdd" id="troopRosterFormAdd">
 						<input type="hidden" name="troopid" id="troopid" value="'.cleanInput($_POST['eventId']).'" />
-						
-						<br />
-						
-						Trooper Search: <input type="text" name="trooperSearch" id="trooperSearch" style="width: 50%;" />
 
 						<p>Select a trooper to add:</p>
 						<select name="trooperSelect" id="trooperSelect">';
@@ -2278,7 +2279,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 								</td>
 								
 								<td name="trooperRosterCostume" id="trooperRosterCostume">
-									<select name="modifysignupFormCostume2" id="modifysignupFormCostume2">';
+									<select name="modifysignupFormCostume2">';
 
 									// Display costumes
 									$query3 = "SELECT * FROM costumes";
@@ -2315,7 +2316,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 								</td>
 								
 								<td name="trooperRosterBackup" id="trooperRosterBackup">
-									<select name="modiftybackupcostumeForm2" id="modiftybackupcostumeForm2">';
+									<select name="modiftybackupcostumeForm2">';
 
 									// Display costumes
 									$query3 = "SELECT * FROM costumes";
@@ -2478,6 +2479,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 				if(!isset($_POST['addfriend']))
 				{
 					$data .= '
+					<hr />
 					<div name="signeduparea" id="signeduparea">
 						<p><b>You are signed up for this troop!</b></p>
 					</div>';

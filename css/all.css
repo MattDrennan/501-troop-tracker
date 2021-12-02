@@ -1,0 +1,9 @@
+#select2-drop
+{
+    width: 100% !important;
+    padding: 12px !important;
+    border: 1px solid #ccc !important;
+    border-radius: 4px !important;
+    box-sizing: border-box !important;
+    resize: vertical !important;
+}

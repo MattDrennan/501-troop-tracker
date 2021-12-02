@@ -4,6 +4,7 @@ jQuery.validator.addMethod("noSpace", function(value, element)
 	return value.trim().replace(/[\t\n]+/g,' ').length > 1; 
 }, "Please enter a comment.");
 
+
 /* Toggle between adding and removing the "responsive" class to topnav when the user clicks on the icon */
 function myFunction() {
 	var x = document.getElementById("myTopnav");
@@ -123,8 +124,38 @@ function echoSelect(value1, value2)
 	return returnValue;
 }
 
+// selectAdd: Selects we want to search
+function selectAdd()
+{
+	// Search select boxes
+	$("#costumeIDEdit").select2();
+	$("#costumeID").select2();
+	$("#userIDAward").select2();
+	$("#awardIDAssign").select2();
+	$("#awardIDEdit").select2();
+	$("#awardID").select2();
+	$("select[name^=eventId]").select2();
+	$("select[name^=userID]").select2();
+	$("select[name^=modifysignupFormCostume]").select2();
+	$("select[name^=modiftybackupcostumeForm]").select2();
+	$("#costume").select2();
+	$("#backupcostume").select2();
+	$("select[name^=trooperSelect]").select2();
+	$("select[name^=costumeChoice]").select2();
+	$("select[name^=attendedcostume]").select2();
+	$("select[name^=trooperSelect]").select2();
+	$("select[name^=modifysignupFormCostume2]").select2();
+	$("select[name^=modiftybackupcostumeForm2]").select2();
+	$("select[name^=costumeValSelect]").select2();
+	$("select[name^=costumeVal]").select2();
+	$("select[name^=attendcostumeVal]").select2();
+}
+
 $(document).ready(function()
 {
+	// Add select2 to DOM
+	selectAdd();
+
 	// Before / After Ajax
 	$(document).ajaxStart(function ()
 	{
@@ -564,6 +595,7 @@ $(document).ready(function()
 			{
 				var json = JSON.parse(data);
 				$("#when" + json.id).html(json.data);
+				selectAdd();
 				alert("Changes submitted!");
 			}
 		});
@@ -815,6 +847,7 @@ $(document).ready(function()
 				{
 					$("#submitRoster").val("Close");
 					$("#rosterInfo").html(data);
+					selectAdd();
 					$("#rosterInfo").show();
 				}
 				else
@@ -1470,32 +1503,35 @@ $(document).ready(function()
 
 	$("body").on("change", "#userID", function(e)
 	{
-		if($("#editEventInfo").is(":hidden"))
+		if($(this).val() > 0)
 		{
-			//$("#editUserInfo").show();
-			//$("#submitEditUser").val("Close");
-		}
-		else
-		{
-			$("#editUserInfo").hide();
-			$("#submitEditUser").val("Edit");
-		}
-
-		// Only used for approving area
-		$.ajax({
-			type: "POST",
-			url: "process.php?do=getuser",
-			data: "id=" + $("#userID").val() + "&getuser=1",
-			success: function(data)
+			if($("#editEventInfo").is(":hidden"))
 			{
-				var json = JSON.parse(data);
-				$("#nameTable").html(json.name);
-				$("#emailTable").html(json.email);
-				$("#phoneTable").html(json.phone);
-				$("#squadTable").html(json.squad);
-				$("#tkTable").html(json.tkid);
+				//$("#editUserInfo").show();
+				//$("#submitEditUser").val("Close");
 			}
-		});
+			else
+			{
+				$("#editUserInfo").hide();
+				$("#submitEditUser").val("Edit");
+			}
+
+			// Only used for approving area
+			$.ajax({
+				type: "POST",
+				url: "process.php?do=getuser",
+				data: "id=" + $("#userID").val() + "&getuser=1",
+				success: function(data)
+				{
+					var json = JSON.parse(data);
+					$("#nameTable").html(json.name);
+					$("#emailTable").html(json.email);
+					$("#phoneTable").html(json.phone);
+					$("#squadTable").html(json.squad);
+					$("#tkTable").html(json.tkid);
+				}
+			});
+		}
 	});
 	
 	// Approve Trooper Requests - On Trooper Change
@@ -1586,7 +1622,7 @@ $(document).ready(function()
 	
 	/************ COSTUME *******************/
 	
-	// Costume Edit Select Change
+	// Costume Management - Edit select change
 	$("body").on("change", "#costumeIDEdit", function(e)
 	{
 		// If click please select, hide list
@@ -1599,11 +1635,12 @@ $(document).ready(function()
 			$("#editCostumeList").show();
 		}
 
-		$("#costumeNameEdit").val($("#costumeIDEdit :selected").attr("costumeName"));
-		$("#costumeEraEdit").val($("#costumeIDEdit :selected").attr("costumeEra"));
-		$("#costumeClubEdit").val($("#costumeIDEdit :selected").attr("costumeClub"));
+		$("#costumeNameEdit").val($(this).find('option:selected').attr("costumeName"));
+		$("#costumeEraEdit").val($(this).find('option:selected').attr("costumeEra"));
+		$("#costumeClubEdit").val($(this).find('option:selected').attr("costumeClub"));
 	});
 	
+	// Costume Management - Edit Costume Button
 	$("body").on("click", "#submitEditCostume", function(e)
 	{
 		e.preventDefault();
@@ -1641,6 +1678,7 @@ $(document).ready(function()
 		}
 	})
 
+	// Costume management - Add costume button
 	$("body").on("click", "#addCostumeButton", function(e)
 	{
 		e.preventDefault();
@@ -1673,6 +1711,7 @@ $(document).ready(function()
 					{
 						// Populate result
 						$("#costumearea").html(json[0].result);
+						selectAdd();
 					}
 
 					// Alert to success
@@ -1682,6 +1721,7 @@ $(document).ready(function()
 		}
 	})
 	
+	// Costume Management - Delete Costume
 	$("body").on("click", "#submitDeleteCostume", function(e)
 	{
 		e.preventDefault();
@@ -1691,7 +1731,7 @@ $(document).ready(function()
 
 		var r = confirm("Are you sure you want to delete this costume?");
 
-		if (r == true)
+		if (r == true && $("#costumeID").val() > 0)
 		{
 			$.ajax({
 				type: "POST",
@@ -1708,15 +1748,18 @@ $(document).ready(function()
 					// Alert to success
 			  		alert("The costume was deleted successfully!");
 
+			  		// Clear edit area
+			  		$("#editCostumeList").hide();
+
 			  		// Show message if empty
-			  		if($("#costumeID").has("option").length <= 0)
+			  		if($("#costumeID option").length <= 0)
 			  		{
 			  			$("#costumeDeleteForm").html("No costume to display.");
 						
 			  		}
 					
 			  		// Show message if empty - edit
-			  		if($("#costumeIDEdit").has("option").length <= 1)
+			  		if($("#costumeIDEdit option").length <= 1)
 			  		{
 			  			$("#costumeEditForm").html("No costume to display.");
 			  		}
@@ -1724,16 +1767,20 @@ $(document).ready(function()
 			});
 
 	  		// Show message if empty
-	  		if($("#costumeID").has("option").length <= 0)
+	  		if($("#costumeID option").length <= 0)
 	  		{
 	  			$("#costumeDeleteForm").html("No costume to display.");
 	  		}
+		}
+		else
+		{
+			alert("Please select a costume.");
 		}
 	})
 	
 	/************ AWARD ********************/
 
-	// Award Edit Select Change
+	// Awards - Edit select change
 	$("body").on("change", "#awardIDEdit", function(e)
 	{
 		// If click please select, hide list
@@ -1750,6 +1797,7 @@ $(document).ready(function()
 		$("#editAwardImage").val($("#awardIDEdit :selected").attr("awardImage"));
 	});
 
+	// Awards - Finsih Edit
 	$("body").on("click", "#submitEditAward", function(e)
 	{
 		e.preventDefault();
@@ -1787,6 +1835,7 @@ $(document).ready(function()
 		}
 	})
 
+	// Awards - Add award
 	$("body").on("click", "#submitAwardAdd", function(e)
 	{
 		e.preventDefault();
@@ -1818,12 +1867,14 @@ $(document).ready(function()
 						// Populate result
 						$("#awardarea").html(json[0].result);
 						$("#assignarea").html(json[0].result2);
+						selectAdd();
 					}
 				}
 			});
 		}
 	})
 
+	// Awards - Give award
 	$("body").on("click", "#award", function(e)
 	{
 		e.preventDefault();
@@ -1850,6 +1901,7 @@ $(document).ready(function()
 		}
 	})
 
+	// Awards - Delete Award
 	$("body").on("click", "#submitDeleteAward", function(e)
 	{
 		e.preventDefault();
@@ -1873,23 +1925,26 @@ $(document).ready(function()
 					// Clear
 					$("#awardID").find("option:selected").remove();
 
+					// Clear edit area
+					$("#editAwardList").hide();
+
 					// Alert to success
 			  		alert("The award was deleted successfully!");
 
 			  		// Show message if empty
-			  		if($("#awardID").has("option").length <= 0)
+			  		if($("#awardID option").length <= 0)
 			  		{
 			  			$("#awardUserDelete").html("No award to display.");
 			  		}
 					
 			  		// Show message if empty - edit
-			  		if($("#awardIDEdit").has("option").length <= 1)
+			  		if($("#awardIDEdit option").length <= 1)
 			  		{
 			  			$("#awardEdit").html("No award to display.");
 			  		}
 					
 			  		// Show message if empty - assign
-			  		if($("#awardIDAssign").has("option").length <= 0)
+			  		if($("#awardIDAssign option").length <= 0)
 			  		{
 			  			$("#assignarea").html("No award to display.");
 			  		}
@@ -1897,7 +1952,7 @@ $(document).ready(function()
 			});
 
 	  		// Show message if empty
-	  		if($("#awardID").has("option").length <= 0)
+	  		if($("#awardID option").length <= 0)
 	  		{
 	  			$("#awardUserDelete").html("No award to display.");
 	  		}
@@ -2023,6 +2078,7 @@ $(document).ready(function()
 				            	// If there is still data
 				            	var json = JSON.parse(data);
 				            	$("#confirmArea2").html(json.data);
+				            	selectAdd();
 				            }
 
 				            alert("Troops confirmation submitted!");
@@ -2072,6 +2128,7 @@ $(document).ready(function()
 			            	// If there is still data
 			            	var json = JSON.parse(data);
 				            $("#confirmArea2").html(json.data);
+				            selectAdd();
 			            }
 
 			            alert("Troops confirmation submitted!");

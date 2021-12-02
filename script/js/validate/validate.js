@@ -641,6 +641,7 @@ $(function()
                     $("#signeduparea").show();
                     $("#signuparea").hide();
                     $("#addfriend").show();
+                    selectAdd();
                 }
             });
         }
@@ -693,10 +694,12 @@ $(function()
                     {
                         // Put data in html
                         $("#signuparea").html(json.data);
+                        selectAdd();
 
                         // Do the rest...
                         $("#signeduparea").show();
                         $("#addfriend").show();
+                        selectAdd();
                         $("#signuparea1").hide();
                         $("#hr1").hide();
                         $("#rosterTableNoData").hide();
@@ -761,13 +764,16 @@ $(function()
                         $("#signuparea1").show();
                         $("#signuparea").hide();
 
+                        // Set search boxes
+                        selectAdd();
+
                         // Remove friend from list
                         $("select[name=trooperSelect]").find("option:selected").remove();
 
                         // Reset fields
-                        $("select[name=costume]").val("null");
+                        $("#costume").val("null").trigger("change");
                         $("select[name=status]").val("null");
-                        $("select[name=backupcostume]").val("null");
+                        $("#backupcostume").val(0).trigger("change");
                     }
                 }
             });

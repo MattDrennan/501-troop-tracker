@@ -57,6 +57,8 @@ echo '
 	<link href="css/dropzone.min.css" type="text/css" rel="stylesheet" />
 	<link href="css/lightbox.min.css" rel="stylesheet" />
 	<link href="css/calendar.css" rel="stylesheet" />
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+	<link href="css/all.css" rel="stylesheet" />
 	
 	<!-- Icon -->
 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
@@ -66,6 +68,9 @@ echo '
 
 	<!-- JQUERY UI -->
 	<script src="script/lib/jquery-ui.min.js"></script>
+
+	<!-- JQUERY SELECT -->
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 	<!-- Addons -->
 	<script src="script/lib/jquery-ui-timepicker-addon.js"></script>
@@ -1682,6 +1687,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					echo '
 					<option value="'.$db->id.'" costumeName="'.$db->costume.'" costumeID="'.$db->id.'" costumeEra="'.$db->era.'" costumeClub="'.$db->club.'">'.$db->costume.'</option>';
 
+
 					// Increment
 					$i++;
 				}
@@ -1696,10 +1702,14 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				echo '
 				</select>
 
+				<br /><br />
+
 				<div id="editCostumeList" name="editCostumeList" style="display: none;">
 
 				<b>Costume Name:</b></br />
 				<input type="text" name="costumeNameEdit" id="costumeNameEdit" />
+
+				<br />
 				
 				<b>Costume Era:</b></br />
 				<select name="costumeEraEdit" id="costumeEraEdit">
@@ -1710,6 +1720,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<option value="4">All</option>
 				</select>
 				
+				<br />
+
 				<b>Costume Club:</b></br />
 				<select name="costumeClubEdit" id="costumeClubEdit">
 					<option value="0" SELECTED>501st Legion</option>
@@ -1719,6 +1731,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<option value="4">Other</option>
 					<option value="5">All</option>
 				</select>
+
+				<br />
 
 				<input type="submit" name="submitEditCostume" id="submitEditCostume" value="Edit Costume" />
 
@@ -1766,6 +1780,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				else
 				{
 					echo '
+					</select>
+
 					<input type="submit" name="submitDeleteCostume" id="submitDeleteCostume" value="Delete Costume" />
 					</form>';
 				}
@@ -1802,9 +1818,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						echo '
 						<form action="process.php?do=assignawards" method="POST" name="awardUser" id="awardUser">
-						
-						Trooper Search: <input type="text" name="trooperSearch" id="trooperSearch" style="width: 50%;" />
-						<br /><br />
 
 						<select name="userIDAward" id="userIDAward">';
 					}
@@ -1919,6 +1932,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				echo '
 				</select>
 
+				<br /><br />
+
 				<div id="editAwardList" name="editAwardList" style="display: none;">
 
 				<b>Award Title:</b><br />
@@ -1950,7 +1965,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					{
 						echo '
 						<form action="process.php?do=assignawards" method="POST" name="awardUserDelete" id="awardUserDelete">
-
 						<select name="awardID" id="awardID">';
 					}
 
@@ -1968,6 +1982,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			else
 			{
 				echo '
+				</select>
+
 				<input type="submit" name="submitDeleteAward" id="submitDeleteAward" value="Delete Award" />
 				</form>';
 			}
@@ -2019,7 +2035,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					{
 						echo '
 						<form action="process.php?do=editevent" method="POST" name="editEvents" id="editEvents">
-
 						<select name="eventId" id="eventId">';
 					}
 					
@@ -2123,35 +2138,30 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						<p>Secure Changing?</p>
 						<select name="secure" id="secure">
-							<option value="null" SELECTED>Please choose an option...</option>
 							<option value="1">Yes</option>
 							<option value="0">No</option>
 						</select>
 
 						<p>Blasters Allowed?</p>
 						<select name="blasters" id="blasters">
-							<option value="null" SELECTED>Please choose an option...</option>
 							<option value="1">Yes</option>
 							<option value="0">No</option>
 						</select>
 
 						<p>Lightsabers Allowed?</p>
 						<select name="lightsabers" id="lightsabers">
-							<option value="null" SELECTED>Please choose an option...</option>
 							<option value="1">Yes</option>
 							<option value="0">No</option>
 						</select>
 
 						<p>Parking?</p>
 						<select name="parking" id="parking">
-							<option value="null" SELECTED>Please choose an option...</option>
 							<option value="1">Yes</option>
 							<option value="0">No</option>
 						</select>
 
 						<p>People with limited mobility access?</p>
 						<select name="mobility" id="mobility">
-							<option value="null" SELECTED>Please choose an option...</option>
 							<option value="1">Yes</option>
 							<option value="0">No</option>
 						</select>
@@ -2164,7 +2174,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						<p>Label:</p>
 						<select name="label" id="label">
-							<option value="null" SELECTED>Please choose an option...</option>
 							<option value="0">Regular</option>
 							<option value="1">Charity</option>
 							<option value="2">PR</option>
@@ -2179,7 +2188,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						<p>Do you wish to lock this event?</p>
 						<select name="limitedEvent" id="limitedEvent">
-							<option value="null" SELECTED>Please choose an option...</option>
 							<option value="1">Yes</option>
 							<option value="0">No</option>
 						</select>
@@ -2317,9 +2325,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					if($i == 0)
 					{
 						echo '
-						Trooper Search: <input type="text" name="trooperSearch" id="trooperSearch" style="width: 50%;" />
-						<br /><br />
-						
 						<form action="process.php?do=managetroopers" method="POST" name="editUser" id="editUser">
 
 						<select name="userID" id="userID">';
@@ -3211,7 +3216,9 @@ if(isset($_GET['event']))
 				<br />
 				<hr />
 				<br />
-			</div>';
+			</div>
+
+			<div style="overflow-x: auto;" id="signuparea1" name="signuparea1">';
 
 			// Query database for roster info
 			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' ORDER BY event_sign_up.id ASC";
@@ -3228,8 +3235,6 @@ if(isset($_GET['event']))
 					if($i == 0)
 					{
 						echo '
-						<div style="overflow-x: auto;" id="signuparea1" name="signuparea1">
-						
 						<form action="process.php?do=modifysignup" method="POST" name="modifysignupForm" id="modifysignupForm">
 						
 						<!-- Hidden variables -->
@@ -3271,7 +3276,7 @@ if(isset($_GET['event']))
 							{
 								echo '
 								<td name="'.$db2->trooperId.'trooperRosterCostume" id="'.$db2->trooperId.'trooperRosterCostume">
-									<select name="modifysignupFormCostume" id="modifysignupFormCostume" trooperid="'.$db2->trooperId.'">';
+									<select name="modifysignupFormCostume" trooperid="'.$db2->trooperId.'">';
 
 									$query3 = "SELECT * FROM costumes";
 									
@@ -3307,7 +3312,7 @@ if(isset($_GET['event']))
 								</td>
 								
 								<td name="'.$db2->trooperId.'trooperRosterBackup" id="'.$db2->trooperId.'trooperRosterBackup">
-									<select name="modiftybackupcostumeForm" id="modiftybackupcostumeForm" trooperid="'.$db2->trooperId.'">';
+									<select name="modiftybackupcostumeForm" trooperid="'.$db2->trooperId.'">';
 
 									// Display costumes
 									$query3 = "SELECT * FROM costumes";
@@ -3452,6 +3457,7 @@ if(isset($_GET['event']))
 			if($i == 0)
 			{
 				echo '
+				</div>
 				<div id="rosterTableNoData" name="rosterTableNoData">
 				<b>No troopers have signed up for this event!</b>
 				<br />
@@ -3548,7 +3554,7 @@ if(isset($_GET['event']))
 											<input type="hidden" name="event" value="'.cleanInput($_GET["event"]).'" />
 											
 											<p>What costume will you wear?</p>
-											<select name="costume">
+											<select name="costume" id="costume">
 												<option value="null" SELECTED>Please choose an option...</option>';
 
 											$query3 = "SELECT * FROM costumes";
@@ -3802,10 +3808,6 @@ if(isset($_GET['event']))
 										echo '
 										<form action="process.php?do=editevent" method="POST" name="troopRosterFormAdd" id="troopRosterFormAdd">
 											<input type="hidden" name="troopid" id="troopid" value="'.cleanInput($_GET['event']).'" />
-											
-											<br />
-											
-											Trooper Search: <input type="text" name="trooperSearch" id="trooperSearch" style="width: 50%;" />
 
 											<p>Select a trooper to add:</p>
 											<select name="trooperSelect" id="trooperSelect">';
@@ -3834,7 +3836,7 @@ if(isset($_GET['event']))
 									
 							echo '
 							<p>What costume will they wear?</p>
-							<select name="costume">
+							<select name="costume" id="costume">
 								<option value="null" SELECTED>Please choose an option...</option>';
 
 							$query3 = "SELECT * FROM costumes";
