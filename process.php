@@ -454,9 +454,8 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 				<option value="1">Rebel Legion</option>
 				<option value="2">Mando Mercs</option>
 				<option value="3">Droid Builders</option>
-				<option value="4">Rebel + 501st</option>
-				<option value="5">Other</option>
-				<option value="6">All</option>
+				<option value="4">Other</option>
+				<option value="5">Dual (501st + Rebel)</option>
 			</select>
 
 			<input type="submit" name="submitEditCostume" id="submitEditCostume" value="Edit Costume" />

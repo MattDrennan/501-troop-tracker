@@ -1168,21 +1168,21 @@ function troopCheck($id)
 	checkTroopCounts($count[0], "REBEL LEGION: " . getName($id) . " now has [COUNT] troop(s)", $id, "REBEL LEGION");
 	
 	// Notify how many troops did a trooper attend - Mando Mercs
-	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ('2' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume))") or die($conn->error);
+	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ('2' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume))") or die($conn->error);
 	$count = $trooperCount_get->fetch_row();
 	
 	// Mando Mercs
 	checkTroopCounts($count[0], "MANDO MERCS: " . getName($id) . " now has [COUNT] troop(s)", $id, "MANDO MERCS");
 	
 	// Notify how many troops did a trooper attend - Droid Builders
-	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ('3' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume))") or die($conn->error);
+	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ('3' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume))") or die($conn->error);
 	$count = $trooperCount_get->fetch_row();
 	
 	// Droid Builders
 	checkTroopCounts($count[0], "DROID BUILDERS: " . getName($id) . " now has [COUNT] troop(s)", $id, "DROID BUILDERS");
 	
 	// Notify how many troops did a trooper attend - Other
-	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ('4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume))") or die($conn->error);
+	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ('4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume))") or die($conn->error);
 	$count = $trooperCount_get->fetch_row();
 	
 	// Other
