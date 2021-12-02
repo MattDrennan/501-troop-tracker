@@ -311,7 +311,7 @@ function drawSupportGraph()
 	if(loggedIn())
 	{
 		// Count number of troopers supporting
-		$getNumOfSupport = $conn->query("SELECT SUM(amount) FROM donations WHERE datetime > NOW() - INTERVAL 1 MONTH");
+		$getNumOfSupport = $conn->query("SELECT SUM(amount) FROM donations WHERE datetime > date_add(date_add(LAST_DAY(NOW()),interval 1 DAY),interval -1 MONTH)");
 		$getSupportNum = $getNumOfSupport->fetch_row();
 		
 		// Count times contributed
