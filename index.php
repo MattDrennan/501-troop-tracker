@@ -621,6 +621,52 @@ if(isset($_GET['action']) && $_GET['action'] == "donation" && loggedIn())
 	</form>';
 }
 
+// Photo Page
+if(isset($_GET['action']) && $_GET['action'] == "photos")
+{
+	// Start photo count
+	$i = 0;
+
+	// Build query
+	$query = "SELECT uploads.troopid, events.dateStart, events.dateEnd FROM uploads LEFT JOIN events ON uploads.troopid = events.id GROUP BY uploads.troopid ORDER BY uploads.id ASC LIMIT 100";
+
+	// Loop through query
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// First loop
+			if($i == 0)
+			{
+				echo '
+				<ul>';
+			}
+
+			$troopCount = $conn->query("SELECT id FROM uploads WHERE troopid = '".$db->troopid."'");
+
+			echo '
+			<li>
+				<a href="index.php?event='.$db->troopid.'"><b>('.$troopCount->num_rows.')</b> ['.date("m-d-Y h:i A", strtotime($db->dateStart)).' - '.date("h:i A", strtotime($db->dateEnd)).'] - '.getEventTitle($db->troopid).'</a>
+			</li>';
+
+			// Increment photo count
+			$i++;
+		}
+	}
+
+	// If photos exist
+	if($i > 0)
+	{
+		echo '
+		</ul>';
+	}
+	else
+	{
+		echo '
+		<p style="text-align: center;">No photos to display.</p>';
+	}
+}
+
 // Show the search page
 if(isset($_GET['action']) && $_GET['action'] == "search")
 {
@@ -4425,7 +4471,17 @@ else
 			// If no photos
 			if($i == 0)
 			{
-				echo '<p style="text-align: center;">No photos to display.</p>';
+				echo '
+				<p style="text-align: center;">
+					No photos to display.
+				</p>';
+			}
+			else
+			{
+				echo '
+				<p style="text-align: center;">
+					<a href="index.php?action=photos">[Recent events with photos]</a>
+				</p>';
 			}
 		}
 		else
