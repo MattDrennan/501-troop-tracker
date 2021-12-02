@@ -624,6 +624,10 @@ if(isset($_GET['action']) && $_GET['action'] == "donation" && loggedIn())
 // Photo Page
 if(isset($_GET['action']) && $_GET['action'] == "photos")
 {
+	// Print
+	echo '
+	<h3>Recent Events With Photos</h3>';
+
 	// Start photo count
 	$i = 0;
 
