@@ -2889,7 +2889,7 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed())
 						if ($validator->check_email_address(cleanInput($_POST['email'])))
 						{
 							// Query the database
-							$conn->query("UPDATE troopers SET email = '".$_POST['email']."', password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE tkid = '".cleanInput($_POST['tkid'])."'");
+							$conn->query("UPDATE troopers SET email = '".cleanInput($_POST['email'])."', password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE tkid = '".cleanInput($_POST['tkid'])."'");
 
 							// Display output
 							echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';
@@ -2974,7 +2974,7 @@ if(isset($_GET['action']) && $_GET['action'] == "forgotpassword")
 		$i = 0;
 
 		// Get data
-		$query = "SELECT * FROM troopers WHERE tkid = '".cleanInput($_POST['tkid'])."' OR forum_id = '".cleanInput($_POST['tkid'])."' OR rebelforum = '".cleanInput($_POST['tkid'])."'";
+		$query = "SELECT * FROM troopers WHERE (tkid = '".cleanInput($_POST['tkid'])."' OR forum_id = '".cleanInput($_POST['tkid'])."' OR rebelforum = '".cleanInput($_POST['tkid'])."') AND email != '' AND password != ''";
 		if ($result = mysqli_query($conn, $query))
 		{
 			while ($db = mysqli_fetch_object($result))
@@ -3001,7 +3001,13 @@ if(isset($_GET['action']) && $_GET['action'] == "forgotpassword")
 		if($i == 0)
 		{
 			echo '
-			<p>Account not found.</p>';
+			<p>
+				Account not found.
+			</p>
+			
+			<p>
+				If you were on the old troop tracker, please do <a href="index.php?action=setup">account setup</a>. If you never trooped before, please do <a href="index.php?action=requestaccess">request access.</a> If you continue to have issues, please contact command staff for assistance.
+			</p>';
 		}
 	}
 	else
