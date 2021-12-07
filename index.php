@@ -2220,6 +2220,13 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<input type="text" name="amenities" id="amenities" />
 
 						<p>Additional Comments:</p>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\')" class="button">Bold</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\')" class="button">Italic</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\')" class="button">Underline</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'Q\')" class="button">Quote</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\')" class="button">Color</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\')" class="button">Size</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\')" class="button">URL</a>
 						<textarea rows="10" cols="50" name="comments" id="comments"></textarea>
 
 						<p>Label:</p>
@@ -2707,6 +2714,13 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<input type="text" name="amenities" id="amenities" value="'.copyEvent($eid, $amenities).'" />
 
 				<p>Additional Comments:</p>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\')" class="button">Bold</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\')" class="button">Italic</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\')" class="button">Underline</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'Q\')" class="button">Quote</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\')" class="button">Color</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\')" class="button">Size</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\')" class="button">URL</a>
 				<textarea rows="10" cols="50" name="comments" id="comments">'.copyEvent($eid, $comments).'</textarea>
 
 				<p>Label:</p>
@@ -2825,7 +2839,10 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 				}
 				else
 				{
-					echo 'Incorrect username or password. <a href="index.php?action=login">Try again?</a>';
+					echo '
+					<p>Incorrect username or password. <a href="index.php?action=login">Try again?</a></p>
+					
+					<p><a href="index.php?action=forgotpassword">Need to recover your password? Click here.</a>';
 				}
 			}
 		}
@@ -2833,7 +2850,16 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 		// An account does not exist
 		if($i == 0)
 		{
-			echo 'Incorrect username or password. <a href="index.php?action=login">Try again?</a>';
+			echo '
+			<p>Account not found. <a href="index.php?action=login">Try again?</a> - <span style="color: red;">BEFORE E-MAILING COMMAND STAFF FOR HELP, READ BELOW:</span></p>
+			
+			<p><b>IF YOU ARE USING YOUR TKID, NUMBERS ONLY! DO NOT USE A PREFIX</b></p>
+			
+			<p><b>YOU CAN USE YOUR FLORIDA GARRISON BOARDS OR REBEL LEGION FORUM USERNAME AS YOUR TKID, IF YOU DON\'T KNOW OR FORGOT YOUR TKID</b></p>
+			
+			<p><b>IF YOU HAD TROOPS ON THE OLD TROOP TRACKER, USE <a href="index.php?action=setup">ACCOUNT SETUP</a>. IF YOU ARE NEW, PLEASE <a href="index.php?action=requestaccess">REQUEST ACCESS</a>.</b></p>
+			
+			<p><b>IF THE ABOVE DID NOT SOLVE YOUR ISSUES, WHEN SENDING AN E-MAIL FOR HELP, INCLUDE (TKID, FL 501ST BOARDS NAME, REBEL LEGION FORUM NAME (IF APPLICABLE), AND AS MUCH DETAIL AS POSSIBLE. PLEASE DO NOT SEND AN E-MAIL ASKING FOR HELP AND NOTHING FURTHER.</b></p>';
 		}
 	}
 	else
@@ -2990,7 +3016,7 @@ if(isset($_GET['action']) && $_GET['action'] == "forgotpassword")
 				
 				echo '
 				<p>
-					An e-mail has been sent to your inbox with your new password. Be sure to check your spam folder. If an e-mail does not appear in your inbox within ten minutes, please contact command staff for assistance.
+					An e-mail has been sent to your inbox with your new password. Be sure to check your spam folder. If an e-mail does not appear in your inbox within thirty minutes, please contact command staff for assistance.
 				</p>';
 
 				// Increment data exist
@@ -3021,7 +3047,7 @@ if(isset($_GET['action']) && $_GET['action'] == "forgotpassword")
 
 			<br /><br />
 
-			<input type="submit" value="Submit!" name="forgotPasswordSend" />
+			<input type="submit" value="Retrieve Password!" name="forgotPasswordSend" />
 		</form>';	
 	}
 }
@@ -3155,7 +3181,7 @@ if(isset($_GET['event']))
 					<p><b>Is parking available:</b> '.yesNo($db->parking).'</p>
 					<p><b>Is venue accessible to those with limited mobility:</b> '.yesNo($db->mobility).'</p>
 					<p><b>Amenities available at venue:</b> '.ifEmpty($db->amenities, "No amenities for this event.").'</p>
-					<p><b>Comments:</b><br />'.ifEmpty(nl2br($db->comments), "No comments for this event.").'</p>
+					<p><b>Comments:</b><br />'.ifEmpty(nl2br(showBBcodes($db->comments)), "No comments for this event.").'</p>
 					<p><b>Referred by:</b> '.ifEmpty($db->referred, "Not available").'</p>';
 				
 					// Get number of events with link
@@ -3181,7 +3207,7 @@ if(isset($_GET['event']))
 						<h2 class="tm-section-header">Shifts</h2>';
 						
 						// Query database for photos
-						$query2 = "SELECT * FROM events WHERE (id = '".$link."' OR link = '".$link."') AND id != '".$db->id."' ORDER BY dateStart ASC";
+						$query2 = "SELECT * FROM events WHERE (id = '".$link."' OR link = '".$link."') AND id != '".$db->id."' ORDER BY dateStart DESC";
 						
 						if ($result2 = mysqli_query($conn, $query2))
 						{
@@ -3197,7 +3223,7 @@ if(isset($_GET['event']))
 							}
 						}
 					}
-				
+					
 					// Don't show photos, if merged data
 					if(!$isMerged)
 					{
@@ -3227,6 +3253,7 @@ if(isset($_GET['event']))
 									echo '<a href="process.php?do=deletephoto&id='.$db2->id.'" name="deletephoto" photoid="'.$db2->id.'">Delete</a>';
 								}
 								
+								// Increment photo count
 								$j++;
 							}
 						}
@@ -3758,8 +3785,37 @@ if(isset($_GET['event']))
 				echo '
 				<hr />';
 				
+				// Set results per page
+				$results = 5;
+				
+				// Get total results - query
+				$sqlPage = "SELECT COUNT(id) AS total FROM uploads WHERE troopid = '".cleanInput($_GET['event'])."'"; 
+				$resultPage = $conn->query($sqlPage);
+				$rowPage = $resultPage->fetch_assoc();
+				
+				// Set total pages
+				$total_pages = ceil($rowPage["total"] / $results);
+				
+				// If page set
+				if(isset($_GET['page']))
+				{
+					// Get page
+					$page = cleanInput($_GET['page']);
+					
+					// Start from
+					$startFrom = ($page - 1) * $results;
+				}
+				else
+				{
+					// Default page
+					$page = 1;
+					
+					// Start from - default
+					$startFrom = ($page - 1) * $results;
+				}
+				
 				// Query database for photos
-				$query = "SELECT * FROM uploads WHERE troopid = '".cleanInput($_GET['event'])."' AND admin = '0' ORDER BY date DESC";
+				$query = "SELECT * FROM uploads WHERE troopid = '".cleanInput($_GET['event'])."' AND admin = '0' ORDER BY date DESC LIMIT ".$startFrom.", ".$results."";
 				
 				// Count photos
 				$i = 0;
@@ -3786,6 +3842,36 @@ if(isset($_GET['event']))
 						
 						$i++;
 					}
+				}
+				
+				// If photos
+				if($i > 0)
+				{
+					echo '<p>Pages: ';
+					
+					// Loop through pages
+					for ($j = 1; $j <= $total_pages; $j++)
+					{
+						// If we are on this page...
+						if($page == $j)
+						{
+							echo '
+							'.$j.'';
+						}
+						else
+						{
+							echo '
+							<a href="index.php?event='.cleanInput($_GET['event']).'&page='.$j.'">'.$j.'</a>';
+						}
+						
+						// If not that last page, add a comma
+						if($j != $total_pages)
+						{
+							echo ', ';
+						}
+					}
+					
+					echo '</p>';
 				}
 				
 				// No photos found

@@ -1,5 +1,11 @@
 **Changelog**
 
+_12/06/2021_
+
+-BB Code Buttons Added
+-Forgot Password Button text changed
+-Pages added to photos to prevent load issues
+
 _12/03/2021_
 
 -Fixed "Forgot password" issue where you could recover an account that was not set up

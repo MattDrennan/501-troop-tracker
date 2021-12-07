@@ -4,6 +4,109 @@ jQuery.validator.addMethod("noSpace", function(value, element)
 	return value.trim().replace(/[\t\n]+/g,' ').length > 1; 
 }, "Please enter a comment.");
 
+// bbcoder: Converts textbox content to BB Code
+function bbcoder(code)
+{
+	try
+	{
+		var old = "";
+		var textarea = document.getElementsByName("comments")[0];
+		var value = textarea.value;
+		var startPos = textarea.selectionStart;
+		var endPos = textarea.selectionEnd;
+		var selectedText = value.substring(startPos, endPos);
+
+		switch (code)
+		{
+			case 'B':
+				bbbold(textarea, value, startPos, endPos, selectedText);
+			break;
+			
+			case 'U':
+				bbunder(textarea, value, startPos, endPos, selectedText);
+			break;
+			
+			case 'I':
+				bbitalic(textarea, value, startPos, endPos, selectedText);
+			break;
+			
+			case 'Q':
+				bbquote(textarea, value, startPos, endPos, selectedText);
+			break;
+			
+			case 'COLOR':
+				bbcolor(textarea, value, startPos, endPos, selectedText);
+			break;
+			
+			case 'SIZE':
+				bbsize(textarea, value, startPos, endPos, selectedText);
+			break;
+			
+			case 'URL':
+				bburl(textarea, value, startPos, endPos, selectedText);
+			break;
+			
+			default:
+				//alert('Invalid argument');
+			break;
+		}
+	}
+	catch (e)
+	{
+		//alert(e.toString());
+	}
+}
+
+// BB - Bold
+function bbbold(textarea, value, startPos, endPos, selectedText)
+{
+	textarea.value = value.replaceBetween(startPos, endPos, "[b]" + selectedText + "[/b]");
+}
+
+// BB - Italic
+function bbitalic(textarea, value, startPos, endPos, selectedText)
+{
+	textarea.value = value.replaceBetween(startPos, endPos, "[i]" + selectedText + "[/i]");
+}
+
+// BB - Underline
+function bbunder(textarea, value, startPos, endPos, selectedText)
+{
+	textarea.value = value.replaceBetween(startPos, endPos, "[u]" + selectedText + "[/u]");
+}
+
+// BB - Quote
+function bbquote(textarea, value, startPos, endPos, selectedText)
+{
+	textarea.value = value.replaceBetween(startPos, endPos, "[quote]" + selectedText + "[/quote]");
+}
+
+// BB - Color
+function bbcolor(textarea, value, startPos, endPos, selectedText)
+{
+	var color = window.prompt("What color?");
+	textarea.value = value.replaceBetween(startPos, endPos, "[color=" + color + "]" + selectedText + "[/color]");
+}
+
+// BB - Size
+function bbsize(textarea, value, startPos, endPos, selectedText)
+{
+	var size = window.prompt("What font size?");
+	textarea.value = value.replaceBetween(startPos, endPos, "[size=" + size + "]" + selectedText + "[/size]");
+}
+
+// BB - URL
+function bburl(textarea, value, startPos, endPos, selectedText)
+{
+	textarea.value = value.replaceBetween(startPos, endPos, "[url]" + selectedText + "[/url]");
+}
+
+// Replace between string
+String.prototype.replaceBetween = function(start, end, what)
+{
+	return this.substring(0, start) + what + this.substring(end);
+};
+
 
 /* Toggle between adding and removing the "responsive" class to topnav when the user clicks on the icon */
 function myFunction() {
