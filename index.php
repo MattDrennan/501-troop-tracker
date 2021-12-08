@@ -632,7 +632,7 @@ if(isset($_GET['action']) && $_GET['action'] == "photos")
 	$i = 0;
 
 	// Build query
-	$query = "SELECT uploads.troopid, events.dateStart, events.dateEnd FROM uploads LEFT JOIN events ON uploads.troopid = events.id GROUP BY uploads.troopid ORDER BY uploads.id ASC LIMIT 100";
+	$query = "SELECT uploads.troopid, events.dateStart, events.dateEnd FROM uploads LEFT JOIN events ON uploads.troopid = events.id GROUP BY uploads.troopid ORDER BY events.dateEnd DESC LIMIT 100";
 
 	// Loop through query
 	if ($result = mysqli_query($conn, $query))
