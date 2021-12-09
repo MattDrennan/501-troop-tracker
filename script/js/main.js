@@ -1516,20 +1516,57 @@ $(document).ready(function()
 	// Modify Sign Up Form Change
 	$("body").on("change", "select[name=modifysignupFormCostume], select[name=modiftybackupcostumeForm], select[name=modifysignupStatusForm]", function(e)
 	{
-		var signupForm1 = $("select[name=modifysignupFormCostume][trooperid=" + $(this).attr("trooperid") + "]");
-		var signupForm2 = $("select[name=modiftybackupcostumeForm][trooperid=" + $(this).attr("trooperid") + "]");
-		var signupForm3 = $("select[name=modifysignupStatusForm][trooperid=" + $(this).attr("trooperid") + "]");
+		var trooperid = $(this).attr("trooperid");
+		var signupForm1 = $("select[name=modifysignupFormCostume][trooperid=" + trooperid + "]");
+		var signupForm2 = $("select[name=modiftybackupcostumeForm][trooperid=" + trooperid + "]");
+		var signupForm3 = $("select[name=modifysignupStatusForm][trooperid=" + trooperid + "]");
 		
 		$.ajax({
 			type: "POST",
 			url: "process.php?do=modifysignup",
-			data: "costume=" + signupForm1.val() + "&costume_backup=" + signupForm2.val() + "&status=" + signupForm3.val() + "&troopid=" + $("#modifysignupTroopIdForm").val() + "&limitedevent=" + $("#limitedEventCancel").val() + "&trooperid=" + $(this).attr("trooperid"),
+			data: "costume=" + signupForm1.val() + "&costume_backup=" + signupForm2.val() + "&status=" + signupForm3.val() + "&troopid=" + $("#modifysignupTroopIdForm").val() + "&limitedevent=" + $("#limitedEventCancel").val() + "&trooperid=" + trooperid,
 			success: function(data)
 			{
+				console.log(data);
 				var json = JSON.parse(data);
 				
+				// If JSON did not fail
 				if(json.success != "failed")
 				{
+					// Adjust options based on costume
+					if((($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "] option:selected").attr("club") == 0 && (json.limit501st - json.limit501stTotal) > 0) || ($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "] option:selected").attr("club") == 1 && (json.limitRebels - json.limitRebelsTotal) > 0) || ($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "] option:selected").attr("club") == 2 && (json.limitMando - json.limitMandoTotal) > 0) || ($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "] option:selected").attr("club") == 3 && (json.limitDroid - json.limitDroidTotal) > 0) || ($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "] option:selected").attr("club") == 4 && (json.limitOther - json.limitOtherTotal) > 0)) && json.staus != 4)
+					{
+						// Empty select
+						signupForm3.empty();
+
+						// Refill
+						signupForm3.append("<option value='0'>I'll be there</option> <option value='2'>Tentative</option> <option value='4'>Cancel</option>");
+
+						// Set selected value
+						signupForm3.val(json.status);
+					}
+					else
+					{
+						// Empty select
+						signupForm3.empty();
+
+						// If not stand by
+						if(json.status != 1)
+						{
+							// Refill
+							signupForm3.append("<option value='0'>I'll be there</option> <option value='2'>Tentative</option> <option value='4'>Cancel</option>");
+						}
+						// Troop is full, show stand by
+						else
+						{
+							// Refill
+							signupForm3.append("<option value='1'>Stand By</option> <option value='4'>Cancel</option>");
+						}
+
+						// Set selected value
+						signupForm3.val(json.status);
+					}
+
 					// Change text on page
 					if(signupForm3.val() == 4)
 					{

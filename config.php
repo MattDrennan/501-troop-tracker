@@ -1475,6 +1475,21 @@ function getTrooperForum($id)
 	}
 }
 
+// getCostumeClub: gets the costumes club
+function getCostumeClub($id)
+{
+	global $conn;
+	
+	$query = "SELECT * FROM costumes WHERE id = '".$id."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			return $db->club;
+		}
+	}
+}
+
 // profileTop: Display's user information at top of profile page
 function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 {
@@ -2219,7 +2234,7 @@ function eventClubCount($eventID, $club)
 	$returnVal = 0; // Number to return
 
 	// Query database for roster info
-	$query = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".$eventID."' AND status != '4'";
+	$query = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".$eventID."' AND status != '1' AND status != '4'";
 
 	if ($result = mysqli_query($conn, $query))
 	{
@@ -2310,137 +2325,44 @@ function isEventFull($eventID, $costumeID)
 {
 	global $conn;
 
-	// Variables
-	$i = 0;	// 501st
-	$rl = 0;	// Rebel Legion
-	$droidb = 0;	// Droid builders
-	$mandos = 0;	// Mandos
-	$other = 0;	// Others
-	$total = 0; // Total count
-	$eventFull = false;	// Is the event full?
+	// Set up variables
+	$eventFull = false;
 
-	// Query database for event info
+	// Set up limits
+	$limitRebels = "";
+	$limit501st = "";
+	$limitMando = "";
+	$limitDroid = "";
+	$limitOther = "";
+
+	// Set up limit totals
+	$limitRebelsTotal = eventClubCount($eventID, 1);
+	$limit501stTotal = eventClubCount($eventID, 0);
+	$limitMandoTotal = eventClubCount($eventID, 2);
+	$limitDroidTotal = eventClubCount($eventID, 3);
+	$limitOtherTotal = eventClubCount($eventID, 4);
+
+	// Query to get limits
 	$query = "SELECT * FROM events WHERE id = '".$eventID."'";
+
+	// Output
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
-			// Query database for roster info
-			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".$eventID."' AND status != '4'";
-
-			if ($result2 = mysqli_query($conn, $query2))
-			{
-				while ($db2 = mysqli_fetch_object($result2))
-				{
-					// Query costume database to add to club counts
-					$query4 = "SELECT * FROM costumes WHERE id = '".$db2->costume."'";
-					if ($result4 = mysqli_query($conn, $query4))
-					{
-						while ($db4 = mysqli_fetch_object($result4))
-						{
-							// 501st
-							if($db4->club == 0)
-							{
-								$i++;
-								$total++;
-							}
-							// Rebel Legion
-							else if($db4->club == 1)
-							{
-								$rl++;
-								$total++;
-							}
-							// Mandos
-							else if($db4->club == 2)
-							{
-								$mandos++;
-								$total++;
-							}
-							// Droid Builders
-							else if($db4->club == 3)
-							{
-								$droidb++;
-								$total++;
-							}
-							// Other
-							else if($db4->club == 4)
-							{
-								$other++;
-								$total++;
-							}
-							// All
-							else if($db4->club == 5)
-							{
-								$i++;
-								$rl++;
-								$mandos++;
-								$droidb++;
-								$other++;
-								$total++;
-							}							
-						}
-					}
-				}
-			}
-
-			// Final checks
-			// Query costume database to get information on the users costume
-			$query4 = "SELECT * FROM costumes WHERE id = '".$costumeID."'";
-			if ($result4 = mysqli_query($conn, $query4))
-			{
-				while ($db4 = mysqli_fetch_object($result4))
-				{
-					// 501st
-					if($db4->club == 0)
-					{
-						if(($i + 1) > $db->limit501st)
-						{
-							$eventFull = true;
-						}
-					}
-					// Rebel Legion
-					else if($db4->club == 1)
-					{
-						if(($rl + 1) > $db->limitRebels)
-						{
-							$eventFull = true;
-						}
-					}
-					// Droid Builders
-					else if($db4->club == 2)
-					{
-						if(($droidb + 1) > $db->limitDroid)
-						{
-							$eventFull = true;
-						}
-					}
-					// Mandos
-					else if($db4->club == 3)
-					{
-						if(($mandos + 1) > $db->limitMando)
-						{
-							$eventFull = true;
-						}
-					}
-					// Other
-					else if($db4->club == 4)
-					{
-						if(($other + 1) > $db->limitOther)
-						{
-							$eventFull = true;
-						}
-					}
-					// All
-					else if($db4->club == 5)
-					{
-						if(($total + 1) > ($db->limit501st + $db->limitRebels + $db->limitDroid + $db->limitMando + $db->limitOther))
-						{
-							$eventFull = true;
-						}
-					}					
-				}
-			}
+			$limitRebels = $db->limitRebels;
+			$limit501st = $db->limit501st;
+			$limitMando = $db->limitMando;
+			$limitDroid = $db->limitDroid;
+			$limitOther = $db->limitOther;
 		}
+	}
+
+	// Check if troop is full
+	if(((getCostumeClub($costumeID) == 0 && ($limit501st - eventClubCount($eventID, 0)) <= 0) || (getCostumeClub($costumeID) == 1 && ($limitRebels - eventClubCount($eventID, 1)) <= 0) || (getCostumeClub($costumeID) == 2 && ($limitMando - eventClubCount($eventID, 2)) <= 0) || (getCostumeClub($costumeID) == 3 && ($limitDroid - eventClubCount($eventID, 3)) <= 0) || (getCostumeClub($costumeID) == 4 && ($limitOther - eventClubCount($eventID, 4)) <= 0)))
+	{
+		// Set event full
+		$eventFull = true;
 	}
 
 	// Return
