@@ -1527,7 +1527,6 @@ $(document).ready(function()
 			data: "costume=" + signupForm1.val() + "&costume_backup=" + signupForm2.val() + "&status=" + signupForm3.val() + "&troopid=" + $("#modifysignupTroopIdForm").val() + "&limitedevent=" + $("#limitedEventCancel").val() + "&trooperid=" + trooperid,
 			success: function(data)
 			{
-				console.log(data);
 				var json = JSON.parse(data);
 				
 				// If JSON did not fail
@@ -1566,6 +1565,9 @@ $(document).ready(function()
 						// Set selected value
 						signupForm3.val(json.status);
 					}
+
+					// Update troopers remaining on the page
+					$("div[name=troopersRemainingDisplay]").html(json.troopersRemaining);
 
 					// Change text on page
 					if(signupForm3.val() == 4)

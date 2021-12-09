@@ -201,6 +201,9 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 			$limitOther = $db->limitOther;
 		}
 	}
+
+	// Set limit total
+	$limitTotal = $limitRebels + $limit501st + $limitMando + $limitDroid + $limitOther;
 	
 	// Kill hack
 	if($i == 0)
@@ -252,8 +255,19 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 		$conn->query("UPDATE event_sign_up SET status = '0' WHERE troopid = '".cleanInput($_POST['troopid'])."' AND status = '1' AND ".getCostumeClub(cleanInput($_POST['costume']))." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ORDER BY signuptime DESC LIMIT 1");
 	}
 
+	// Update troopers remaining
+	$data = '
+	<ul>
+		<li>This event is limited to '.$limitTotal.' troopers.</li>
+		<li>This event is limited to '.$limit501st.' 501st troopers. '.troopersRemaining($limit501st, eventClubCount(cleanInput($_POST['troopid']), 0)).' </li>
+		<li>This event is limited to '.$limitRebels.' Rebel Legion troopers. '.troopersRemaining($limitRebels, eventClubCount(cleanInput($_POST['troopid']), 1)).'</li>
+		<li>This event is limited to '.$limitMando.' Mando Merc troopers. '.troopersRemaining($limitMando, eventClubCount(cleanInput($_POST['troopid']), 2)).'</li>
+		<li>This event is limited to '.$limitDroid.' Droid Builder troopers. '.troopersRemaining($limitDroid, eventClubCount(cleanInput($_POST['troopid']), 3)).'</li>
+		<li>This event is limited to '.$limitOther.' Other troopers. '.troopersRemaining($limitOther, eventClubCount(cleanInput($_POST['troopid']), 4)).'</li>
+	</ul>';
+
 	// Send JSON
-	$array = array('success' => 'true', 'status' => $status, 'troopFull' => $troopFull, 'limitRebels' => $limitRebels, 'limit501st' => $limit501st, 'limitMando' => $limitMando, 'limitOther' => $limitOther, 'limitRebelsTotal' => $limitRebelsTotal, 'limit501stTotal' => $limit501stTotal, 'limitMandoTotal' => $limitMandoTotal, 'limitDroidTotal' => $limitDroidTotal, 'limitOtherTotal' => $limitOtherTotal);
+	$array = array('success' => 'true', 'status' => $status, 'troopFull' => $troopFull, 'limitRebels' => $limitRebels, 'limit501st' => $limit501st, 'limitMando' => $limitMando, 'limitOther' => $limitOther, 'limitRebelsTotal' => $limitRebelsTotal, 'limit501stTotal' => $limit501stTotal, 'limitMandoTotal' => $limitMandoTotal, 'limitDroidTotal' => $limitDroidTotal, 'limitOtherTotal' => $limitOtherTotal, 'troopersRemaining' => $data);
 	echo json_encode($array);
 }
 
@@ -2277,6 +2291,9 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 			}
 		}
 
+		// Add to total
+		$limitTotal = $limitRebels + $limit501st + $limitMando + $limitDroid + $limitOther;
+
 		// Set troop full - not used at the moment, but will keep it here for now
 		$troopFull = false;
 		
@@ -2580,8 +2597,19 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 					</div>';
 				}
 
+				// Update troopers remaining
+				$data2 = '
+				<ul>
+					<li>This event is limited to '.$limitTotal.' troopers.</li>
+					<li>This event is limited to '.$db->limit501st.' 501st troopers. '.troopersRemaining($db->limit501st, eventClubCount($db->id, 0)).' </li>
+					<li>This event is limited to '.$db->limitRebels.' Rebel Legion troopers. '.troopersRemaining($db->limitRebels, eventClubCount($db->id, 1)).'</li>
+					<li>This event is limited to '.$db->limitMando.' Mando Merc troopers. '.troopersRemaining($db->limitMando, eventClubCount($db->id, 2)).'</li>
+					<li>This event is limited to '.$db->limitDroid.' Droid Builder troopers. '.troopersRemaining($db->limitDroid, eventClubCount($db->id, 3)).'</li>
+					<li>This event is limited to '.$db->limitOther.' Other troopers. '.troopersRemaining($db->limitOther, eventClubCount($db->id, 4)).'</li>
+				</ul>';
+
 				// Send back data
-				$array = array('success' => 'success', 'data' => $data, 'id' => $_SESSION['id']);
+				$array = array('success' => 'success', 'data' => $data, 'id' => $_SESSION['id'], 'troopersRemaining' => $data2);
 				echo json_encode($array);
 			}
 		}

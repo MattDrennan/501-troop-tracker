@@ -703,6 +703,9 @@ $(function()
                         $("#signuparea1").hide();
                         $("#hr1").hide();
                         $("#rosterTableNoData").hide();
+
+                        // Update troopers remaining on the page
+                        $("div[name=troopersRemainingDisplay]").html(json.troopersRemaining);
                     }
                 }
             });
@@ -774,6 +777,9 @@ $(function()
                         $("#costume").val("null").trigger("change");
                         $("select[name=status]").val("null");
                         $("#backupcostume").val(0).trigger("change");
+
+                        // Update troopers remaining on the page
+                        $("div[name=troopersRemainingDisplay]").html(json.troopersRemaining);
                     }
                 }
             });

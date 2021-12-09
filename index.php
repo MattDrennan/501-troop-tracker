@@ -1432,7 +1432,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<a href="index.php?action=commandstaff&do=createuser" class="button">Create Trooper</a> 
 				<a href="index.php?action=commandstaff&do=managetroopers" class="button">Manage Troopers</a> 
 				<a href="index.php?action=commandstaff&do=approvetroopers" class="button" id="trooperRequestButton" name="trooperRequestButton">Approve Trooper Requests - ('.$getTrooperNotifications->num_rows.')</a> 
-				<a href="index.php?action=commandstaff&do=assignawards" class="button">Assign Awards</a>
+				<a href="index.php?action=commandstaff&do=assignawards" class="button">Award Management</a>
 				<a href="index.php?action=commandstaff&do=sitesettings" class="button">Site Settings</a>';
 			}
 			
@@ -2243,7 +2243,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<option value="8">Other</option>
 						</select>
 
-						<p>Do you wish to lock this event?</p>
+						<p>Is this a manual selection event?</p>
 						<select name="limitedEvent" id="limitedEvent">
 							<option value="1">Yes</option>
 							<option value="0">No</option>
@@ -2738,7 +2738,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<option value="8" '.copyEventSelect($eid, $label, 8).'>Other</option>
 				</select>
 
-				<p>Do you wish to lock this event?</p>
+				<p>Is this a manual selection event?</p>
 				<select name="limitedEvent" id="limitedEvent">
 					<option value="null" '.copyEventSelect($eid, $limitedEvent, "null").'>Please choose an option...</option>
 					<option value="1" '.copyEventSelect($eid, $limitedEvent, 1).'>Yes</option>
@@ -3280,7 +3280,7 @@ if(isset($_GET['event']))
 						<hr />
 						<br />
 						
-						<div style="color: red;">
+						<div style="color: red;" name="troopersRemainingDisplay">
 							<ul>
 								<li>This event is limited to '.$limitTotal.' troopers.</li>
 								<li>This event is limited to '.$db->limit501st.' 501st troopers. '.troopersRemaining($db->limit501st, eventClubCount($db->id, 0)).' </li>
