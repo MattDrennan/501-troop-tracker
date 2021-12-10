@@ -643,7 +643,7 @@ if(isset($_GET['action']) && $_GET['action'] == "photos")
 	$i = 0;
 
 	// Build query
-	$query = "SELECT uploads.troopid, events.dateStart, events.dateEnd FROM uploads LEFT JOIN events ON uploads.troopid = events.id GROUP BY uploads.troopid ORDER BY events.dateEnd DESC LIMIT 100";
+	$query = "SELECT uploads.troopid, events.dateStart, events.dateEnd FROM uploads LEFT JOIN events ON uploads.troopid = events.id WHERE admin = '0' GROUP BY uploads.troopid ORDER BY events.dateEnd DESC LIMIT 100";
 
 	// Loop through query
 	if ($result = mysqli_query($conn, $query))
@@ -1086,7 +1086,8 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		<h2 class="tm-section-header">My Stats</h2>
 		
 		<p style="text-align: center;">
-			<a href="#" class="button" id="showstats" name="showstats">Show My Stats</a>
+			<a href="#" class="button" id="showstats" name="showstats">Show My Stats</a> 
+			<a href="index.php?profile='.$_SESSION['id'].'" class="button">View My Profile</a>
 		</p>
 		
 		<div id="mystats" name="mystats" style="display: none;">';
