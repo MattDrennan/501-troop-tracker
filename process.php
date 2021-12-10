@@ -228,21 +228,13 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	$troopFull = false;
 	
 	// Check if troop is full and not set to cancel
-	if(((getCostumeClub(cleanInput($_POST['costume'])) == 0 && ($limit501st - eventClubCount(cleanInput($_POST['troopid']), 0)) <= 0) || (getCostumeClub(cleanInput($_POST['costume'])) == 1 && ($limitRebels - eventClubCount(cleanInput($_POST['troopid']), 1)) <= 0) || (getCostumeClub(cleanInput($_POST['costume'])) == 2 && ($limitMando - eventClubCount(cleanInput($_POST['troopid']), 2)) <= 0) || (getCostumeClub(cleanInput($_POST['costume'])) == 3 && ($limitDroid - eventClubCount(cleanInput($_POST['troopid']), 3)) <= 0) || (getCostumeClub(cleanInput($_POST['costume'])) == 4 && ($limitOther - eventClubCount(cleanInput($_POST['troopid']), 4)) <= 0)) && $status != 4)
+	if(((getCostumeClub(cleanInput($_POST['costume'])) == 0 && ($limit501st - eventClubCount(cleanInput($_POST['troopid']), 0)) <= 0) || (getCostumeClub(cleanInput($_POST['costume'])) == 1 && ($limitRebels - eventClubCount(cleanInput($_POST['troopid']), 1)) <= 0) || (getCostumeClub(cleanInput($_POST['costume'])) == 2 && ($limitMando - eventClubCount(cleanInput($_POST['troopid']), 2)) <= 0) || (getCostumeClub(cleanInput($_POST['costume'])) == 3 && ($limitDroid - eventClubCount(cleanInput($_POST['troopid']), 3)) <= 0) || (getCostumeClub(cleanInput($_POST['costume'])) == 4 && ($limitOther - eventClubCount(cleanInput($_POST['troopid']), 4)) <= 0)) && $status != 4 && inEvent(cleanInput($_POST['trooperid']), cleanInput($_POST['troopid']))['inTroop'] != 1)
 	{
 		// Troop is full, set to stand by
 		$status = 1;
 
 		// Set troop full
 		$troopFull = true;
-	}
-	else
-	{
-		// If status is not updated, let's update it to prevent blank data
-		if($status != 0 && $status != 1 && $status != 4)
-		{
-			$status = 0;
-		}
 	}
 
 	// Update SQL
@@ -2223,16 +2215,25 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 	// When we receive a submission for an event sign up...
 	if(isset($_POST['submitSignUp']))
 	{
+		// Set trooper ID
+		$trooperID = 0;
+
 		// Check if this is add friend
 		if(isset($_POST['addfriend']))
 		{
 			// Prevent bug of getting signed up twice
 			$eventCheck = inEvent(cleanInput($_POST['trooperSelect']), cleanInput($_POST['event']));
+
+			// Set
+			$trooperID = cleanInput($_POST['trooperSelect']);
 		}
 		else
 		{
 			// Prevent bug of getting signed up twice
 			$eventCheck = inEvent(cleanInput($_SESSION['id']), cleanInput($_POST['event']));
+
+			// Set
+			$trooperID = cleanInput($_SESSION['id']);
 		}
 
 		if($eventCheck['inTroop'] == 1)
@@ -2360,8 +2361,8 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 							<!-- Hidden variables -->
 							<input type="hidden" name="modifysignupTroopIdForm" id="modifysignupTroopIdForm" value="'.$db->id.'" />
 							<input type="hidden" name="limitedEventCancel" id="limitedEventCancel" value="'.$db->limitedEvent.'" />
-							<input type="hidden" name="troopidC" id="troopidC" value="'.strip_tags(addslashes($_POST['event'])).'" />
-							<input type="hidden" name="myId" id="myId" value="'.strip_tags(addslashes($_SESSION['id'])).'" />
+							<input type="hidden" name="troopidC" id="troopidC" value="'.cleanInput($_POST['event']).'" />
+							<input type="hidden" name="myId" id="myId" value="'.cleanInput($_SESSION['id']).'" />
 
 							<div style="overflow-x: auto;">
 							<table border="1">
@@ -2376,6 +2377,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 							$data .= '
 							<tr>
 								<td>
+									'.drawSupportBadge($db2->trooperId).'
 									<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>
 								</td>
 									

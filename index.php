@@ -3323,7 +3323,7 @@ if(isset($_GET['event']))
 						<!-- Hidden variables -->
 						<input type="hidden" name="modifysignupTroopIdForm" id="modifysignupTroopIdForm" value="'.$db->id.'" />
 						<input type="hidden" name="limitedEventCancel" id="limitedEventCancel" value="'.$db->limitedEvent.'" />
-						<input type="hidden" name="troopidC" id="troopidC" value="'.strip_tags(addslashes($_GET['event'])).'" />';
+						<input type="hidden" name="troopidC" id="troopidC" value="'.cleanInput($_GET['event']).'" />';
 						
 						// If user logged in
 						if(loggedIn())
