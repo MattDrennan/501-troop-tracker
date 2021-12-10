@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Nov 30, 2021 at 01:22 PM
+-- Generation Time: Dec 10, 2021 at 06:35 PM
 -- Server version: 5.7.34
 -- PHP Version: 7.4.21
 
@@ -173,6 +173,17 @@ CREATE TABLE `events` (
   `moneyRaised` int(11) NOT NULL DEFAULT '0',
   `squad` int(11) NOT NULL,
   `link` int(11) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `event_notifications`
+--
+
+CREATE TABLE `event_notifications` (
+  `troopid` int(11) NOT NULL,
+  `trooperid` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------

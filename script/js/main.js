@@ -286,6 +286,34 @@ $(document).ready(function()
 			$("#limitChange").text("Change Limits");
 		}
 	})
+
+	// Event Notifications - Subscribe / Unsubscribe
+	$("body").on("click", "#subscribeupdates", function(e)
+	{
+		e.preventDefault();
+
+		$.ajax({
+			type: "POST",
+			url: "process.php?do=eventsubscribe",
+			data: "eventsubscribe=1&event=" + $("#subscribeupdates").attr("event"),
+			success: function(data)
+			{
+				// Get JSON
+				var json = JSON.parse(data);
+
+				if($("#subscribeupdates").text() == "Subscribe Updates")
+				{
+					alert(json.message);
+					$("#subscribeupdates").text("Unsubscribe Updates");
+				}
+				else
+				{
+					alert(json.message);
+					$("#subscribeupdates").text("Subscribe Updates");
+				}
+			}
+		});
+	})
 	
 	// Add shift variable
 	var shifts = 2;
@@ -1536,6 +1564,7 @@ $(document).ready(function()
 			data: "costume=" + signupForm1.val() + "&costume_backup=" + signupForm2.val() + "&status=" + signupForm3.val() + "&troopid=" + $("#modifysignupTroopIdForm").val() + "&limitedevent=" + $("#limitedEventCancel").val() + "&trooperid=" + trooperid + "&signid=" + signid,
 			success: function(data)
 			{
+				console.log(data);
 				var json = JSON.parse(data);
 				
 				// If JSON did not fail
@@ -1767,6 +1796,7 @@ $(document).ready(function()
 			$("#forumTable").html("");
 			$("#forumRebelTable").html("");
 			$("#mandoTable").html("");
+			$("#sgTable").html("");
 			$("#phoneTable").html("");
 			$("#squadTable").html("");
 			$("#tkTable").html("");

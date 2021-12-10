@@ -245,6 +245,9 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	{
 		// Check if someone is on the wait list, and set to going
 		$conn->query("UPDATE event_sign_up SET status = '0' WHERE troopid = '".cleanInput($_POST['troopid'])."' AND status = '1' AND ".getCostumeClub(cleanInput($_POST['costume']))." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ORDER BY signuptime DESC LIMIT 1");
+
+		// Send update
+		sendEventUpdate(cleanInput($_POST['troopid']), cleanInput($_POST['trooperid']), "Troop Tracker: Trooper Canceled Sign Up On " . getEventTitle(cleanInput($_POST['troopid'])), getName(cleanInput($_POST['trooperid'])) . " canceled on " . getEventTitle(cleanInput($_POST['troopid']) . "."));
 	}
 
 	// Update troopers remaining
@@ -575,6 +578,40 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 		// Send notification to command staff
 		sendNotification(getName($_SESSION['id']) . " has edited costume ID [" . cleanInput($_POST['costumeIDEdit']) . "] to " . cleanInput($_POST['costumeNameEdit']), cleanInput($_SESSION['id']));
 	}
+}
+
+/************************ EVENT NOTIFICATIONS ***************************************/
+
+// Event notifications button pressed
+if(isset($_GET['do']) && $_GET['do'] == "eventsubscribe" && isset($_POST['eventsubscribe']) && loggedIn())
+{
+	// Set up variable
+	$message = "";
+
+	// Query to see if trooper is subscribed already
+	$isSubscribed = $conn->query("SELECT * FROM event_notifications WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($_POST['event'])."'");
+
+	// Check if subscribed
+	if($isSubscribed->num_rows > 0)
+	{
+		// Already subscribed, delete information
+		$conn->query("DELETE FROM event_notifications WHERE trooperid = '".cleanInput($_SESSION['id'])."' AND troopid = '".cleanInput($_POST['event'])."'");
+
+		// Message
+		$message = "You are now unsubscribed from this event.";
+	}
+	else
+	{
+		// Subscribe
+		$conn->query("INSERT INTO event_notifications (trooperid, troopid) VALUES ('".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['event'])."')");
+
+		// Message
+		$message = "You are now subscribed to this event and will receive e-mail notifications.";
+	}
+
+	// Send JSON
+	$array = array('message' => $message);
+	echo json_encode($array);
 }
 
 /************************ AWARDS ***************************************/
@@ -2335,6 +2372,9 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 			$conn->query("INSERT INTO event_sign_up (trooperid, troopid, costume, status, costume_backup) VALUES ('".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['event'])."', '".cleanInput($_POST['costume'])."', '".$status."', '".cleanInput($_POST['backupcostume'])."')") or die($conn->error);
 		}
 
+		// Send update
+		sendEventUpdate(cleanInput($_POST['event']), $trooperID, "Troop Tracker: Trooper Signed Up On " . getEventTitle(cleanInput($_POST['event'])), getName($trooperID) . " signed up on " . getEventTitle(cleanInput($_POST['event']) . "."));
+
 		// Define data variable for below code
 		$data = "";
 
@@ -2384,7 +2424,16 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 							<tr>
 								<td>
 									'.drawSupportBadge($db2->trooperId).'
-									<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>
+									<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
+
+									// Show who added the trooper
+									if($db2->addedby != 0)
+									{
+										$data .= '
+										<br /><small>Added by:<br />' . getName($db2->addedby) . '</small>';
+									}
+
+								$data .= '
 								</td>
 									
 								<td>
@@ -2528,7 +2577,17 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 							$data .= '
 							<tr>
 								<td>
-									<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>
+									'.drawSupportBadge($db2->trooperId).'
+									<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
+
+									// Show who added the trooper
+									if($db2->addedby != 0)
+									{
+										$data .= '
+										<br /><small>Added by:<br />' . getName($db2->addedby) . '</small>';
+									}
+
+								$data .= '
 								</td>
 									
 								<td>
@@ -2556,7 +2615,17 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 							$data .= '
 							<tr>
 								<td>
-									<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>
+									'.drawSupportBadge($db2->trooperId).'
+									<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
+
+									// Show who added the trooper
+									if($db2->addedby != 0)
+									{
+										$data .= '
+										<br /><small>Added by:<br />' . getName($db2->addedby) . '</small>';
+									}
+
+								$data .= '
 								</td>
 									
 								<td>

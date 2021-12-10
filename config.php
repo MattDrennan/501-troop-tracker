@@ -2069,13 +2069,33 @@ function isTKRegistered($tk)
 	return $registered;
 }
 
-// Prevent hacks
+// cleanInput: Prevents hack by cleaning input
 function cleanInput($value)
 {
 	$value = strip_tags(addslashes($value));
 	return $value;
 }
 
+// sendEventUpdate: Send's an e-mail (if subscribed) to user
+function sendEventUpdate($troopid, $trooperid, $subject, $message)
+{
+	global $conn;
+
+	// Add footer to message
+	$message = $message . "https://www.fl501st.com/troop-tracker/index.php?event=".$troopid."\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com\n\nTo turn off this notification, go to the event page, and press the \"Unsubscribe\" button.";
+
+	// Query database for trooper information and make sure they are subscribed to e-mail
+	$query = "SELECT troopers.email, troopers.name, troopers.subscribe FROM troopers LEFT JOIN event_notifications ON troopers.id = event_notifications.trooperid WHERE event_notifications.troopid = '".$troopid."' AND troopers.subscribe = '1' AND troopers.email != ''";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			@sendEmail($db->email, $db->name, $subject, $message);
+		}
+	}
+}
+
+// sendEmail: Send's an e-mail to specified user
 function sendEmail($SendTo, $Name, $Subject, $Message)
 {
 	// MAIL

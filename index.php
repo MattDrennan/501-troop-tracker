@@ -3117,7 +3117,25 @@ if(isset($_GET['event']))
 			
 			// Format dates
 			$date1 = date("m/d/Y - h:i A", strtotime($db->dateStart)); 
-			$date2 = date("m/d/Y - h:i A", strtotime($db->dateEnd)); 
+			$date2 = date("m/d/Y - h:i A", strtotime($db->dateEnd));
+
+			// Query to see if trooper is subscribed
+			$isSubscribed = $conn->query("SELECT * FROM event_notifications WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($_GET['event'])."'");
+
+			// Set default subscribe button text
+			$subscribeText = "Subscribe Updates";
+
+			// Check if we are subscribed
+			if($isSubscribed->num_rows > 0)
+			{
+				$subscribeText = "Unsubscribe Updates";
+			}
+
+			// Subscribe button
+			echo '
+			<p style="text-align: center;">
+				<a href="#" class="button" id="subscribeupdates" event="'.cleanInput($_GET['event']).'">'.$subscribeText.'</a>
+			</p>';
 			
 			// Is this merged data?
 			if($db->venue == NULL && $db->numberOfAttend == NULL && $db->requestedCharacter == NULL && $db->secureChanging == NULL && $db->lightsabers == NULL && $db->parking == NULL && $db->mobility == NULL && $db->amenities == NULL && $db->referred == NULL)
@@ -3358,7 +3376,16 @@ if(isset($_GET['event']))
 						<tr>
 							<td>
 								'.drawSupportBadge($db2->trooperId).'
-								<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>
+								<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
+
+								// Show who added the trooper
+								if($db2->addedby != 0)
+								{
+									echo '
+									<br /><small>Added by:<br />' . getName($db2->addedby) . '</small>';
+								}
+
+							echo '
 							</td>
 								
 							<td>
@@ -3528,7 +3555,16 @@ if(isset($_GET['event']))
 						<tr>
 							<td>
 								'.drawSupportBadge($db2->trooperId).'
-								<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>
+								<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
+
+								// Show who added the trooper
+								if($db2->addedby != 0)
+								{
+									echo '
+									<br /><small>Added by:<br />' . getName($db2->addedby) . '</small>';
+								}
+
+							echo '
 							</td>
 								
 							<td>
