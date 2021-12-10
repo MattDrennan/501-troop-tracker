@@ -3314,8 +3314,6 @@ if(isset($_GET['event']))
 					// Use this for later to determine which select box to show...
 					$status = $db2->status;
 
-					$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' AND status != '4' AND status != '1'");
-
 					// If no events to show...
 					if($i == 0)
 					{
@@ -3643,6 +3641,9 @@ if(isset($_GET['event']))
 								{
 									echo '<b>This is a locked event. When you sign up, you will be placed in a pending status until command staff approves you. Please check for updates.</b>';
 								}
+
+								// Get troop count
+								$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' AND status != '4' AND status != '1'");
 
 								// Is the event full?
 								if($getNumOfTroopers->num_rows >= ($db->limit501st + $db->limitRebels + $db->limitMando + $db->limitDroid + $db->limitOther))
@@ -4030,26 +4031,9 @@ if(isset($_GET['event']))
 
 						if($limitedEvent != 1)
 						{
-							// Should add stand by
-							$addStandBy = true;
-
-							// If on stand by, don't show other options
-							if(($getNumOfTroopers->num_rows + 1) <= $limitTotal)
-							{
-								echo '
-								<option value="0">I\'ll be there!</option>
-								<option value="2">Tentative</option>';
-
-								// Set add stand by
-								$addStandBy = false;
-							}
-
-							// Add stand by option if needed
-							if($addStandBy)
-							{
-								echo '
-								<option value="1">Stand By</option>';
-							}
+							echo '
+							<option value="0">I\'ll be there!</option>
+							<option value="2">Tentative</option>';
 						}
 						else
 						{
