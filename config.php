@@ -2029,13 +2029,24 @@ function isSignUpClosed()
 }
 
 // Does the TK ID exist?
-function doesTKExist($tk)
+function doesTKExist($tk, $squad = 0)
 {
 	global $conn, $squadArray;
 	
+	// Set up variables
 	$exist = false;
 	
-	$query = "SELECT * FROM troopers WHERE tkid='".$tk."' AND squad <= ".count($squadArray)."";
+	// If a 501st squad
+	if($squad < count($squadArray))
+	{
+		$query = "SELECT * FROM troopers WHERE tkid = '".$tk."' AND squad <= ".count($squadArray)."";
+	}
+	else
+	{
+		// If a club
+		$query = "SELECT * FROM troopers WHERE rebelforum = '".$tk."' AND squad = ".$squad."";
+	}
+
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
@@ -2048,13 +2059,24 @@ function doesTKExist($tk)
 }
 
 // Is the TK ID registered?
-function isTKRegistered($tk)
+function isTKRegistered($tk, $squad = 0)
 {
 	global $conn, $squadArray;
 	
+	// Set up variables
 	$registered = false;
 	
-	$query = "SELECT * FROM troopers WHERE tkid='".$tk."' AND squad <= ".count($squadArray)."";
+	// If a 501st squad
+	if($squad < count($squadArray))
+	{
+		$query = "SELECT * FROM troopers WHERE tkid = '".$tk."' AND squad <= ".count($squadArray)."";
+	}
+	else
+	{
+		// If a club
+		$query = "SELECT * FROM troopers WHERE rebelforum = '".$tk."' AND squad = ".$squad."";
+	}
+
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))

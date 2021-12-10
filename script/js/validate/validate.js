@@ -951,8 +951,7 @@ $(function()
             // on the right side
             tkid:
             {
-                required: true,
-                digits: true
+                required: true
             },
             email:
             {

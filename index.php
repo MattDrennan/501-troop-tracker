@@ -2911,10 +2911,10 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed())
 	if(isset($_POST['registerAccount']))
 	{
 		// Does this TK ID exist?
-		if(doesTKExist(cleanInput($_POST['tkid'])))
+		if(doesTKExist(cleanInput($_POST['tkid']), cleanInput($_POST['squad'])))
 		{
 			// Is this TK ID registered?
-			if(!isTKRegistered(cleanInput($_POST['tkid'])))
+			if(!isTKRegistered(cleanInput($_POST['tkid']), cleanInput($_POST['squad'])))
 			{
 				if(strlen(cleanInput($_POST['password'])) >= 6)
 				{
@@ -2926,8 +2926,18 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed())
 						$validator = new EmailAddressValidator;
 						if ($validator->check_email_address(cleanInput($_POST['email'])))
 						{
-							// Query the database
-							$conn->query("UPDATE troopers SET email = '".cleanInput($_POST['email'])."', password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE tkid = '".cleanInput($_POST['tkid'])."'");
+							// If 501st
+							if(cleanInput($_POST['squad']) <= count($squadArray))
+							{
+								// Query the database
+								$conn->query("UPDATE troopers SET email = '".cleanInput($_POST['email'])."', password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE tkid = '".cleanInput($_POST['tkid'])."'");
+							}
+							else
+							{
+								// If a club
+								// Query the database
+								$conn->query("UPDATE troopers SET email = '".cleanInput($_POST['email'])."', password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE rebelforum = '".cleanInput($_POST['tkid'])."'");
+							}
 
 							// Display output
 							echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';
@@ -2949,12 +2959,12 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed())
 			}
 			else
 			{
-				echo 'This TK ID is already registred! Please contact an admin if this issue persists.';
+				echo 'This TK ID or Rebel Legion user is already registred! Please contact an admin if this issue persists.';
 			}
 		}
 		else
 		{
-			echo 'This TK ID does not exist! Please contact an admin if this issue persists.';
+			echo 'This TK ID or Rebel Legion user does not exist! Please contact an admin if this issue persists.';
 		}
 	}
 	else
@@ -2964,7 +2974,7 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed())
 		<p style="text-align: center;">Were you already using the old trooper tracker? Set up your account by using the form below.</p>
 		
 		<form method="POST" action="index.php?action=setup" name="registerForm" id="registerForm">
-			<p>What is your TKID (numbers only):</p>
+			<p>What is your TKID (numbers only) or Rebel Forum username (if Rebel Legion member only):</p>
 			<input type="text" name="tkid" id="tkid" />
 
 			<p>What is your e-mail:</p>
@@ -2979,7 +2989,7 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed())
 			<p>Squad/Club</p>
 			
 			<select name="squad" id="squad">
-				'.squadSelectList(false).'
+				'.squadSelectList(true).'
 			</select>
 			
 			<br /><br />
