@@ -62,6 +62,9 @@ echo '
 	
 	<!-- Icon -->
 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+	
+	<!-- Setup Variable -->
+	<script>var placeholder = '.placeholder.';</script>
 
 	<!-- JQUERY -->
 	<script src="script/lib/jquery-3.4.1.min.js"></script>
@@ -384,7 +387,7 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 if(isset($_GET['profile']))
 {
 	// Get data
-	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, event_sign_up.attended_costume, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.forum_id, troopers.tkid, troopers.squad, troopers.phone FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".cleanInput($_GET['profile'])."' AND events.closed = '1' AND event_sign_up.status = '3' ORDER BY events.dateEnd DESC";
+	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, event_sign_up.attended_costume, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.forum_id, troopers.tkid, troopers.squad, troopers.phone FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".cleanInput($_GET['profile'])."' AND troopers.id != ".placeholder." AND events.closed = '1' AND event_sign_up.status = '3' ORDER BY events.dateEnd DESC";
 	$i = 0;
 	
 	if ($result = mysqli_query($conn, $query))
@@ -435,6 +438,14 @@ if(isset($_GET['profile']))
 		echo '
 		<p style="text-align: center;">
 			<b>This trooper does not exist.</b>
+		</p>';
+	}
+	// Check if placeholder
+	else if($_GET['profile'] == placeholder)
+	{
+		echo '
+		<p style="text-align: center;">
+			<b>This is a placeholder account. A placeholder is used to fill space when a trooper does not have Troop Tracker access.</b>
 		</p>';
 	}
 	else
@@ -3359,7 +3370,7 @@ if(isset($_GET['event']))
 							{
 								echo '
 								<td name="'.$db2->trooperId.'trooperRosterCostume" id="'.$db2->trooperId.'trooperRosterCostume">
-									<select name="modifysignupFormCostume" trooperid="'.$db2->trooperId.'">';
+									<select name="modifysignupFormCostume" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
 
 									$query3 = "SELECT * FROM costumes";
 
@@ -3395,7 +3406,7 @@ if(isset($_GET['event']))
 								</td>
 								
 								<td name="'.$db2->trooperId.'trooperRosterBackup" id="'.$db2->trooperId.'trooperRosterBackup">
-									<select name="modiftybackupcostumeForm" trooperid="'.$db2->trooperId.'">';
+									<select name="modiftybackupcostumeForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
 
 									// Display costumes
 									$query3 = "SELECT * FROM costumes";
@@ -3475,7 +3486,7 @@ if(isset($_GET['event']))
 									if($db2->status == 1)
 									{
 										echo '
-										<select name="modifysignupStatusForm" id="modifysignupStatusForm" trooperid="'.$db2->trooperId.'">
+										<select name="modifysignupStatusForm" id="modifysignupStatusForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
 											<option value="0" '.echoSelect(1, $db2->status).'>Stand By</option>
 											<option value="4" '.echoSelect(4, $db2->status).'>Cancel</option>
 										</select>';
@@ -3484,7 +3495,7 @@ if(isset($_GET['event']))
 									else
 									{
 										echo '
-										<select name="modifysignupStatusForm" id="modifysignupStatusForm" trooperid="'.$db2->trooperId.'">
+										<select name="modifysignupStatusForm" id="modifysignupStatusForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
 											<option value="0" '.echoSelect(0, $db2->status).'>I\'ll be there!</option>
 											<option value="2" '.echoSelect(2, $db2->status).'>Tentative</option>
 											<option value="4" '.echoSelect(4, $db2->status).'>Cancel</option>
@@ -3956,7 +3967,7 @@ if(isset($_GET['event']))
 							<input type="hidden" name="event" value="'.cleanInput($_GET["event"]).'" />';
 								
 						// Load all users
-						$query = "SELECT troopers.id AS troopida, troopers.name AS troopername, troopers.tkid, troopers.squad FROM troopers WHERE NOT EXISTS (SELECT event_sign_up.trooperid FROM event_sign_up WHERE event_sign_up.trooperid = troopers.id AND event_sign_up.troopid = '".cleanInput($_GET['event'])."') AND troopers.approved = 1 ORDER BY troopers.name";
+						$query = "SELECT troopers.id AS troopida, troopers.name AS troopername, troopers.tkid, troopers.squad FROM troopers WHERE NOT EXISTS (SELECT event_sign_up.trooperid FROM event_sign_up WHERE event_sign_up.trooperid = troopers.id AND event_sign_up.troopid = '".cleanInput($_GET['event'])."' AND event_sign_up.trooperid != ".placeholder.") AND troopers.approved = 1 ORDER BY troopers.name";
 
 						$i = 0;
 						if ($result = mysqli_query($conn, $query) or die($conn->error))

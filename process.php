@@ -238,7 +238,7 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	}
 
 	// Update SQL
-	$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costume'])."', costume_backup = '".cleanInput($_POST['costume_backup'])."', status = '".$status."', reason = '".$reason."' WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['troopid'])."'");
+	$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costume'])."', costume_backup = '".cleanInput($_POST['costume_backup'])."', status = '".$status."', reason = '".$reason."' WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['troopid'])."' AND id = '".cleanInput($_POST['signid'])."'");
 
 	// If cancel
 	if($status == 4 && !isEventFull(cleanInput($_POST['troopid']), cleanInput($_POST['costume'])))
@@ -1566,7 +1566,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		}
 		
 		// Query the database
-		$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costumeValSelect' . $_POST['trooperSelectEdit'] . ''])."', costume_backup = '".cleanInput($_POST['costumeVal' . $_POST['trooperSelectEdit'] . ''])."', status = '".cleanInput($_POST['statusVal' . $_POST['trooperSelectEdit'] . ''])."', reason = '".cleanInput($_POST['reasonVal' . $_POST['trooperSelectEdit'] . ''])."', attended_costume = '".cleanInput($_POST['attendcostumeVal' . $_POST['trooperSelectEdit'] . ''])."' WHERE trooperid = '".cleanInput($_POST['trooperSelectEdit'])."' AND troopid = '".cleanInput($_POST['eventId'])."'") or die($conn->error);
+		$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costumeValSelect' . $_POST['trooperSelectEdit'] . ''])."', costume_backup = '".cleanInput($_POST['costumeVal' . $_POST['trooperSelectEdit'] . ''])."', status = '".cleanInput($_POST['statusVal' . $_POST['trooperSelectEdit'] . ''])."', reason = '".cleanInput($_POST['reasonVal' . $_POST['trooperSelectEdit'] . ''])."', attended_costume = '".cleanInput($_POST['attendcostumeVal' . $_POST['trooperSelectEdit'] . ''])."' WHERE trooperid = '".cleanInput($_POST['trooperSelectEdit'])."' AND troopid = '".cleanInput($_POST['eventId'])."' AND id = '".cleanInput($_POST['signid'])."'") or die($conn->error);
 
 		// If set as attended, check trooper counts
 		if(cleanInput($_POST['statusVal' . $_POST['trooperSelectEdit'] . '']) == 3)
@@ -1587,7 +1587,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 	if(isset($_POST['troopRosterFormAdd']))
 	{
 		// Does this trooper already exist in roster?
-		$query = "SELECT * FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['trooperSelect'])."' AND troopid = '".cleanInput($_POST['troopid'])."'";
+		$query = "SELECT * FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['trooperSelect'])."' AND troopid = '".cleanInput($_POST['troopid'])."' AND trooperid != ".placeholder."";
 		$i = 0;
 		if ($result = mysqli_query($conn, $query))
 		{
@@ -1598,6 +1598,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			}
 		}
 		
+		// Final check before adding to roster
 		if(cleanInput($_POST['costume']) != "null" && cleanInput($_POST['status']) != "null" && $i == 0)
 		{
 			// Query the database
@@ -1613,6 +1614,10 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			
 			// Send notification to command staff
 			sendNotification(getName($_SESSION['id']) . " has added trooper ID [".cleanInput($_POST['trooperSelect'])."] to event ID [" . cleanInput($_POST['troopid']) . "]", cleanInput($_SESSION['id']));
+			
+			// Send back data
+			$array = array('success' => 'success', 'signid' => $last_id);
+			echo json_encode($array);
 		}
 	}
 
@@ -1707,7 +1712,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			$array = array('success' => 'true', 'data' => 'Trooper removed!');
 
 			// Query the database
-			$conn->query("DELETE FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['trooperSelectEdit'])."' AND troopid = '".cleanInput($_POST['eventId'])."'");
+			$conn->query("DELETE FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['trooperSelectEdit'])."' AND troopid = '".cleanInput($_POST['eventId'])."' AND id = '".cleanInput($_POST['signid'])."'");
 			
 			// Send notification to command staff
 			sendNotification(getName($_SESSION['id']) . " has removed trooper ID [".cleanInput($_POST['trooperSelectEdit'])."] on event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
@@ -1777,22 +1782,22 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 
 				// List troopers
 				echo '
-				<tr id="roster_'.$db->trooperid.'" name="roster_'.$db->trooperid.'">
+				<tr name="roster_'.$db->trooperid.'" signid="'.$db->id.'">
 					<td>
-						<input type="hidden" name="tkid" id="tkid" value = "'.getTKNumber($db->trooperid).'" />
-						<input type="hidden" name="troopername" id="troopername" value = "'.getName(cleanInput($db->trooperid)).'" />
-						<input type="hidden" name="eventId" id="eventId" value = "'.cleanInput($_POST['eventId']).'" />
-						<input type="radio" name="trooperSelectEdit" id="trooperSelectEdit" value="'.$db->trooperid.'" />
+						<input type="hidden" name="tkid" signid="'.$db->id.'" value = "'.getTKNumber($db->trooperid).'" />
+						<input type="hidden" name="troopername" signid="'.$db->id.'" value = "'.getName(cleanInput($db->trooperid)).'" />
+						<input type="hidden" name="eventId" signid="'.$db->id.'" value = "'.cleanInput($_POST['eventId']).'" />
+						<input type="radio" name="trooperSelectEdit" signid="'.$db->id.'" value="'.$db->trooperid.'" signid="'.$db->id.'" />
 					</td>
 
 					<td>
-						<div name="tknumber1'.$db->trooperid.'" id="tknumber1'.$db->trooperid.'"><a href="index.php?profile='.$db->trooperid.'" target="_blank">'.readTKNumber(getTKNumber($db->trooperid), getSquadID($db->trooperid)).' - '.getName($db->trooperid).'</a></div>
+						<div name="tknumber1'.$db->trooperid.'" signid="'.$db->id.'"><a href="index.php?profile='.$db->trooperid.'" target="_blank">'.readTKNumber(getTKNumber($db->trooperid), getSquadID($db->trooperid)).' - '.getName($db->trooperid).'</a></div>
 					</td>
 
 					<td>
-						<div name="costume1'.$db->trooperid.'" id="costume1'.$db->trooperid.'">'.ifEmpty(getCostume($db->costume), "N/A").'</div>
-						<div name="costume2'.$db->trooperid.'" id="costume2'.$db->trooperid.'" style="display:none;">
-							<select name="costumeValSelect'.$db->trooperid.'" id="costumeValSelect'.$db->trooperid.'">';
+						<div name="costume1'.$db->trooperid.'" signid="'.$db->id.'">'.ifEmpty(getCostume($db->costume), "N/A").'</div>
+						<div name="costume2'.$db->trooperid.'" signid="'.$db->id.'" style="display:none;">
+							<select name="costumeValSelect'.$db->trooperid.'" signid="'.$db->id.'">';
 							
 							// Array count
 							$a = 0;
@@ -1819,10 +1824,10 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 					</td>
 
 					<td>
-						<div name="backup1'.$db->trooperid.'" id="backup1'.$db->trooperid.'">'.ifEmpty(getCostume($db->costume_backup), "N/A").'</div>
-						<div name="backup2'.$db->trooperid.'" id="backup2'.$db->trooperid.'" style="display:none;">
+						<div name="backup1'.$db->trooperid.'" signid="'.$db->id.'">'.ifEmpty(getCostume($db->costume_backup), "N/A").'</div>
+						<div name="backup2'.$db->trooperid.'" signid="'.$db->id.'" style="display:none;">
 
-						<select name="costumeVal'.$db->trooperid.'" id="costumeVal'.$db->trooperid.'">';
+						<select name="costumeVal'.$db->trooperid.'" signid="'.$db->id.'">';
 
 						// Reset
 						$a = 0;
@@ -1865,9 +1870,9 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 					</td>
 
 					<td>
-						<div name="status1'.$db->trooperid.'" id="status1'.$db->trooperid.'">'.getStatus($db->status).'</div>
-						<div name="status2'.$db->trooperid.'" id="status2'.$db->trooperid.'" style="display:none;">
-							<select name="statusVal'.$db->trooperid.'">
+						<div name="status1'.$db->trooperid.'" signid="'.$db->id.'">'.getStatus($db->status).'</div>
+						<div name="status2'.$db->trooperid.'" signid="'.$db->id.'" style="display:none;">
+							<select name="statusVal'.$db->trooperid.'" signid="'.$db->id.'">
 								<option value="0" '.echoSelect(0, $db->status).'>Going</option>
 								<option value="1" '.echoSelect(1, $db->status).'>Stand By</option>
 								<option value="2" '.echoSelect(2, $db->status).'>Tentative</option>
@@ -1880,14 +1885,14 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 					</td>
 
 					<td>
-						<div name="reason1'.$db->trooperid.'" id="reason1'.$db->trooperid.'">'.ifEmpty($db->reason, "None").'</div>
-						<div name="reason2'.$db->trooperid.'" id="reason2'.$db->trooperid.'" style="display:none;"><input type="text" id="reasonVal'.$db->trooperid.'" name="reasonVal'.$db->trooperid.'" value="'.$db->reason.'" /></div>
+						<div name="reason1'.$db->trooperid.'" signid="'.$db->id.'">'.ifEmpty($db->reason, "None").'</div>
+						<div name="reason2'.$db->trooperid.'" signid="'.$db->id.'" style="display:none;"><input type="text" name="reasonVal'.$db->trooperid.'" signid="'.$db->id.'" value="'.$db->reason.'" /></div>
 					</td>
 
 					<td>
-						<div name="attendcostume1'.$db->trooperid.'" id="attendcostume1'.$db->trooperid.'">'.ifEmpty(getCostume($db->attended_costume), "Not Submitted").'</div>
-						<div name="attendcostume2'.$db->trooperid.'" id="attendcostume2'.$db->trooperid.'" style="display:none;">
-						<select name="attendcostumeVal'.$db->trooperid.'" id="attendcostumeVal'.$db->trooperid.'">';
+						<div name="attendcostume1'.$db->trooperid.'" signid="'.$db->id.'">'.ifEmpty(getCostume($db->attended_costume), "Not Submitted").'</div>
+						<div name="attendcostume2'.$db->trooperid.'" signid="'.$db->id.'" style="display:none;">
+						<select name="attendcostumeVal'.$db->trooperid.'" signid="'.$db->id.'">';
 
 						// Reset
 						$a = 0;
@@ -1962,7 +1967,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		}
 
 		// Load all users
-		$query = "SELECT troopers.id AS troopida, troopers.name AS troopername, troopers.tkid, troopers.squad FROM troopers WHERE NOT EXISTS (SELECT event_sign_up.trooperid FROM event_sign_up WHERE event_sign_up.trooperid = troopers.id AND event_sign_up.troopid = '".cleanInput($_POST['eventId'])."') ORDER BY troopers.name";
+		$query = "SELECT troopers.id AS troopida, troopers.name AS troopername, troopers.tkid, troopers.squad FROM troopers WHERE NOT EXISTS (SELECT event_sign_up.trooperid FROM event_sign_up WHERE event_sign_up.trooperid = troopers.id AND event_sign_up.troopid = '".cleanInput($_POST['eventId'])."' AND event_sign_up.trooperid != ".placeholder.") ORDER BY troopers.name";
 
 		$i = 0;
 		if ($result = mysqli_query($conn, $query) or die($conn->error))
@@ -2236,7 +2241,8 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 			$trooperID = cleanInput($_SESSION['id']);
 		}
 
-		if($eventCheck['inTroop'] == 1)
+		// Check if already in troop and exclude placeholder account
+		if($eventCheck['inTroop'] == 1 && $trooperID != placeholder)
 		{
 			die("ALREADY IN THIS TROOP!");
 		}
@@ -2386,7 +2392,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 								</td>
 								
 								<td name="trooperRosterCostume" id="trooperRosterCostume">
-									<select name="modifysignupFormCostume2">';
+									<select name="modifysignupFormCostume2" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
 
 									// Display costumes
 									$query3 = "SELECT * FROM costumes";
@@ -2423,7 +2429,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 								</td>
 								
 								<td name="trooperRosterBackup" id="trooperRosterBackup">
-									<select name="modiftybackupcostumeForm2">';
+									<select name="modiftybackupcostumeForm2" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
 
 									// Display costumes
 									$query3 = "SELECT * FROM costumes";
@@ -2489,7 +2495,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 										if($db2->status == 1)
 										{
 											$data .= '
-											<select name="modifysignupStatusForm" id="modifysignupStatusForm" trooperid="'.$db2->trooperId.'">
+											<select name="modifysignupStatusForm" id="modifysignupStatusForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
 												<option value="0" '.echoSelect(1, $db2->status).'>Stand By</option>
 												<option value="4" '.echoSelect(4, $db2->status).'>Cancel</option>
 											</select>';
@@ -2498,7 +2504,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 										else
 										{
 											$data .= '
-											<select name="modifysignupStatusForm" id="modifysignupStatusForm" trooperid="'.$db2->trooperId.'">
+											<select name="modifysignupStatusForm" id="modifysignupStatusForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
 												<option value="0" '.echoSelect(0, $db2->status).'>I\'ll be there!</option>
 												<option value="2" '.echoSelect(2, $db2->status).'>Tentative</option>
 												<option value="4" '.echoSelect(4, $db2->status).'>Cancel</option>

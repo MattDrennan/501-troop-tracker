@@ -1356,6 +1356,10 @@ $(document).ready(function()
 	$("body").on("click", "#removetrooper", function(e)
 	{
 		e.preventDefault();
+		
+		// Set up vasriables
+		var trooperid = $("input[name=trooperSelectEdit]:checked").val();
+		var signid = $("input[name=trooperSelectEdit]:checked").attr("signid");
 
 		var form = $("#troopRosterForm");
 		var url = form.attr("action");
@@ -1367,21 +1371,21 @@ $(document).ready(function()
 			$.ajax({
 				type: "POST",
 				url: url,
-				data: form.serialize() + "&removetrooper=1",
+				data: form.serialize() + "&removetrooper=1&signid=" + signid,
 				success: function(data)
 				{
 					var json = JSON.parse(data);
 					
-					var trooperid = $("#roster_" + $("input[name=trooperSelectEdit]:checked").val() + " input[name=trooperSelectEdit]").val();
-					var eventId = $("#roster_" + $("input[name=trooperSelectEdit]:checked").val() + " input[name=eventId]").val();
-					var troopername = $("#roster_" + $("input[name=trooperSelectEdit]:checked").val() + " input[name=troopername]").val();
-					var tkid = $("#roster_" + $("input[name=trooperSelectEdit]:checked").val() + " input[name=tkid]").val();
+					// Get variables
+					var eventId = $("input[name=eventId][signid=" + signid + "]").val();
+					var troopername = $("input[name=troopername][signid=" + signid + "]").val();
+					var tkid = $("input[name=tkid][signid=" + signid + "]").val();
 					
 					// Add to trooper list
 					$("#trooperSelect").append('<option value="' + trooperid + '" troopername="' + troopername + '" tkid="' + tkid + '">' + troopername + ' - ' + tkid + '</option>');
 
 					// Remove
-					$("#roster_" + $("input[name=trooperSelectEdit]:checked").val()).remove();
+					$("tr[name=roster_" + trooperid + "][signid=" + signid + "]").remove();
 
 					// Display message
 					alert(json.data);
@@ -1393,6 +1397,10 @@ $(document).ready(function()
 	$("body").on("click", "#edittrooper", function(e)
 	{
 		e.preventDefault();
+		
+		// Set up vasriables
+		var trooperid = $("input[name=trooperSelectEdit]:checked").val();
+		var signid = $("input[name=trooperSelectEdit]:checked").attr("signid");
 
 		if($("input[name=trooperSelectEdit]").is(":checked"))
 		{
@@ -1402,28 +1410,28 @@ $(document).ready(function()
 				$("#edittrooper").val("Save");
 				
 				// Replace None
-				if($("#reason2" + $("input[name=trooperSelectEdit]:checked").val()).find("input").val() == "None")
+				if($("[name=reason2" + trooperid + "][signid=" + signid + "]").find("input").val() == "None")
 				{
-					$("#reason2" + $("input[name=trooperSelectEdit]:checked").val()).find("input").val("");
+					$("[name=reason2" + trooperid + "][signid=" + signid + "]").find("input").val("");
 				}
 
 				// Show Inputs for edit
-				$("#costume2" + $("input[name=trooperSelectEdit]:checked").val()).show();
-				$("#backup2" + $("input[name=trooperSelectEdit]:checked").val()).show();
-				$("#status2" + $("input[name=trooperSelectEdit]:checked").val()).show();
-				$("#reason2" + $("input[name=trooperSelectEdit]:checked").val()).show();
-				$("#attendcostume2" + $("input[name=trooperSelectEdit]:checked").val()).show();
-				$("#dateAttending" + $("input[name=trooperSelectEdit]:checked").val() + "Edit").show();
-				$("#dateAttended" + $("input[name=trooperSelectEdit]:checked").val() + "Edit").show();
+				$("[name=costume2" + trooperid + "][signid=" + signid + "]").show();
+				$("[name=backup2" + trooperid + "][signid=" + signid + "]").show();
+				$("[name=status2" + trooperid + "][signid=" + signid + "]").show();
+				$("[name=reason2" + trooperid + "][signid=" + signid + "]").show();
+				$("[name=attendcostume2" + trooperid + "][signid=" + signid + "]").show();
+				$("[name=dateAttending" + trooperid + "][signid=" + signid + "]" + "Edit").show();
+				$("[name=dateAttended" + trooperid + "][signid=" + signid + "]" + "Edit").show();
 
 				// Hide static values
-				$("#costume1" + $("input[name=trooperSelectEdit]:checked").val()).hide();
-				$("#backup1" + $("input[name=trooperSelectEdit]:checked").val()).hide();
-				$("#status1" + $("input[name=trooperSelectEdit]:checked").val()).hide();
-				$("#reason1" + $("input[name=trooperSelectEdit]:checked").val()).hide();
-				$("#attendcostume1" + $("input[name=trooperSelectEdit]:checked").val()).hide();
-				$("#dateAttending" + $("input[name=trooperSelectEdit]:checked").val()).hide();
-				$("#dateAttended" + $("input[name=trooperSelectEdit]:checked").val()).hide();
+				$("[name=costume1" + trooperid + "][signid=" + signid + "]").hide();
+				$("[name=backup1" + trooperid + "][signid=" + signid + "]").hide();
+				$("[name=status1" + trooperid + "][signid=" + signid + "]").hide();
+				$("[name=reason1" + trooperid + "][signid=" + signid + "]").hide();
+				$("[name=attendcostume1" + trooperid + "][signid=" + signid + "]").hide();
+				$("[name=dateAttending" + trooperid + "][signid=" + signid + "]").hide();
+				$("[name=dateAttended" + trooperid + "][signid=" + signid + "]").hide();
 				
 				// Loop through inputs
 				$("input[name=trooperSelectEdit]").each(function( index )
@@ -1450,53 +1458,53 @@ $(document).ready(function()
 					$.ajax({
 						type: "POST",
 						url: url,
-						data: form.serialize() + "&submitEditRoster=1",
+						data: form.serialize() + "&submitEditRoster=1&signid=" + signid,
 						success: function(data)
 						{
 							// Change submit button
 							$("#edittrooper").val("Edit Trooper");
 
 							// Hide Inputs for edit
-							$("#costume2" + $("input[name=trooperSelectEdit]:checked").val()).hide();
-							$("#backup2" + $("input[name=trooperSelectEdit]:checked").val()).hide();
-							$("#status2" + $("input[name=trooperSelectEdit]:checked").val()).hide();
-							$("#reason2" + $("input[name=trooperSelectEdit]:checked").val()).hide();
-							$("#attendcostume2" + $("input[name=trooperSelectEdit]:checked").val()).hide();
-							$("#dateAttending" + $("input[name=trooperSelectEdit]:checked").val() + "Edit").hide();
-							$("#dateAttended" + $("input[name=trooperSelectEdit]:checked").val() + "Edit").hide();
+							$("[name=costume2" + trooperid + "][signid=" + signid + "]").hide();
+							$("[name=backup2" + trooperid + "][signid=" + signid + "]").hide();
+							$("[name=status2" + trooperid + "][signid=" + signid + "]").hide();
+							$("[name=reason2" + trooperid + "][signid=" + signid + "]").hide();
+							$("[name=attendcostume2" + trooperid + "][signid=" + signid + "]").hide();
+							$("[name=dateAttending" + trooperid + "][signid=" + signid + "]" + "Edit").hide();
+							$("[name=dateAttended" + trooperid + "][signid=" + signid + "]" + "Edit").hide();
 							
 							// Set the comment back to "None" if no value
-							if($("#reason2" + $("input[name=trooperSelectEdit]:checked").val()).find("input").val() == "")
+							if($("[name=reason2" + trooperid + "][signid=" + signid + "]").find("input").val() == "")
 							{
-								$("#reason2" + $("input[name=trooperSelectEdit]:checked").val()).find("input").val("None");
+								$("[name=reason2" + trooperid + "][signid=" + signid + "]").find("input").val("None");
 							}
 							
 							// Set values
-							$("#costume1" + $("input[name=trooperSelectEdit]:checked").val()).html($("#costume2" + $("input[name=trooperSelectEdit]:checked").val()).find("select :selected").text());
-							$("#backup1" + $("input[name=trooperSelectEdit]:checked").val()).html($("#backup2" + $("input[name=trooperSelectEdit]:checked").val()).find("select :selected").text());
-							$("#status1" + $("input[name=trooperSelectEdit]:checked").val()).html($("#status2" + $("input[name=trooperSelectEdit]:checked").val()).find("select :selected").text());
-							$("#reason1" + $("input[name=trooperSelectEdit]:checked").val()).html($("#reason2" + $("input[name=trooperSelectEdit]:checked").val()).find("input").val());
-							$("#attendcostume1" + $("input[name=trooperSelectEdit]:checked").val()).html($("#attendcostume2" + $("input[name=trooperSelectEdit]:checked").val()).find("select :selected").text());
+							$("[name=costume1" + trooperid + "][signid=" + signid + "]").html($("[name=costume2" + trooperid + "][signid=" + signid + "]").find("select :selected").text());
+							$("[name=backup1" + trooperid + "][signid=" + signid + "]").html($("[name=backup2" + trooperid + "][signid=" + signid + "]").find("select :selected").text());
+							$("[name=status1" + trooperid + "][signid=" + signid + "]").html($("[name=status2" + trooperid + "][signid=" + signid + "]").find("select :selected").text());
+							$("[name=reason1" + trooperid + "][signid=" + signid + "]").html($("[name=reason2" + trooperid + "][signid=" + signid + "]").find("input").val());
+							$("[name=attendcostume1" + trooperid + "][signid=" + signid + "]").html($("[name=attendcostume2" + trooperid + "][signid=" + signid + "]").find("select :selected").text());
 							
 							// Set attended text
-							if($("#attendcostume2" + $("input[name=trooperSelectEdit]:checked").val()).find("select :selected").text() == "None")
+							if($("[name=attendcostume2" + trooperid + "][signid=" + signid + "]").find("select :selected").text() == "None")
 							{
-								$("#attendcostume1" + $("input[name=trooperSelectEdit]:checked").val()).text("Not Submitted");
+								$("[name=attendcostume1" + trooperid + "][signid=" + signid + "]").text("Not Submitted");
 							}
 
 							// Show static values
-							$("#costume1" + $("input[name=trooperSelectEdit]:checked").val()).show();
-							$("#backup1" + $("input[name=trooperSelectEdit]:checked").val()).show();
-							$("#status1" + $("input[name=trooperSelectEdit]:checked").val()).show();
-							$("#reason1" + $("input[name=trooperSelectEdit]:checked").val()).show();
-							$("#attendcostume1" + $("input[name=trooperSelectEdit]:checked").val()).show();
-							$("#dateAttending" + $("input[name=trooperSelectEdit]:checked").val()).show();
-							$("#dateAttended" + $("input[name=trooperSelectEdit]:checked").val()).show();
+							$("[name=costume1" + trooperid + "][signid=" + signid + "]").show();
+							$("[name=backup1" + trooperid + "][signid=" + signid + "]").show();
+							$("[name=status1" + trooperid + "][signid=" + signid + "]").show();
+							$("[name=reason1" + trooperid + "][signid=" + signid + "]").show();
+							$("[name=attendcostume1" + trooperid + "][signid=" + signid + "]").show();
+							$("[name=dateAttending" + trooperid + "][signid=" + signid + "]").show();
+							$("[name=dateAttended" + trooperid + "][signid=" + signid + "]").show();
 
 							var json = JSON.parse(data);
 							
-							$("#dateAttending" + $("input[name=trooperSelectEdit]:checked").val()).html(json.data);
-							$("#dateAttended" + $("input[name=trooperSelectEdit]:checked").val()).html(json.data2);
+							$("[name=dateAttending" + trooperid + "][signid=" + signid + "]").html(json.data);
+							$("[name=dateAttended" + trooperid + "][signid=" + signid + "]").html(json.data2);
 							
 							// Re-enable all input radios to prevent issues
 							$("input[name=trooperSelectEdit]").each(function( index )
@@ -1517,14 +1525,15 @@ $(document).ready(function()
 	$("body").on("change", "select[name=modifysignupFormCostume], select[name=modiftybackupcostumeForm], select[name=modifysignupStatusForm]", function(e)
 	{
 		var trooperid = $(this).attr("trooperid");
-		var signupForm1 = $("select[name=modifysignupFormCostume][trooperid=" + trooperid + "]");
-		var signupForm2 = $("select[name=modiftybackupcostumeForm][trooperid=" + trooperid + "]");
-		var signupForm3 = $("select[name=modifysignupStatusForm][trooperid=" + trooperid + "]");
+		var signid = $(this).attr("signid");
+		var signupForm1 = $("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "]");
+		var signupForm2 = $("select[name=modiftybackupcostumeForm][trooperid=" + trooperid + "][signid=" + signid + "]");
+		var signupForm3 = $("select[name=modifysignupStatusForm][trooperid=" + trooperid + "][signid=" + signid + "]");
 		
 		$.ajax({
 			type: "POST",
 			url: "process.php?do=modifysignup",
-			data: "costume=" + signupForm1.val() + "&costume_backup=" + signupForm2.val() + "&status=" + signupForm3.val() + "&troopid=" + $("#modifysignupTroopIdForm").val() + "&limitedevent=" + $("#limitedEventCancel").val() + "&trooperid=" + trooperid,
+			data: "costume=" + signupForm1.val() + "&costume_backup=" + signupForm2.val() + "&status=" + signupForm3.val() + "&troopid=" + $("#modifysignupTroopIdForm").val() + "&limitedevent=" + $("#limitedEventCancel").val() + "&trooperid=" + trooperid + "&signid=" + signid,
 			success: function(data)
 			{
 				var json = JSON.parse(data);
@@ -1533,7 +1542,7 @@ $(document).ready(function()
 				if(json.success != "failed")
 				{
 					// Adjust options based on costume
-					if((($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "] option:selected").attr("club") == 0 && (json.limit501st - json.limit501stTotal) > 0) || ($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "] option:selected").attr("club") == 1 && (json.limitRebels - json.limitRebelsTotal) > 0) || ($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "] option:selected").attr("club") == 2 && (json.limitMando - json.limitMandoTotal) > 0) || ($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "] option:selected").attr("club") == 3 && (json.limitDroid - json.limitDroidTotal) > 0) || ($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "] option:selected").attr("club") == 4 && (json.limitOther - json.limitOtherTotal) > 0)) && json.staus != 4)
+					if((($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 0 && (json.limit501st - json.limit501stTotal) > 0) || ($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 1 && (json.limitRebels - json.limitRebelsTotal) > 0) || ($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 2 && (json.limitMando - json.limitMandoTotal) > 0) || ($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 3 && (json.limitDroid - json.limitDroidTotal) > 0) || ($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 4 && (json.limitOther - json.limitOtherTotal) > 0)) && json.staus != 4)
 					{
 						// Empty select
 						signupForm3.empty();

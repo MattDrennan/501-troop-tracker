@@ -26,7 +26,10 @@ define('dbUser2', 'DB_USER_HERE');
 define('dbPassword2', 'DB_PASSWORD_HERE');
 define('dbName2', 'DB_NAME_HERE');
 
-// Forum User Database
+// Placeholder Account ID (Used for signing up non-members)
+define('placeholder', 1196);
+
+// Forum User Database (FL 501ST BOARDS DATABASE)
 define('forum_user_database', 'DATABASE.TABLE HERE');
 
 // E-mail Creds
