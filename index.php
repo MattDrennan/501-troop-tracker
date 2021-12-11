@@ -3142,23 +3142,27 @@ if(isset($_GET['event']))
 			$date1 = date("m/d/Y - h:i A", strtotime($db->dateStart)); 
 			$date2 = date("m/d/Y - h:i A", strtotime($db->dateEnd));
 
-			// Query to see if trooper is subscribed
-			$isSubscribed = $conn->query("SELECT * FROM event_notifications WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($_GET['event'])."'");
-
-			// Set default subscribe button text
-			$subscribeText = "Subscribe Updates";
-
-			// Check if we are subscribed
-			if($isSubscribed->num_rows > 0)
+			// Only show if logged in
+			if(loggedIn())
 			{
-				$subscribeText = "Unsubscribe Updates";
-			}
+				// Query to see if trooper is subscribed
+				$isSubscribed = $conn->query("SELECT * FROM event_notifications WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($_GET['event'])."'");
 
-			// Subscribe button
-			echo '
-			<p style="text-align: center;">
-				<a href="#" class="button" id="subscribeupdates" event="'.cleanInput($_GET['event']).'">'.$subscribeText.'</a>
-			</p>';
+				// Set default subscribe button text
+				$subscribeText = "Subscribe Updates";
+
+				// Check if we are subscribed
+				if($isSubscribed->num_rows > 0)
+				{
+					$subscribeText = "Unsubscribe Updates";
+				}
+
+				// Subscribe button
+				echo '
+				<p style="text-align: center;">
+					<a href="#" class="button" id="subscribeupdates" event="'.cleanInput($_GET['event']).'">'.$subscribeText.'</a>
+				</p>';
+			}
 			
 			// Is this merged data?
 			if($db->venue == NULL && $db->numberOfAttend == NULL && $db->requestedCharacter == NULL && $db->secureChanging == NULL && $db->lightsabers == NULL && $db->parking == NULL && $db->mobility == NULL && $db->amenities == NULL && $db->referred == NULL)
