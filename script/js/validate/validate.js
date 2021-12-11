@@ -967,6 +967,14 @@ $(function()
             {
                 required: true,
                 minlength: 6
+            },
+            tkid2:
+            {
+                digits: true,
+                required: function()
+                {
+                    return $('#squad').val() == 6;
+                }
             }
         },
         // Specify validation error messages
@@ -975,7 +983,8 @@ $(function()
             tkid: "Please enter your TKID.",
             password: "Please enter a six (6) character password.",
             password2: "Please enter a matching six (6) character password.",
-            email: "Please enter a valid e-mail address."
+            email: "Please enter a valid e-mail address.",
+            tkid2: "Please enter an ID."
         },
         // Make sure the form is submitted to the destination defined
         // in the "action" attribute of the form when valid

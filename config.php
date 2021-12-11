@@ -103,7 +103,7 @@ function showSquadButtons()
 }
 
 // squadSelectList: Returns options for select tag of squads
-function squadSelectList($clubs = true, $insideElement = "", $eid = 0, $squadP = 0)
+function squadSelectList($clubs = true, $insideElement = "", $eid = 0, $squadP = 0, $rebelOnly = false)
 {
 	global $squadArray, $clubArray;
 	
@@ -168,6 +168,12 @@ function squadSelectList($clubs = true, $insideElement = "", $eid = 0, $squadP =
 				// Add to return var
 				$returnVar .= '
 				<option value="'.$squadID.'" '.echoSelect($squadID, cleanInput($_POST['squad'])).'>'.$squad.'</option>';
+			}
+
+			// Stop at Rebels
+			if($rebelOnly)
+			{
+				break;
 			}
 			
 			// Increment

@@ -287,6 +287,21 @@ $(document).ready(function()
 		}
 	})
 
+	// Account Setup - Change Squad
+	$("body").on("change", "#squad", function(e)
+	{
+		// If Rebel Legion
+		if($(this).val() == 6)
+		{
+			$("#rebelid").show();
+		}
+		else
+		{
+			// If 501st
+			$("#rebelid").hide();
+		}
+	})
+
 	// Event Notifications - Subscribe / Unsubscribe
 	$("body").on("click", "#subscribeupdates", function(e)
 	{

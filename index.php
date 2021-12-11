@@ -2934,9 +2934,16 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed())
 							}
 							else
 							{
-								// If a club
-								// Query the database
-								$conn->query("UPDATE troopers SET email = '".cleanInput($_POST['email'])."', password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE rebelforum = '".cleanInput($_POST['tkid'])."'");
+								if(cleanInput($_POST['tkid2']) != "")
+								{
+									// If a club
+									// Query the database
+									$conn->query("UPDATE troopers SET email = '".cleanInput($_POST['email'])."', tkid = '".cleanInput($_POST['tkid2'])."', password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE rebelforum = '".cleanInput($_POST['tkid'])."'");
+								}
+								else
+								{
+									echo 'Please enter an ID.';
+								}
 							}
 
 							// Display output
@@ -2989,8 +2996,13 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed())
 			<p>Squad/Club</p>
 			
 			<select name="squad" id="squad">
-				'.squadSelectList(true).'
+				'.squadSelectList(true, "", 0, 0, true).'
 			</select>
+
+			<div style="display: none;" id="rebelid">
+				<p>Choose an ID number (1 to 11 digits):</p>
+				<input type="text" maxlength="11" name="tkid2" id="tkid2" />
+			</div>
 			
 			<br /><br />
 
