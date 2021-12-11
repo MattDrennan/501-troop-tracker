@@ -657,7 +657,7 @@ if(isset($_GET['action']) && $_GET['action'] == "photos")
 				<ul>';
 			}
 
-			$troopCount = $conn->query("SELECT id FROM uploads WHERE troopid = '".$db->troopid."'");
+			$troopCount = $conn->query("SELECT id FROM uploads WHERE troopid = '".$db->troopid."' AND admin = '0'");
 
 			echo '
 			<li>
@@ -2931,23 +2931,35 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed())
 							{
 								// Query the database
 								$conn->query("UPDATE troopers SET email = '".cleanInput($_POST['email'])."', password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE tkid = '".cleanInput($_POST['tkid'])."'");
+								
+								// Display output
+								echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';
 							}
 							else
 							{
-								if(cleanInput($_POST['tkid2']) != "")
+								$tkIDTaken = $conn->query("SELECT id FROM troopers WHERE tkid = '".cleanInput($_POST['tkid2'])."' AND squad = '".cleanInput($_POST['squad'])."'");
+								
+								if($tkIDTaken->num_rows == 0)
 								{
-									// If a club
-									// Query the database
-									$conn->query("UPDATE troopers SET email = '".cleanInput($_POST['email'])."', tkid = '".cleanInput($_POST['tkid2'])."', password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE rebelforum = '".cleanInput($_POST['tkid'])."'");
+									if(cleanInput($_POST['tkid2']) != "")
+									{
+										// If a club
+										// Query the database
+										$conn->query("UPDATE troopers SET email = '".cleanInput($_POST['email'])."', tkid = '".cleanInput($_POST['tkid2'])."', password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE rebelforum = '".cleanInput($_POST['tkid'])."'");
+										
+										// Display output
+										echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';
+									}
+									else
+									{
+										echo 'Please enter an ID.';
+									}
 								}
 								else
 								{
-									echo 'Please enter an ID.';
+									echo 'The ID you have chosen is already in use. Please pick another.';
 								}
 							}
-
-							// Display output
-							echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';
 						}
 						else
 						{
@@ -3156,12 +3168,25 @@ if(isset($_GET['event']))
 				{
 					$subscribeText = "Unsubscribe Updates";
 				}
-
-				// Subscribe button
-				echo '
+				
+				// Create button variable
+				$button = '
 				<p style="text-align: center;">
 					<a href="#" class="button" id="subscribeupdates" event="'.cleanInput($_GET['event']).'">'.$subscribeText.'</a>
 				</p>';
+
+				// If this event is over, don't show it
+				if(strtotime($db->dateEnd) >= strtotime("-1 day"))
+				{					
+					// Subscribe button
+					echo $button;
+				}
+				// If subscribed, allow to unsubscribe
+				else if($subscribeText == "Unsubscribe Updates")
+				{
+					// Subscribe button
+					echo $button;
+				}
 			}
 			
 			// Is this merged data?
