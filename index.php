@@ -4372,6 +4372,9 @@ else
 				. showSquadButtons() . '
 				
 				<p style="text-align: center;">
+					<small>Press a squad above to sort by squad.</small>
+					<br />
+					<br />
 					<a href="index.php?squad=mytroops" class="button">My Troops</a>
 				</p>
 
