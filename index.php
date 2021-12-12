@@ -2842,7 +2842,21 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 						$_SESSION['id'] = $db->id;
 						$_SESSION['tkid'] = $db->tkid;
 
-						echo 'You have now logged in! <a href="index.php">Click here to go home.</a>';
+						// Cookie set
+						if(isset($_COOKIE["TroopTrackerLastEvent"]))
+						{
+							echo '
+							<meta http-equiv="refresh" content="5; URL=index.php?event='.cleanInput($_COOKIE["TroopTrackerLastEvent"]).'" />
+							You have now logged in! <a href="index.php?event='.cleanInput($_COOKIE["TroopTrackerLastEvent"]).'">Click here to view the event</a> or you will be redirected shortly.';
+							
+							// Clear cookie
+							setcookie("TroopTrackerLastEvent", "", time() - 3600);
+						}
+						else
+						{
+							// Cookie not set
+							echo 'You have now logged in! <a href="index.php">Click here to go home.</a>';
+						}
 					}
 					else
 					{
@@ -3107,6 +3121,12 @@ if(isset($_POST['submitCancelTroop']))
 // If we are viewing an event, hide all other info
 if(isset($_GET['event']))
 {
+	// Set cookie for login
+	if(!loggedIn())
+	{
+		setcookie("TroopTrackerLastEvent", cleanInput($_GET['event']), time() + 3600);
+	}
+	
 	// Delete Comment
 	if(isset($_POST['deleteComment']) && isAdmin())
 	{
