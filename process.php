@@ -1446,6 +1446,100 @@ if(isset($_GET['do']) && $_GET['do'] == "getlocation" && loggedIn() && isAdmin()
 	}
 }
 
+// Event Page - Change Status
+if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin())
+{
+	// Set up return data
+	$message = "";
+	$message2 = "";
+
+	// Load event sign up in roster
+	$query = "SELECT * FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['eventid'])."' AND id = ".cleanInput($_POST['signid'])."";
+
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// If set to going
+			if($db->status == 0)
+			{
+				// Set to not picked
+				$conn->query("UPDATE event_sign_up SET status = '6' WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['eventid'])."' AND id = ".cleanInput($_POST['signid'])."");
+
+				// Set return data
+				$message = '
+				Not Picked
+				<br />
+				<a href="#" class="button" name="changestatus" trooperid="'.$db->trooperid.'" signid="'.$db->id.'" buttonid="1">Approve</a>';
+			}
+			// If set to pending
+			if($db->status == 5)
+			{
+				// Set up variables
+				$status = 0;
+				$text = "Reject";
+				$buttonid = 0;
+
+				// Get button type
+				if($_POST['buttonid'] == 0)
+				{
+					// Not picked
+					$status = 6;
+					$text = "Approve";
+					$buttonid = 1;
+				}
+				else
+				{
+					// Going
+					$status = 0;
+					$text = "Reject";
+					$buttonid = 0;
+				}
+
+				// Set to not picked
+				$conn->query("UPDATE event_sign_up SET status = '".$status."' WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['eventid'])."' AND id = ".cleanInput($_POST['signid'])."");
+
+				// Set return data
+				$message = '
+				'.getStatus($status).'
+				<br />
+				<a href="#" class="button" name="changestatus" trooperid="'.$db->trooperid.'" signid="'.$db->id.'" buttonid="'.$buttonid.'">'.$text.'</a>';
+			}
+			// If set to not picked
+			else if($db->status == 6)
+			{
+				// Set to going
+				$conn->query("UPDATE event_sign_up SET status = '0' WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['eventid'])."' AND id = ".cleanInput($_POST['signid'])."");
+
+				// Set return data
+				$message = '
+				Going
+				<br />
+				<a href="#" class="button" name="changestatus" trooperid="'.$db->trooperid.'" signid="'.$db->id.'" buttonid="0">Reject</a>';
+			}
+
+			// If is admin
+			if(isAdmin())
+			{
+				// Load trooper counts
+				$message2 .= '
+				<h3>Admin Trooper Counts</h3>
+
+				<ul style="display:inline-table;">
+					<li>501st troopers: '.eventClubCount(cleanInput($_POST['eventid']), 0).' </li>
+					<li>Rebel Legion: '.eventClubCount(cleanInput($_POST['eventid']), 1).' </li>
+					<li>Mando Mercs: '.eventClubCount(cleanInput($_POST['eventid']), 2).' </li>
+					<li>Droid Builders: '.eventClubCount(cleanInput($_POST['eventid']), 3).' </li>
+					<li>Other troopers: '.eventClubCount(cleanInput($_POST['eventid']), 4).' </li>
+				</ul>';
+			}
+		}
+	}
+
+	$array = array('message' => $message, 'message2' => $message2);
+	echo json_encode($array);
+}
+
 // Edit Settings
 if(isset($_GET['do']) && $_GET['do'] == "changesettings" && loggedIn() && isAdmin())
 {
@@ -2353,7 +2447,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 		else
 		{
 			// If status is not updated, let's update it to prevent blank data
-			if($status != 0 && $status != 1 && $status != 4)
+			if($status != 0 && $status != 1 && $status != 4 && $status != 5)
 			{
 				$status = 0;
 			}
@@ -2563,7 +2657,22 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 									else
 									{
 										$data .= '
-										(Pending Command Staff Approval)';								
+										<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
+										(Pending Command Staff Approval)';
+
+										// If is admin and limited event
+										if(isAdmin() && $db->limitedEvent == 1)
+										{
+											// Set status
+											$data .= '
+											<br />
+											<a href="#" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>
+											<br />
+											<a href="#" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
+										}
+
+										$data .= '
+										</div>';								
 									}
 
 								$data .= '
@@ -2604,7 +2713,32 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 								
 								<td id="'.$db2->trooperId.'Status">
 								<div name="trooperRosterStatus" id="trooperRosterStatus">
-									'.getStatus($db2->status).'
+								<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
+									'.getStatus($db2->status);
+
+									// If is admin and limited event
+									if(isAdmin() && $db->limitedEvent == 1)
+									{
+										// If set to going
+										if($db2->status == 0)
+										{
+											// Set status
+											$data .= '
+											<br />
+											<a href="#" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
+										}
+										// If set to not picked
+										else if($db2->status == 6)
+										{
+											// Set status
+											$data .= '
+											<br />
+											<a href="#" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>';
+										}
+									}
+
+								$data .= '
+								</div>
 								</div>
 								</td>
 							</tr>';
@@ -2641,7 +2775,32 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 								</td>
 								
 								<td id="'.$db2->trooperId.'Status">
-									'.getStatus($db2->status).'
+									<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
+									'.getStatus($db2->status);
+
+									// If is admin and limited event
+									if(isAdmin() && $db->limitedEvent == 1)
+									{
+										// If set to going
+										if($db2->status == 0)
+										{
+											// Set status
+											$data .= '
+											<br />
+											<a href="#" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
+										}
+										// If set to not picked
+										else if($db2->status == 6)
+										{
+											// Set status
+											$data .= '
+											<br />
+											<a href="#" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>';
+										}
+									}
+
+								$data .= '
+								</div>
 								</td>
 							</tr>';
 						}

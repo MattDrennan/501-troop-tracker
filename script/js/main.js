@@ -270,7 +270,8 @@ $(document).ready(function()
 	{
 		$.LoadingOverlay("hide");
 	});
-	// Shows / Hide Change Limits
+
+	// Change Limits - Shows / Hide Change Limits
 	$("body").on("click", "#limitChange", function(e)
 	{
 		e.preventDefault();
@@ -285,6 +286,52 @@ $(document).ready(function()
 			$("#limitChangeArea").hide();
 			$("#limitChange").text("Change Limits");
 		}
+	})
+
+	// Change Limits - Reset Default
+	$("body").on("click", "#resetDefaultCount", function(e)
+	{
+		e.preventDefault();
+
+		// Reset
+		$("#era").val(4);
+		$("#limit501st").val(500);
+		$("#limitRebels").val(500);
+		$("#limitMando").val(500);
+		$("#limitDroid").val(500);
+		$("#limitOther").val(500);
+	})
+
+	// Event Page - Change Status
+	$("body").on("click", "a[name=changestatus]", function(e)
+	{
+		e.preventDefault();
+		
+		// Load data from form
+		var trooperid = $(this).attr("trooperid");
+		var eventid = $("#troopidC").val();
+		var signid = $(this).attr("signid");
+		var buttonid = $(this).attr("buttonid");
+		
+		// Get AJAX data
+		$.ajax({
+			type: "POST",
+			url: "process.php?do=changestatus",
+			data: "trooperid=" + trooperid + "&eventid=" + eventid + "&signid=" + signid + "&buttonid=" + buttonid,
+			success: function(data)
+			{
+				// Get JSON
+				var json = JSON.parse(data);
+
+				// Change buttons based on data
+				$("div[name=changestatusarea][trooperid=" + trooperid + "][signid=" + signid + "]").html(json.message);
+
+				console.log(json.message2);
+
+				// Change counts for admin
+				$("div[name=troopersRemainingDisplay]").html(json.message2);
+			}
+		});
 	})
 
 	// Account Setup - Change Squad

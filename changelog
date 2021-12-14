@@ -1,5 +1,12 @@
 **Changelog**
 
+_12/14/2021_
+
+-You can now change the status of manual events on the event page
+-Reset to Defaults button added to create / edit event
+-Fixed: A bug where troopers would be set to going on manual events
+-Added trooper admin count for manual events
+
 _12/12/2021_
 
 -Users will be redirected to an event they were viewing upon login

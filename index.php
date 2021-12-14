@@ -2290,6 +2290,10 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						
 						<p>Limit of Others:</p>
 						<input type="number" name="limitOther" value="500" id="limitOther" />
+
+						<p>
+							<a href="#" class="button" id="resetDefaultCount">Reset Default</a>
+						</p>
 						
 						</div>
 
@@ -2786,6 +2790,10 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				
 				<p>Limit of Others:</p>
 				<input type="number" name="limitOther" value="'.copyEvent($eid, $limitOther, 500).'" id="limitOther" />
+
+				<p>
+					<a href="#" class="button" id="resetDefaultCount">Reset Default</a>
+				</p>
 				
 				</div>
 
@@ -3392,6 +3400,30 @@ if(isset($_GET['event']))
 							</ul>
 						</div>';
 					}
+					else
+					{
+						// If is a admin and a limited event
+						if(isAdmin() && $db->limitedEvent == 1)
+						{
+							// All other events show counts of sign ups
+							echo '
+							<br />
+							<hr />
+							<br />
+							
+							<div name="troopersRemainingDisplay" style="justify-content: center; text-align: center;">
+								<h3>Admin Trooper Counts</h3>
+
+								<ul style="display:inline-table;">
+									<li>501st troopers: '.eventClubCount($db->id, 0).' </li>
+									<li>Rebel Legion: '.eventClubCount($db->id, 1).' </li>
+									<li>Mando Mercs: '.eventClubCount($db->id, 2).' </li>
+									<li>Droid Builders: '.eventClubCount($db->id, 3).' </li>
+									<li>Other troopers: '.eventClubCount($db->id, 4).' </li>
+								</ul>
+							</div>';
+						}
+					}
 				}
 			}
 			
@@ -3607,11 +3639,51 @@ if(isset($_GET['event']))
 									if($db2->status == 5)
 									{
 										echo '
+										<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
 										(Pending Command Staff Approval)';
+
+										// If is admin and limited event
+										if(isAdmin() && $db->limitedEvent == 1)
+										{
+											// Set status
+											echo '
+											<br />
+											<a href="#" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>
+											<br />
+											<a href="#" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
+										}
+
+										echo '</div>';
 									}
 									else
 									{
+										echo '
+										<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
+
 										echo getStatus($db2->status);
+
+										// If is admin and limited event
+										if(isAdmin() && $db->limitedEvent == 1)
+										{
+											// If set to going
+											if($db2->status == 0)
+											{
+												// Set status
+												echo '
+												<br />
+												<a href="#" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
+											}
+											// If set to not picked
+											else if($db2->status == 6)
+											{
+												// Set status
+												echo '
+												<br />
+												<a href="#" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>';
+											}
+										}
+
+										echo '</div>';
 									}
 								}
 
@@ -3661,8 +3733,55 @@ if(isset($_GET['event']))
 								'.ifEmpty(getCostume($db2->costume_backup), "N/A").'
 							</td>
 							
-							<td id="'.$db2->trooperId.'Status">
-								'.getStatus($db2->status).'
+							<td id="'.$db2->trooperId.'Status">';
+								echo '
+								<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
+
+								// Limited event - If pending approval
+								if($db2->status == 5)
+								{
+									echo '
+									(Pending Command Staff Approval)';
+
+									// If is admin and limited event
+									if(isAdmin() && $db->limitedEvent == 1)
+									{
+										// Set status
+										echo '
+										<br />
+										<a href="#" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>
+										<br />
+										<a href="#" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
+									}
+								}
+								else
+								{
+									echo getStatus($db2->status);
+
+									// If is admin and limited event
+									if(isAdmin() && $db->limitedEvent == 1)
+									{
+										// If set to going
+										if($db2->status == 0)
+										{
+											// Set status
+											echo '
+											<br />
+											<a href="#" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
+										}
+										// If set to not picked
+										else if($db2->status == 6)
+										{
+											// Set status
+											echo '
+											<br />
+											<a href="#" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>';
+										}
+									}
+								}
+
+							echo '
+							</div>
 							</td>
 						</tr>';
 					}
