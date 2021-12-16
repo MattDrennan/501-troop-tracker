@@ -127,7 +127,8 @@ if(!loggedIn())
 		{
 			echo '
 			<a href="index.php?action=requestaccess" '.isPageActive("requestaccess").'>Request Access</a>
-			<a href="index.php?action=setup" '.isPageActive("setup").'>Account Setup</a>';
+			<a href="index.php?action=setup" '.isPageActive("setup").'>Account Setup</a>
+			<a href="index.php?action=faq" '.isPageActive("faq").'>FAQ</a>';
 		}
 	}
 	
@@ -174,12 +175,12 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 	echo '
 	<h2 class="tm-section-header">Manage Account</h2>
 
-	<a href="#" id="emailSettingLink" class="button">E-mail Settings</a> 
-	<a href="#" id="changeemailLink" class="button">Change E-mail</a> 
-	<a href="#" id="changephoneLink" class="button">Change Phone</a> 
-	<a href="#" id="changenameLink" class="button">Change Name</a> 
-	<a href="#" id="changepasswordLink" class="button">Change Password</a>
-	<a href="#" id="changethemeLink" class="button">Change Theme</a> 
+	<a href="#/" id="emailSettingLink" class="button">E-mail Settings</a> 
+	<a href="#/" id="changeemailLink" class="button">Change E-mail</a> 
+	<a href="#/" id="changephoneLink" class="button">Change Phone</a> 
+	<a href="#/" id="changenameLink" class="button">Change Name</a> 
+	<a href="#/" id="changepasswordLink" class="button">Change Password</a>
+	<a href="#/" id="changethemeLink" class="button">Change Theme</a> 
 	<a href="index.php?action=donation" class="button">Donate</a> 
 	<a href="index.php?profile='.$_SESSION['id'].'" class="button">View Your Profile</a>
 	<br /><br />
@@ -457,8 +458,11 @@ if(isset($_GET['profile']))
 		}
 		else
 		{
+			// Get count for awards
 			$troops_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE status = '3' AND trooperid = '".cleanInput($_GET['profile'])."'") or die($conn->error);
 			$count = $troops_get->fetch_row();
+
+			// Set up award count
 			$j = 0;
 
 			echo '
@@ -467,7 +471,7 @@ if(isset($_GET['profile']))
 
 			<br />
 
-			<b>Total Finished Troops:</b> ' . number_format($i) . '
+			'.getTroopCounts(cleanInput($_GET['profile'])).'
 
 			<br />
 
@@ -1086,7 +1090,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		<h2 class="tm-section-header">My Stats</h2>
 		
 		<p style="text-align: center;">
-			<a href="#" class="button" id="showstats" name="showstats">Show My Stats</a> 
+			<a href="#/" class="button" id="showstats" name="showstats">Show My Stats</a> 
 			<a href="index.php?profile='.$_SESSION['id'].'" class="button">View My Profile</a>
 		</p>
 		
@@ -1145,8 +1149,8 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 			</div>
 
 			<p><b>Favorite Costume:</b> '.ifEmpty(getCostume($favoriteCostume['attended_costume']), "N/A").'</p>
-			<p><b>Attended:</b> '.number_format($troopsAttended).'</p>
-			<p><b>Money Raised:</b> $'.number_format($moneyRaised).'</p>';
+			<p><b>Money Raised:</b> $'.number_format($moneyRaised).'</p>
+			' . getTroopCounts(cleanInput($_SESSION['id'])) . '';
 		}
 		else
 		{
@@ -1445,6 +1449,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<a href="index.php?action=commandstaff&do=managetroopers" class="button">Manage Troopers</a> 
 				<a href="index.php?action=commandstaff&do=approvetroopers" class="button" id="trooperRequestButton" name="trooperRequestButton">Approve Trooper Requests - ('.$getTrooperNotifications->num_rows.')</a> 
 				<a href="index.php?action=commandstaff&do=assignawards" class="button">Award Management</a>
+				<a href="index.php?action=commandstaff&do=stats" class="button">Stats</a>
 				<a href="index.php?action=commandstaff&do=sitesettings" class="button">Site Settings</a>';
 			}
 			
@@ -1513,6 +1518,100 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			{
 				echo '<p>ERROR: Settings not correctly set. Check database.</p>';
 			}
+		}
+
+		/**************************** Trooper Check *********************************/
+		
+		if(isset($_GET['do']) && $_GET['do'] == "stats")
+		{
+			// Count number of users with set up accounts
+			$totalAccountsSetUp = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1'");
+
+			// Count number of users with set up accounts - 501
+			$totalAccountsSetUp501 = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad <= 5");
+
+			// Count number of users with set up accounts - Everglades
+			$totalAccountsSetUpE = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 1");
+
+			// Count number of users with set up accounts - Makaze
+			$totalAccountsSetUpM = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 2");
+
+			// Count number of users with set up accounts - Parjai
+			$totalAccountsSetUpP = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 3");
+
+			// Count number of users with set up accounts - Squad 7
+			$totalAccountsSetUpS = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 4");
+
+			// Count number of users with set up accounts - Tampa Bay
+			$totalAccountsSetUpT = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 5");
+
+			// Count number of users with set up accounts - Rebel
+			$totalAccountsSetUpRebel = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 6");
+
+			// Count number of users with set up accounts - Mando
+			$totalAccountsSetUpMando = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 7");
+
+			// Count number of users with set up accounts - Droid
+			$totalAccountsSetUpDroid = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 8");
+
+			// Count number of users with set up accounts - Other
+			$totalAccountsSetUpOther = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 9");
+
+			// Total number of accounts
+			$totalAccounts = $conn->query("SELECT id FROM troopers");
+
+			$totalNotSet = $totalAccounts->num_rows - $totalAccountsSetUp->num_rows;
+
+			echo '
+			<h2>Important People</h2>
+			<h3>Super Admin</h3>
+			<ul>';
+
+			// Show all super admins
+			$query = "SELECT * FROM troopers WHERE permissions = '1' ORDER BY name";
+
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					echo '<li><a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</a></li>';
+				}
+			}
+
+			echo '</ul>';
+
+			echo '
+			<h3>Moderator</h3>
+			<ul>';
+
+			// Show all super admins
+			$query = "SELECT * FROM troopers WHERE permissions = '2' ORDER BY name";
+
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					echo '<li><a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</a></li>';
+				}
+			}
+
+			echo '</ul>
+
+			<h2>Statistics</h2>
+
+			<p><b>501st Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUp501->num_rows).'</p>
+			<p><b>Everglades Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpE->num_rows).'</p>
+			<p><b>Makaze Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpM->num_rows).'</p>
+			<p><b>Parjai Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpP->num_rows).'</p>
+			<p><b>Squad 7 Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpS->num_rows).'</p>
+			<p><b>Tampa Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpT->num_rows).'</p>
+			<p><b>Rebel Legion Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpRebel->num_rows).'</p>
+			<p><b>Mando Mercs Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpMando->num_rows).'</p>
+			<p><b>Droid Builders Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpDroid->num_rows).'</p>
+			<p><b>Other Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpOther->num_rows).'</p>
+			<p><b>Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUp->num_rows).'</p>
+			<p><b>Total Accounts (Not Set Up):</b> '.number_format($totalNotSet).'</p>
+			<p><b>Total Accounts:</b> '.number_format($totalAccounts->num_rows).'</p>';
 		}
 		
 		/**************************** Trooper Check *********************************/
@@ -2135,7 +2234,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				}
 				
 				echo '
-				<input type="submit" name="submitCancel" id="submitCancel" value="Mark Canceled" /> <input type="submit" name="submitFinish" id="submitFinish" value="Mark Finished" /> <input type="submit" name="submitOpen" id="submitOpen" value="Mark Open" /> <input type="submit" name="submitLock" id="submitLock" value="Mark Locked" /> <input type="submit" name="submitEdit" id="submitEdit" value="Edit" /> <input type="submit" name="submitRoster" id="submitRoster" value="Roster" /> <input type="submit" name="submitCharity" id="submitCharity" value="Set Charity Amount" />
+				<input type="submit" name="submitCancel" id="submitCancel" value="Mark Canceled" /> <input type="submit" name="submitFinish" id="submitFinish" value="Mark Finished" /> <input type="submit" name="submitOpen" id="submitOpen" value="Mark Open" /> <input type="submit" name="submitLock" id="submitLock" value="Mark Locked" /> <input type="submit" name="submitEdit" id="submitEdit" value="Edit" /> <input type="submit" name="submitRoster" id="submitRoster" value="Roster" /> <input type="submit" name="submitCharity" id="submitCharity" value="Set Charity Amount" /> <input type="submit" name="viewEvent" id="viewEvent" value="View Event" />
 
 				</form>
 				
@@ -2262,7 +2361,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						</select>
 						
 						<p>
-							<a href="#" class="button" id="limitChange">Change Limits</a>
+							<a href="#/" class="button" id="limitChange">Change Limits</a>
 						</p>
 						
 						<div id="limitChangeArea" style="display: none;">
@@ -2292,7 +2391,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<input type="number" name="limitOther" value="500" id="limitOther" />
 
 						<p>
-							<a href="#" class="button" id="resetDefaultCount">Reset Default</a>
+							<a href="#/" class="button" id="resetDefaultCount">Reset Default</a>
 						</p>
 						
 						</div>
@@ -2630,7 +2729,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 			// JQUERY Easy Form Filler
 			echo '
-			<a href="#" class="button" id="easyfilltoolbutton" name="easyfilltoolbutton">Easy Fill Tool</a>
+			<a href="#/" class="button" id="easyfilltoolbutton" name="easyfilltoolbutton">Easy Fill Tool</a>
 			
 			<div name="easyfilltoolarea" id="easyfilltoolarea" style="display: none;">
 			<p>Easy Fill Tool:</p>
@@ -2762,7 +2861,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				</select>
 				
 				<p>
-					<a href="#" class="button" id="limitChange">Change Limits</a>
+					<a href="#/" class="button" id="limitChange">Change Limits</a>
 				</p>
 
 				<div id="limitChangeArea" style="display: none;">
@@ -2792,7 +2891,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<input type="number" name="limitOther" value="'.copyEvent($eid, $limitOther, 500).'" id="limitOther" />
 
 				<p>
-					<a href="#" class="button" id="resetDefaultCount">Reset Default</a>
+					<a href="#/" class="button" id="resetDefaultCount">Reset Default</a>
 				</p>
 				
 				</div>
@@ -2809,6 +2908,23 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		// If the user is not an admin or logged in
 		echo 'You are not command staff. Access denied!';
 	}
+}
+
+// Show the FAQ page
+if(isset($_GET['action']) && $_GET['action'] == "faq")
+{
+	echo '
+	<h3>Troop Tracker - Overview Video (After Account Setup)</h3>
+	<p><iframe width="100%" height="315" src="https://www.youtube.com/embed/vFP6posJt70" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></p>
+
+	<h3>Troop Tracker - How To Video</h3>
+	<p><iframe width="100%" height="315" src="https://www.youtube.com/embed/j0Z5SB6TVOg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></p>
+
+	<h3>Troop Tracker - For Command Staff</h3>
+	<p><iframe width="100%" height="315" src="https://www.youtube.com/embed/ycwFdQQvGoc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></p>
+
+	<h3>Troop Tracker Manual</h3>
+	<p><a href="https://github.com/MattDrennan/501-troop-tracker/blob/master/manual/troop_tracker_manual.pdf" target="_blank">Click here to view PDF manual.</a></p>';
 }
 
 // Show the login page
@@ -3200,7 +3316,7 @@ if(isset($_GET['event']))
 				// Create button variable
 				$button = '
 				<p style="text-align: center;">
-					<a href="#" class="button" id="subscribeupdates" event="'.cleanInput($_GET['event']).'">'.$subscribeText.'</a>
+					<a href="#/" class="button" id="subscribeupdates" event="'.cleanInput($_GET['event']).'">'.$subscribeText.'</a>
 				</p>';
 
 				// If this event is over, don't show it
@@ -3643,14 +3759,14 @@ if(isset($_GET['event']))
 										(Pending Command Staff Approval)';
 
 										// If is admin and limited event
-										if(isAdmin() && $db->limitedEvent == 1)
+										if(isAdmin() && $db->limitedEvent == 1 && $db->closed == 0)
 										{
 											// Set status
 											echo '
 											<br />
-											<a href="#" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>
+											<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>
 											<br />
-											<a href="#" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
+											<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
 										}
 
 										echo '</div>';
@@ -3663,7 +3779,7 @@ if(isset($_GET['event']))
 										echo getStatus($db2->status);
 
 										// If is admin and limited event
-										if(isAdmin() && $db->limitedEvent == 1)
+										if(isAdmin() && $db->limitedEvent == 1 && $db->closed == 0)
 										{
 											// If set to going
 											if($db2->status == 0)
@@ -3671,7 +3787,7 @@ if(isset($_GET['event']))
 												// Set status
 												echo '
 												<br />
-												<a href="#" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
+												<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
 											}
 											// If set to not picked
 											else if($db2->status == 6)
@@ -3679,7 +3795,7 @@ if(isset($_GET['event']))
 												// Set status
 												echo '
 												<br />
-												<a href="#" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>';
+												<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>';
 											}
 										}
 
@@ -3744,14 +3860,14 @@ if(isset($_GET['event']))
 									(Pending Command Staff Approval)';
 
 									// If is admin and limited event
-									if(isAdmin() && $db->limitedEvent == 1)
+									if(isAdmin() && $db->limitedEvent == 1 && $db->closed == 0)
 									{
 										// Set status
 										echo '
 										<br />
-										<a href="#" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>
+										<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>
 										<br />
-										<a href="#" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
+										<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
 									}
 								}
 								else
@@ -3759,7 +3875,7 @@ if(isset($_GET['event']))
 									echo getStatus($db2->status);
 
 									// If is admin and limited event
-									if(isAdmin() && $db->limitedEvent == 1)
+									if(isAdmin() && $db->limitedEvent == 1 && $db->closed == 0)
 									{
 										// If set to going
 										if($db2->status == 0)
@@ -3767,7 +3883,7 @@ if(isset($_GET['event']))
 											// Set status
 											echo '
 											<br />
-											<a href="#" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
+											<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
 										}
 										// If set to not picked
 										else if($db2->status == 6)
@@ -3775,7 +3891,7 @@ if(isset($_GET['event']))
 											// Set status
 											echo '
 											<br />
-											<a href="#" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>';
+											<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>';
 										}
 									}
 								}
@@ -4425,7 +4541,7 @@ if(isset($_GET['event']))
 						// If is admin, set up admin options
 						if(isAdmin())
 						{
-							$admin = '<span style="margin-right: 15px;"><a href="#" id="deleteComment_'.$db->id.'" name="'.$db->id.'"><img src="images/trash.png" alt="Delete Comment" /></a></span>';
+							$admin = '<span style="margin-right: 15px;"><a href="#/" id="deleteComment_'.$db->id.'" name="'.$db->id.'"><img src="images/trash.png" alt="Delete Comment" /></a></span>';
 						}
 						
 						// Convert date/time
@@ -4434,7 +4550,7 @@ if(isset($_GET['event']))
 
 						echo '
 						<tr>
-							<td><span style="float: left;">'.$admin.'<a href="#" id="quoteComment_'.$db->id.'" name="'.$db->id.'"><img src="images/quote.png" alt="Quote Comment"></a></span> <a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.readTKNumber(getTKNumber($db->trooperid), getTrooperSquad($db->trooperid)).'</a><br />'.$newdate.'</td>
+							<td><span style="float: left;">'.$admin.'<a href="#/" id="quoteComment_'.$db->id.'" name="'.$db->id.'"><img src="images/quote.png" alt="Quote Comment"></a></span> <a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.readTKNumber(getTKNumber($db->trooperid), getTrooperSquad($db->trooperid)).'</a><br />'.$newdate.'</td>
 						</tr>
 						
 						<tr>
@@ -4556,11 +4672,11 @@ else
 				$i = 0;
 				
 				echo '
-				<a href="#" id="changeview" class="button">Calendar View</a>
+				<p><a href="#/" id="changeview" class="button">Calendar View</a></p>
 				
-				<br /><br />
-				
-				<div id="listview">';
+				<div id="listview">
+
+				<p><input type="text" id="controlf" placeholder="Type your search here..." style="text-align: center;" /></p>';
 				
 				// Event calendar
 				$events = array();

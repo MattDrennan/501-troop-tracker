@@ -1,5 +1,17 @@
 **Changelog**
 
+_12/15/2021_
+
+-Changed "#" links to "#/" to prevent jumping to top of page
+-Changing status on manual events will no longer show on finished events
+-List view button will not be hidden when screen is too small for calendar view
+-Fixed issue where when editing certain values, it would not be updated in select box
+-Added "View Event" button to edit event area
+-Added troop counts per club on profile
+-Added FAQ page
+-Added Stats page to Command Staff Area
+-Added search bar for active troops
+
 _12/14/2021_
 
 -You can now change the status of manual events on the event page

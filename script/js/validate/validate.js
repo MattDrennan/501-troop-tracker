@@ -237,6 +237,7 @@ $(function()
 
                         // Fix text when changing the title
                         $("#userID option:selected").text(json.newname);
+                        $("#userID").select2();
 
                         // Alert to success
                         alert(json.data);
@@ -377,6 +378,7 @@ $(function()
 
                         // Fix text when changing the title
                         $("#eventId option:selected").text($("#eventName").val());
+                        $("#eventId").select2();
 						
 						// Remove all shift boxes
 						$("div[name*='pair']").each(function()

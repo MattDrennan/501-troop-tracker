@@ -271,6 +271,22 @@ $(document).ready(function()
 		$.LoadingOverlay("hide");
 	});
 
+	// Home Page - Search
+	$("body").on("input", "#controlf", function(e)
+	{
+		$("#listview div").each(function(index)
+		{
+			if($(this).text().toLowerCase().includes($("#controlf").val()))
+			{
+				$(this).show();
+			}
+			else
+			{
+				$(this).hide();
+			}
+		});
+	})
+
 	// Change Limits - Shows / Hide Change Limits
 	$("body").on("click", "#limitChange", function(e)
 	{
@@ -437,7 +453,11 @@ $(document).ready(function()
 	{
 		if($(window).width() < 800)
 		{
-			$("a[id=changeview]").hide();
+			// Only hide if calendar view is not visible
+			if($("#calendarview").is(":hidden"))
+			{
+				$("a[id=changeview]").hide();
+			}
 		}
 		else
 		{
@@ -1348,6 +1368,15 @@ $(document).ready(function()
 			});
 		}
 	})
+
+	// Edit Event - View Event
+	$("#viewEvent").button().click(function(e)
+	{
+		e.preventDefault();
+		
+		// Open in new tab
+		window.open('index.php?event=' + $("#eventId option:selected").val(), '_blank');
+	})
 	
 	// Manage Trooper - Reset Password
 	$("#submitResetPasswordUser").button().click(function(e)
@@ -1378,11 +1407,9 @@ $(document).ready(function()
 	$("#submitViewProfile").button().click(function(e)
 	{
 		e.preventDefault();
-
-		var form = $("#editUser");
-		var url = form.attr("action");
 		
-		window.location = 'index.php?profile=' + $("#userID option:selected").val();
+		// Open in new tab
+		window.open('index.php?profile=' + $("#userID option:selected").val(), '_blank');
 	})
 
 	// Manage Trooper - Delete Trooper
@@ -1905,12 +1932,14 @@ $(document).ready(function()
 				{
 					// Change values for delete form
 					$("#costumeID").children("option[value='" + $("#costumeIDEdit :selected").val() + "']").text($("#costumeNameEdit").val());
+					$("#costumeID").select2();
 					
 					// Change values for edit form
 					$("#costumeIDEdit :selected").text($("#costumeNameEdit").val());
 					$("#costumeIDEdit :selected").attr("costumeName", $("#costumeNameEdit").val());
 					$("#costumeIDEdit :selected").attr("costumeEra", $("#costumeEraEdit").val());
 					$("#costumeIDEdit :selected").attr("costumeClub", $("#costumeClubEdit").val());
+					$("#costumeIDEdit").select2();
 
 					$("#editCostumeList").hide();
 
@@ -2062,12 +2091,16 @@ $(document).ready(function()
 				{
 					// Change values for delete form
 					$("#awardID").children("option[value='" + $("#awardIDEdit :selected").val() + "']").text($("#editAwardTitle").val());
+					$("#awardID").select2();
+
 					$("#awardIDAssign").children("option[value='" + $("#awardIDEdit :selected").val() + "']").text($("#editAwardTitle").val());
+					$("#awardIDAssign").select2();
 					
 					// Change values in edit form select
 					$("#awardIDEdit :selected").text($("#editAwardTitle").val());
 					$("#awardIDEdit :selected").attr("awardTitle", $("#editAwardTitle").val());
 					$("#awardIDEdit :selected").attr("awardImage", $("#editAwardImage").val());
+					$("#awardIDEdit").select2();
 
 					$("#editAwardList").hide();
 

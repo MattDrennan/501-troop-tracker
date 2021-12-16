@@ -74,6 +74,38 @@ function displaySquadLinks($squadLink)
 	return $returnVar;
 }
 
+// getTroopCounts: Returns the users total troop counts for each club
+function getTroopCounts($id)
+{
+	global $conn;
+
+	// Get troop counts - 501st
+	$count_501 = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
+
+	// Get troop counts - Rebel
+	$count_rebel = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('1' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
+
+	// Get troop counts - Mando Mercs
+	$count_mando = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('2' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
+
+	// Get troop counts - Droid
+	$count_droid = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('3' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
+
+	// Get troop counts - Other
+	$count_other = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.attended_costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
+
+	// Get total count
+	$count_total = $conn->query("SELECT id FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3'");
+
+	return '
+	<p><b>501st Troops:</b> ' . number_format($count_501->num_rows) . '</p>
+	<p><b>Rebel Legion Troops:</b> ' . number_format($count_rebel->num_rows) . '</p>
+	<p><b>Mando Mercs Troops:</b> ' . number_format($count_mando->num_rows) . '</p>
+	<p><b>Droid Builder Troops:</b> ' . number_format($count_droid->num_rows) . '</p>
+	<p><b>Other Troops:</b> ' . number_format($count_other->num_rows) . '</p>
+	<p><b>Total Finished Troops:</b> ' . number_format($count_total->num_rows) . '</p>';
+}
+
 // showSquadButtons: Returns garrison and squad images on front page
 function showSquadButtons()
 {
