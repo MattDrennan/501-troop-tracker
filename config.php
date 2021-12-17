@@ -11,19 +11,14 @@ set_time_limit(0);
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// PHP Mail
-require 'script/lib/phpmail/src/Exception.php';
-require 'script/lib/phpmail/src/PHPMailer.php';
-require 'script/lib/phpmail/src/SMTP.php';
-
 // Twitter namespace
 use DG\Twitter\Twitter;
 
-// Twitter
-require_once 'script/lib/twitter/twitter.class.php';
+// Calendar links - namespace
+use Spatie\CalendarLinks\Link;
 
-// Calendar
-require 'script/lib/php-calendar/src/phpCalendar/Calendar.php';
+// Composer Autoload
+require 'vendor/autoload.php';
 
 // Calendar Namespace
 use benhall14\phpCalendar\Calendar;
@@ -44,6 +39,29 @@ $conn = new mysqli(dbServer, dbUser, dbPassword, dbName);
 if ($conn->connect_error)
 {
 	trigger_error('Database connection failed: ' . $conn->connect_error, E_USER_ERROR);
+}
+
+// showCalendarLinks: Returns links to add event to calendar
+function showCalendarLinks($name, $location, $description, $date1, $date2)
+{
+	// Convert dates
+	$date1 = date('Y-m-d H:i', strtotime($date1));
+	$date2 = date('Y-m-d H:i', strtotime($date2));
+	
+	// Calendar links - from and to dates
+	$from = DateTime::createFromFormat('Y-m-d H:i', $date1);
+	$to = DateTime::createFromFormat('Y-m-d H:i', $date2);
+
+	// Create link
+	$link = Link::create($name, $from, $to)->description($description)->address($location);
+	
+	// Show link
+	return '
+	<p style="text-align: center;">
+		<b>Add to calendar:</b>
+		<br />
+		<a href="'.$link->google().'" target="_blank"><img src="images/google.png" alt="Google Calendar" /></a> <a href="'.$link->yahoo().'" target="_blank"><img src="images/yahoo.png" alt="Yahoo Calendar" /></a> <a href="'.$link->webOutlook().'" target="_blank"><img src="images/outlook.png" alt="Outlook Calendar" /></a> <a href="'.$link->ics().'" target="_blank"><img src="images/ics.png" alt="ICS Calendar" /></a>
+	</p>';
 }
 
 // displaySquadLinks: Returns links for each garrison for troop tracker

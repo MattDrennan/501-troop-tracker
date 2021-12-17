@@ -276,7 +276,7 @@ $(document).ready(function()
 	{
 		$("#listview div").each(function(index)
 		{
-			if($(this).text().toLowerCase().includes($("#controlf").val()))
+			if($(this).text().toLowerCase().includes($("#controlf").val().toLowerCase()))
 			{
 				$(this).show();
 			}

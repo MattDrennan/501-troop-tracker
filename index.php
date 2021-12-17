@@ -3291,7 +3291,9 @@ if(isset($_GET['event']))
 				echo '
 				<h2 class="tm-section-header">Admin Controls</h2>
 				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=editevent&eid='.$db->id.'">Edit/View Event in Command Staff Area</a></p>
-				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=createevent&eid='.$db->id.'">Copy Event in Command Staff Area</a></p>';
+				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=createevent&eid='.$db->id.'">Copy Event in Command Staff Area</a></p>
+				<br />
+				<hr />';
 			}
 			
 			// Format dates
@@ -3317,6 +3319,8 @@ if(isset($_GET['event']))
 				$button = '
 				<p style="text-align: center;">
 					<a href="#/" class="button" id="subscribeupdates" event="'.cleanInput($_GET['event']).'">'.$subscribeText.'</a>
+					<br />
+					<i>Get updates on trooper sign ups and cancellations.</i>
 				</p>';
 
 				// If this event is over, don't show it
@@ -3331,6 +3335,8 @@ if(isset($_GET['event']))
 					// Subscribe button
 					echo $button;
 				}
+				
+				echo showCalendarLinks($db->name, $db->location, "Troop Tracker Event", $db->dateStart, $db->dateEnd);
 			}
 			
 			// Is this merged data?

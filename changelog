@@ -1,5 +1,10 @@
 **Changelog**
 
+_12/16/2021_
+
+-Upgraded libraries to composer
+-Added "Add to calendar" icons to event pages
+
 _12/15/2021_
 
 -Changed "#" links to "#/" to prevent jumping to top of page
