@@ -1438,13 +1438,13 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		<p>
 			<a href="index.php?action=commandstaff&do=createevent" class="button">Create an Event</a> 
 			<a href="index.php?action=commandstaff&do=editevent" class="button">Edit an Event</a> 
-			<a href="index.php?action=commandstaff&do=notifications" class="button">Notifications</a> 
-			<a href="index.php?action=commandstaff&do=troopercheck" class="button">Trooper Check</a> 
-			<a href="index.php?action=commandstaff&do=managecostumes" class="button">Costume Management</a> ';
+			<a href="index.php?action=commandstaff&do=notifications" class="button">Notifications</a> ';
 			
 			if(hasPermission(1))
 			{
 				echo '
+				<a href="index.php?action=commandstaff&do=troopercheck" class="button">Trooper Check</a> 
+				<a href="index.php?action=commandstaff&do=managecostumes" class="button">Costume Management</a> 
 				<a href="index.php?action=commandstaff&do=createuser" class="button">Create Trooper</a> 
 				<a href="index.php?action=commandstaff&do=managetroopers" class="button">Manage Troopers</a> 
 				<a href="index.php?action=commandstaff&do=approvetroopers" class="button" id="trooperRequestButton" name="trooperRequestButton">Approve Trooper Requests - ('.$getTrooperNotifications->num_rows.')</a> 
@@ -1616,7 +1616,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		
 		/**************************** Trooper Check *********************************/
 		
-		if(isset($_GET['do']) && $_GET['do'] == "troopercheck")
+		if(isset($_GET['do']) && $_GET['do'] == "troopercheck" && hasPermission(1))
 		{
 			echo '
 			<h3>Trooper Check</h3>
@@ -1785,7 +1785,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		/**************************** COSTUMES *********************************/
 
 		// Manage costumes - allow command staff to add, edit, and delete costumes
-		if(isset($_GET['do']) && $_GET['do'] == "managecostumes")
+		if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && hasPermission(1))
 		{
 			echo '
 			<h3>Add Costume</h3>
@@ -1901,55 +1901,52 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				</form>';
 			}
 			
-			if(hasPermission(1))
+			echo '
+			<br />
+			<hr />
+			<br />
+		
+			<h3>Delete Costume</h3>';
+
+			// Get data
+			$query = "SELECT * FROM costumes ORDER BY costume";
+
+			$i = 0;
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					// Formatting
+					if($i == 0)
+					{
+						echo '
+						<form action="process.php?do=managecostumes" method="POST" name="costumeDeleteForm" id="costumeDeleteForm">
+
+						<select name="costumeID" id="costumeID">';
+					}
+
+					echo '<option value="'.$db->id.'">'.$db->costume.'</option>';
+
+					// Increment
+					$i++;
+				}
+			}
+
+			if($i == 0)
+			{
+				echo 'No costumes to display.';
+			}
+			else
 			{
 				echo '
-				<br />
-				<hr />
-				<br />
-			
-				<h3>Delete Costume</h3>';
+				</select>
 
-				// Get data
-				$query = "SELECT * FROM costumes ORDER BY costume";
-
-				$i = 0;
-				if ($result = mysqli_query($conn, $query))
-				{
-					while ($db = mysqli_fetch_object($result))
-					{
-						// Formatting
-						if($i == 0)
-						{
-							echo '
-							<form action="process.php?do=managecostumes" method="POST" name="costumeDeleteForm" id="costumeDeleteForm">
-
-							<select name="costumeID" id="costumeID">';
-						}
-
-						echo '<option value="'.$db->id.'">'.$db->costume.'</option>';
-
-						// Increment
-						$i++;
-					}
-				}
-
-				if($i == 0)
-				{
-					echo 'No costumes to display.';
-				}
-				else
-				{
-					echo '
-					</select>
-
-					<input type="submit" name="submitDeleteCostume" id="submitDeleteCostume" value="Delete Costume" />
-					</form>';
-				}
-				
-				echo '
-				</div>';
+				<input type="submit" name="submitDeleteCostume" id="submitDeleteCostume" value="Delete Costume" />
+				</form>';
 			}
+			
+			echo '
+			</div>';
 		}
 		
 		/**************************** AWARDS *********************************/
