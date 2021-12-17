@@ -3328,6 +3328,9 @@ if(isset($_GET['event']))
 				{					
 					// Subscribe button
 					echo $button;
+					
+					// Add to calendar links
+					echo showCalendarLinks($db->name, $db->location, "Troop Tracker Event", $db->dateStart, $db->dateEnd);
 				}
 				// If subscribed, allow to unsubscribe
 				else if($subscribeText == "Unsubscribe Updates")
@@ -3335,8 +3338,6 @@ if(isset($_GET['event']))
 					// Subscribe button
 					echo $button;
 				}
-				
-				echo showCalendarLinks($db->name, $db->location, "Troop Tracker Event", $db->dateStart, $db->dateEnd);
 			}
 			
 			// Is this merged data?
