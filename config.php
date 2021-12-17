@@ -41,6 +41,9 @@ if ($conn->connect_error)
 	trigger_error('Database connection failed: ' . $conn->connect_error, E_USER_ERROR);
 }
 
+// Main costume string
+$mainCostumes = "'501st: N/A', '501st: Command Staff', '501st: Handler'";
+
 // showCalendarLinks: Returns links to add event to calendar
 function showCalendarLinks($name, $location, $description, $date1, $date2)
 {
@@ -731,7 +734,7 @@ function getMyCostumes($id, $squad)
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$costume .= ", '" . $db->costumename . "'";
+				$costume .= ", '501st: " . $db->costumename . "'";
 			}
 		}
 	}
