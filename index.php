@@ -1430,7 +1430,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<a href="index.php?action=commandstaff&do=troopercheck" class="button">Trooper Check</a> 
 				<a href="index.php?action=commandstaff&do=managecostumes" class="button">Costume Management</a> 
 				<a href="index.php?action=commandstaff&do=createuser" class="button">Create Trooper</a> 
-				<a href="index.php?action=commandstaff&do=managetroopers" class="button">Manage Troopers</a> 
+				<a href="index.php?action=commandstaff&do=managetroopers" class="button">Trooper Management</a> 
 				<a href="index.php?action=commandstaff&do=approvetroopers" class="button" id="trooperRequestButton" name="trooperRequestButton">Approve Trooper Requests - ('.$getTrooperNotifications->num_rows.')</a> 
 				<a href="index.php?action=commandstaff&do=assignawards" class="button">Award Management</a>
 				<a href="index.php?action=commandstaff&do=stats" class="button">Stats</a>
