@@ -253,7 +253,6 @@ function selectAdd()
 	$("select[name^=modiftybackupcostumeForm2]").select2();
 	$("select[name^=costumeValSelect]").select2();
 	$("select[name^=costumeVal]").select2();
-	$("select[name^=attendcostumeVal]").select2();
 }
 
 $(document).ready(function()
@@ -1537,7 +1536,6 @@ $(document).ready(function()
 				$("[name=backup2" + trooperid + "][signid=" + signid + "]").show();
 				$("[name=status2" + trooperid + "][signid=" + signid + "]").show();
 				$("[name=reason2" + trooperid + "][signid=" + signid + "]").show();
-				$("[name=attendcostume2" + trooperid + "][signid=" + signid + "]").show();
 				$("[name=dateAttending" + trooperid + "][signid=" + signid + "]" + "Edit").show();
 				$("[name=dateAttended" + trooperid + "][signid=" + signid + "]" + "Edit").show();
 
@@ -1546,7 +1544,6 @@ $(document).ready(function()
 				$("[name=backup1" + trooperid + "][signid=" + signid + "]").hide();
 				$("[name=status1" + trooperid + "][signid=" + signid + "]").hide();
 				$("[name=reason1" + trooperid + "][signid=" + signid + "]").hide();
-				$("[name=attendcostume1" + trooperid + "][signid=" + signid + "]").hide();
 				$("[name=dateAttending" + trooperid + "][signid=" + signid + "]").hide();
 				$("[name=dateAttended" + trooperid + "][signid=" + signid + "]").hide();
 				
@@ -1586,7 +1583,6 @@ $(document).ready(function()
 							$("[name=backup2" + trooperid + "][signid=" + signid + "]").hide();
 							$("[name=status2" + trooperid + "][signid=" + signid + "]").hide();
 							$("[name=reason2" + trooperid + "][signid=" + signid + "]").hide();
-							$("[name=attendcostume2" + trooperid + "][signid=" + signid + "]").hide();
 							$("[name=dateAttending" + trooperid + "][signid=" + signid + "]" + "Edit").hide();
 							$("[name=dateAttended" + trooperid + "][signid=" + signid + "]" + "Edit").hide();
 							
@@ -1601,20 +1597,12 @@ $(document).ready(function()
 							$("[name=backup1" + trooperid + "][signid=" + signid + "]").html($("[name=backup2" + trooperid + "][signid=" + signid + "]").find("select :selected").text());
 							$("[name=status1" + trooperid + "][signid=" + signid + "]").html($("[name=status2" + trooperid + "][signid=" + signid + "]").find("select :selected").text());
 							$("[name=reason1" + trooperid + "][signid=" + signid + "]").html($("[name=reason2" + trooperid + "][signid=" + signid + "]").find("input").val());
-							$("[name=attendcostume1" + trooperid + "][signid=" + signid + "]").html($("[name=attendcostume2" + trooperid + "][signid=" + signid + "]").find("select :selected").text());
-							
-							// Set attended text
-							if($("[name=attendcostume2" + trooperid + "][signid=" + signid + "]").find("select :selected").text() == "None")
-							{
-								$("[name=attendcostume1" + trooperid + "][signid=" + signid + "]").text("Not Submitted");
-							}
 
 							// Show static values
 							$("[name=costume1" + trooperid + "][signid=" + signid + "]").show();
 							$("[name=backup1" + trooperid + "][signid=" + signid + "]").show();
 							$("[name=status1" + trooperid + "][signid=" + signid + "]").show();
 							$("[name=reason1" + trooperid + "][signid=" + signid + "]").show();
-							$("[name=attendcostume1" + trooperid + "][signid=" + signid + "]").show();
 							$("[name=dateAttending" + trooperid + "][signid=" + signid + "]").show();
 							$("[name=dateAttended" + trooperid + "][signid=" + signid + "]").show();
 
