@@ -3436,12 +3436,21 @@ if(isset($_GET['event']))
 							}
 						}
 					}
+
+					// Set up add to query
+					$add = "";
+
+					// Add to query if this is a linked event
+					if(isLink(cleanInput($_GET['event'])) > 0)
+					{
+						$add = " OR troopid = '".isLink(cleanInput($_GET['event']))."'";
+					}
 					
 					// Don't show photos, if merged data
 					if(!$isMerged)
 					{
 						// Query database for photos
-						$query2 = "SELECT * FROM uploads WHERE troopid = '".cleanInput($_GET['event'])."' AND admin = '1' ORDER BY date DESC";
+						$query2 = "SELECT * FROM uploads WHERE troopid = '".cleanInput($_GET['event'])."' AND admin = '1'".$add." ORDER BY date DESC";
 						
 						// Query count
 						$j = 0;
@@ -4130,12 +4139,21 @@ if(isset($_GET['event']))
 			{
 				echo '
 				<hr />';
+
+				// Set up add to query
+				$add = "";
+
+				// Add to query if this is a linked event
+				if(isLink(cleanInput($_GET['event'])) > 0)
+				{
+					$add = " OR troopid = '".isLink(cleanInput($_GET['event']))."'";
+				}
 				
 				// Set results per page
 				$results = 5;
 				
 				// Get total results - query
-				$sqlPage = "SELECT COUNT(id) AS total FROM uploads WHERE troopid = '".cleanInput($_GET['event'])."'"; 
+				$sqlPage = "SELECT COUNT(id) AS total FROM uploads WHERE troopid = '".cleanInput($_GET['event'])."'".$add.""; 
 				$resultPage = $conn->query($sqlPage);
 				$rowPage = $resultPage->fetch_assoc();
 				
@@ -4161,7 +4179,7 @@ if(isset($_GET['event']))
 				}
 				
 				// Query database for photos
-				$query = "SELECT * FROM uploads WHERE troopid = '".cleanInput($_GET['event'])."' AND admin = '0' ORDER BY date DESC LIMIT ".$startFrom.", ".$results."";
+				$query = "SELECT * FROM uploads WHERE troopid = '".cleanInput($_GET['event'])."' AND admin = '0'".$add." ORDER BY date DESC LIMIT ".$startFrom.", ".$results."";
 				
 				// Count photos
 				$i = 0;
