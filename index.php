@@ -3910,7 +3910,11 @@ if(isset($_GET['event']))
 				</div>';
 			}
 
-			echo '<hr />';
+			// HR Fix for formatting
+			if(loggedIn())
+			{
+				echo '<hr />';
+			}
 
 			// For rosterTableNoData - If no data, this is for the AJAX of a submitted sign up form
 			if($i == 0)
@@ -4103,25 +4107,6 @@ if(isset($_GET['event']))
 					}
 				}
 			}
-			else
-			{
-				// If not merged and not logged in
-				if(!$isMerged)
-				{
-					echo '
-					<br />
-					<b>You must <a href="index.php?action=login">login</a> to sign up for a troop.</b>
-					<br /><br />';
-				}
-				else
-				{
-					// Is merged
-					echo '
-					<br />
-					<b>You are unable to sign up for this event.</b>
-					<br /><br />';
-				}
-			}
 		}
 		
 		// If event does not exist
@@ -4137,8 +4122,11 @@ if(isset($_GET['event']))
 			// Don't show photos, if merged data
 			if(!$isMerged)
 			{
-				echo '
-				<hr />';
+				// HR Fix for formatting
+				if(loggedIn())
+				{
+					echo '<hr />';
+				}
 
 				// Set up add to query
 				$add = "";
@@ -4238,15 +4226,6 @@ if(isset($_GET['event']))
 					echo '</p>';
 				}
 				
-				// No photos found
-				if($i == 0)
-				{
-					echo '
-					<p>
-						<b>There are no photos to display.</b>
-					</p>';
-				}
-				
 				// If trooper logged in show uploader
 				if(loggedIn())
 				{
@@ -4269,7 +4248,11 @@ if(isset($_GET['event']))
 				}
 			}
 
-			echo '<hr />';
+			// HR Fix for formatting
+			if(loggedIn())
+			{
+				echo '<hr />';
+			}
 
 			if(loggedIn() && !$isMerged)
 			{
@@ -4569,21 +4552,6 @@ if(isset($_GET['event']))
 					echo '
 					<br />
 					<b>No discussion to display.</b>';
-				}
-			}
-			else
-			{
-				if(!$isMerged)
-				{
-					echo '
-					<br />
-					<b>You must <a href="index.php?action=login">login</a> to view the discussion.</b>';
-				}
-				else
-				{
-					echo '
-					<br />
-					<b>You are unable to participate in the dicussion on this event.</b>';
 				}
 			}
 		}
