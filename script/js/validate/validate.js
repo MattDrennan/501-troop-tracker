@@ -1028,133 +1028,93 @@ $(function()
             // in the "action" attribute of the form when valid
             submitHandler: function(form)
             {
-                // Make user pick a costume
-                if ($("#status").val() == 3 && $("#attendedcostume").val() == 0)
+                $.ajax(
                 {
-                    alert("Please pick a costume.");
-                }
-                else
-                {
-                    $.ajax(
+                    type: "POST",
+                    url: form.action,
+                    data: $(form).serialize() + "&troopRosterFormAdd=1",
+                    success: function(data)
                     {
-                        type: "POST",
-                        url: form.action,
-                        data: $(form).serialize() + "&troopRosterFormAdd=1",
-                        success: function(data)
+						var json = JSON.parse(data);
+						
+                        // Set variables
+                        var troopername = $("#trooperSelect option[value='" + $("#trooperSelect").val() + "']").attr("troopername");
+                        var tkid = $("#trooperSelect option[value='" + $("#trooperSelect").val() + "']").attr("tkid");
+						var trooperid = $("#trooperSelect").val();
+						var signid = json.signid;
+						
+                        // Send alert
+                        alert("Trooper added to roster!");
+
+                        // Show table if form is hidden
+                        if ($("#troopRosterForm").is(":hidden"))
                         {
-							var json = JSON.parse(data);
-							
-                            // Set variables
-                            var troopername = $("#trooperSelect option[value='" + $("#trooperSelect").val() + "']").attr("troopername");
-                            var tkid = $("#trooperSelect option[value='" + $("#trooperSelect").val() + "']").attr("tkid");
-							var trooperid = $("#trooperSelect").val();
-							var signid = json.signid;
-							
-							console.log(signid);
-							
-                            // Send alert
-                            alert("Trooper added to roster!");
-
-                            // Show table if form is hidden
-                            if ($("#troopRosterForm").is(":hidden"))
-                            {
-                                $("#troopRosterForm").show();
-                            }
-
-                            // Costume One
-                            var string1 = '<select name="costumeValSelect' + trooperid + '" signid="' + signid + '">';
-
-                            for (var i = 0; i <= jArray1.length - 1; i++)
-                            {
-                                if ($("#costume").val() == jArray2[i])
-                                {
-                                    string1 += '<option value="' + jArray2[i] + '" SELECTED>' + jArray1[i] + '</option>';
-                                }
-                                else
-                                {
-                                    string1 += '<option value="' + jArray2[i] + '">' + jArray1[i] + '</option>';
-                                }
-                            }
-
-                            string1 += '</select>';
-
-                            // Costume Two
-                            var string2 = '<select name="costumeVal' + trooperid + '" signid="' + signid + '">';
-
-                            // Checks to see if a option selected
-                            var string2Set = false;
-
-                            for (var i = 0; i <= jArray1.length - 1; i++)
-                            {
-                                if ($("#costumebackup").val() == jArray2[i])
-                                {
-                                    string2 += '<option value="' + jArray2[i] + '" SELECTED>' + jArray1[i] + '</option>';
-                                    string2Set = true;
-                                }
-                                else
-                                {
-                                    string2 += '<option value="' + jArray2[i] + '">' + jArray1[i] + '</option>';
-                                }
-                            }
-
-                            if (!string2Set)
-                            {
-                                string2 += '<option value="0" SELECTED>Please select a costume...</option>';
-                            }
-
-                            string2 += '</select>';
-
-                            // Costume Three
-                            var string3 = '<select name="attendcostumeVal' + trooperid + '" signid="' + signid + '">';
-
-                            // Checks to see if a option selected
-                            var string3Set = false;
-
-                            for (var i = 0; i <= jArray1.length - 1; i++)
-                            {
-                                if ($("#attendedcostume").val() == jArray2[i])
-                                {
-                                    string3 += '<option value="' + jArray2[i] + '" SELECTED>' + jArray1[i] + '</option>';
-                                    string3Set = true;
-                                }
-                                else
-                                {
-                                    string3 += '<option value="' + jArray2[i] + '">' + jArray1[i] + '</option>';
-                                }
-                            }
-
-                            if (!string3Set)
-                            {
-                                string3 += '<option value="0" SELECTED>None</option>';
-                            }
-
-                            string3 += '</select>';
-
-                            // Show form / table
-                            $('#rosterTable').append('<tr name="roster_' + trooperid + '" signid="' + signid + '"><td><input type="hidden" name="tkid" signid="' + signid + '" value = "' + tkid + '" /><input type="hidden" name="troopername" signid="' + signid + '" value = "' + troopername + '" /><input type="hidden" name="eventId" signid="' + signid + '" value = "' + $("#troopid").val() + '" /><input type="radio" name="trooperSelectEdit" signid="' + signid + '" value="' + trooperid + '" /></td><td><div name="tknumber1' + trooperid + '" signid="' + signid + '"><a href="index.php?profile=' + trooperid + '" target="_blank">' + tkid + ' - ' + troopername + '</a></div></td><td><div name="costume1' + trooperid + '" signid="' + signid + '">' + $("#costume option:selected").text() + '</div><div name="costume2' + trooperid + '" signid="' + signid + '" style="display:none;">' + string1 + '</div></td><td><div name="backup1' + trooperid + '" signid="' + signid + '">' + ifEmpty($("#costumebackup option:selected").text()) + '</div><div name="backup2' + trooperid + '" signid="' + signid + '" style="display:none;">' + string2 + '</div></td><td><div name="status1' + trooperid + '" signid="' + signid + '">' + getStatus($("#status").val()) + '</div><div name="status2' + trooperid + '" signid="' + signid + '" style="display:none;"><select name="statusVal' + trooperid + '" signid="' + signid + '"><option value="0">Going</option><option value="1">Stand By</option><option value="2">Tentative</option><option value="3">Attended</option><option value="4">Canceled</option><option value="5">Pending</option><option value="6">Not Picked</option></select></div></td><td><div name="reason1' + trooperid + '" signid="' + signid + '">' + ifEmpty2($("#reason").val(), "None") + '</div><div name="reason2' + trooperid + '" signid="' + signid + '" style="display:none;"><input type="text" name="reasonVal' + trooperid + '" signid="' + signid + '" value="' + $("#reason").val() + '" /></div></td><td><div name="attendcostume1' + trooperid + '" signid="' + signid + '">' + ifEmpty3($("#attendedcostume option:selected").text(), "Not Submitted") + '</div><div name="attendcostume2' + trooperid + '" signid="' + signid + '" style="display:none;">' + string3 + '</div></td></tr>');
-
-                            // Select Options
-                            $("select[name=statusVal" + trooperid + "][signid=" + signid + "]").val($("#status").val());
-
-							// Make sure not placeholder
-							if(trooperid != placeholder)
-							{
-								// Remove trooper
-								$("#trooperSelect option[value='" + trooperid + "']").remove();
-							}
-
-                            // Reset
-                            $("#costume").val("null").trigger('change');
-                            $("#costumebackup").val("0").trigger('change');
-                            $("#status").val("null");
-                            $("#reasonBlock").hide();
-                            $("#reason").val("");
-                            $("#attendBlock").hide();
-                            $("#attendedcostume").val("0").trigger('change');
-                            $("input[id='trooperSearch']").val("").trigger("input");
+                            $("#troopRosterForm").show();
                         }
-                    });
-                }
+
+                        // Costume One
+                        var string1 = '<select name="costumeValSelect' + trooperid + '" signid="' + signid + '">';
+
+                        for (var i = 0; i <= jArray1.length - 1; i++)
+                        {
+                            if ($("#costume").val() == jArray2[i])
+                            {
+                                string1 += '<option value="' + jArray2[i] + '" SELECTED>' + jArray1[i] + '</option>';
+                            }
+                            else
+                            {
+                                string1 += '<option value="' + jArray2[i] + '">' + jArray1[i] + '</option>';
+                            }
+                        }
+
+                        string1 += '</select>';
+
+                        // Costume Two
+                        var string2 = '<select name="costumeVal' + trooperid + '" signid="' + signid + '">';
+
+                        // Checks to see if a option selected
+                        var string2Set = false;
+
+                        for (var i = 0; i <= jArray1.length - 1; i++)
+                        {
+                            if ($("#costumebackup").val() == jArray2[i])
+                            {
+                                string2 += '<option value="' + jArray2[i] + '" SELECTED>' + jArray1[i] + '</option>';
+                                string2Set = true;
+                            }
+                            else
+                            {
+                                string2 += '<option value="' + jArray2[i] + '">' + jArray1[i] + '</option>';
+                            }
+                        }
+
+                        if (!string2Set)
+                        {
+                            string2 += '<option value="0" SELECTED>Please select a costume...</option>';
+                        }
+
+                        string2 += '</select>';
+
+                        // Show form / table
+                        $('#rosterTable').append('<tr name="roster_' + trooperid + '" signid="' + signid + '"><td><input type="hidden" name="tkid" signid="' + signid + '" value = "' + tkid + '" /><input type="hidden" name="troopername" signid="' + signid + '" value = "' + troopername + '" /><input type="hidden" name="eventId" signid="' + signid + '" value = "' + $("#troopid").val() + '" /><input type="radio" name="trooperSelectEdit" signid="' + signid + '" value="' + trooperid + '" /></td><td><div name="tknumber1' + trooperid + '" signid="' + signid + '"><a href="index.php?profile=' + trooperid + '" target="_blank">' + tkid + ' - ' + troopername + '</a></div></td><td><div name="costume1' + trooperid + '" signid="' + signid + '">' + $("#costume option:selected").text() + '</div><div name="costume2' + trooperid + '" signid="' + signid + '" style="display:none;">' + string1 + '</div></td><td><div name="backup1' + trooperid + '" signid="' + signid + '">' + ifEmpty($("#costumebackup option:selected").text()) + '</div><div name="backup2' + trooperid + '" signid="' + signid + '" style="display:none;">' + string2 + '</div></td><td><div name="status1' + trooperid + '" signid="' + signid + '">' + getStatus($("#status").val()) + '</div><div name="status2' + trooperid + '" signid="' + signid + '" style="display:none;"><select name="statusVal' + trooperid + '" signid="' + signid + '"><option value="0">Going</option><option value="1">Stand By</option><option value="2">Tentative</option><option value="3">Attended</option><option value="4">Canceled</option><option value="5">Pending</option><option value="6">Not Picked</option></select></div></td></tr>');
+
+                        // Select Options
+                        $("select[name=statusVal" + trooperid + "][signid=" + signid + "]").val($("#status").val());
+
+						// Make sure not placeholder
+						if(trooperid != placeholder)
+						{
+							// Remove trooper
+							$("#trooperSelect option[value='" + trooperid + "']").remove();
+						}
+
+                        // Reset
+                        $("#costume").val("null").trigger('change');
+                        $("#costumebackup").val("0").trigger('change');
+                        $("#status").val("null");
+                        $("input[id='trooperSearch']").val("").trigger("input");
+                    }
+                });
             }
         });
     });

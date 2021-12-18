@@ -20,7 +20,7 @@ if (!empty($_FILES))
 	move_uploaded_file($tempFile, $targetFile);
 	
 	// Check if admin (command staff) checkbox checked
-	if(!isset($_POST['admin']))
+	if($_POST['admin'] == 0)
 	{
 		// Insert file into database
 		$conn->query("INSERT INTO uploads (troopid, trooperid, filename) VALUES ('".cleanInput($_POST['troopid'])."', '".cleanInput($_POST['trooperid'])."', '".addslashes($fileName)."')");

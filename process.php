@@ -153,9 +153,6 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	// Used to determine if a friend
 	$isFriend = false;
 	
-	// Used to set the reason for canceling
-	$reason = "";
-	
 	// Output
 	if ($result = mysqli_query($conn, $query))
 	{
@@ -210,16 +207,6 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	{
 		die("Can not do this.");
 	}
-	
-	// Check to see if friend
-	if($isFriend)
-	{
-		// Check to see if canceled
-		if($_POST['status'] == 4)
-		{
-			$reason = "Canceled by friend.";
-		}
-	}
 
 	// Set status from post
 	$status = cleanInput($_POST['status']);
@@ -238,7 +225,7 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	}
 
 	// Update SQL
-	$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costume'])."', costume_backup = '".cleanInput($_POST['costume_backup'])."', status = '".$status."', reason = '".$reason."' WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['troopid'])."' AND id = '".cleanInput($_POST['signid'])."'");
+	$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costume'])."', costume_backup = '".cleanInput($_POST['costume_backup'])."', status = '".$status."' WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['troopid'])."' AND id = '".cleanInput($_POST['signid'])."'");
 
 	// If cancel
 	if($status == 4 && !isEventFull(cleanInput($_POST['troopid']), cleanInput($_POST['costume'])))
@@ -425,7 +412,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 		$conn->query("DELETE FROM costumes WHERE id = '".cleanInput($_POST['costumeID'])."'");
 		
 		// Update other databases that are affected
-		$conn->query("UPDATE event_sign_up SET attended_costume = '0' WHERE attended_costume = '".cleanInput($_POST['costumeID'])."'");
+		$conn->query("UPDATE event_sign_up SET costume = '0' WHERE costume = '".cleanInput($_POST['costumeID'])."'");
 		$conn->query("UPDATE event_sign_up SET costume_backup = '0' WHERE costume_backup = '".cleanInput($_POST['costumeID'])."'");
 		
 		// Send notification to command staff
@@ -1688,16 +1675,9 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 {
 	// Edit a trooper from roster
 	if(isset($_POST['submitEditRoster']))
-	{
-		// Filter out none
-		if(cleanInput($_POST['reasonVal' . $_POST['trooperSelectEdit'] . '']) == "None")
-		{
-			// Set to blank
-			$_POST['reasonVal' . $_POST['trooperSelectEdit'] . ''] = "";
-		}
-		
+	{	
 		// Query the database
-		$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costumeValSelect' . $_POST['trooperSelectEdit'] . ''])."', costume_backup = '".cleanInput($_POST['costumeVal' . $_POST['trooperSelectEdit'] . ''])."', status = '".cleanInput($_POST['statusVal' . $_POST['trooperSelectEdit'] . ''])."', reason = '".cleanInput($_POST['reasonVal' . $_POST['trooperSelectEdit'] . ''])."', attended_costume = '".cleanInput($_POST['attendcostumeVal' . $_POST['trooperSelectEdit'] . ''])."' WHERE trooperid = '".cleanInput($_POST['trooperSelectEdit'])."' AND troopid = '".cleanInput($_POST['eventId'])."' AND id = '".cleanInput($_POST['signid'])."'") or die($conn->error);
+		$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costumeValSelect' . $_POST['trooperSelectEdit'] . ''])."', costume_backup = '".cleanInput($_POST['costumeVal' . $_POST['trooperSelectEdit'] . ''])."', status = '".cleanInput($_POST['statusVal' . $_POST['trooperSelectEdit'] . ''])."' WHERE trooperid = '".cleanInput($_POST['trooperSelectEdit'])."' AND troopid = '".cleanInput($_POST['eventId'])."' AND id = '".cleanInput($_POST['signid'])."'") or die($conn->error);
 
 		// If set as attended, check trooper counts
 		if(cleanInput($_POST['statusVal' . $_POST['trooperSelectEdit'] . '']) == 3)
@@ -1733,7 +1713,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		if(cleanInput($_POST['costume']) != "null" && cleanInput($_POST['status']) != "null" && $i == 0)
 		{
 			// Query the database
-			$conn->query("INSERT INTO event_sign_up (trooperid, troopid, costume, costume_backup, reason, status, attended_costume) VALUES ('".cleanInput($_POST['trooperSelect'])."', '".cleanInput($_POST['troopid'])."', '".cleanInput($_POST['costume'])."', '".cleanInput($_POST['costumebackup'])."', '".cleanInput($_POST['reason'])."', '".cleanInput($_POST['status'])."', '".cleanInput($_POST['attendedcostume'])."')") or die($conn->error);
+			$conn->query("INSERT INTO event_sign_up (trooperid, troopid, costume, costume_backup, status) VALUES ('".cleanInput($_POST['trooperSelect'])."', '".cleanInput($_POST['troopid'])."', '".cleanInput($_POST['costume'])."', '".cleanInput($_POST['costumebackup'])."', '".cleanInput($_POST['status'])."')") or die($conn->error);
 			$last_id = $conn->insert_id;
 			
 			// If status is attended
@@ -1908,7 +1888,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 						<div style="overflow-x: auto;">
 						<table border="1" name="rosterTable" id="rosterTable">
 							<tr>
-								<th>Selection</th>	<th>Trooper TKID / Name</td>	<th>Trooper Costume</th>	<th>Trooper Backup Costume</th>	<th>Trooper Status</th>	<th>Trooper Comment</th>	<th>Attended With</th>';
+								<th>Selection</th>	<th>Trooper TKID / Name</td>	<th>Trooper Costume</th>	<th>Trooper Backup Costume</th>	<th>Trooper Status</th>';
 				}
 
 				// List troopers
@@ -2014,56 +1994,6 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 							</select>
 						</div>
 					</td>
-
-					<td>
-						<div name="reason1'.$db->trooperid.'" signid="'.$db->id.'">'.ifEmpty($db->reason, "None").'</div>
-						<div name="reason2'.$db->trooperid.'" signid="'.$db->id.'" style="display:none;"><input type="text" name="reasonVal'.$db->trooperid.'" signid="'.$db->id.'" value="'.$db->reason.'" /></div>
-					</td>
-
-					<td>
-						<div name="attendcostume1'.$db->trooperid.'" signid="'.$db->id.'">'.ifEmpty(getCostume($db->attended_costume), "Not Submitted").'</div>
-						<div name="attendcostume2'.$db->trooperid.'" signid="'.$db->id.'" style="display:none;">
-						<select name="attendcostumeVal'.$db->trooperid.'" signid="'.$db->id.'">';
-
-						// Reset
-						$a = 0;
-						
-						// Amount of costumes
-						$c = 0;
-						
-						// Count picked
-						$p = 0;
-
-						// Display costumes
-						foreach($costumesName as $key)
-						{
-							if($db->attended_costume == intval($costumesID[$a]))
-							{
-								// The users costume
-								echo '<option value="'.$costumesID[$a].'" SELECTED>'.$key.'</option>';
-								$p++;
-							}
-							else
-							{
-								// Display costume
-								echo '<option value="'.$costumesID[$a].'">'.$key.'</option>';
-							}
-
-							$c++;
-							$a++;
-						}
-
-						if($c == 0 || $p == 0)
-						{
-							echo '<option value="0" SELECTED>None</option>';
-						}
-
-						echo '
-						</select>
-
-						</div>
-						</td>
-					</td>
 				</tr>';
 
 				$i++;
@@ -2078,7 +2008,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				<div style="overflow-x: auto;">
 				<table border="1" name="rosterTable" id="rosterTable">
 					<tr>
-						<th>Selection</th>	<th>Trooper TKID / Name</td>	<th>Trooper Costume</th>	<th>Trooper Backup Costume</th>	<th>Trooper Status</th>	<th>Trooper Comment</th>	<th>Attended With</th>
+						<th>Selection</th>	<th>Trooper TKID / Name</td>	<th>Trooper Costume</th>	<th>Trooper Backup Costume</th>	<th>Trooper Status</th>
 					</tr>
 				</table>
 				</div>
@@ -2194,40 +2124,6 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 					<option value="4">Canceled</option>
 					<option value="5">Pending</option>
 				</select>
-
-				<div id="reasonBlock" name="reasonBlock" style="display:none;">
-					<p>Reason:</p>
-					<input type="text" name="reason" id="reason" />
-				</div>
-
-				<div id="attendBlock" name="attendBlock" style="display:none;">
-					<p>Attended event in the following costume:</p>
-					
-					<select name="attendedcostume" id="attendedcostume">';
-					
-					// Reset
-					$a = 0;
-					$c = 0;
-					
-					// Display costumes
-					foreach($costumesName as $key)
-					{
-						// If first select option
-						if($c == 0)
-						{
-							echo '<option value="0" SELECTED>Select a costume...</option>';
-						}
-						
-						// Add costume
-						echo '<option value="'.$costumesID[$a].'">'.$key.'</option>';
-						
-						$a++;
-						$c++;
-					}
-					
-					echo '
-					</select>
-				</div>
 
 				<input type="submit" name="submitAddOn" id="submitAddOn" value="Add!" />
 			</form>';
@@ -2482,7 +2378,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 			{
 
 				// Query database for roster info
-				$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.attended_costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, event_sign_up.status, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".cleanInput($_POST['event'])."' ORDER BY event_sign_up.id ASC";
+				$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, event_sign_up.status, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".cleanInput($_POST['event'])."' ORDER BY event_sign_up.id ASC";
 				$i = 0;
 
 				if ($result2 = mysqli_query($conn, $query2))
@@ -2874,7 +2770,7 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmList")
 			for($i = 0; $i < $n; $i++)
 			{
 				// Query the database
-				$conn->query("UPDATE event_sign_up SET attended_costume = '".cleanInput($_POST['costume'])."', status = '3' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($list[$i])."'") or die($conn->error);
+				$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costume'])."', status = '3' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($list[$i])."'") or die($conn->error);
 			}
 			
 			// Check troops for notification
