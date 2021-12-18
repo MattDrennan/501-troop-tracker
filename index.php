@@ -401,7 +401,8 @@ if(isset($_GET['profile']))
 				echo 
 				profileTop($db->id, $db->tkid, $db->name, $db->squad, $db->forum_id, $db->phone);
 				
-				echo '
+				echo  '
+				<span style="text-align: center;">' . getTroopCounts(cleanInput($_SESSION['id'])) . '</span>
 				<div style="overflow-x: auto;">
 				<table border="1">
 				<tr>
@@ -468,12 +469,6 @@ if(isset($_GET['profile']))
 			echo '
 			</table>
 			</div>
-
-			<br />
-
-			'.getTroopCounts(cleanInput($_GET['profile'])).'
-
-			<br />
 
 			<h2 class="tm-section-header">Awards</h2>';
 			
@@ -1098,17 +1093,17 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 
 		// Get data
 		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND status = 3 AND events.closed = '1' ORDER BY events.dateEnd DESC";
+
+		// Troop count
 		$i = 0;
-		$troopsAttended = 0;
-		$moneyRaised = 0;
-		$timeSpent = 0;
+
 		if ($result = mysqli_query($conn, $query))
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
 				if($i == 0)
 				{
-					echo '
+					echo getTroopCounts(cleanInput($_SESSION['id'])) . '
 					<div style="overflow-x: auto;">
 					<table border="1">
 					<tr>
@@ -1130,27 +1125,16 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 					<td><a href="index.php?event='.$db->eventId.'">'.$add.''.$db->eventName.'</a></td>	<td>'.ifEmpty(getCostume($db->costume), "N/A").'</td>	<td>$'.number_format($db->moneyRaised).'</td>
 				</tr>';
 
-				// Increment
-				$troopsAttended++;
-				$moneyRaised += $db->moneyRaised;
+				// Increment troop count
 				$i++;
 			}
 		}
 
 		if($i > 0)
 		{
-			// How many troops did the user attend
-			$favoriteCostume_get = $conn->query("SELECT costume, COUNT(*) FROM event_sign_up WHERE trooperid = '".$_SESSION['id']."' GROUP BY costume ORDER BY COUNT(costume) DESC LIMIT 1") or die($conn->error);
-
-			$favoriteCostume = mysqli_fetch_array($favoriteCostume_get);
-
 			echo '
 			</table>
-			</div>
-
-			<p><b>Favorite Costume:</b> '.ifEmpty(getCostume($favoriteCostume['costume']), "N/A").'</p>
-			<p><b>Money Raised:</b> $'.number_format($moneyRaised).'</p>
-			' . getTroopCounts(cleanInput($_SESSION['id'])) . '';
+			</div>';
 		}
 		else
 		{
@@ -3321,7 +3305,7 @@ if(isset($_GET['event']))
 				</p>';
 
 				// If this event is over, don't show it
-				if(strtotime($db->dateEnd) >= strtotime("-1 day"))
+				if(strtotime($db->dateEnd) >= strtotime("-1 day") && $db->closed == 0)
 				{					
 					// Subscribe button
 					echo $button;

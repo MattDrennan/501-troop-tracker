@@ -118,13 +118,23 @@ function getTroopCounts($id)
 	// Get total count
 	$count_total = $conn->query("SELECT id FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3'");
 
+	// Get favorite costume
+	$favoriteCostume_get = $conn->query("SELECT costume, COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' GROUP BY costume ORDER BY COUNT(costume) DESC LIMIT 1") or die($conn->error);
+	$favoriteCostume = mysqli_fetch_array($favoriteCostume_get);
+
+	// Get total money raised
+	$moneyRaised_get = $conn->query("SELECT SUM(moneyRaised) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$id."'") or die($conn->error);
+	$moneyRaised = mysqli_fetch_array($moneyRaised_get);
+
 	return '
 	<p><b>501st Troops:</b> ' . number_format($count_501->num_rows) . '</p>
 	<p><b>Rebel Legion Troops:</b> ' . number_format($count_rebel->num_rows) . '</p>
 	<p><b>Mando Mercs Troops:</b> ' . number_format($count_mando->num_rows) . '</p>
 	<p><b>Droid Builder Troops:</b> ' . number_format($count_droid->num_rows) . '</p>
 	<p><b>Other Troops:</b> ' . number_format($count_other->num_rows) . '</p>
-	<p><b>Total Finished Troops:</b> ' . number_format($count_total->num_rows) . '</p>';
+	<p><b>Total Finished Troops:</b> ' . number_format($count_total->num_rows) . '</p>
+	<p><b>Favorite Costume:</b> '.ifEmpty(getCostume($favoriteCostume['costume']), "N/A").'</p>
+	<p><b>Money Raised:</b> $'.number_format($moneyRaised[0]).'</p>';
 }
 
 // showSquadButtons: Returns garrison and squad images on front page
