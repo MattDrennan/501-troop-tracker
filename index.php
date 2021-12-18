@@ -3236,7 +3236,7 @@ if(isset($_GET['action']) && $_GET['action'] == "forgotpassword")
 if(isset($_POST['submitCancelTroop']))
 {
 	// Query the database
-	$conn->query("UPDATE event_sign_up SET status = '4', reason = '".cleanInput($_POST['cancelReason'])."' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($_POST['troopidC'])."'") or die($conn->error);
+	$conn->query("UPDATE event_sign_up SET status = '4' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($_POST['troopidC'])."'") or die($conn->error);
 }
 
 // If we are viewing an event, hide all other info
@@ -3557,7 +3557,7 @@ if(isset($_GET['event']))
 			<div style="overflow-x: auto;" id="signuparea1" name="signuparea1">';
 
 			// Query database for roster info
-			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.reason, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, event_sign_up.status, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' ORDER BY event_sign_up.id ASC";
+			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, event_sign_up.status, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' ORDER BY event_sign_up.id ASC";
 			$i = 0;
 			
 			if ($result2 = mysqli_query($conn, $query2))

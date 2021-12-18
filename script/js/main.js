@@ -247,7 +247,6 @@ function selectAdd()
 	$("#costumebackup").select2();
 	$("select[name^=trooperSelect]").select2();
 	$("select[name^=costumeChoice]").select2();
-	$("select[name^=attendedcostume]").select2();
 	$("select[name^=trooperSelect]").select2();
 	$("select[name^=modifysignupFormCostume2]").select2();
 	$("select[name^=modiftybackupcostumeForm2]").select2();
@@ -340,8 +339,6 @@ $(document).ready(function()
 
 				// Change buttons based on data
 				$("div[name=changestatusarea][trooperid=" + trooperid + "][signid=" + signid + "]").html(json.message);
-
-				console.log(json.message2);
 
 				// Change counts for admin
 				$("div[name=troopersRemainingDisplay]").html(json.message2);
@@ -1524,18 +1521,11 @@ $(document).ready(function()
 			{
 				// Change submit button
 				$("#edittrooper").val("Save");
-				
-				// Replace None
-				if($("[name=reason2" + trooperid + "][signid=" + signid + "]").find("input").val() == "None")
-				{
-					$("[name=reason2" + trooperid + "][signid=" + signid + "]").find("input").val("");
-				}
 
 				// Show Inputs for edit
 				$("[name=costume2" + trooperid + "][signid=" + signid + "]").show();
 				$("[name=backup2" + trooperid + "][signid=" + signid + "]").show();
 				$("[name=status2" + trooperid + "][signid=" + signid + "]").show();
-				$("[name=reason2" + trooperid + "][signid=" + signid + "]").show();
 				$("[name=dateAttending" + trooperid + "][signid=" + signid + "]" + "Edit").show();
 				$("[name=dateAttended" + trooperid + "][signid=" + signid + "]" + "Edit").show();
 
@@ -1543,7 +1533,6 @@ $(document).ready(function()
 				$("[name=costume1" + trooperid + "][signid=" + signid + "]").hide();
 				$("[name=backup1" + trooperid + "][signid=" + signid + "]").hide();
 				$("[name=status1" + trooperid + "][signid=" + signid + "]").hide();
-				$("[name=reason1" + trooperid + "][signid=" + signid + "]").hide();
 				$("[name=dateAttending" + trooperid + "][signid=" + signid + "]").hide();
 				$("[name=dateAttended" + trooperid + "][signid=" + signid + "]").hide();
 				
@@ -1582,27 +1571,18 @@ $(document).ready(function()
 							$("[name=costume2" + trooperid + "][signid=" + signid + "]").hide();
 							$("[name=backup2" + trooperid + "][signid=" + signid + "]").hide();
 							$("[name=status2" + trooperid + "][signid=" + signid + "]").hide();
-							$("[name=reason2" + trooperid + "][signid=" + signid + "]").hide();
 							$("[name=dateAttending" + trooperid + "][signid=" + signid + "]" + "Edit").hide();
 							$("[name=dateAttended" + trooperid + "][signid=" + signid + "]" + "Edit").hide();
-							
-							// Set the comment back to "None" if no value
-							if($("[name=reason2" + trooperid + "][signid=" + signid + "]").find("input").val() == "")
-							{
-								$("[name=reason2" + trooperid + "][signid=" + signid + "]").find("input").val("None");
-							}
 							
 							// Set values
 							$("[name=costume1" + trooperid + "][signid=" + signid + "]").html($("[name=costume2" + trooperid + "][signid=" + signid + "]").find("select :selected").text());
 							$("[name=backup1" + trooperid + "][signid=" + signid + "]").html($("[name=backup2" + trooperid + "][signid=" + signid + "]").find("select :selected").text());
 							$("[name=status1" + trooperid + "][signid=" + signid + "]").html($("[name=status2" + trooperid + "][signid=" + signid + "]").find("select :selected").text());
-							$("[name=reason1" + trooperid + "][signid=" + signid + "]").html($("[name=reason2" + trooperid + "][signid=" + signid + "]").find("input").val());
 
 							// Show static values
 							$("[name=costume1" + trooperid + "][signid=" + signid + "]").show();
 							$("[name=backup1" + trooperid + "][signid=" + signid + "]").show();
 							$("[name=status1" + trooperid + "][signid=" + signid + "]").show();
-							$("[name=reason1" + trooperid + "][signid=" + signid + "]").show();
 							$("[name=dateAttending" + trooperid + "][signid=" + signid + "]").show();
 							$("[name=dateAttended" + trooperid + "][signid=" + signid + "]").show();
 
@@ -1641,7 +1621,6 @@ $(document).ready(function()
 			data: "costume=" + signupForm1.val() + "&costume_backup=" + signupForm2.val() + "&status=" + signupForm3.val() + "&troopid=" + $("#modifysignupTroopIdForm").val() + "&limitedevent=" + $("#limitedEventCancel").val() + "&trooperid=" + trooperid + "&signid=" + signid,
 			success: function(data)
 			{
-				console.log(data);
 				var json = JSON.parse(data);
 				
 				// If JSON did not fail
@@ -1705,27 +1684,6 @@ $(document).ready(function()
 	});
 	
 	// End Modify Sign Up Form Change
-
-	$("body").on("change", "#status", function(e)
-	{
-		if($("#status").val() == "4")
-		{
-			$("#reasonBlock").show();
-		}
-		else
-		{
-			$("#reasonBlock").hide();
-		}
-
-		if($("#status").val() == "3")
-		{
-			$("#attendBlock").show();
-		}
-		else
-		{
-			$("#attendBlock").hide();
-		}
-	});
 
 	// If date picker (first option) is changed
 	$("#datepicker").on("change", function()
