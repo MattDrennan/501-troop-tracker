@@ -2096,7 +2096,7 @@ function doesTKExist($tk, $squad = 0)
 	$exist = false;
 	
 	// If a 501st squad
-	if($squad < count($squadArray))
+	if($squad <= count($squadArray))
 	{
 		$query = "SELECT * FROM troopers WHERE tkid = '".$tk."' AND squad <= ".count($squadArray)."";
 	}
@@ -2126,7 +2126,7 @@ function isTKRegistered($tk, $squad = 0)
 	$registered = false;
 	
 	// If a 501st squad
-	if($squad < count($squadArray))
+	if($squad <= count($squadArray))
 	{
 		$query = "SELECT * FROM troopers WHERE tkid = '".$tk."' AND squad <= ".count($squadArray)."";
 	}
