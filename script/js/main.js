@@ -1630,6 +1630,9 @@ $(document).ready(function()
 		var signupForm2 = $("select[name=modiftybackupcostumeForm][trooperid=" + trooperid + "][signid=" + signid + "]");
 		var signupForm3 = $("select[name=modifysignupStatusForm][trooperid=" + trooperid + "][signid=" + signid + "]");
 		
+		
+		console.log(signupForm1.val());
+		console.log(signupForm1);
 		$.ajax({
 			type: "POST",
 			url: "process.php?do=modifysignup",

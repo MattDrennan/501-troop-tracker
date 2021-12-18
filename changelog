@@ -3,6 +3,12 @@
 _12/18/2021_
 
 -Removed attended_costume
+-Removed reason
+-Fixed formatting for events when not logged in
+-Improved admin upload
+-Photos will show on all linked events
+-Moved troop counts to top
+-Fixed cancel bug where it would change costume and back up costume to undefined
 
 _12/16/2021_
 

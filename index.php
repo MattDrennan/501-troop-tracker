@@ -402,7 +402,7 @@ if(isset($_GET['profile']))
 				profileTop($db->id, $db->tkid, $db->name, $db->squad, $db->forum_id, $db->phone);
 				
 				echo  '
-				<span style="text-align: center;">' . getTroopCounts(cleanInput($_SESSION['id'])) . '</span>
+				<span style="text-align: center;">' . getTroopCounts(cleanInput($_GET['profile'])) . '</span>
 				<div style="overflow-x: auto;">
 				<table border="1">
 				<tr>

@@ -2431,7 +2431,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 								</td>
 								
 								<td name="trooperRosterCostume" id="trooperRosterCostume">
-									<select name="modifysignupFormCostume2" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
+									<select name="modifysignupFormCostume" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
 
 									// Display costumes
 									$query3 = "SELECT * FROM costumes";
@@ -2468,7 +2468,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 								</td>
 								
 								<td name="trooperRosterBackup" id="trooperRosterBackup">
-									<select name="modiftybackupcostumeForm2" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
+									<select name="modiftybackupcostumeForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
 
 									// Display costumes
 									$query3 = "SELECT * FROM costumes";
@@ -2526,7 +2526,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 								</td>
 								
 								<td id="'.$db2->trooperId.'Status">
-								<div name="trooperRosterStatus2" id="trooperRosterStatus2">';
+								<div name="trooperRosterStatus">';
 								
 									if($db->limitedEvent != 1)
 									{
@@ -2599,16 +2599,16 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 									'.readTKNumber($db2->tkid, $db2->squad).'
 								</td>
 								
-								<td name="trooperRosterCostume" id="trooperRosterCostume">
+								<td name="trooperRosterCostume">
 									'.getCostume($db2->costume).'
 								</td>
 								
-								<td name="trooperRosterBackup" id="trooperRosterBackup">
+								<td name="trooperRosterBackup">
 									'.ifEmpty(getCostume($db2->costume_backup), "N/A").'
 								</td>
 								
 								<td id="'.$db2->trooperId.'Status">
-								<div name="trooperRosterStatus" id="trooperRosterStatus">
+								<div name="trooperRosterStatus">
 								<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
 									'.getStatus($db2->status);
 
