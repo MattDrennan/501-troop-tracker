@@ -4251,18 +4251,19 @@ if(isset($_GET['event']))
 				if(loggedIn())
 				{
 					echo '
-					<p>
-						<form action="script/php/upload.php" class="dropzone" id="photoupload">
-							<input type="hidden" name="troopid" value="'.cleanInput($_GET['event']).'" />
-							<input type="hidden" name="trooperid" value="'.$_SESSION['id'].'" />';
-							
-							if(loggedIn() && isAdmin())
-							{
-								echo '
-								<input type="checkbox" name="admin" /> Troop Instructional Image Upload (Command Staff Only)';
-							}
-							
+					<p>';
+						// If logged in and command staff
+						if(loggedIn() && isAdmin())
+						{
+							echo '
+							<a href="#/" class="button" id="changeUpload">Change To: Troop Instructional Image Upload</a>';
+						}
+
 						echo '
+						<form action="script/php/upload.php" class="dropzone" id="photoupload">
+							<input type="hidden" name="admin" value="0" />
+							<input type="hidden" name="troopid" value="'.cleanInput($_GET['event']).'" />
+							<input type="hidden" name="trooperid" value="'.$_SESSION['id'].'" />
 						</form>
 					</p>';
 				}

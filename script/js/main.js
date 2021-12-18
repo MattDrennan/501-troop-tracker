@@ -269,6 +269,21 @@ $(document).ready(function()
 		$.LoadingOverlay("hide");
 	});
 
+	// Image Upload - Change Upload Type
+	$("body").on("click", "#changeUpload", function(e)
+	{
+		if($("input[name=admin]").val() == 0)
+		{
+			$("#changeUpload").text("Change To: Regular Upload");
+			$("input[name=admin]").val(1);
+		}
+		else
+		{
+			$("#changeUpload").text("Change To: Troop Instructional Image Upload");
+			$("input[name=admin]").val(0);
+		}
+	})
+
 	// Home Page - Search
 	$("body").on("input", "#controlf", function(e)
 	{
