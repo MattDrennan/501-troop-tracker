@@ -202,12 +202,13 @@ a.button,div.container{
 }
 
 a.button{
- background-color:#4CAF50;
- border:1px solid #660000;
- border-radius:5px;
- color:#fff;
- margin:5px;
- padding:10px 10px 10px 10px;
+	background-color:#4CAF50;
+	border:1px solid #660000;
+	border-radius:5px;
+	color:#fff;
+	margin:5px;
+	padding:10px 10px 10px 10px;
+	-webkit-appearance: none;
 }
 
 /* Background for chosen squad */
@@ -282,15 +283,18 @@ label {
 
 /* Style the submit button */
 input[type=submit] {
-  display: inline-block;
-  background-color:#4CAF50;
-  border:1px solid #660000;
-  border-radius:5px;
-  color:#fff;
-  margin:5px;
-  padding:10px 10px 10px 10px;
-  cursor: pointer;
-  font-size: 15px;
+	display: inline-block;
+	background-color:#4CAF50;
+	border:1px solid #660000;
+	border-radius:5px;
+	color:#fff;
+	margin:5px;
+	padding:10px 10px 10px 10px;
+	cursor: pointer;
+	font-size: 15px;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
 }
 
 /* Floating column for labels: 25% width */
@@ -319,6 +323,9 @@ input[type=submit] {
   .col-25, .col-75, input[type=submit] {
     width: 100%;
     margin-top: 0;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
   }
 }
 
