@@ -119,7 +119,7 @@ function getTroopCounts($id)
 	$count_total = $conn->query("SELECT id FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3'");
 
 	// Get favorite costume
-	$favoriteCostume_get = $conn->query("SELECT costume, COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' GROUP BY costume ORDER BY COUNT(costume) DESC LIMIT 1") or die($conn->error);
+	$favoriteCostume_get = $conn->query("SELECT costume, COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND costume != 706 AND costume != 720 GROUP BY costume ORDER BY COUNT(costume) DESC LIMIT 1") or die($conn->error);
 	$favoriteCostume = mysqli_fetch_array($favoriteCostume_get);
 
 	// Get total money raised

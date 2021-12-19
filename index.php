@@ -1251,7 +1251,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 	if($i > 0)
 	{
 		// How many troops did the user attend
-		$favoriteCostume_get = $conn->query("SELECT costume, COUNT(*) FROM event_sign_up GROUP BY costume ORDER BY COUNT(costume) DESC LIMIT 1") or die($conn->error);
+		$favoriteCostume_get = $conn->query("SELECT costume, COUNT(*) FROM event_sign_up WHERE costume != 706 AND costume != 720 GROUP BY costume ORDER BY COUNT(costume) DESC LIMIT 1") or die($conn->error);
 		$favoriteCostume = mysqli_fetch_array($favoriteCostume_get);
 
 		// How many troops did the user attend
