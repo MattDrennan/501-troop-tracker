@@ -4,6 +4,10 @@ _12/19/2021_
 
 -Fixed HR not showing above photos when not logged in
 -Pages for photos will no longer show when there is only one page
+-Improved Logs (Command Staff Notifications)
+-501st N/A and Rebel N/A will no longer show as a favorite costume
+-CSS Button Fixes on iOS devices
+-Moved cron files to script/php/cron
 
 _12/18/2021_
 

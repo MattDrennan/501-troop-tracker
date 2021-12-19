@@ -232,9 +232,9 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	{
 		// Check if someone is on the wait list, and set to going
 		$conn->query("UPDATE event_sign_up SET status = '0' WHERE troopid = '".cleanInput($_POST['troopid'])."' AND status = '1' AND ".getCostumeClub(cleanInput($_POST['costume']))." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ORDER BY signuptime DESC LIMIT 1");
-
-		// Send update
-		sendEventUpdate(cleanInput($_POST['troopid']), cleanInput($_POST['trooperid']), "Troop Tracker: Trooper Canceled Sign Up On " . getEventTitle(cleanInput($_POST['troopid'])), getName(cleanInput($_POST['trooperid'])) . " canceled on " . getEventTitle(cleanInput($_POST['troopid']) . "."));
+		
+		// Send to database to send out notifictions later
+		$conn->query("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES ('".cleanInput($_POST['troopid'])."', '".cleanInput($_POST['trooperid'])."', '2')");
 	}
 
 	// Update troopers remaining
@@ -268,6 +268,7 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 		{
 			// Query the database
 			$conn->query("INSERT INTO comments (troopid, trooperid, comment, important) VALUES ('".cleanInput($_POST['eventId'])."', '".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['comment'])."', '".cleanInput($_POST['important'])."')") or die($conn->error);
+			$last_id = $conn->insert_id;
 		}
 
 		// Set up query string
@@ -376,16 +377,8 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 		// Check comment check
 		if($commentCheck->num_rows == 0)
 		{
-			// Notify e-mail for comments
-			$query = "SELECT events.id AS eventId, events.name AS eventName, event_sign_up.id AS signupId, troopers.id AS trooperId, troopers.email AS email, troopers.name AS name FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE event_sign_up.troopid = '".cleanInput($_POST['eventId'])."' AND troopers.subscribe = '1' AND troopers.email != '' AND troopers.ecomments = '1' GROUP BY troopers.id";
-			if ($result = mysqli_query($conn, $query))
-			{
-				while ($db = mysqli_fetch_object($result))
-				{
-					// Send E-mail
-					@sendEmail($db->email, $db->name, "Troop Tracker: A comment has posted on ".$db->eventName."!", getName(cleanInput($_SESSION['id'])) . ": " . cleanInput($_POST['comment']) . "\n\nhttps://www.fl501st.com/troop-tracker/index.php?event=".$db->eventId."\n\n\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com");
-				}
-			}
+			// Send to database to send out notifictions later
+			$conn->query("INSERT INTO notification_check (troopid, commentid) VALUES ('".cleanInput($_POST['eventId'])."', '".$last_id."')");
 		}
 
 		if($i == 0)
@@ -1614,27 +1607,8 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 			// Only notify if event is in the future
 			if(strtotime($date1) > strtotime("now"))
 			{
-				// Send notification to Discord
-				sendEventNotify($eventId, cleanInput($_POST['eventName']), cleanInput($_POST['comments']), cleanInput($_POST['squadm']));
-				
-				// Post to Twitter
-				postTweet("".cleanInput($_POST['eventName'])." has been added in ".getSquadName(cleanInput($_POST['squadm'])).".");
-
-				// Build e-mail
-				$emailBody = "";
-				$emailBody .= cleanInput($_POST['eventName']) . " has been added in " . getSquadName(cleanInput($_POST['squadm'])) . "\n\nhttps://www.fl501st.com/troop-tracker/index.php?event=".$eventId."\n\n\n\n";
-				$emailBody .= "You can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com";
-
-				// Send e-mails - Loop through all troopers who are subscribed to e-mails
-				$query = "SELECT * FROM troopers WHERE troopers.email != '' AND troopers.subscribe = '1' AND troopers.efast = '1' AND troopers.esquad".cleanInput($_POST['squadm'])." = '1'";
-				if ($result = mysqli_query($conn, $query))
-				{
-					while ($db = mysqli_fetch_object($result))
-					{
-						// Send e-mail
-						sendEmail($db->email, $db->name, "Troop Tracker: " . cleanInput($_POST['eventName']) . " posted!", $emailBody);
-					}
-				}
+				// Send to database to send out notifictions later
+				$conn->query("INSERT INTO notification_check (troopid) VALUES ($eventId)");
 			}
 			
 			// Loop through shifts
@@ -2373,8 +2347,8 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 			$conn->query("INSERT INTO event_sign_up (trooperid, troopid, costume, status, costume_backup) VALUES ('".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['event'])."', '".cleanInput($_POST['costume'])."', '".$status."', '".cleanInput($_POST['backupcostume'])."')") or die($conn->error);
 		}
 
-		// Send update
-		sendEventUpdate(cleanInput($_POST['event']), $trooperID, "Troop Tracker: Trooper Signed Up On " . getEventTitle(cleanInput($_POST['event'])), getName($trooperID) . " signed up on " . getEventTitle(cleanInput($_POST['event']) . "."));
+		// Send to database to send out notifictions later
+		$conn->query("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES ('".cleanInput($_POST['event'])."', '".cleanInput($_POST['trooperSelect'])."', '1')");
 
 		// Define data variable for below code
 		$data = "";
