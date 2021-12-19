@@ -1746,10 +1746,32 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					
 					// Format Date
 					$dateF = date('m-d-Y H:i:s', strtotime($db->datetime));
+
+					// Set JSON value
+					$json = "";
+
+					// Check JSON value if blank
+					if($db->json == "")
+					{
+						// Nothing to show
+						$json = '<a href="index.php?profile='.$db->trooperid.'" target="_blank" class="button">View Profile</a>';
+					}
+					else
+					{
+						// Show value
+						$json = '
+						<textarea width="100%" rows="5" disabled>' . $db->json . '</textarea>
+						<br />
+						<a href="index.php?profile='.$db->trooperid.'" target="_blank" class="button">View Staff Profile</a>';
+					}
 					
 					echo '
 					<li>
-						<a href="index.php?profile='.$db->trooperid.'">'.$db->message.'</a> on '.$dateF.'.
+						<a href="#/" name="jsonshow" json="'.$db->id.'">'.$db->message.'</a> on '.$dateF.'.
+
+						<p>
+							<div style="display: none;" name="json'.$db->id.'">'.$json.'</div>
+						</p>
 					</li>';
 					
 					$i++;

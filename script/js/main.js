@@ -270,6 +270,22 @@ $(document).ready(function()
 	});
 
 	// Image Upload - Change Upload Type
+	$("body").on("click", "a[name=jsonshow]", function(e)
+	{
+		// Is the box visible
+		if($("[name=json" + $(this).attr("json") + "]").is(":visible"))
+		{
+			// Visible - hide
+			$("[name=json" + $(this).attr("json") + "]").hide();
+		}
+		else
+		{
+			// Not visible - show
+			$("[name=json" + $(this).attr("json") + "]").show();
+		}
+	})
+
+	// Image Upload - Change Upload Type
 	$("body").on("click", "#changeUpload", function(e)
 	{
 		if($("input[name=admin]").val() == 0)
