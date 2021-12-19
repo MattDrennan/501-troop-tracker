@@ -4122,12 +4122,6 @@ if(isset($_GET['event']))
 			// Don't show photos, if merged data
 			if(!$isMerged)
 			{
-				// HR Fix for formatting
-				if(loggedIn())
-				{
-					echo '<hr />';
-				}
-
 				// Set up add to query
 				$add = "";
 
@@ -4144,6 +4138,12 @@ if(isset($_GET['event']))
 				$sqlPage = "SELECT COUNT(id) AS total FROM uploads WHERE troopid = '".cleanInput($_GET['event'])."'".$add.""; 
 				$resultPage = $conn->query($sqlPage);
 				$rowPage = $resultPage->fetch_assoc();
+				
+				// HR Fix for formatting
+				if(loggedIn() || $rowPage["total"] > 0)
+				{
+					echo '<hr />';
+				}
 				
 				// Set total pages
 				$total_pages = ceil($rowPage["total"] / $results);
@@ -4197,7 +4197,7 @@ if(isset($_GET['event']))
 				}
 				
 				// If photos
-				if($i > 0)
+				if($total_pages > 1)
 				{
 					echo '<p>Pages: ';
 					

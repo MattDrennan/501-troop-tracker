@@ -1,5 +1,10 @@
 **Changelog**
 
+_12/19/2021_
+
+-Fixed HR not showing above photos when not logged in
+-Pages for photos will no longer show when there is only one page
+
 _12/18/2021_
 
 -Removed attended_costume
