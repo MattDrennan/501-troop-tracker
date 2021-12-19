@@ -129,11 +129,16 @@ else
 				$custom = cleanInput($_GET['trooperid']);
 			}
 			
+			// Make sure there isn't a duplicate transaction
 			if($txn_count->num_rows == 0)
 			{
-				// Update donations
-				$conn->query("INSERT INTO donations (trooperid, amount, txn_id) VALUES ('".$custom."', '".$mc_gross."', '".$txn_id."')");
-				sendNotification(getName($custom) . " donated $" . $mc_gross . ".", $custom);
+				// Make sure this is a payment completed
+				if($payment_status == "Completed")
+				{
+					// Update donations
+					$conn->query("INSERT INTO donations (trooperid, amount, txn_id) VALUES ('".$custom."', '".$mc_gross."', '".$txn_id."')");
+					sendNotification(getName($custom) . " donated $" . $mc_gross . ".", $custom);
+				}
 			}
 
 			// Echo
