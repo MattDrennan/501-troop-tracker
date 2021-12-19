@@ -1209,12 +1209,60 @@ function loggedIn()
 	return false;
 }
 
-// sendNotification: Sends a notification to the log
-function sendNotification($message, $trooperid)
+// convertDataToJSON: Converts a query to JSON
+function convertDataToJSON($query)
 {
 	global $conn;
+
+	// Set up array
+	$array = array();
+
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Loop through all columns, get data
+			foreach($db as $c => $d)
+			{
+				// Don't save password
+				if($c != "password")
+				{
+					$array[$c] = $d;
+				}
+			}
+		}
+	}
+
+	return json_encode($array);
+}
+
+// sendNotification: Sends a notification to the log
+function sendNotification($message, $trooperid, $type = 0, $json = "")
+{
+	global $conn;
+
+	// 0 - N/A
+	// 1 - Add Costume
+	// 2 - Delete Costume
+	// 3 - Edit Costume
+	// 4 - Delete Award
+	// 5 - Add Award
+	// 6 - Give Award Trooper
+	// 7 - Edit Award
+	// 8 - Deny Trooper
+	// 9 - Approve Trooper
+	// 10 - Delete Trooper
+	// 11 - Update Trooper
+	// 12 - Add Trooper
+	// 13 - Add Event
+	// 14 - Edit Event
+	// 15 - Add Trooper To Event
+	// 16 - Delete Event
+	// 17 - Set Charity
+	// 18 - Remove Trooper From Event
+	// 19 - Add Shift From Edit
 	
-	$conn->query("INSERT INTO notifications (message, trooperid) VALUES ('".$message."', '".$trooperid."')");
+	$conn->query("INSERT INTO notifications (message, trooperid, type, json) VALUES ('".$message."', '".$trooperid."', '".$type."', '".$json."')");
 }
 
 // troopCheck: Checks the troop counts of all clubs
