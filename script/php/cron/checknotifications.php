@@ -1,7 +1,7 @@
 <?php
 
 // Include config file
-include "config.php";
+include "../../../config.php";
 
 // Loop through all events to send notifications
 $query = "SELECT notification_check.troopid, notification_check.commentid, events.squad, events.name, events.id FROM notification_check LEFT JOIN events ON events.id = notification_check.troopid WHERE notification_check.troopid != 0 AND notification_check.commentid = 0 AND notification_check.trooperid = 0 AND notification_check.trooperstatus = 0";
@@ -55,7 +55,7 @@ if ($result = mysqli_query($conn, $query))
 		}
 
 		// Loop through all troopers
-		$query2 = "SELECT event_sign_up.id AS signupId FROM event_sign_up LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.subscribe = '1' AND troopers.email != '' AND troopers.ecomments = '1' AND event_sign_up.troopid = '".$db->id."' GROUP BY troopers.id";
+		$query2 = "SELECT event_sign_up.id AS signupId, troopers.email, troopers.name, troopers.id FROM event_sign_up LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.subscribe = '1' AND troopers.email != '' AND troopers.ecomments = '1' AND event_sign_up.troopid = '".$db->id."' GROUP BY troopers.id";
 		if ($result2 = mysqli_query($conn, $query2))
 		{
 			while ($db2 = mysqli_fetch_object($result2))
@@ -68,7 +68,7 @@ if ($result = mysqli_query($conn, $query))
 }
 
 // Loop through all trooper updates
-$query = "SELECT notification_check.troopid, notification_check.commentid, notification_check.trooperid, events.squad, events.name, events.id FROM notification_check LEFT JOIN events ON events.id = notification_check.troopid WHERE notification_check.troopid != 0 AND notification_check.commentid = 0 AND notification_check.trooperid != 0 AND notification_check.trooperstatus != 0";
+$query = "SELECT notification_check.troopid, notification_check.commentid, notification_check.trooperid, notification_check.trooperstatus, events.squad, events.name, events.id FROM notification_check LEFT JOIN events ON events.id = notification_check.troopid WHERE notification_check.troopid != 0 AND notification_check.commentid = 0 AND notification_check.trooperid != 0 AND notification_check.trooperstatus != 0";
 if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))
@@ -77,13 +77,13 @@ if ($result = mysqli_query($conn, $query))
 		if($db->trooperstatus == 1)
 		{
 			// Send update
-			sendEventUpdate($db->troopid, $db->$trooperid, "Troop Tracker: Trooper Signed Up On " . $db->name, getName($db->trooperid) . " signed up on " . $db->name . "."));
+			sendEventUpdate($db->troopid, $db->trooperid, "Troop Tracker: Trooper Signed Up On " . $db->name, getName($db->trooperid) . " signed up on " . $db->name . ".");
 		}
 		// Check status
 		if($db->trooperstatus == 2)
 		{
 			// Send update
-			sendEventUpdate($db->troopid, $db->$trooperid, "Troop Tracker: Trooper Canceled Sign Up On " . $db->name, getName($db->trooperid) . " canceled on " . $db->name . "."));
+			sendEventUpdate($db->troopid, $db->trooperid, "Troop Tracker: Trooper Canceled Sign Up On " . $db->name, getName($db->trooperid) . " canceled on " . $db->name . ".");
 		}
 	}
 }

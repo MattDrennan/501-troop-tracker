@@ -1,7 +1,7 @@
 <?php
 
 // Include config file
-include "config.php";
+include "../../../config.php";
 
 // Loop through all troopers
 $query = "SELECT events.id AS eventId, event_sign_up.id AS signupId, troopers.id AS trooperId, troopers.email AS email, troopers.name AS name FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE events.closed = '1' AND event_sign_up.status = '0' AND troopers.subscribe = '1' AND troopers.email != '' AND troopers.econfirm = '1' GROUP BY troopers.id";

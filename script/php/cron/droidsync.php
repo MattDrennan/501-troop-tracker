@@ -1,7 +1,7 @@
 <?php
 
 // Include config
-include 'config.php';
+include '../../../config.php';
 
 // Purge Droids
 $conn->query("DELETE FROM droid_troopers") or die($conn->error);

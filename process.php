@@ -226,15 +226,26 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 
 	// Update SQL
 	$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costume'])."', costume_backup = '".cleanInput($_POST['costume_backup'])."', status = '".$status."' WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['troopid'])."' AND id = '".cleanInput($_POST['signid'])."'");
+	
+	// Update notifications
+	// Going
+	if($status == 0)
+	{
+		// Send to database to send out notifictions later
+		$conn->query("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES ('".cleanInput($_POST['troopid'])."', '".cleanInput($_POST['trooperid'])."', '1')");
+	}
+	// Cancel
+	else if($status == 4)
+	{
+		// Send to database to send out notifictions later
+		$conn->query("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES ('".cleanInput($_POST['troopid'])."', '".cleanInput($_POST['trooperid'])."', '2')");
+	}
 
 	// If cancel
 	if($status == 4 && !isEventFull(cleanInput($_POST['troopid']), cleanInput($_POST['costume'])))
 	{
 		// Check if someone is on the wait list, and set to going
 		$conn->query("UPDATE event_sign_up SET status = '0' WHERE troopid = '".cleanInput($_POST['troopid'])."' AND status = '1' AND ".getCostumeClub(cleanInput($_POST['costume']))." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ORDER BY signuptime DESC LIMIT 1");
-		
-		// Send to database to send out notifictions later
-		$conn->query("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES ('".cleanInput($_POST['troopid'])."', '".cleanInput($_POST['trooperid'])."', '2')");
 	}
 
 	// Update troopers remaining
@@ -2340,15 +2351,18 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 		{
 			// Query the database
 			$conn->query("INSERT INTO event_sign_up (trooperid, troopid, costume, status, costume_backup, addedby) VALUES ('".cleanInput($_POST['trooperSelect'])."', '".cleanInput($_POST['event'])."', '".cleanInput($_POST['costume'])."', '".$status."', '".cleanInput($_POST['backupcostume'])."', '".cleanInput($_SESSION['id'])."')") or die($conn->error);
+			
+			// Send to database to send out notifictions later
+			$conn->query("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES ('".cleanInput($_POST['event'])."', '".cleanInput($_POST['trooperSelect'])."', '1')");
 		}
 		else
 		{
 			// Query the database
 			$conn->query("INSERT INTO event_sign_up (trooperid, troopid, costume, status, costume_backup) VALUES ('".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['event'])."', '".cleanInput($_POST['costume'])."', '".$status."', '".cleanInput($_POST['backupcostume'])."')") or die($conn->error);
+			
+			// Send to database to send out notifictions later
+			$conn->query("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES ('".cleanInput($_POST['event'])."', '".cleanInput($_SESSION['id'])."', '1')");
 		}
-
-		// Send to database to send out notifictions later
-		$conn->query("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES ('".cleanInput($_POST['event'])."', '".cleanInput($_POST['trooperSelect'])."', '1')");
 
 		// Define data variable for below code
 		$data = "";

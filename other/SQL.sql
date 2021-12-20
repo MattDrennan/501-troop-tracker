@@ -2,10 +2,10 @@
 -- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:8889
--- Generation Time: Dec 10, 2021 at 06:35 PM
--- Server version: 5.7.34
--- PHP Version: 7.4.21
+-- Host: 127.0.0.1:3306
+-- Generation Time: Dec 20, 2021 at 01:20 PM
+-- Server version: 5.7.31
+-- PHP Version: 8.0.11
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -27,7 +27,8 @@ SET time_zone = "+00:00";
 -- Table structure for table `501st_costumes`
 --
 
-CREATE TABLE `501st_costumes` (
+DROP TABLE IF EXISTS `501st_costumes`;
+CREATE TABLE IF NOT EXISTS `501st_costumes` (
   `legionid` int(11) NOT NULL,
   `costumeid` int(11) NOT NULL,
   `prefix` varchar(2) NOT NULL,
@@ -43,7 +44,8 @@ CREATE TABLE `501st_costumes` (
 -- Table structure for table `501st_troopers`
 --
 
-CREATE TABLE `501st_troopers` (
+DROP TABLE IF EXISTS `501st_troopers`;
+CREATE TABLE IF NOT EXISTS `501st_troopers` (
   `legionid` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `thumbnail` varchar(255) NOT NULL,
@@ -52,7 +54,8 @@ CREATE TABLE `501st_troopers` (
   `approved` int(11) NOT NULL DEFAULT '0',
   `status` int(11) NOT NULL DEFAULT '0',
   `standing` int(11) NOT NULL DEFAULT '0',
-  `joindate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `joindate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`legionid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -61,10 +64,12 @@ CREATE TABLE `501st_troopers` (
 -- Table structure for table `awards`
 --
 
-CREATE TABLE `awards` (
-  `id` int(10) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `awards`;
+CREATE TABLE IF NOT EXISTS `awards` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL,
-  `icon` varchar(100) NOT NULL
+  `icon` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -73,11 +78,13 @@ CREATE TABLE `awards` (
 -- Table structure for table `award_troopers`
 --
 
-CREATE TABLE `award_troopers` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `award_troopers`;
+CREATE TABLE IF NOT EXISTS `award_troopers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `trooperid` int(11) NOT NULL,
   `awardid` int(11) NOT NULL,
-  `awarded` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `awarded` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -86,13 +93,15 @@ CREATE TABLE `award_troopers` (
 -- Table structure for table `comments`
 --
 
-CREATE TABLE `comments` (
-  `id` int(10) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `comments`;
+CREATE TABLE IF NOT EXISTS `comments` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `troopid` int(11) NOT NULL,
   `trooperid` int(11) NOT NULL,
   `comment` text NOT NULL,
   `important` int(11) NOT NULL,
-  `posted` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `posted` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -101,11 +110,13 @@ CREATE TABLE `comments` (
 -- Table structure for table `costumes`
 --
 
-CREATE TABLE `costumes` (
-  `id` int(10) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `costumes`;
+CREATE TABLE IF NOT EXISTS `costumes` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `costume` varchar(50) NOT NULL,
   `era` int(11) NOT NULL,
-  `club` int(11) NOT NULL
+  `club` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -114,11 +125,13 @@ CREATE TABLE `costumes` (
 -- Table structure for table `donations`
 --
 
-CREATE TABLE `donations` (
+DROP TABLE IF EXISTS `donations`;
+CREATE TABLE IF NOT EXISTS `donations` (
   `trooperid` int(11) NOT NULL,
   `amount` decimal(11,2) NOT NULL,
   `txn_id` varchar(255) NOT NULL,
-  `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`txn_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -127,7 +140,8 @@ CREATE TABLE `donations` (
 -- Table structure for table `droid_troopers`
 --
 
-CREATE TABLE `droid_troopers` (
+DROP TABLE IF EXISTS `droid_troopers`;
+CREATE TABLE IF NOT EXISTS `droid_troopers` (
   `forum_id` varchar(255) NOT NULL,
   `droidname` varchar(255) NOT NULL,
   `imageurl` varchar(255) NOT NULL
@@ -139,8 +153,9 @@ CREATE TABLE `droid_troopers` (
 -- Table structure for table `events`
 --
 
-CREATE TABLE `events` (
-  `id` int(10) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `events`;
+CREATE TABLE IF NOT EXISTS `events` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `oldid` int(11) NOT NULL DEFAULT '0',
   `name` varchar(255) NOT NULL,
   `venue` varchar(255) DEFAULT NULL,
@@ -172,7 +187,8 @@ CREATE TABLE `events` (
   `closed` tinyint(1) NOT NULL DEFAULT '0',
   `moneyRaised` int(11) NOT NULL DEFAULT '0',
   `squad` int(11) NOT NULL,
-  `link` int(11) NOT NULL DEFAULT '0'
+  `link` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -181,10 +197,11 @@ CREATE TABLE `events` (
 -- Table structure for table `event_notifications`
 --
 
-CREATE TABLE `event_notifications` (
+DROP TABLE IF EXISTS `event_notifications`;
+CREATE TABLE IF NOT EXISTS `event_notifications` (
   `troopid` int(11) NOT NULL,
   `trooperid` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -192,17 +209,17 @@ CREATE TABLE `event_notifications` (
 -- Table structure for table `event_sign_up`
 --
 
-CREATE TABLE `event_sign_up` (
-  `id` int(10) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `event_sign_up`;
+CREATE TABLE IF NOT EXISTS `event_sign_up` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `trooperid` int(11) DEFAULT NULL,
   `troopid` int(11) NOT NULL,
   `costume` varchar(50) DEFAULT NULL,
   `costume_backup` varchar(50) NOT NULL DEFAULT '0',
-  `reason` text,
   `status` int(11) NOT NULL DEFAULT '0',
-  `attended_costume` varchar(100) NOT NULL DEFAULT '0',
   `addedby` int(11) NOT NULL DEFAULT '0',
-  `signuptime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `signuptime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -211,7 +228,8 @@ CREATE TABLE `event_sign_up` (
 -- Table structure for table `mando_costumes`
 --
 
-CREATE TABLE `mando_costumes` (
+DROP TABLE IF EXISTS `mando_costumes`;
+CREATE TABLE IF NOT EXISTS `mando_costumes` (
   `mandoid` int(11) NOT NULL,
   `costumeurl` varchar(255) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
@@ -222,10 +240,12 @@ CREATE TABLE `mando_costumes` (
 -- Table structure for table `mando_troopers`
 --
 
-CREATE TABLE `mando_troopers` (
+DROP TABLE IF EXISTS `mando_troopers`;
+CREATE TABLE IF NOT EXISTS `mando_troopers` (
   `mandoid` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `costume` varchar(255) NOT NULL
+  `costume` varchar(255) NOT NULL,
+  PRIMARY KEY (`mandoid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -234,11 +254,29 @@ CREATE TABLE `mando_troopers` (
 -- Table structure for table `notifications`
 --
 
-CREATE TABLE `notifications` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `notifications`;
+CREATE TABLE IF NOT EXISTS `notifications` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `message` varchar(100) NOT NULL,
   `trooperid` int(11) NOT NULL,
-  `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `type` int(11) NOT NULL DEFAULT '0',
+  `json` text NOT NULL,
+  `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `notification_check`
+--
+
+DROP TABLE IF EXISTS `notification_check`;
+CREATE TABLE IF NOT EXISTS `notification_check` (
+  `troopid` int(11) NOT NULL DEFAULT '0',
+  `trooperid` int(11) NOT NULL DEFAULT '0',
+  `commentid` int(11) NOT NULL DEFAULT '0',
+  `trooperstatus` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -247,7 +285,8 @@ CREATE TABLE `notifications` (
 -- Table structure for table `rebel_costumes`
 --
 
-CREATE TABLE `rebel_costumes` (
+DROP TABLE IF EXISTS `rebel_costumes`;
+CREATE TABLE IF NOT EXISTS `rebel_costumes` (
   `rebelid` int(11) NOT NULL,
   `costumename` varchar(255) NOT NULL,
   `costumeimage` varchar(255) NOT NULL
@@ -259,7 +298,8 @@ CREATE TABLE `rebel_costumes` (
 -- Table structure for table `rebel_troopers`
 --
 
-CREATE TABLE `rebel_troopers` (
+DROP TABLE IF EXISTS `rebel_troopers`;
+CREATE TABLE IF NOT EXISTS `rebel_troopers` (
   `rebelid` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `rebelforum` varchar(255) NOT NULL
@@ -271,7 +311,8 @@ CREATE TABLE `rebel_troopers` (
 -- Table structure for table `settings`
 --
 
-CREATE TABLE `settings` (
+DROP TABLE IF EXISTS `settings`;
+CREATE TABLE IF NOT EXISTS `settings` (
   `lastidtrooper` int(11) NOT NULL DEFAULT '0',
   `lastidevent` int(11) NOT NULL DEFAULT '0',
   `lastidlink` int(11) NOT NULL DEFAULT '0',
@@ -288,11 +329,13 @@ CREATE TABLE `settings` (
 -- Table structure for table `sg_troopers`
 --
 
-CREATE TABLE `sg_troopers` (
+DROP TABLE IF EXISTS `sg_troopers`;
+CREATE TABLE IF NOT EXISTS `sg_troopers` (
   `sgid` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
   `image` varchar(255) NOT NULL,
-  `link` varchar(255) NOT NULL
+  `link` varchar(255) NOT NULL,
+  PRIMARY KEY (`sgid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -301,8 +344,9 @@ CREATE TABLE `sg_troopers` (
 -- Table structure for table `troopers`
 --
 
-CREATE TABLE `troopers` (
-  `id` int(10) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `troopers`;
+CREATE TABLE IF NOT EXISTS `troopers` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `oldid` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `email` varchar(240) DEFAULT NULL,
@@ -329,7 +373,8 @@ CREATE TABLE `troopers` (
   `efast` tinyint(1) DEFAULT '0',
   `ecommandnotify` tinyint(1) DEFAULT '1',
   `econfirm` tinyint(1) DEFAULT '1',
-  `datecreated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `datecreated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -338,154 +383,16 @@ CREATE TABLE `troopers` (
 -- Table structure for table `uploads`
 --
 
-CREATE TABLE `uploads` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `uploads`;
+CREATE TABLE IF NOT EXISTS `uploads` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `troopid` int(11) NOT NULL,
   `trooperid` int(11) NOT NULL,
   `filename` varchar(255) NOT NULL,
   `admin` int(11) NOT NULL DEFAULT '0',
-  `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `501st_troopers`
---
-ALTER TABLE `501st_troopers`
-  ADD PRIMARY KEY (`legionid`);
-
---
--- Indexes for table `awards`
---
-ALTER TABLE `awards`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `award_troopers`
---
-ALTER TABLE `award_troopers`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `comments`
---
-ALTER TABLE `comments`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `costumes`
---
-ALTER TABLE `costumes`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `donations`
---
-ALTER TABLE `donations`
-  ADD PRIMARY KEY (`txn_id`);
-
---
--- Indexes for table `events`
---
-ALTER TABLE `events`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `event_sign_up`
---
-ALTER TABLE `event_sign_up`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `mando_troopers`
---
-ALTER TABLE `mando_troopers`
-  ADD PRIMARY KEY (`mandoid`);
-
---
--- Indexes for table `notifications`
---
-ALTER TABLE `notifications`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `sg_troopers`
---
-ALTER TABLE `sg_troopers`
-  ADD PRIMARY KEY (`sgid`);
-
---
--- Indexes for table `troopers`
---
-ALTER TABLE `troopers`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `uploads`
---
-ALTER TABLE `uploads`
-  ADD PRIMARY KEY (`id`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `awards`
---
-ALTER TABLE `awards`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `award_troopers`
---
-ALTER TABLE `award_troopers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `comments`
---
-ALTER TABLE `comments`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `costumes`
---
-ALTER TABLE `costumes`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `events`
---
-ALTER TABLE `events`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `event_sign_up`
---
-ALTER TABLE `event_sign_up`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `notifications`
---
-ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `troopers`
---
-ALTER TABLE `troopers`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `uploads`
---
-ALTER TABLE `uploads`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

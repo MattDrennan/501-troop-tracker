@@ -1,10 +1,10 @@
 <?php
 
 // Include config
-include 'config.php';
+include '../../../config.php';
 
 // Get Simple PHP DOM Tool - just a note, for this code to work, $stripRN must be false in tool
-include('tool/dom/simple_html_dom.php');
+include('../../../tool/dom/simple_html_dom.php');
 
 // Purge SG troopers
 $conn->query("DELETE FROM sg_troopers") or die($conn->error);
