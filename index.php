@@ -2966,8 +2966,17 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 				{
 					if($db->approved != 0)
 					{
+						// Set session
 						$_SESSION['id'] = $db->id;
 						$_SESSION['tkid'] = $db->tkid;
+						
+						// Set log in cookie, if set to keep logged in
+						if(isset($_POST['keepLog']) && $_POST['keepLog'] == 1)
+						{
+							// Set cookies
+							setcookie("TroopTrackerUsername", $db->forum_id, time() + (10 * 365 * 24 * 60 * 60));
+							setcookie("TroopTrackerPassword", cleanInput($_POST['password']), time() + (10 * 365 * 24 * 60 * 60));
+						}
 
 						// Cookie set
 						if(isset($_COOKIE["TroopTrackerLastEvent"]))
@@ -3024,6 +3033,10 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 
 			<p>Password:</p>
 			<input type="password" name="password" id="password" />
+			
+			<br /><br />
+			
+			<input type="checkbox" name="keepLog" value="1" /> Keep me logged in
 
 			<br /><br />
 
@@ -3169,6 +3182,14 @@ if(isset($_GET['action']) && $_GET['action'] == "logout")
 {
 	// Destroy session
 	session_destroy();
+	
+	// Make sure cookies are set before destroying
+	if(isset($_COOKIE['TroopTrackerUsername']) && isset($_COOKIE['TroopTrackerPassword']))
+	{
+		// Destroy cookies
+		setcookie("TroopTrackerUsername", "", time() - 3600);
+		setcookie("TroopTrackerPassword", "", time() - 3600);
+	}
 
 	// Show logout message
 	echo '

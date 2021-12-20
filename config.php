@@ -2623,6 +2623,46 @@ function isLink($id)
 	return $link;
 }
 
+// If trooper is not logged in and not set to login from login page
+if(!loggedIn() && !isset($_POST['loginWithTK']))
+{
+	// If cookies are set
+	if(isset($_COOKIE['TroopTrackerUsername']) && isset($_COOKIE['TroopTrackerPassword']) && $_COOKIE['TroopTrackerUsername'] != "" && $_COOKIE['TroopTrackerPassword'] != "")
+	{
+		// Set up fail check
+		$failCheck = true;
+		
+		$query = "SELECT * FROM troopers WHERE forum_id = '".$_COOKIE['TroopTrackerUsername']."'";
+		if ($result = mysqli_query($conn, $query))
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				// Check credentials
+				if(password_verify($_COOKIE['TroopTrackerPassword'], $db->password))
+				{
+					// Set session
+					$_SESSION['id'] = $db->id;
+					$_SESSION['tkid'] = $db->tkid;
+					
+					// Set success
+					$failCheck = false;
+				}
+			}
+		}
+		
+		// Something wrong happened, delete cookie
+		if($failCheck)
+		{
+			// Destroy cookies
+			setcookie("TroopTrackerUsername", "", time() - 3600);
+			setcookie("TroopTrackerPassword", "", time() - 3600);
+		}
+	}
+}
+
+// Enable output buffering
+ob_start();
+
 // If logged in, update active status
 if(loggedIn())
 {
