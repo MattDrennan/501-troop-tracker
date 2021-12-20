@@ -1,0 +1,3 @@
+*/2 * * * * curl --silent --compressed https://www.fl501st.com/troop-tracker/script/php/cron/checknotifications.php
+0 15 * * * curl --silent --compressed https://www.fl501st.com/troop-tracker/script/php/cron/checktroops.php
+0 3 * * * curl --silent --compressed https://www.fl501st.com/troop-tracker/script/php/cron/501sync.php

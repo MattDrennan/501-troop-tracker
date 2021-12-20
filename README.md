@@ -82,6 +82,7 @@ $clubArray = array("Rebel Legion" => "test", "Droid Builders" => "test", "Mando 
 
 <li>Set file permissions to 'images/uploads' to 777</li>
 <li>Manually modify getSquad() function in 'config.php' to fit your needs</li>
+<li>On a live server, set up cron jobs located in other/cron.txt</li>
 <li>To use 'nodescraper', create a '.env' file in same directory. Add the following:</li>
 </ol>
 
