@@ -1,5 +1,12 @@
 **Changelog**
 
+_12/21/2021_
+
+-Fixed bug where admin photos would show for admin and non-admin areas on shift events
+-Improved notifications for editing roster
+-Added pages to notifications
+-Improved photo editing
+
 _12/20/2021_
 
 -E-mails will now be sent in batches, rather than when a user performs an action

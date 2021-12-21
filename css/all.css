@@ -38,3 +38,29 @@ span.select2-selection__rendered
 {
 	color: black;
 }
+
+.container-image
+{
+	height: 200px;
+	width: 200px;
+	position: relative;
+	display: inline-block;
+}
+
+.image-c
+{
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
+.container-text
+{
+	z-index: 100;
+	position: absolute;
+	color: white;
+	font-size: 24px;
+	font-weight: bold;
+	left: 80px;
+	top: 125px;
+}

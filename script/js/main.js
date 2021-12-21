@@ -649,12 +649,12 @@ $(document).ready(function()
 		}
 	})
 	
-	// Get Location Button
+	// Photo Management - Delete Photo
 	$("a[name='deletephoto']").click(function(e)
 	{
 		e.preventDefault();
 		
-		var elementS = $(this);
+		var troopid = $(this).attr("troopid");
 		
 		var r = confirm("Are you sure you want to delete this photo?");
 		
@@ -665,7 +665,7 @@ $(document).ready(function()
 			$.ajax({
 				type: "POST",
 				url: "process.php?do=deletephoto",
-				data: { photoid: $(this).attr("photoid") },
+				data: { photoid: $(this).attr("photoid"), troopid: $(this).attr("troopid") },
 				success: function(data)
 				{
 					// Get JSON
@@ -674,9 +674,48 @@ $(document).ready(function()
 					// Alert user
 					alert(json.data);
 					
-					// Remove elements
-					$("#photo" + elementS.attr("photoid")).remove();
-					elementS.remove();
+					// Redirect trooper
+					window.location = "index.php?event=" + troopid;
+				}
+			});
+		}
+	})
+	
+	// Photo Management - Make Admin / Regular
+	$("a[name='adminphoto']").click(function(e)
+	{
+		e.preventDefault();
+		
+		var r = confirm("Are you sure you want to change the status of this photo?");
+		
+		var elementS = $(this);
+		
+		// If confirmed
+		if(r == true)
+		{
+			// Send data
+			$.ajax({
+				type: "POST",
+				url: "process.php?do=adminphoto",
+				data: { photoid: $(this).attr("photoid") },
+				success: function(data)
+				{
+					// Get JSON
+					var json = JSON.parse(data);
+					
+					// If success
+					if(json.data == 1)
+					{
+						console.log(elementS.text());
+						if(elementS.text() == "Make Admin Photo")
+						{
+							elementS.text("Make Regular Photo");
+						}
+						else if(elementS.text() == "Make Regular Photo")
+						{
+							elementS.text("Make Admin Photo");
+						}
+					}
 				}
 			});
 		}

@@ -92,6 +92,7 @@ if(isset($_GET['do']) && $_GET['do'] == "troopercheckretired" && loggedIn() && i
 
 /******************** PHOTOS *******************************/
 
+// Delete Photo
 if(isset($_GET['do']) && $_GET['do'] == "deletephoto" && loggedIn())
 {
 	// Query database for photos
@@ -122,13 +123,60 @@ if(isset($_GET['do']) && $_GET['do'] == "deletephoto" && loggedIn())
 	if($i == 0)
 	{
 		// Send JSON
-		$array = array('data' => 'Failed to delete photo');
+		$array = array('data' => 'Failed to delete photo!');
 		echo json_encode($array);
 	}
 	else
 	{
 		// Send JSON
 		$array = array('data' => 'Deleted!');
+		echo json_encode($array);
+	}
+}
+
+// Make Admin / Regular
+if(isset($_GET['do']) && $_GET['do'] == "adminphoto" && loggedIn())
+{
+	// Query database for photos
+	$query = "SELECT * FROM uploads WHERE id = '".cleanInput($_POST['photoid'])."'";
+	
+	// Count photos
+	$i = 0;
+	
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			if(isAdmin())
+			{
+				if($db->admin == 0)
+				{
+					// Query database
+					$conn->query("UPDATE uploads SET admin = '1' WHERE id = '".cleanInput($_POST['photoid'])."'");
+				}
+				else
+				{
+					// Query database
+					$conn->query("UPDATE uploads SET admin = '0' WHERE id = '".cleanInput($_POST['photoid'])."'");
+				}
+				
+				// Increment
+				$i++;
+			}
+		}
+	}
+	
+	// If failed...
+	if($i == 0)
+	{
+		// Send JSON
+		$array = array('data' => 0);
+		echo json_encode($array);
+	}
+	else
+	{
+		// Send JSON
+		$array = array('data' => 1);
 		echo json_encode($array);
 	}
 }
@@ -1681,7 +1729,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		}
 
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has edited event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']), 14, convertDataToJSON("SELECT * FROM events WHERE id = '".cleanInput($_POST['eventId'])."'"));
+		sendNotification(getName($_SESSION['id']) . " has edited event ID: [" . cleanInput($_POST['eventId']) . "] by updating the roster.", cleanInput($_SESSION['id']), 14, convertDataToJSON("SELECT * FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['trooperSelectEdit'])."' AND troopid = '".cleanInput($_POST['eventId'])."' AND id = '".cleanInput($_POST['signid'])."'"));
 
 		// Send back data
 		$array = array('success' => 'success', 'id' => $_SESSION['id']);
@@ -1718,7 +1766,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			}
 			
 			// Send notification to command staff
-			sendNotification(getName($_SESSION['id']) . " has added trooper ID [".cleanInput($_POST['trooperSelect'])."] to event ID [" . cleanInput($_POST['troopid']) . "]", cleanInput($_SESSION['id']), 15, json_encode(array("trooperid" => cleanInput($_POST['trooperSelect']), "troopid" => cleanInput($_POST['troopid']))));
+			sendNotification(getName($_SESSION['id']) . " has added trooper ID [".cleanInput($_POST['trooperSelect'])."] to event ID [" . cleanInput($_POST['troopid']) . "]", cleanInput($_SESSION['id']), 15, convertDataToJSON("SELECT * FROM event_sign_up WHERE id = '".$last_id."'"));
 			
 			// Send back data
 			$array = array('success' => 'success', 'signid' => $last_id);
@@ -1815,12 +1863,12 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		if(isset($_POST['trooperSelectEdit']) && $_POST['trooperSelectEdit'] >= 0)
 		{
 			$array = array('success' => 'true', 'data' => 'Trooper removed!');
+			
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has removed trooper ID [".cleanInput($_POST['trooperSelectEdit'])."] on event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']), 18, convertDataToJSON("SELECT * FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['trooperSelectEdit'])."' AND troopid = '".cleanInput($_POST['eventId'])."' AND id = '".cleanInput($_POST['signid'])."'"));
 
 			// Query the database
 			$conn->query("DELETE FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['trooperSelectEdit'])."' AND troopid = '".cleanInput($_POST['eventId'])."' AND id = '".cleanInput($_POST['signid'])."'");
-			
-			// Send notification to command staff
-			sendNotification(getName($_SESSION['id']) . " has removed trooper ID [".cleanInput($_POST['trooperSelectEdit'])."] on event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']), 18, json_encode(array("trooperid" => cleanInput($_POST['trooperSelectEdit']), "troopid" => cleanInput($_POST['eventId']))));
 		}
 		else
 		{

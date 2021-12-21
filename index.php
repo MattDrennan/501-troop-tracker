@@ -1440,6 +1440,52 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		echo '
 		</p>';
 		
+		/**************************** Edit Photo *********************************/
+		
+		if(isset($_GET['do']) && $_GET['do'] == "editphoto")
+		{
+			// Get data
+			$query = "SELECT * FROM uploads WHERE id = '".cleanInput($_GET['id'])."'";
+			$i = 0;
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					echo '
+					<h3>Edit Photo: '.$db->filename.'</h3>
+					
+					<p>
+						<img src="images/uploads/'.$db->filename.'" width="200px" height="200px" />
+					</p>';
+					
+					// Check if admin photo
+					if($db->admin == 0)
+					{
+						echo '
+						<p>
+							<a href="#/" photoid="'.$db->id.'" class="button" name="adminphoto">Make Admin Photo</a>
+						</p>';
+					}
+					else
+					{
+						echo '
+						<p>
+							<a href="#/" photoid="'.$db->id.'" class="button" name="adminphoto">Make Regular Photo</a>
+						</p>';
+					}
+					
+					echo '
+					<p>
+						<a href="#/" photoid="'.$db->id.'" troopid="'.$db->troopid.'" class="button" name="deletephoto">Delete Photo</a>
+					</p>
+					
+					<p>
+						<a href="index.php?event='.$db->troopid.'" class="button">View Event</a>
+					</p>';
+				}
+			}
+		}
+		
 		/**************************** Site Settings *********************************/
 		
 		if(isset($_GET['do']) && $_GET['do'] == "sitesettings")
@@ -1716,25 +1762,67 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<a href="index.php?action=commandstaff&do=notifications&s=system" class="button">System</a>
 				<a href="index.php?action=commandstaff&do=notifications&s=troopers" class="button">Troopers</a>
 			</p>';
+			
+			// Set results per page
+			$results = 100;
 		
 			// Add to query if in URL
 			if(isset($_GET['s']) && $_GET['s'] == "system")
 			{
 				// Get data
-				$query = "SELECT * FROM notifications WHERE message NOT LIKE '%now has%' ORDER BY id DESC LIMIT 100";
+				$query = "SELECT * FROM notifications WHERE message NOT LIKE '%now has%' ORDER BY id DESC ";
+				
+				// Get total results - query
+				$sqlPage = "SELECT COUNT(id) AS total FROM notifications WHERE message NOT LIKE '%now has%'";
 			}
 			else if(isset($_GET['s']) && $_GET['s'] == "troopers")
 			{
 				// Get data
-				$query = "SELECT * FROM notifications WHERE message LIKE '%now has%' ORDER BY id DESC LIMIT 100";
+				$query = "SELECT * FROM notifications WHERE message LIKE '%now has%' ORDER BY id DESC ";
+				
+				// Get total results - query
+				$sqlPage = "SELECT COUNT(id) AS total FROM notifications WHERE message LIKE '%now has%'";
 			}
 			else
 			{
 				// Get data
-				$query = "SELECT * FROM notifications ORDER BY id DESC LIMIT 100";
+				$query = "SELECT * FROM notifications ORDER BY id DESC ";
+				
+				// Get total results - query
+				$sqlPage = "SELECT COUNT(id) AS total FROM notifications";
 			}
 			
+			// Page SQL
+			$resultPage = $conn->query($sqlPage);
+			$rowPage = $resultPage->fetch_assoc();
+			
+			// Set total pages
+			$total_pages = ceil($rowPage["total"] / $results);
+			
+			// If page set
+			if(isset($_GET['page']))
+			{
+				// Get page
+				$page = cleanInput($_GET['page']);
+				
+				// Start from
+				$startFrom = ($page - 1) * $results;
+			}
+			else
+			{
+				// Default page
+				$page = 1;
+				
+				// Start from - default
+				$startFrom = ($page - 1) * $results;
+			}
+			
+			// Add to query
+			$query .= "LIMIT ".$startFrom.", ".$results."";
+			
+			// Set notification count
 			$i = 0;
+			
 			if ($result = mysqli_query($conn, $query))
 			{
 				while ($db = mysqli_fetch_object($result))
@@ -1778,13 +1866,45 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				}
 			}
 			
+			// No notifications to display
 			if($i == 0)
 			{
 				echo '<p>No notifications to display.</p>';
 			}
 			else
 			{
+				// Finish HTML list - notifications exist
 				echo '</ul>';
+			}
+			
+			// If notifications
+			if($total_pages > 1)
+			{
+				echo '<p>Pages: ';
+				
+				// Loop through pages
+				for ($j = 1; $j <= $total_pages; $j++)
+				{
+					// If we are on this page...
+					if($page == $j)
+					{
+						echo '
+						'.$j.'';
+					}
+					else
+					{
+						echo '
+						<a href="index.php?action=commandstaff&do=notifications&page='.$j.'">'.$j.'</a>';
+					}
+					
+					// If not that last page, add a comma
+					if($j != $total_pages)
+					{
+						echo ', ';
+					}
+				}
+				
+				echo '</p>';
 			}
 		}
 
@@ -3493,7 +3613,7 @@ if(isset($_GET['event']))
 					if(!$isMerged)
 					{
 						// Query database for photos
-						$query2 = "SELECT * FROM uploads WHERE troopid = '".cleanInput($_GET['event'])."' AND admin = '1'".$add." ORDER BY date DESC";
+						$query2 = "SELECT * FROM uploads WHERE admin = '1' AND (troopid = '".cleanInput($_GET['event'])."'".$add.") ORDER BY date DESC";
 						
 						// Query count
 						$j = 0;
@@ -3510,13 +3630,20 @@ if(isset($_GET['event']))
 								}
 								
 								echo '
-								<a href="images/uploads/'.$db2->filename.'" data-lightbox="photosadmin" data-title="Uploaded by '.getName($db2->trooperid).'" id="photo'.$db2->id.'"><img src="images/uploads/'.$db2->filename.'" width="200px" height="200px" /></a>';
-								
-								// If owned by trooper
-								if(loggedIn() && isAdmin())
-								{
-									echo '<a href="process.php?do=deletephoto&id='.$db2->id.'" name="deletephoto" photoid="'.$db2->id.'">Delete</a>';
-								}
+								<div class="container-image">
+									<a href="images/uploads/'.$db2->filename.'" data-lightbox="photosadmin" data-title="Uploaded by '.getName($db2->trooperid).'" id="photo'.$db2->id.'"><img src="images/uploads/'.$db2->filename.'" width="200px" height="200px" class="image-c" /></a>
+									
+									<p class="container-text">';
+									
+										// If owned by trooper
+										if(loggedIn() && isAdmin())
+										{
+											echo '<a href="index.php?action=commandstaff&do=editphoto&id='.$db2->id.'">Edit</a>';
+										}
+										
+									echo '
+									</p>
+								</div>';
 								
 								// Increment photo count
 								$j++;
@@ -4178,7 +4305,7 @@ if(isset($_GET['event']))
 				$results = 5;
 				
 				// Get total results - query
-				$sqlPage = "SELECT COUNT(id) AS total FROM uploads WHERE troopid = '".cleanInput($_GET['event'])."'".$add.""; 
+				$sqlPage = "SELECT COUNT(id) AS total FROM uploads WHERE admin = 0 AND (troopid = '".cleanInput($_GET['event'])."'".$add.")"; 
 				$resultPage = $conn->query($sqlPage);
 				$rowPage = $resultPage->fetch_assoc();
 				
@@ -4210,7 +4337,7 @@ if(isset($_GET['event']))
 				}
 				
 				// Query database for photos
-				$query = "SELECT * FROM uploads WHERE troopid = '".cleanInput($_GET['event'])."' AND admin = '0'".$add." ORDER BY date DESC LIMIT ".$startFrom.", ".$results."";
+				$query = "SELECT * FROM uploads WHERE admin = '0' AND (troopid = '".cleanInput($_GET['event'])."'".$add.") ORDER BY date DESC LIMIT ".$startFrom.", ".$results."";
 				
 				// Count photos
 				$i = 0;
@@ -4227,13 +4354,20 @@ if(isset($_GET['event']))
 						}
 						
 						echo '
-						<a href="images/uploads/'.$db->filename.'" data-lightbox="photos" data-title="Uploaded by '.getName($db->trooperid).'" id="photo'.$db->id.'"><img src="images/uploads/'.$db->filename.'" width="200px" height="200px" /></a>';
-						
-						// If owned by trooper
-						if(loggedIn() && ($db->trooperid == $_SESSION['id'] || isAdmin()))
-						{
-							echo '<a href="process.php?do=deletephoto&id='.$db->id.'" name="deletephoto" photoid="'.$db->id.'">Delete</a>';
-						}
+						<div class="container-image">
+							<a href="images/uploads/'.$db->filename.'" data-lightbox="photosadmin" data-title="Uploaded by '.getName($db->trooperid).'" id="photo'.$db->id.'"><img src="images/uploads/'.$db->filename.'" width="200px" height="200px" class="image-c" /></a>
+							
+							<p class="container-text">';
+							
+								// If owned by trooper
+								if(loggedIn() && isAdmin())
+								{
+									echo '<a href="index.php?action=commandstaff&do=editphoto&id='.$db->id.'">Edit</a>';
+								}
+								
+							echo '
+							</p>
+						</div>';
 						
 						$i++;
 					}
