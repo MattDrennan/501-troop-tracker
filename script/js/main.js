@@ -706,7 +706,6 @@ $(document).ready(function()
 					// If success
 					if(json.data == 1)
 					{
-						console.log(elementS.text());
 						if(elementS.text() == "Make Admin Photo")
 						{
 							elementS.text("Make Regular Photo");
