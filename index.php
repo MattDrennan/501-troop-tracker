@@ -2862,7 +2862,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<input type="submit" name="submit" name="easyFillButton" id="easyFillButton" value="Fill!" />
 			</form>
 
-			<p><i>Make sure there is a ":" in the time for both datetime values</i></p>
+			<p><i>Copy and paste event requests in the textbox above. Please ensure all information is accurate.</i></p>
 			</div>';
 
 			// Display create event form
