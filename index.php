@@ -5053,6 +5053,14 @@ else
 					</div>';
 				}
 			}
+
+			// If logged in, show Discord server
+			if(loggedIn())
+			{
+				echo '
+				<h2 class="tm-section-header">Tracker Updates</h2>
+				<iframe src="https://titanembeds.com/embed/911999467908132866?defaultchannel=920863548173873263&fixedsidenav=false" height="600" width="100%" frameborder="0"></iframe>';
+			}
 			
 			echo '
 			<h2 class="tm-section-header">Recent Photos</h2>';
