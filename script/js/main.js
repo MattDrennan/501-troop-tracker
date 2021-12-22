@@ -2441,118 +2441,245 @@ $(document).ready(function()
 		// Get Text
 		var text = $("#easyFill").val();
 
-		// Convert to array
-		var textArray = text.split(":");
+		// Convert to array (by new line)
+		var textArray = text.split(/\r?\n/);
 
-		// Event Title
-		var eventTitle = textArray.indexOf("Event Name");	
-		eventTitle = textArray[eventTitle + 1].split("\n");
-		$("#eventName").val(eventTitle[0]);
+		// Set up error message
+		var error = "";
 
-		// Event Venue
-		var eventVenue = textArray[2].split("Venue address");
-		$("#eventVenue").val(eventVenue[0].slice(1));
-
-		// Event Location
-		var eventLocation = textArray[3].split("Event Start");
-		eventLocation[0] = eventLocation[0].replace(/\n/g, " ");
-		$("#location").val(eventLocation[0].slice(1));
-
-		// Event Time ISSUE WITH : in time need to fix
-		var eventTime = textArray[4].slice(1) + ":" + textArray[5].split("Event End")[0];
-		eventTime = eventTime.split("-");
-		eventTime = eventTime[0] + eventTime[1];
-		eventTime = moment(new Date(eventTime)).format('MM/DD/YYYY HH:mm');
-		$("#datepicker").val(eventTime);
-
-		// Event Time 2
-		var eventTime2 = textArray[6].slice(1) + ":" + textArray[7].split("Event Website")[0];
-		eventTime2 = eventTime2.split("-");
-		eventTime2 = eventTime2[0] + eventTime2[1];
-		eventTime2 = moment(new Date(eventTime2)).format('MM/DD/YYYY HH:mm');
-		$("#datepicker2").val(eventTime2);
-
-		// Website
-		var website = textArray[8].slice(1).split("Expected number of attendees")[0];
-		$("#website").val(website);
-
-		// Number of Attendees
-		var numberOfAttend = textArray[9].slice(1).split("Requested number of characters")[0];
-		$("#numberOfAttend").val(parseInt(numberOfAttend));
-
-		// Number of Requested Characters
-		var requestedNumber = textArray[10].slice(1).split("Requested character types")[0];
-		$("#requestedNumber").val(parseInt(requestedNumber));
-
-		// Requested Characters
-		var requestedCharacter = textArray[11].slice(1).split("Secure changing/staging area")[0];
-		$("#requestedCharacter").val(requestedCharacter);
-
-		// Secure Changing Area?
-		var secure = textArray[12].slice(1).split("Can troopers carry blasters")[0];
-		if(secure.includes("No"))
+		// Loop through each line
+		textArray.forEach(function(line, i)
 		{
-			$("#secure").val(0);
-		}
-		else
-		{
-			$("#secure").val(1);
-		}
+			// Event title
+			if(line.includes("Event Name:"))
+			{
+				$("#eventName").val(line.split("Event Name:")[1].trim());
+			}
 
-		// Can Troopers Carry Blasters?
-		var blasters = textArray[13].slice(1).split("Can troopers carry/bring props like lightsabers and staffs")[0];
-		if(blasters.includes("NO") || blasters.includes("no") || blasters.includes("No"))
-		{
-			$("#blasters").val(0);
-		}
-		else
-		{
-			$("#blasters").val(1);
-		}
+			// Event venue
+			if(line.includes("Venue:"))
+			{
+				$("#eventVenue").val(line.split("Venue:")[1].trim());
+			}
 
-		// Can Troopers Carry Lightsabers?
-		var lightsabers = textArray[14].slice(1).split("Is parking available")[0];
-		if(lightsabers.includes("NO") || lightsabers.includes("no") || lightsabers.includes("No"))
-		{
-			$("#lightsabers").val(0);
-		}
-		else
-		{
-			$("#lightsabers").val(1);
-		}
+			// Event Location
+			if(line.includes("Venue address:"))
+			{
+				// Set up
+				var address = "";
+				
+				// Get first line
+				address = line.split("Venue address:")[1].trim();
 
-		// Parking?
-		var parking = textArray[15].slice(1).split("Is venue accessible to those with limited mobility")[0];
-		if(parking.includes("NO") || parking.includes("no") || parking.includes("No"))
-		{
-			$("#parking").val(0);
-		}
-		else
-		{
-			$("#parking").val(1);
-		}
+				// Loop for multi-line
+				for(j = i + 1; j <= textArray.length; j++)
+				{
+					if(!textArray[j].includes("Event Start:"))
+					{
+						// Add to comments
+						address += " " + textArray[j];
+					}
+					else
+					{
+						// End
+						break;
+					}
+				}
 
-		// Mobility?
-		var mobility = textArray[16].slice(1).split("Amenities available at venue")[0];
-		if(mobility.includes("NO") || mobility.includes("no") || mobility.includes("No"))
+				// Set
+				$("#location").val(address);
+			}
+
+			// Date Start
+			if(line.includes("Event Start:"))
+			{
+				$("#datepicker").val(moment(new Date(line.split("Event Start:")[1].trim())).format('MM/DD/YYYY HH:mm'));
+
+				// Check if date is invalid
+				if($("#datepicker").val() == "Invalid date")
+				{
+					// Make date fields blank
+					$("#datepicker").val("");
+
+					// Add to message
+					error += "-Date Start is invalid\n";
+				}
+			}
+
+			// Date Start
+			if(line.includes("Event End:"))
+			{
+				$("#datepicker2").val(moment(new Date(line.split("Event End:")[1].trim())).format('MM/DD/YYYY HH:mm'));
+
+				// Check if date is invalid
+				if($("#datepicker2").val() == "Invalid date")
+				{
+					// Make date fields blank
+					$("#datepicker2").val("");
+
+					// Add to message
+					error += "-Date End is invalid\n";
+				}
+			}
+
+			// Website
+			if(line.includes("Event Website:"))
+			{
+				$("#website").val(line.split("Event Website:")[1].trim());
+			}
+
+			// Expected number of attendees
+			if(line.includes("Expected number of attendees:"))
+			{
+				$("#numberOfAttend").val(line.split("Expected number of attendees:")[1].trim());
+
+				// Check if invalid
+				if(isNaN(parseInt($("#numberOfAttend").val())))
+				{
+					// Make date fields blank
+					$("#numberOfAttend").val("");
+
+					// Add to message
+					error += "-Number of attendees is not a number\n";
+				}
+			}
+
+			// Requested number of characters:
+			if(line.includes("Requested number of characters:"))
+			{
+				$("#requestedNumber").val(line.split("Requested number of characters:")[1].trim());
+
+				// Check if invalid
+				if(isNaN(parseInt($("#requestedNumber").val())))
+				{
+					// Make date fields blank
+					$("#requestedNumber").val("");
+
+					// Add to message
+					error += "-Requested number of characters is not a number\n";
+				}
+			}
+
+			// Requested number of characters:
+			if(line.includes("Requested character types:"))
+			{
+				$("#requestedCharacter").val(line.split("Requested character types:")[1].trim());
+			}
+
+			// Secure Changing Area?
+			if(line.includes("Secure changing/staging area"))
+			{
+				if(line.includes("No"))
+				{
+					$("#secure").val(0);
+				}
+				else
+				{
+					$("#secure").val(1);
+				}
+			}
+
+			// Can Troopers Carry Blasters?
+			if(line.includes("Can troopers carry blasters"))
+			{
+				if(line.includes("No"))
+				{
+					$("#blasters").val(0);
+				}
+				else
+				{
+					$("#blasters").val(1);
+				}
+			}
+
+			// Parking
+			if(line.includes("Is parking available"))
+			{
+				if(line.includes("No"))
+				{
+					$("#parking").val(0);
+				}
+				else
+				{
+					$("#parking").val(1);
+				}
+			}
+
+			// Parking
+			if(line.includes("Can troopers carry/bring props like lightsabers and staffs"))
+			{
+				if(line.includes("No"))
+				{
+					$("#lightsabers").val(0);
+				}
+				else
+				{
+					$("#lightsabers").val(1);
+				}
+			}
+
+			// Mobility
+			if(line.includes("Is venue accessible to those with limited mobility"))
+			{
+				if(line.includes("No"))
+				{
+					$("#mobility").val(0);
+				}
+				else
+				{
+					$("#mobility").val(1);
+				}
+			}
+
+			// Amenities
+			if(line.includes("Amenities available at venue:"))
+			{
+				$("#amenities").val(line.split("Amenities available at venue:")[1].trim());
+			}
+
+			// Comments
+			if(line.includes("Comments:"))
+			{
+				// Set up
+				var comment = "";
+
+				// Get first line
+				comment = line.split("Comments:")[1].trim();
+
+				// Loop for multi-line
+				for(j = i + 1; j <= textArray.length; j++)
+				{
+					if(!textArray[j].includes("Referred by:"))
+					{
+						// Add to comments
+						comment += textArray[j];
+					}
+					else
+					{
+						// End
+						break;
+					}
+				}
+
+				// Set
+				$("#comments").val(comment);
+			}
+
+			// Referred By
+			if(line.includes("Referred by:"))
+			{
+				$("#referred").val(line.split("Referred by:")[1].trim());
+			}
+		});
+
+		// If error
+		if(error != "")
 		{
-			$("#mobility").val(0);
+			// Add to error
+			error += "\nPlease be sure to verify all information is accurate.";
+
+			// Show message
+			alert(error);
 		}
-		else
-		{
-			$("#mobility").val(1);
-		}
-
-		// Amenities?
-		var amenities = textArray[17].slice(1).split("Comments")[0];
-		$("#amenities").val(amenities);
-
-		// Comments
-		var comments = textArray[18].slice(1).split("Referred by")[0];
-		$("#comments").val(comments);
-
-		// Referred By
-		var referred = textArray[19].slice(1).split("Referred by")[0];
-		$("#referred").val(referred);
 	})
 });
