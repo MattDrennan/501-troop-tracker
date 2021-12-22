@@ -64,3 +64,10 @@ span.select2-selection__rendered
 	left: 80px;
 	top: 125px;
 }
+
+.quotec
+{
+	display: inline;
+	border: 1px solid black;
+	color:  gray;
+}

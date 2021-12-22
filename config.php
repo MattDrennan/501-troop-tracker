@@ -300,6 +300,7 @@ function showBBcodes($text)
 		'~\[i\](.*?)\[/i\]~s',
 		'~\[u\](.*?)\[/u\]~s',
 		'~\[quote\](.*?)\[/quote\]~s',
+		'~\[quotec trooperid=(.*?) name=(.*?) tkid=(.*?) commentid=(.*?)\](.*?)\[/quotec\]~s',
 		'~\[size=(.*?)\](.*?)\[/size\]~s',
 		'~\[color=(.*?)\](.*?)\[/color\]~s',
 		'~\[url\]((?:ftp|https?)://.*?)\[/url\]~s',
@@ -312,6 +313,7 @@ function showBBcodes($text)
 		'<i>$1</i>',
 		'<span style="text-decoration:underline;">$1</span>',
 		'<pre>$1</'.'pre>',
+		'<a href="#comment_$4">$2 - $3</a><br /><span class="quotec">$5</'.'span><br />',
 		'<span style="font-size:$1px;">$2</span>',
 		'<span style="color:$1;">$2</span>',
 		'<a href="$1">$1</a>',
@@ -1548,7 +1550,7 @@ function isSquadActive($squad)
 }
 
 // getTKNumber: gets TK number
-function getTKNumber($id)
+function getTKNumber($id, $read = false)
 {
 	global $conn;
 	
@@ -1557,7 +1559,15 @@ function getTKNumber($id)
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
-			return $db->tkid;
+			// Don't read, just output
+			if(!$read)
+			{
+				return $db->tkid;
+			}
+			else
+			{
+				return readTKNumber($db->tkid, $db->squad);
+			}
 		}
 	}
 }
