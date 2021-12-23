@@ -1428,6 +1428,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		<p>
 			<a href="index.php?action=commandstaff&do=createevent" class="button">Create an Event</a> 
 			<a href="index.php?action=commandstaff&do=editevent" class="button">Edit an Event</a> 
+			<a href="index.php?action=commandstaff&do=roster" class="button">Roster</a> 
 			<a href="index.php?action=commandstaff&do=notifications" class="button">Notifications</a> ';
 			
 			if(hasPermission(1))
@@ -1585,10 +1586,10 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			$totalAccountsSetUpRebel = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 6");
 
 			// Count number of users with set up accounts - Mando
-			$totalAccountsSetUpMando = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 7");
+			$totalAccountsSetUpMando = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 8");
 
 			// Count number of users with set up accounts - Droid
-			$totalAccountsSetUpDroid = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 8");
+			$totalAccountsSetUpDroid = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 7");
 
 			// Count number of users with set up accounts - Other
 			$totalAccountsSetUpOther = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 9");
@@ -1648,6 +1649,94 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<p><b>Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUp->num_rows).'</p>
 			<p><b>Total Accounts (Not Set Up):</b> '.number_format($totalNotSet).'</p>
 			<p><b>Total Accounts:</b> '.number_format($totalAccounts->num_rows).'</p>';
+		}
+
+		/**************************** Roster *********************************/
+		
+		if(isset($_GET['do']) && $_GET['do'] == "roster" && isAdmin())
+		{
+			echo '
+			<h3>Roster</h3>';
+			
+			// Squad count
+			$i = 1;
+			
+			echo '
+			<a href="index.php?action=commandstaff&do=roster" class="button">All</a>';
+			
+			foreach($squadArray as $squad => $squad_value)
+			{
+				echo '<a href="index.php?action=commandstaff&do=roster&squad='.$i.'" class="button">' . $squad . '</a> ';
+				$i++;
+			}
+			
+			foreach($clubArray as $club => $club_value)
+			{
+				echo '<a href="index.php?action=commandstaff&do=roster&squad='.$i.'" class="button">' . $club . '</a> ';
+				$i++;
+			}
+			
+			echo '<br /><hr />';
+			
+			// Set up
+			$queryAdd = "";
+			
+			// Check if squad is requested
+			if(isset($_GET['squad']))
+			{
+				$queryAdd = "WHERE squad = '".cleanInput($_GET['squad'])."'";
+			}
+			
+			// Query database
+			$query = "SELECT * FROM troopers ".$queryAdd." ORDER BY name";
+			
+			// Query count
+			$i = 0;
+			
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					// If first data
+					if($i == 0)
+					{
+						echo '
+						<div style="overflow-x: auto;">
+						<table>
+							<tr>
+								<th>Name</th>	<th>TKID</th>
+							</tr>';
+					}
+					
+					echo '
+					<tr name="row_'.$db->id.'">
+						<td>
+							<a href="index.php?profile='.$db->id.'">'.$db->name.'</a>
+						</td>
+						
+						<td>
+							'.readTKNumber($db->tkid, $db->squad).'
+						</td>
+					</tr>
+					';
+					
+					// Increment
+					$i++;
+				}
+			}
+			
+			// If data exists
+			if($i > 0)
+			{
+				echo '
+				</table>
+				</div>';
+			}
+			else
+			{
+				echo '
+				<p style="text-align: center;">Nothing to display for this squad / club.</p>';
+			}
 		}
 		
 		/**************************** Trooper Check *********************************/
@@ -3115,13 +3204,18 @@ if(isset($_GET['action']) && $_GET['action'] == "faq")
 		The troop will be listed on your troop tracker profile, or under your stats on the troop tracker page. When you confirm a troop, your status will change from "Going" to "Attended".
 	</p>
 
+	<h3>I need a costume added to the troop tracker.</h3>
+	<p>
+		Please notify your squad leader, or e-mail the Garrison Web Master directly. See below for e-mail.
+	</p>
+
 	<h3>I need information on joining the 501st Legion.</h3>
 	<p>
 		<a href="https://databank.501st.com/databank/Join_Us" target="_blank">Click here to learn how to join.</a>
 	</p>
 
 	<h3>Contact Garrison Web Master</h3>
-	<p>If you have read and reviewed all the material above and are still experiencing issues, or have noticed a bug on the website, please <a href="mailto: drennanmattheww@gmail.com">e-mail me here</a>. <b>If you ask a question that is listed above or is answered on a video on this page, you will receive an e-mail advising to review the FAQ page.</b></p>';
+	<p>If you have read and reviewed all the material above and are still experiencing issues, or have noticed a bug on the website, please <a href="mailto: drennanmattheww@gmail.com">send an e-mail here</a>. <b>If you ask a question that is listed above or is answered on a video on this page, you will receive an e-mail advising to review the FAQ page.</b></p>';
 }
 
 // Show the login page
