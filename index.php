@@ -1447,52 +1447,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		echo '
 		</p>';
 		
-		/**************************** Edit Photo *********************************/
-		
-		if(isset($_GET['do']) && $_GET['do'] == "editphoto")
-		{
-			// Get data
-			$query = "SELECT * FROM uploads WHERE id = '".cleanInput($_GET['id'])."'";
-			$i = 0;
-			if ($result = mysqli_query($conn, $query))
-			{
-				while ($db = mysqli_fetch_object($result))
-				{
-					echo '
-					<h3>Edit Photo: '.$db->filename.'</h3>
-					
-					<p>
-						<img src="images/uploads/'.$db->filename.'" width="200px" height="200px" />
-					</p>';
-					
-					// Check if admin photo
-					if($db->admin == 0)
-					{
-						echo '
-						<p>
-							<a href="#/" photoid="'.$db->id.'" class="button" name="adminphoto">Make Admin Photo</a>
-						</p>';
-					}
-					else
-					{
-						echo '
-						<p>
-							<a href="#/" photoid="'.$db->id.'" class="button" name="adminphoto">Make Regular Photo</a>
-						</p>';
-					}
-					
-					echo '
-					<p>
-						<a href="#/" photoid="'.$db->id.'" troopid="'.$db->troopid.'" class="button" name="deletephoto">Delete Photo</a>
-					</p>
-					
-					<p>
-						<a href="index.php?event='.$db->troopid.'" class="button">View Event</a>
-					</p>';
-				}
-			}
-		}
-		
 		/**************************** Site Settings *********************************/
 		
 		if(isset($_GET['do']) && $_GET['do'] == "sitesettings")
@@ -3218,6 +3172,65 @@ if(isset($_GET['action']) && $_GET['action'] == "faq")
 	<p>If you have read and reviewed all the material above and are still experiencing issues, or have noticed a bug on the website, please <a href="mailto: drennanmattheww@gmail.com">send an e-mail here</a>. <b>If you ask a question that is listed above or is answered on a video on this page, you will receive an e-mail advising to review the FAQ page.</b></p>';
 }
 
+/**************************** Edit Photo *********************************/
+
+if(isset($_GET['action']) && $_GET['action'] == "editphoto")
+{
+	// Get data
+	$query = "SELECT * FROM uploads WHERE id = '".cleanInput($_GET['id'])."'";
+	$i = 0;
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// If admin or trooper that uploaded it
+			if(isAdmin() || $db->trooperid == $_SESSION['id'])
+			{
+				echo '
+				<h3>Edit Photo: '.$db->filename.'</h3>
+				
+				<p>
+					<img src="images/uploads/'.$db->filename.'" width="200px" height="200px" />
+				</p>';
+
+				// If is admin
+				if(isAdmin())
+				{
+					echo '
+					<p>
+						<b>Uploaded by:</b> <a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.getTKNumber($db->trooperid, true).'</a>
+					</p>';
+				
+					// Check if admin photo
+					if($db->admin == 0)
+					{
+						echo '
+						<p>
+							<a href="#/" photoid="'.$db->id.'" class="button" name="adminphoto">Make Admin Photo</a>
+						</p>';
+					}
+					else
+					{
+						echo '
+						<p>
+							<a href="#/" photoid="'.$db->id.'" class="button" name="adminphoto">Make Regular Photo</a>
+						</p>';
+					}
+				}
+				
+				echo '
+				<p>
+					<a href="#/" photoid="'.$db->id.'" troopid="'.$db->troopid.'" class="button" name="deletephoto">Delete Photo</a>
+				</p>
+				
+				<p>
+					<a href="index.php?event='.$db->troopid.'" class="button">View Event</a>
+				</p>';
+			}
+		}
+	}
+}
+
 // Show the login page
 if(isset($_GET['action']) && $_GET['action'] == "login")
 {
@@ -3803,10 +3816,10 @@ if(isset($_GET['event']))
 									
 									<p class="container-text">';
 									
-										// If owned by trooper
-										if(loggedIn() && isAdmin())
+										// If owned by trooper or admin
+										if(isAdmin() || $db2->trooperid == $_SESSION['id'])
 										{
-											echo '<a href="index.php?action=commandstaff&do=editphoto&id='.$db2->id.'">Edit</a>';
+											echo '<a href="index.php?action=editphoto&id='.$db2->id.'">Edit</a>';
 										}
 										
 									echo '
@@ -4527,10 +4540,10 @@ if(isset($_GET['event']))
 							
 							<p class="container-text">';
 							
-								// If owned by trooper
-								if(loggedIn() && isAdmin())
+								// If owned by trooper or is admin
+								if(isAdmin() || $db->trooperid == $_SESSION['id'])
 								{
-									echo '<a href="index.php?action=commandstaff&do=editphoto&id='.$db->id.'">Edit</a>';
+									echo '<a href="index.php?action=editphoto&id='.$db->id.'">Edit</a>';
 								}
 								
 							echo '

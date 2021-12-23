@@ -105,6 +105,7 @@ if(isset($_GET['do']) && $_GET['do'] == "deletephoto" && loggedIn())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
+			// If is trooper or is admin
 			if($db->trooperid == $_SESSION['id'] || isAdmin())
 			{
 				// Delete file
