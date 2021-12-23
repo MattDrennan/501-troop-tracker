@@ -1847,8 +1847,17 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					// Check JSON value if blank
 					if($db->json == "")
 					{
+						// Set up
+						$add = "";
+
+						// Does not contain now has
+						if(strpos($db->message, "now has") === false)
+						{
+							$add = "Staff ";
+						}
+
 						// Nothing to show
-						$json = '<a href="index.php?profile='.$db->trooperid.'" target="_blank" class="button">View Staff Profile</a>';
+						$json = '<a href="index.php?profile='.$db->trooperid.'" target="_blank" class="button">View '.$add.'Profile</a>';
 					}
 					else
 					{
