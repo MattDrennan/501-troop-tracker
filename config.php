@@ -126,6 +126,12 @@ function getTroopCounts($id)
 	$moneyRaised_get = $conn->query("SELECT SUM(moneyRaised) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$id."'") or die($conn->error);
 	$moneyRaised = mysqli_fetch_array($moneyRaised_get);
 
+	// Prevent notice error
+	if($favoriteCostume == "")
+	{
+		$favoriteCostume['costume'] = 0;
+	}
+
 	return '
 	<p><b>501st Troops:</b> ' . number_format($count_501->num_rows) . '</p>
 	<p><b>Rebel Legion Troops:</b> ' . number_format($count_rebel->num_rows) . '</p>
@@ -1976,6 +1982,10 @@ function validate_url($url)
 function ifEmpty($value, $message = "EMPTY")
 {
 	if($value == "")
+	{
+		return $message;
+	}
+	else if(is_null($value))
 	{
 		return $message;
 	}
