@@ -1842,7 +1842,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					if($db->json == "")
 					{
 						// Nothing to show
-						$json = '<a href="index.php?profile='.$db->trooperid.'" target="_blank" class="button">View Profile</a>';
+						$json = '<a href="index.php?profile='.$db->trooperid.'" target="_blank" class="button">View Staff Profile</a>';
 					}
 					else
 					{
@@ -1851,6 +1851,34 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<textarea width="100%" rows="5" disabled>' . $db->json . '</textarea>
 						<br />
 						<a href="index.php?profile='.$db->trooperid.'" target="_blank" class="button">View Staff Profile</a>';
+
+						// Decode JSON data - Avoid null results
+						$data = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $db->json));
+
+						// If array or object
+						if(is_array($data) || is_object($data))
+						{
+							// Loop through JSON data
+							foreach($data as $key => $value)
+							{
+								// Troop ID
+								if($key == "trooperid")
+								{
+									$json .= ' <a href="index.php?profile='.$value.'" target="_blank" class="button">View Trooper</a>';
+								}
+
+								// Troop ID
+								if($key == "troopid")
+								{
+									$json .= ' <a href="index.php?event='.$value.'" target="_blank" class="button">View Troop</a>';
+								}
+								// Troop ID #2
+								else if($key == "id" && ($db->type == 13 || $db->type == 14 || $db->type == 19 || $db->type == 17) && !isset($data->troopid))
+								{
+									$json .= ' <a href="index.php?event='.$value.'" target="_blank" class="button">View Troop</a>';
+								}
+							}
+						}
 					}
 					
 					echo '
@@ -3038,16 +3066,47 @@ if(isset($_GET['action']) && $_GET['action'] == "faq")
 {
 	echo '
 	<h3>Troop Tracker - Overview Video (After Account Setup)</h3>
-	<p><iframe width="100%" height="315" src="https://www.youtube.com/embed/vFP6posJt70" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></p>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/vFP6posJt70" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
 
 	<h3>Troop Tracker - How To Video</h3>
-	<p><iframe width="100%" height="315" src="https://www.youtube.com/embed/j0Z5SB6TVOg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></p>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/j0Z5SB6TVOg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
 
 	<h3>Troop Tracker - For Command Staff</h3>
-	<p><iframe width="100%" height="315" src="https://www.youtube.com/embed/ycwFdQQvGoc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></p>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/ycwFdQQvGoc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
 
 	<h3>Troop Tracker Manual</h3>
-	<p><a href="https://github.com/MattDrennan/501-troop-tracker/blob/master/manual/troop_tracker_manual.pdf" target="_blank">Click here to view PDF manual.</a></p>';
+	<p>
+		<a href="https://github.com/MattDrennan/501-troop-tracker/blob/master/manual/troop_tracker_manual.pdf" target="_blank">Click here to view PDF manual.</a>
+	</p>
+
+	<h3>I am missing troop data / My troop data is incorrect</h3>
+	<p>
+		Please refer to your squad leader to get this corrected.
+	</p>
+
+	<h3>My costumes are not showing on my profile / I am missing a costume on my profile</h3>
+	<p>
+		The troop tracker automatically scrapes several different club databases for your costume data. If your costume data is not showing, make sure your ID numbers and forum username\'s are accurate. If the aforementioned information is correct, than refer to your squad / club leadership, as this data is missing on their end.
+	</p>
+
+	<h3>How do I know I confirmed a troop?</h3>
+	<p>
+		The troop will be listed on your troop tracker profile, or under your stats on the troop tracker page. When you confirm a troop, your status will change from "Going" to "Attended".
+	</p>
+
+	<h3>I need information on joining the 501st Legion.</h3>
+	<p>
+		<a href="https://databank.501st.com/databank/Join_Us" target="_blank">Click here to learn how to join.</a>
+	</p>
+
+	<h3>Contact Garrison Web Master</h3>
+	<p>If you have read and reviewed all the material above and are still experiencing issues, or have noticed a bug on the website, please <a href="mailto: drennanmattheww@gmail.com">e-mail me here</a>. <b>If you ask a question that is listed above or is answered on a video on this page, you will receive an e-mail advising to review the FAQ page.</b></p>';
 }
 
 // Show the login page
@@ -5168,8 +5227,7 @@ echo '
 
 <section class="tm-section tm-section-small">
 <p class="tm-mb-0">
-Website created by <a href="index.php?profile=644">Matthew Drennan (TK52233)</a>. If you encounter any technical issues with this site, please
-<a href="mailto:drennanmattheww@gmail.com" class="tm-contact-link">email</a> me here.
+Website created by <a href="index.php?profile=644">Matthew Drennan (TK52233)</a>. If you encounter any technical issues with this site, please refer to the <a href="index.php?action=faq">FAQ page</a> for guidance.
 </p>
 
 <p class="tm-mb-0">

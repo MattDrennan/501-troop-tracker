@@ -902,7 +902,7 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 		$conn->query("UPDATE awards SET title = '".cleanInput($_POST['editAwardTitle'])."', icon = '".cleanInput($_POST['editAwardImage'])."' WHERE id = '".cleanInput($_POST['awardIDEdit'])."'");
 
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has edited award ID [" . cleanInput($_POST['awardIDEdit']) . " to " . cleanInput($_POST['editAwardTitle']), cleanInput($_SESSION['id']), 7, convertDataToJSON("SELECT * FROM awards WHERE id = '".cleanInput($_POST['awardIDEdit'])."'"));
+		sendNotification(getName($_SESSION['id']) . " has edited award ID [" . cleanInput($_POST['awardIDEdit']) . "] to " . cleanInput($_POST['editAwardTitle']), cleanInput($_SESSION['id']), 7, convertDataToJSON("SELECT * FROM awards WHERE id = '".cleanInput($_POST['awardIDEdit'])."'"));
 	}
 }
 
@@ -1729,7 +1729,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		}
 
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has edited event ID: [" . cleanInput($_POST['eventId']) . "] by updating the roster.", cleanInput($_SESSION['id']), 14, convertDataToJSON("SELECT * FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['trooperSelectEdit'])."' AND troopid = '".cleanInput($_POST['eventId'])."' AND id = '".cleanInput($_POST['signid'])."'"));
+		sendNotification(getName($_SESSION['id']) . " has edited event ID: [" . cleanInput($_POST['eventId']) . "] by updating trooper ID: [" . cleanInput($_POST['trooperSelectEdit']) . "].", cleanInput($_SESSION['id']), 14, convertDataToJSON("SELECT * FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['trooperSelectEdit'])."' AND troopid = '".cleanInput($_POST['eventId'])."' AND id = '".cleanInput($_POST['signid'])."'"));
 
 		// Send back data
 		$array = array('success' => 'success', 'id' => $_SESSION['id']);
