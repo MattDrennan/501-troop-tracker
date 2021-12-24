@@ -387,6 +387,12 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 // Show the profile page
 if(isset($_GET['profile']))
 {
+	// Convert TKID to profile
+	if(isset($_GET['tkid']))
+	{
+		$_GET['profile'] = getIDFromTKNumber($_GET['tkid']);
+	}
+	
 	// Get data
 	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.forum_id, troopers.tkid, troopers.squad, troopers.phone FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".cleanInput($_GET['profile'])."' AND troopers.id != ".placeholder." AND events.closed = '1' AND event_sign_up.status = '3' ORDER BY events.dateEnd DESC";
 	$i = 0;

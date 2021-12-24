@@ -1578,6 +1578,21 @@ function getTKNumber($id, $read = false)
 	}
 }
 
+// getIDFromTKNumber: gets ID from TK numbers (501st only)
+function getIDFromTKNumber($tkid)
+{
+	global $conn, $squadArray;
+	
+	$query = "SELECT * FROM troopers WHERE tkid='".$tkid."' AND squad <= ".count($squadArray)."";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			return $db->id;
+		}
+	}
+}
+
 // getTrooperSquad: gets squad of trooper
 function getTrooperSquad($id)
 {
