@@ -26,6 +26,9 @@ define('dbUser2', 'DB_USER_HERE');
 define('dbPassword2', 'DB_PASSWORD_HERE');
 define('dbName2', 'DB_NAME_HERE');
 
+// Path - Absolute path to directory
+define('aPath', 'ABSOLUTE_PATH_HERE_TO_MAIN_DIRECTORY');
+
 // Placeholder Account ID (Used for signing up non-members)
 define('placeholder', 1196);
 

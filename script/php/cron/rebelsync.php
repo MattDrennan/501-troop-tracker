@@ -1,16 +1,19 @@
 <?php
 
 // Include config
-include '../../../config.php';
+include(aPath . 'config.php');
 
 // Get Simple PHP DOM Tool - just a note, for this code to work, $stripRN must be false in tool
-include('../../../tool/dom/simple_html_dom.php');
+include(aPath . 'tool/dom/simple_html_dom.php');
 
 // Purge rebel troopers
 $conn->query("DELETE FROM rebel_troopers") or die($conn->error);
 
 // Purge rebel costumes
 $conn->query("DELETE FROM rebel_costumes") or die($conn->error);
+
+// Costume image array (duplicate check)
+$costumeImagesG = array();
 
 // Loop through all records
 for($i = 0; $i <= 1000; $i += 10)
@@ -25,7 +28,7 @@ for($i = 0; $i <= 1000; $i += 10)
 	foreach($html->find('comment') as $e)
 	{
 		// If comment contains array
-		if(str_contains($e, "Array"))
+		if(contains($e, "Array"))
 		{
 			// Find where it says array
 			$arrayI = strpos($e, "Array");
@@ -57,9 +60,6 @@ for($i = 0; $i <= 1000; $i += 10)
 					// Loop through inner arrays
 					foreach($innerArray as $key => $a)
 					{
-						// Print data
-						echo $key . ': ' . $a . '<br />';
-						
 						// If first value (ID)
 						if($key == 0)
 						{
@@ -75,13 +75,29 @@ for($i = 0; $i <= 1000; $i += 10)
 							// Costume image array
 							$costumeImages = array();
 							
+							// Set should add to prevent duplicates
+							$addTo = true;
+							
 							// Loop through costume images on profile
 							foreach($html2->find('img[height=125]') as $r)
 							{
 								//echo $r->src;
 								
-								// Push to array
-								array_push($costumeImages, str_replace("sm", "-A", $r->src));
+								// Check to see if exists in duplicate array
+								if(in_array(str_replace("sm", "-A", $r->src), $costumeImagesG))
+								{
+									$addTo = false;
+								}
+								
+								// Check to see if we can add (duplicates)
+								if($addTo)
+								{
+									// Push to array
+									array_push($costumeImages, str_replace("sm", "-A", $r->src));
+									
+									// Push to array (to check for duplicates)
+									array_push($costumeImagesG, str_replace("sm", "-A", $r->src));
+								}
 							}
 							
 							// Loop through costume names
@@ -96,10 +112,14 @@ for($i = 0; $i <= 1000; $i += 10)
 										//echo $a->innertext . '<br />';
 										
 										// Prevent an issue where it inserts a 1
-										if($a->innertext != 1 && !str_contains($a->innertext, "http"))
+										if($a->innertext != 1 && !contains($a->innertext, "http"))
 										{
-											// Push to array
-											array_push($costumeNames, $a->innertext);
+											// Check to see if we can add (duplicates)
+											if($addTo)
+											{
+												// Push to array
+												array_push($costumeNames, $a->innertext);
+											}
 										}
 									}
 								}
@@ -113,6 +133,8 @@ for($i = 0; $i <= 1000; $i += 10)
 							{
 								// Query
 								$conn->query("INSERT INTO rebel_costumes (rebelid, costumename, costumeimage) VALUES ('".cleanInput($innerArray[0])."', '".cleanInput($costumeNames[$cc])."', '".cleanInput($costumeImages[$cc])."')") or die($conn->error);
+								
+								echo $innerArray[0] . ' - ' . $costumeNames[$cc] . ' - ' . $costumeImages[$cc] . ' <br />';
 								
 								// Increment
 								$cc++;
@@ -147,44 +169,6 @@ for($i = 0; $i <= 1000; $i += 10)
 		// Stop loop
 		break;
 	}
-}
-
-// Pull extra data from spreadsheet - Troopers
-$url = 'https://sheets.googleapis.com/v4/spreadsheets/1I3FuS_uPg2nuC80PEA6tKYaVBd1Qh1allTOdVz3M6x0/values/Troopers?key=' . googleSheets;
-$json = json_decode(file_get_contents($url));
-$rows = $json->values;
-$i = 0;
-
-foreach($rows as $row)
-{
-	// If not first
-	if($i != 0)
-	{
-		// Query
-		$conn->query("INSERT INTO rebel_troopers (rebelid, name, rebelforum) VALUES ('".$row[0]."', '".$row[1]."', '".$row[2]."')") or die($conn->error);
-	}
-
-	// Increment
-	$i++;
-}
-
-// Pull extra data from spreadsheet - Costumes
-$url = 'https://sheets.googleapis.com/v4/spreadsheets/1I3FuS_uPg2nuC80PEA6tKYaVBd1Qh1allTOdVz3M6x0/values/Costumes?key=' . googleSheets;
-$json = json_decode(file_get_contents($url));
-$rows = $json->values;
-$i = 0;
-
-foreach($rows as $row)
-{
-	// If not first
-	if($i != 0)
-	{
-		// Insert into database
-		$conn->query("INSERT INTO rebel_costumes (rebelid, costumename, costumeimage) VALUES ('".$row[0]."', '".$row[1]."', '".$row[2]."')") or die($conn->error);
-	}
-
-	// Increment
-	$i++;
 }
 
 // print_r_reverse: Convert a string (print_r) back to a value
@@ -256,7 +240,7 @@ function print_r_reverse($input)
 }
 
 // For early PHP version
-function str_contains($haystack, $needle)
+function contains($haystack, $needle)
 {
 	return $needle !== '' && mb_strpos($haystack, $needle) !== false;
 }

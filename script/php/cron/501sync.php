@@ -1,7 +1,7 @@
 <?php
 
 // Include config file
-include "../../../config.php";
+include(aPath . 'config.php');
 
 // Reset databases
 $conn->query("DELETE FROM 501st_troopers");
