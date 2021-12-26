@@ -255,4 +255,10 @@ function print_r_reverse($input)
     }
 }
 
+// For early PHP version
+function str_contains($haystack, $needle)
+{
+	return $needle !== '' && mb_strpos($haystack, $needle) !== false;
+}
+
 ?>
