@@ -50,7 +50,7 @@ if ($result = mysqli_query($conn, $query))
 		echo $db->troopid . ' - not exist<br />';
 		
 		// Update event sign up to dual costume
-		$conn->query("INSERT INTO event_sign_up (trooperid, troopid, status, costume, attended_costume) VALUES ('".$goodRebel."', '".$db->troopid."', 3, 720, 720)") or die(error_log($conn->error));
+		$conn->query("INSERT INTO event_sign_up (trooperid, troopid, status, costume) VALUES ('".$goodRebel."', '".$db->troopid."', 3, 720, 720)") or die(error_log($conn->error));
 		
 		// Delete old event sign up
 		$conn->query("DELETE FROM event_sign_up WHERE id = '".$db->id."'");

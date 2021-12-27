@@ -61,10 +61,10 @@ if ($result = mysqli_query($conn, $query))
 				echo $db2->troopid . '<br />';
 				
 				// Update event sign up to dual costume
-				$conn->query("UPDATE event_sign_up SET costume = '721', attended_costume = '721' WHERE trooperid = '".$ID501[0]."' AND troopid = '".$db->troopid."'");
+				$conn->query("UPDATE event_sign_up SET costume = '721' WHERE trooperid = '".$ID501[0]."' AND troopid = '".$db->troopid."'") or die($conn->error);
 				
 				// Delete old event sign up
-				$conn->query("DELETE FROM event_sign_up WHERE id = '".$db->id."'");
+				$conn->query("DELETE FROM event_sign_up WHERE id = '".$db->id."'") or die($conn->error);
 				
 				// Increment - data exists
 				$i++;
@@ -78,18 +78,18 @@ if ($result = mysqli_query($conn, $query))
 			echo $db->troopid . ' - not exist<br />';
 			
 			// Update event sign up to dual costume
-			$conn->query("INSERT INTO event_sign_up (trooperid, troopid, status, costume, attended_costume) VALUES ('".$ID501[0]."', '".$db->troopid."', 3, 720, 720)") or die(error_log($conn->error));
+			$conn->query("INSERT INTO event_sign_up (trooperid, troopid, status, costume) VALUES ('".$ID501[0]."', '".$db->troopid."', 3, 720)") or die($conn->error);
 			
 			// Delete old event sign up
-			$conn->query("DELETE FROM event_sign_up WHERE id = '".$db->id."'");
+			$conn->query("DELETE FROM event_sign_up WHERE id = '".$db->id."'") or die($conn->error);
 		}
 	}
 }
 
 // Delete old account - Rebel
-$conn->query("DELETE FROM troopers WHERE id = '".$IDRebel[0]."'");
+$conn->query("DELETE FROM troopers WHERE id = '".$IDRebel[0]."'") or die($conn->error);
 
 // Update new account
-$conn->query("UPDATE troopers SET rebelforum = '".$trooperRebel."' WHERE id = '".$ID501[0]."'");
+$conn->query("UPDATE troopers SET rebelforum = '".$trooperRebel."' WHERE id = '".$ID501[0]."'") or die($conn->error);
 
 ?>
