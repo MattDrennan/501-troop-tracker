@@ -27,10 +27,6 @@ $goodRebel = 0;
 // Enter Bad Rebel ID
 $badRebel = 0;
 
-// Get Rebel ID
-$IDRebel_get = $conn->query("SELECT id FROM troopers WHERE id = '".$goodRebel."'") or die($conn->error);
-$IDRebel = $IDRebel_get->fetch_row();
-
 // Don't run twice check
 $trooperCount = $conn->query("SELECT id FROM troopers WHERE id = '".$badRebel."'") or die($conn->error);
 
@@ -50,7 +46,7 @@ if ($result = mysqli_query($conn, $query))
 		echo $db->troopid . ' - not exist<br />';
 		
 		// Update event sign up to dual costume
-		$conn->query("INSERT INTO event_sign_up (trooperid, troopid, status, costume) VALUES ('".$goodRebel."', '".$db->troopid."', 3, 720, 720)") or die(error_log($conn->error));
+		$conn->query("INSERT INTO event_sign_up (trooperid, troopid, status, costume) VALUES ('".$goodRebel."', '".$db->troopid."', 3, 720)") or die(error_log($conn->error));
 		
 		// Delete old event sign up
 		$conn->query("DELETE FROM event_sign_up WHERE id = '".$db->id."'");
