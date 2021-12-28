@@ -4986,6 +4986,11 @@ else
 					// Query
 					$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, events.limitRebels, events.limitMando, events.limitDroid, events.limitOther FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() - INTERVAL 1 DAY AND event_sign_up.status < 3 AND (events.closed = 0 OR events.closed = 3)";
 				}
+				else if(isset($_GET['squad']) && $_GET['squad'] == "canceledtroops")
+				{
+					// Query
+					$query = "SELECT * FROM events WHERE dateStart >= CURDATE() AND (closed = '2') ORDER BY dateStart";
+				}
 				else if(isset($_GET['squad']))
 				{
 					// Query
@@ -4999,6 +5004,41 @@ else
 
 				// Number of events loaded
 				$i = 0;
+				
+				// Number of canceled events loaded
+				$j = 0;
+				
+				// Get canceled events
+				$query2 = "SELECT * FROM events WHERE DATE_FORMAT(dateStart, '%Y-%m-%d') = CURDATE() AND (closed = '2') ORDER BY dateStart";
+				
+				// Load events that are today or in the future
+				if ($result = mysqli_query($conn, $query2))
+				{
+					while ($db = mysqli_fetch_object($result))
+					{
+						// If first result
+						if($j == 0)
+						{
+							// Show message
+							echo '
+							<b>NOTICE!! The following troops have been canceled:</b>
+							<ul>';
+						}
+						
+						echo '
+						<li><a href="index.php?event='.$db->id.'">'.$db->name.'</a></li>';
+						
+						// Increment canceled events
+						$j++;
+					}
+				}
+				
+				// If canceled event results
+				if($j > 0)
+				{
+					echo '
+					</ul>';
+				}
 				
 				echo '
 				<p><a href="#/" id="changeview" class="button">Calendar View</a></p>
@@ -5118,6 +5158,10 @@ else
 			if(loggedIn())
 			{
 				echo '
+				<p style="text-align: center;">
+					<a href="index.php?squad=canceledtroops" class="button">Canceled Troop Noticeboard</a>
+				</p>
+				
 				<h2 class="tm-section-header">Recently Finished</h2>
 				
 				<ul>';

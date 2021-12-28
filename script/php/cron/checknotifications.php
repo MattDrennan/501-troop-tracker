@@ -4,7 +4,7 @@
 include "../../../config.php";
 
 // Loop through all events to send notifications
-$query = "SELECT notification_check.troopid, notification_check.commentid, events.squad, events.name, events.id FROM notification_check LEFT JOIN events ON events.id = notification_check.troopid WHERE notification_check.troopid != 0 AND notification_check.commentid = 0 AND notification_check.trooperid = 0 AND notification_check.trooperstatus = 0";
+$query = "SELECT notification_check.troopid, notification_check.commentid, events.squad, events.name, events.id FROM notification_check LEFT JOIN events ON events.id = notification_check.troopid WHERE notification_check.troopid != 0 AND notification_check.commentid = 0 AND notification_check.trooperid = 0 AND notification_check.trooperstatus = 0 AND notification_check.troopstatus = 0";
 if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))
@@ -34,7 +34,7 @@ if ($result = mysqli_query($conn, $query))
 }
 
 // Loop through all comments to send notifications
-$query = "SELECT notification_check.troopid, notification_check.commentid, events.squad, events.name, events.id FROM notification_check LEFT JOIN events ON events.id = notification_check.troopid WHERE notification_check.troopid != 0 AND notification_check.commentid != 0 AND notification_check.trooperid = 0 AND notification_check.trooperstatus = 0";
+$query = "SELECT notification_check.troopid, notification_check.commentid, events.squad, events.name, events.id FROM notification_check LEFT JOIN events ON events.id = notification_check.troopid WHERE notification_check.troopid != 0 AND notification_check.commentid != 0 AND notification_check.trooperid = 0 AND notification_check.trooperstatus = 0 AND notification_check.troopstatus = 0";
 if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))
@@ -68,7 +68,7 @@ if ($result = mysqli_query($conn, $query))
 }
 
 // Loop through all trooper updates
-$query = "SELECT notification_check.troopid, notification_check.commentid, notification_check.trooperid, notification_check.trooperstatus, events.squad, events.name, events.id FROM notification_check LEFT JOIN events ON events.id = notification_check.troopid WHERE notification_check.troopid != 0 AND notification_check.commentid = 0 AND notification_check.trooperid != 0 AND notification_check.trooperstatus != 0";
+$query = "SELECT notification_check.troopid, notification_check.commentid, notification_check.trooperid, notification_check.trooperstatus, events.squad, events.name, events.id FROM notification_check LEFT JOIN events ON events.id = notification_check.troopid WHERE notification_check.troopid != 0 AND notification_check.commentid = 0 AND notification_check.trooperid != 0 AND notification_check.trooperstatus != 0 AND notification_check.troopstatus = 0";
 if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))
@@ -84,6 +84,21 @@ if ($result = mysqli_query($conn, $query))
 		{
 			// Send update
 			sendEventUpdate($db->troopid, $db->trooperid, "Troop Tracker: Trooper Canceled Sign Up On " . $db->name, getName($db->trooperid) . " canceled on " . $db->name . ".");
+		}
+	}
+}
+
+// Loop through all trooper updates
+$query = "SELECT notification_check.troopid, notification_check.commentid, notification_check.trooperid, notification_check.trooperstatus, notification_check.troopstatus, events.squad, events.name, events.id FROM notification_check LEFT JOIN events ON events.id = notification_check.troopid WHERE notification_check.troopid != 0 AND notification_check.commentid = 0 AND notification_check.trooperid != 0 AND notification_check.trooperstatus = 0 AND notification_check.troopstatus != 0";
+if ($result = mysqli_query($conn, $query))
+{
+	while ($db = mysqli_fetch_object($result))
+	{
+		// Check status
+		if($db->troopstatus == 2)
+		{
+			// Send update
+			sendEventUpdate($db->troopid, $db->trooperid, "Troop Tracker: " . getEventTitle($db->troopid) . " has been canceled.", getEventTitle($db->troopid) . " has been canceled by command staff. Please refer to the troop for more details.");
 		}
 	}
 }
