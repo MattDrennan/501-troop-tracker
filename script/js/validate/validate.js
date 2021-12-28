@@ -59,7 +59,7 @@ $(function()
             label:
             {
                 required: true,
-                range: [0, 9]
+                range: [0, 10]
             },
             limitedEvent:
             {
@@ -158,6 +158,7 @@ $(function()
                             $("#limitDroid").val("500");
 							$("#limitOther").val("500");
                             $("#referred").val("");
+                            $("#options").show();
 
                             // Remove all shift boxes
                             $("div[name*='pair']").each(function()
@@ -303,7 +304,7 @@ $(function()
             label:
             {
                 required: true,
-                range: [0, 9]
+                range: [0, 10]
             },
             limitedEvent:
             {
@@ -374,6 +375,7 @@ $(function()
 
                         // Hide interface
                         $("#submitEdit").val("Edit");
+                        $("#options").show();
                         $("#editEventInfo").hide();
 
                         // Fix text when changing the title

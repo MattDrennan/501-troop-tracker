@@ -269,6 +269,33 @@ $(document).ready(function()
 		$.LoadingOverlay("hide");
 	});
 
+	// Create / Edit Event - Label changed
+	$("body").on("change", "#label", function(e)
+	{
+		// If armor party selected
+		if($(this).val() == 10)
+		{
+			// Set settings
+			$("#secure").val(1);
+			$("#blasters").val(1);
+			$("#lightsabers").val(1);
+			$("#parking").val(1);
+			$("#mobility").val(1);
+			$("#requestedCharacter").val("");
+			$("#requestedNumber").val(0);
+			$("#numberOfAttend").val(0);
+			$("#website").val("");
+
+			// Hide
+			$("#options").hide();
+		}
+		else
+		{
+			// Show
+			$("#options").show();		
+		}
+	})
+
 	// Image Upload - Change Upload Type
 	$("body").on("click", "a[name=jsonshow]", function(e)
 	{
@@ -986,6 +1013,13 @@ $(document).ready(function()
 					$("#limitDroid").val(json.limitDroid);
 					$("#limitOther").val(json.limitOther);
 					$("#referred").val(json.referred);
+
+					// Hide options if armor party
+					if(json.label == 10)
+					{
+						// Hide
+						$("#options").hide();
+					}
 					
 					// Prevent an issue with old data, convert blank selects to have a value
 					$('select').each(function()
@@ -1785,6 +1819,9 @@ $(document).ready(function()
 			$("#charityAmount").hide();
 			$("#submitCharity").val("Set Charity Amount");
 		}
+
+		// Show options to prevent not showing when changing
+		$("#options").show();
 	});
 
 	$("body").on("change", "#userID", function(e)

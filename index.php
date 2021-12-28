@@ -1272,6 +1272,9 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		// How many regular troops
 		$regular_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '0'") or die($conn->error);
 		$count2 = $regular_get->fetch_row();
+ 		// How many armor party troops
+		$armorparty_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '10'") or die($conn->error);
+		$count13 = $armorparty_get->fetch_row();
  		// How many PR troops
 		$charity_get = $conn->query("SELECT COUNT(*) FROM events WHERE label = '1'") or die($conn->error);
 		$count3 = $charity_get->fetch_row();
@@ -1364,6 +1367,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 			<p><b>Volunteers at Troops:</b> '.number_format($count1[0]).'</p>
 			<p><b>Money Raised:</b> $'.number_format($countMoney[0]).'</p>
 			<p><b>Regular Troops:</b> '.number_format($count2[0]).'</p>
+			<p><b>Armor Parties:</b> '.number_format($count13[0]).'</p>
 			<p><b>Charity Troops:</b> '.number_format($count3[0]).'</p>
 			<p><b>PR Troops:</b> '.number_format($count4[0]).'</p>
 			<p><b>Disney Troops:</b> '.number_format($count5[0]).'</p>
@@ -2500,47 +2504,49 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<i>Please note: This is to add additional shifts. To edit a shift, go to the shift event page, and edit it there.</i>
 						</p>
 
-						<p>Website:</p>
-						<input type="text" name="website" id="website" />
+						<div id="options">
+							<p>Website:</p>
+							<input type="text" name="website" id="website" />
 
-						<p>Number of Attendees:</p>
-						<input type="number" name="numberOfAttend" id="numberOfAttend" />
+							<p>Number of Attendees:</p>
+							<input type="number" name="numberOfAttend" id="numberOfAttend" />
 
-						<p>Requested Number of Characters:</p>
-						<input type="number" name="requestedNumber" id="requestedNumber" />
+							<p>Requested Number of Characters:</p>
+							<input type="number" name="requestedNumber" id="requestedNumber" />
 
-						<p>Requested Character Types:</p>
-						<input type="text" name="requestedCharacter" id="requestedCharacter" />
+							<p>Requested Character Types:</p>
+							<input type="text" name="requestedCharacter" id="requestedCharacter" />
 
-						<p>Secure Changing?</p>
-						<select name="secure" id="secure">
-							<option value="1">Yes</option>
-							<option value="0">No</option>
-						</select>
+							<p>Secure Changing?</p>
+							<select name="secure" id="secure">
+								<option value="1">Yes</option>
+								<option value="0">No</option>
+							</select>
 
-						<p>Blasters Allowed?</p>
-						<select name="blasters" id="blasters">
-							<option value="1">Yes</option>
-							<option value="0">No</option>
-						</select>
+							<p>Blasters Allowed?</p>
+							<select name="blasters" id="blasters">
+								<option value="1">Yes</option>
+								<option value="0">No</option>
+							</select>
 
-						<p>Lightsabers Allowed?</p>
-						<select name="lightsabers" id="lightsabers">
-							<option value="1">Yes</option>
-							<option value="0">No</option>
-						</select>
+							<p>Lightsabers Allowed?</p>
+							<select name="lightsabers" id="lightsabers">
+								<option value="1">Yes</option>
+								<option value="0">No</option>
+							</select>
 
-						<p>Parking?</p>
-						<select name="parking" id="parking">
-							<option value="1">Yes</option>
-							<option value="0">No</option>
-						</select>
+							<p>Parking?</p>
+							<select name="parking" id="parking">
+								<option value="1">Yes</option>
+								<option value="0">No</option>
+							</select>
 
-						<p>People with limited mobility access?</p>
-						<select name="mobility" id="mobility">
-							<option value="1">Yes</option>
-							<option value="0">No</option>
-						</select>
+							<p>People with limited mobility access?</p>
+							<select name="mobility" id="mobility">
+								<option value="1">Yes</option>
+								<option value="0">No</option>
+							</select>
+						</div>
 
 						<p>Amenities?</p>
 						<input type="text" name="amenities" id="amenities" />
@@ -2558,6 +2564,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<p>Label:</p>
 						<select name="label" id="label">
 							<option value="0">Regular</option>
+							<option value="10">Armor Party</option>
 							<option value="1">Charity</option>
 							<option value="2">PR</option>
 							<option value="3">Disney</option>
@@ -2957,6 +2964,15 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<p><i>Copy and paste event requests in the textbox above. Please ensure all information is accurate.</i></p>
 			</div>';
 
+			// Set up show options
+			$style = '';
+
+			// If armor party
+			if($label == 10)
+			{
+				$style = 'style="display: none;"';
+			}
+
 			// Display create event form
 			echo '
 			<h3>Create an Event</h3>
@@ -2993,52 +3009,54 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<i>Please note: The first date and time is considered a shift. If you add another shift with the same date and time, it will be a duplicate.</i>
 				</p>
 
-				<p>Website:</p>
-				<input type="text" name="website" id="website" value="'.copyEvent($eid, $website).'" />
+				<div id="options" '.$style.'>
+					<p>Website:</p>
+					<input type="text" name="website" id="website" value="'.copyEvent($eid, $website).'" />
 
-				<p>Number of Attendees:</p>
-				<input type="number" name="numberOfAttend" id="numberOfAttend" value="'.copyEvent($eid, $numberOfAttend).'" />
+					<p>Number of Attendees:</p>
+					<input type="number" name="numberOfAttend" id="numberOfAttend" value="'.copyEvent($eid, $numberOfAttend).'" />
 
-				<p>Requested Number of Characters:</p>
-				<input type="number" name="requestedNumber" id="requestedNumber" value="'.copyEvent($eid, $requestNumber).'" />
+					<p>Requested Number of Characters:</p>
+					<input type="number" name="requestedNumber" id="requestedNumber" value="'.copyEvent($eid, $requestNumber).'" />
 
-				<p>Requested Character Types:</p>
-				<input type="text" name="requestedCharacter" id="requestedCharacter" value="'.copyEvent($eid, $requestedCharacter).'" />
+					<p>Requested Character Types:</p>
+					<input type="text" name="requestedCharacter" id="requestedCharacter" value="'.copyEvent($eid, $requestedCharacter).'" />
 
-				<p>Secure Changing?</p>
-				<select name="secure" id="secure">
-					<option value="null" '.copyEventSelect($eid, $secureChanging, "null").'>Please choose an option...</option>
-					<option value="1" '.copyEventSelect($eid, $secureChanging, 1).'>Yes</option>
-					<option value="0" '.copyEventSelect($eid, $secureChanging, 0).'>No</option>
-				</select>
+					<p>Secure Changing?</p>
+					<select name="secure" id="secure">
+						<option value="null" '.copyEventSelect($eid, $secureChanging, "null").'>Please choose an option...</option>
+						<option value="1" '.copyEventSelect($eid, $secureChanging, 1).'>Yes</option>
+						<option value="0" '.copyEventSelect($eid, $secureChanging, 0).'>No</option>
+					</select>
 
-				<p>Blasters Allowed?</p>
-				<select name="blasters" id="blasters">
-					<option value="null" '.copyEventSelect($eid, $blasters, "null").'>Please choose an option...</option>
-					<option value="1" '.copyEventSelect($eid, $blasters, 1).'>Yes</option>
-					<option value="0" '.copyEventSelect($eid, $blasters, 0).'>No</option>
-				</select>
-				
-				<p>Lightsabers Allowed?</p>
-				<select name="lightsabers" id="lightsabers">
-					<option value="null" '.copyEventSelect($eid, $lightsabers, "null").'>Please choose an option...</option>
-					<option value="1" '.copyEventSelect($eid, $lightsabers, 1).'>Yes</option>
-					<option value="0" '.copyEventSelect($eid, $lightsabers, 0).'>No</option>
-				</select>
+					<p>Blasters Allowed?</p>
+					<select name="blasters" id="blasters">
+						<option value="null" '.copyEventSelect($eid, $blasters, "null").'>Please choose an option...</option>
+						<option value="1" '.copyEventSelect($eid, $blasters, 1).'>Yes</option>
+						<option value="0" '.copyEventSelect($eid, $blasters, 0).'>No</option>
+					</select>
+					
+					<p>Lightsabers Allowed?</p>
+					<select name="lightsabers" id="lightsabers">
+						<option value="null" '.copyEventSelect($eid, $lightsabers, "null").'>Please choose an option...</option>
+						<option value="1" '.copyEventSelect($eid, $lightsabers, 1).'>Yes</option>
+						<option value="0" '.copyEventSelect($eid, $lightsabers, 0).'>No</option>
+					</select>
 
-				<p>Parking?</p>
-				<select name="parking" id="parking">
-					<option value="null" '.copyEventSelect($eid, $parking, "null").'>Please choose an option...</option>
-					<option value="1" '.copyEventSelect($eid, $parking, 1).'>Yes</option>
-					<option value="0" '.copyEventSelect($eid, $parking, 0).'>No</option>
-				</select>
+					<p>Parking?</p>
+					<select name="parking" id="parking">
+						<option value="null" '.copyEventSelect($eid, $parking, "null").'>Please choose an option...</option>
+						<option value="1" '.copyEventSelect($eid, $parking, 1).'>Yes</option>
+						<option value="0" '.copyEventSelect($eid, $parking, 0).'>No</option>
+					</select>
 
-				<p>People with limited mobility access?</p>
-				<select name="mobility" id="mobility">
-					<option value="null" '.copyEventSelect($eid, $mobility, "null").'>Please choose an option...</option>
-					<option value="1" '.copyEventSelect($eid, $mobility, 1).'>Yes</option>
-					<option value="0" '.copyEventSelect($eid, $mobility, 0).'>No</option>
-				</select>
+					<p>People with limited mobility access?</p>
+					<select name="mobility" id="mobility">
+						<option value="null" '.copyEventSelect($eid, $mobility, "null").'>Please choose an option...</option>
+						<option value="1" '.copyEventSelect($eid, $mobility, 1).'>Yes</option>
+						<option value="0" '.copyEventSelect($eid, $mobility, 0).'>No</option>
+					</select>
+				</div>
 
 				<p>Amenities?</p>
 				<input type="text" name="amenities" id="amenities" value="'.copyEvent($eid, $amenities).'" />
@@ -3057,6 +3075,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<select name="label" id="label">
 					<option value="null" '.copyEventSelect($eid, $label, "null").'>Please choose an option...</option>
 					<option value="0" '.copyEventSelect($eid, $label, 0).'>Regular</option>
+					<option value="10" '.copyEventSelect($eid, $label, 10).'>Armor Party</option>
 					<option value="1" '.copyEventSelect($eid, $label, 1).'>Charity</option>
 					<option value="2" '.copyEventSelect($eid, $label, 2).'>PR</option>
 					<option value="3" '.copyEventSelect($eid, $label, 3).'>Disney</option>
@@ -3728,21 +3747,32 @@ if(isset($_GET['event']))
 						echo '
 						<p><b>Event Raised:</b> $'.number_format($db->moneyRaised).'</p>';
 					}
+
+					// Set up show options
+					$style = '';
+
+					// If armor party
+					if($db->label == 10)
+					{
+						$style = 'style="display: none;"';
+					}
 					
 					echo '
 					<p><b>Venue:</b> '.$db->venue.'</p>
 					<p><b>Address:</b> <a href="https://www.google.com/maps/search/?api=1&query='.$db->location.'" target="_blank">'.$db->location.'</a></p>
 					<p><b>Event Start:</b> '.$date1.' ('.date('l', strtotime($db->dateStart)).')</p>
 					<p><b>Event End:</b> '.$date2.' ('.date('l', strtotime($db->dateEnd)).')</p>
-					<p><b>Website:</b> '.validate_url($db->website).'</p>
-					<p><b>Expected number of attendees:</b> '.number_format($db->numberOfAttend).'</p>
-					<p><b>Requested number of characters:</b> '.number_format($db->requestedNumber).'</p>
-					<p><b>Requested character types:</b> '.$db->requestedCharacter.'</p>
-					<p><b>Secure changing/staging area:</b> '.yesNo($db->secureChanging).'</p>
-					<p><b>Can troopers bring blasters:</b> '.yesNo($db->blasters).'</p>
-					<p><b>Can troopers bring/carry prop like lightsabers:</b> '.yesNo($db->lightsabers).'</p>
-					<p><b>Is parking available:</b> '.yesNo($db->parking).'</p>
-					<p><b>Is venue accessible to those with limited mobility:</b> '.yesNo($db->mobility).'</p>
+					<div id="options" '.$style.'>
+						<p><b>Website:</b> '.validate_url($db->website).'</p>
+						<p><b>Expected number of attendees:</b> '.number_format($db->numberOfAttend).'</p>
+						<p><b>Requested number of characters:</b> '.number_format($db->requestedNumber).'</p>
+						<p><b>Requested character types:</b> '.$db->requestedCharacter.'</p>
+						<p><b>Secure changing/staging area:</b> '.yesNo($db->secureChanging).'</p>
+						<p><b>Can troopers bring blasters:</b> '.yesNo($db->blasters).'</p>
+						<p><b>Can troopers bring/carry prop like lightsabers:</b> '.yesNo($db->lightsabers).'</p>
+						<p><b>Is parking available:</b> '.yesNo($db->parking).'</p>
+						<p><b>Is venue accessible to those with limited mobility:</b> '.yesNo($db->mobility).'</p>
+					</div>
 					<p><b>Amenities available at venue:</b> '.ifEmpty($db->amenities, "No amenities for this event.").'</p>
 					<p><b>Comments:</b><br />'.ifEmpty(nl2br(showBBcodes($db->comments)), "No comments for this event.").'</p>
 					<p><b>Referred by:</b> '.ifEmpty($db->referred, "Not available").'</p>';
