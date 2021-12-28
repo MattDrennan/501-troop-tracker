@@ -3670,7 +3670,7 @@ if(isset($_GET['event']))
 				<p style="text-align: center;">
 					<a href="#/" class="button" id="subscribeupdates" event="'.cleanInput($_GET['event']).'">'.$subscribeText.'</a>
 					<br />
-					<i>Get updates on trooper sign ups and cancellations.</i>
+					<i>Get updates on sign ups and cancellations.</i>
 				</p>';
 
 				// If this event is over, don't show it
