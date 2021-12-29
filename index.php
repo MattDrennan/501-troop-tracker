@@ -5331,8 +5331,11 @@ else
 						{
 							// Show message
 							echo '
-							<b>NOTICE!! The following troops have been canceled:</b>
-							<ul>';
+							<p>
+								<b>NOTICE!! The following troops have been canceled:</b>
+							</p>
+							
+							<ul style="display:inline-table;">';
 						}
 						
 						echo '
@@ -5387,26 +5390,30 @@ else
 						echo '
 						' . $db->name . '</a>';
 
-						// If not enough troopers
-						if($getNumOfTroopers->num_rows <= 1)
+						// Prevent on canceled events
+						if($db->closed != 2)
 						{
-							echo '
-							<br />
-							<span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
-						}
-						// If full
-						else if($getNumOfTroopers->num_rows >= ($db->limit501st + $db->limitRebels + $db->limitMando + $db->limitDroid + $db->limitOther))
-						{
-							echo '
-							<br />
-							<span style="color:green;"><b>THIS TROOP IS FULL!</b></span>';
-						}
-						// Everything else
-						else
-						{
-							echo '
-							<br />
-							<span>'.$getNumOfTroopers->num_rows.' Troopers Attending</span>';
+							// If not enough troopers
+							if($getNumOfTroopers->num_rows <= 1)
+							{
+								echo '
+								<br />
+								<span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
+							}
+							// If full
+							else if($getNumOfTroopers->num_rows >= ($db->limit501st + $db->limitRebels + $db->limitMando + $db->limitDroid + $db->limitOther))
+							{
+								echo '
+								<br />
+								<span style="color:green;"><b>THIS TROOP IS FULL!</b></span>';
+							}
+							// Everything else
+							else
+							{
+								echo '
+								<br />
+								<span>'.$getNumOfTroopers->num_rows.' Troopers Attending</span>';
+							}
 						}
 
 						// Increment number of events
