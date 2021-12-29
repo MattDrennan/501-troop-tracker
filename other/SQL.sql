@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Dec 28, 2021 at 11:14 AM
+-- Generation Time: Dec 29, 2021 at 01:31 AM
 -- Server version: 5.7.31
 -- PHP Version: 8.0.11
 
@@ -354,6 +354,11 @@ CREATE TABLE IF NOT EXISTS `troopers` (
   `phone` varchar(10) DEFAULT NULL,
   `squad` int(11) NOT NULL,
   `permissions` int(11) NOT NULL DEFAULT '0',
+  `p501` int(11) NOT NULL DEFAULT '0',
+  `pRebel` int(11) NOT NULL DEFAULT '0',
+  `pDroid` int(11) NOT NULL DEFAULT '0',
+  `pMando` int(11) NOT NULL DEFAULT '0',
+  `pOther` int(11) NOT NULL DEFAULT '0',
   `tkid` varchar(20) NOT NULL,
   `forum_id` varchar(255) NOT NULL,
   `rebelforum` varchar(255) NOT NULL,
