@@ -7,7 +7,7 @@ You are free to download, modify, and use freely for non-commerical purposes.
 ## How to setup
 
 <ol>
-<li>Upload all the files to your web server, execute "SQL.sql" on your database, and create a "cred.php" file in the root directory. Cred.php should look like this:</li>
+<li>Upload all the files to your web server, execute "other/SQL.sql" on your database, and create a "cred.php" file in the root directory. Cred.php should look like this:</li>
  
 ```
 <?php
