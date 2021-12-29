@@ -1269,8 +1269,40 @@ if(isset($_GET['do']) && $_GET['do'] == "createuser" && loggedIn())
 			
 			if(!$failed)
 			{
+				// Set up permission vars
+				$p501 = 0;
+				$pRebel = 0;
+				$pDroid = 0;
+				$pMando = 0;
+				$pOther = 0;
+				
+				// Set permissions
+				// 501
+				if(cleanInput($_POST['squad']) <= count($squadArray))
+				{
+					$p501 = 1;
+				}
+				
+				// Rebel
+				if(cleanInput($_POST['rebelforum']) != "")
+				{
+					$pRebel = 1;
+				}
+				
+				// Mando
+				if(cleanInput($_POST['mandoid']) > 0)
+				{
+					$pMando = 1;
+				}
+				
+				// Other
+				if(cleanInput($_POST['sgid']) > 0)
+				{
+					$pOther = 1;
+				}
+				
 				// Insert into database
-				$conn->query("INSERT INTO troopers (name, email, forum_id, rebelforum, mandoid, sgid, phone, squad, permissions, tkid, password, approved) VALUES ('".cleanInput($_POST['name'])."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['rebelforum'])."', '".cleanInput($_POST['mandoid'])."', '".cleanInput($_POST['sgid'])."', '".cleanInput($_POST['phone'])."', '".cleanInput($_POST['squad'])."', '".cleanInput($_POST['permissions'])."', '".cleanInput($_POST['tkid'])."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', 1)") or die($conn->error);
+				$conn->query("INSERT INTO troopers (name, email, forum_id, rebelforum, mandoid, sgid, phone, squad, permissions, p501, pRebel, pDroid, pMando, pOther, tkid, password, approved) VALUES ('".cleanInput($_POST['name'])."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['rebelforum'])."', '".cleanInput($_POST['mandoid'])."', '".cleanInput($_POST['sgid'])."', '".cleanInput($_POST['phone'])."', '".cleanInput($_POST['squad'])."', '".cleanInput($_POST['permissions'])."', '".$p501."', '".$pRebel."', '".$pDroid."', '".$pMando."', '".$pOther."', '".cleanInput($_POST['tkid'])."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', 1)") or die($conn->error);
 
 				// Get last ID
 				$last_id = $conn->insert_id;

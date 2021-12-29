@@ -5474,11 +5474,16 @@ else
 
 			if(loggedIn())
 			{
-				echo '
-				<p style="text-align: center;">
-					<a href="index.php?squad=canceledtroops" class="button">Canceled Troop Noticeboard</a>
-				</p>
+				// Hide canceled troops button if we are on the page
+				if(!isset($_GET['squad']) && $_GET['squad'] != "canceledtroops")
+				{
+					echo '
+					<p style="text-align: center;">
+						<a href="index.php?squad=canceledtroops" class="button">Canceled Troop Noticeboard</a>
+					</p>';
+				}
 				
+				echo '
 				<h2 class="tm-section-header">Recently Finished</h2>
 				
 				<ul>';
