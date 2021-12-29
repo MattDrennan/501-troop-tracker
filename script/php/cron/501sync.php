@@ -52,18 +52,18 @@ foreach($rows as $row)
 		// Query
 		if($row[1] == "Retired")
 		{
-			$conn->query("UPDATE troopers SET p501 = 3 WHERE tkid = '".cleanInput($row[6])."' AND squad <= ".count($squadArray)."") or die($conn->error);
-			echo cleanInput($row[6]) . ' - Retired<br /><br />';
+			$conn->query("UPDATE troopers SET p501 = 3 WHERE tkid = '".get_numerics(cleanInput($row[6]))."' AND squad <= ".count($squadArray)."") or die($conn->error);
+			echo get_numerics(cleanInput($row[6])) . ' - Retired<br /><br />';
 		}
 		else if($row[1] == "Reserve")
 		{
-			$conn->query("UPDATE troopers SET p501 = 2 WHERE tkid = '".cleanInput($row[6])."' AND squad <= ".count($squadArray)."") or die($conn->error);
-			echo cleanInput($row[6]) . ' - Reserve<br /><br />';
+			$conn->query("UPDATE troopers SET p501 = 2 WHERE tkid = '".get_numerics(cleanInput($row[6]))."' AND squad <= ".count($squadArray)."") or die($conn->error);
+			echo get_numerics(cleanInput($row[6])) . ' - Reserve<br /><br />';
 		}
 		else if($row[1] == "Active")
 		{
-			$conn->query("UPDATE troopers SET p501 = 1 WHERE tkid = '".cleanInput($row[6])."' AND squad <= ".count($squadArray)."") or die($conn->error);
-			echo cleanInput($row[6]) . ' - Active<br /><br />';
+			$conn->query("UPDATE troopers SET p501 = 1 WHERE tkid = '".get_numerics(cleanInput($row[6]))."' AND squad <= ".count($squadArray)."") or die($conn->error);
+			echo get_numerics(cleanInput($row[6])) . ' - Active<br /><br />';
 		}
 	}
 	
@@ -173,6 +173,13 @@ function convertSquadId($value)
 	}
 
 	return $returnValue;
+}
+
+// get_numerics: Gets the numbers
+function get_numerics($str)
+{
+    preg_match_all('/\d+/', $str, $matches);
+    return $matches[0][0];
 }
 
 ?>
