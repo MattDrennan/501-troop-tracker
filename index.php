@@ -1713,7 +1713,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					echo '
 					<tr name="row_'.$db->id.'">
 						<td>
-							<a href="index.php?profile='.$db->id.'">'.$db->name.'</a>
+							<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.'</a>
 						</td>
 						
 						<td>
@@ -1917,7 +1917,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						
 						echo '
 						<td>
-							<a href="index.php?profile='.$db->id.'">'.$db->name.'</a>
+							<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.'</a>
 						</td>
 						
 						<td>
@@ -3596,7 +3596,7 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 						else
 						{
 							echo '
-							Your account is retired. Please contact the GML for further instructions on how to get re-approved.';
+							Your account is retired. Please contact your squad / club leader for further instructions on how to get re-approved.';
 						}
 					}
 					else
@@ -5475,59 +5475,59 @@ else
 			if(loggedIn())
 			{
 				// Hide canceled troops button if we are on the page
-				if(!isset($_GET['squad']) && $_GET['squad'] != "canceledtroops")
+				if((isset($_GET['squad']) && $_GET['squad'] != "canceledtroops") || !isset($_GET['squad']))
 				{
 					echo '
 					<p style="text-align: center;">
 						<a href="index.php?squad=canceledtroops" class="button">Canceled Troop Noticeboard</a>
 					</p>';
-				}
-				
-				echo '
-				<h2 class="tm-section-header">Recently Finished</h2>
-				
-				<ul>';
-				
-				// If on my troops
-				if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
-				{
-					// Query
-					$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, events.limitRebels, events.limitMando, events.limitDroid, events.limitOther FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.closed = 1 ORDER BY dateEnd DESC LIMIT 20";
-				}
-				// If on squad
-				else if(isset($_GET['squad']))
-				{
-					// Get recently closed troops by squad
-					$query = "SELECT * FROM events WHERE closed = '1' AND squad = '".cleanInput($_GET['squad'])."' ORDER BY dateEnd DESC LIMIT 20";
-				}
-				// If on default
-				else
-				{
-					// Get recently closed troops
-					$query = "SELECT * FROM events WHERE closed = '1' ORDER BY dateEnd DESC LIMIT 20";
-				}
-				
-				// Load events that are today or in the future
-				if ($result = mysqli_query($conn, $query))
-				{
-					while ($db = mysqli_fetch_object($result))
+
+					echo '
+					<h2 class="tm-section-header">Recently Finished</h2>
+					
+					<ul>';
+					
+					// If on my troops
+					if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
 					{
-						// Set up string to add to title if a linked event
-						$add = "";
-						
-						// If this a linked event?
-						if(isLink($db->id) > 0)
-						{
-							$add .= "[<b>" . date("l", strtotime($db->dateStart)) . "</b> : <i>" . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "</i>] ";
-						}
-						
-						echo '
-						<li><a href="index.php?event='.$db->id.'">'.$add.''.$db->name.'</a></li>';
+						// Query
+						$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, events.limitRebels, events.limitMando, events.limitDroid, events.limitOther FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.closed = 1 ORDER BY dateEnd DESC LIMIT 20";
 					}
+					// If on squad
+					else if(isset($_GET['squad']))
+					{
+						// Get recently closed troops by squad
+						$query = "SELECT * FROM events WHERE closed = '1' AND squad = '".cleanInput($_GET['squad'])."' ORDER BY dateEnd DESC LIMIT 20";
+					}
+					// If on default
+					else
+					{
+						// Get recently closed troops
+						$query = "SELECT * FROM events WHERE closed = '1' ORDER BY dateEnd DESC LIMIT 20";
+					}
+					
+					// Load events that are today or in the future
+					if ($result = mysqli_query($conn, $query))
+					{
+						while ($db = mysqli_fetch_object($result))
+						{
+							// Set up string to add to title if a linked event
+							$add = "";
+							
+							// If this a linked event?
+							if(isLink($db->id) > 0)
+							{
+								$add .= "[<b>" . date("l", strtotime($db->dateStart)) . "</b> : <i>" . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "</i>] ";
+							}
+							
+							echo '
+							<li><a href="index.php?event='.$db->id.'">'.$add.''.$db->name.'</a></li>';
+						}
+					}
+					
+					echo '
+					</ul>';
 				}
-				
-				echo '
-				</ul>';
 				
 				// Load events that need confirmation
 				$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1";
