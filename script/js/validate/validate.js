@@ -200,6 +200,31 @@ $(function()
                 required: true,
                 range: [0, 2]
             },
+            p501:
+            {
+                required: true,
+                range: [0, 4]
+            },
+            pRebel:
+            {
+                required: true,
+                range: [0, 4]
+            },
+            pDroid:
+            {
+                required: true,
+                range: [0, 4]
+            },
+            pMando:
+            {
+                required: true,
+                range: [0, 4]
+            },
+            pOther:
+            {
+                required: true,
+                range: [0, 4]
+            },
             tkid:
             {
                 required: true,
@@ -814,6 +839,36 @@ $(function()
             {
                 required: true,
                 range: [0, 1]
+            },
+            permissions:
+            {
+                required: true,
+                range: [0, 2]
+            },
+            p501:
+            {
+                required: true,
+                range: [0, 4]
+            },
+            pRebel:
+            {
+                required: true,
+                range: [0, 4]
+            },
+            pDroid:
+            {
+                required: true,
+                range: [0, 4]
+            },
+            pMando:
+            {
+                required: true,
+                range: [0, 4]
+            },
+            pOther:
+            {
+                required: true,
+                range: [0, 4]
             },
             tkid:
             {

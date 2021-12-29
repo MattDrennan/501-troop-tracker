@@ -268,6 +268,26 @@ $(document).ready(function()
 	{
 		$.LoadingOverlay("hide");
 	});
+	
+	// Roster - Update member status
+	$("body").on("change", "[name=changepermission]", function(e)
+	{
+		// Get vars
+		var trooperid = $(this).attr("trooperid");
+		var permission = $(this).val();
+		var club = $("#club").val();
+		
+		$.ajax({
+			type: "POST",
+			url: "process.php?do=changepermission",
+			data: "trooperid=" + trooperid + "&permission=" + permission + "&club=" + club,
+			success: function(data)
+			{
+				console.log(data);
+				alert("Updated!");
+			}
+		});
+	})
 
 	// Create / Edit Event - Label changed
 	$("body").on("change", "#label", function(e)
@@ -933,6 +953,11 @@ $(document).ready(function()
 					$("#phone").val(json.phone);
 					$("#squad").val(json.squad);
 					$("#permissions").val(json.permissions);
+					$("#p501").val(json.p501);
+					$("#pRebel").val(json.pRebel);
+					$("#pDroid").val(json.pDroid);
+					$("#pMando").val(json.pMando);
+					$("#pOther").val(json.pOther);
 					$("#tkid").val(json.tkid);
 					$("#forumid").val(json.forumid);
 					$("#rebelforum").val(json.rebelforum);

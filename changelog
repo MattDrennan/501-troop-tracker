@@ -6,6 +6,9 @@ _12/28/2021_
 -Canceled troop alert
 -E-mail notification for canceled events
 -Armor party option added
+-Added permissions for each club
+-Improved Roster / Trooper Check (Command Staff can now change the account type per club)
+-The Troop Tracker will now lock out retired members
 
 _12/24/2021_
 

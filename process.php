@@ -1,8 +1,9 @@
 <?php
 include 'config.php';
 
-// Change password
-if($_GET['do'] == "changepassword")
+/******************** CHANGE PASSWORD *******************************/
+
+if(isset($_GET['do']) && $_GET['do'] == "changepassword")
 {
 	// Display submission for change your password, otherwise show the form
 	if(isset($_POST['changePasswordSend']))
@@ -44,6 +45,38 @@ if($_GET['do'] == "changepassword")
 	}
 }
 
+/******************** CHANGE PERMISSION *******************************/
+
+if(isset($_GET['do']) && isset($_POST['trooperid']) && isset($_POST['permission']) && $_GET['do'] == "changepermission" && isAdmin())
+{
+	$queryAdd = "";
+	
+	// Which club to get
+	if($_POST['club'] <= count($squadArray))
+	{
+		$queryAdd = "p501";
+	}
+	else if($_POST['club'] == 6)
+	{
+		$queryAdd = "pRebel";
+	}
+	else if($_POST['club'] == 7)
+	{
+		$queryAdd = "pDroid";
+	}
+	else if($_POST['club'] == 8)
+	{
+		$queryAdd = "pMando";
+	}
+	else if($_POST['club'] == 9)
+	{
+		$queryAdd = "pOther";
+	}
+				
+	// Query the database
+	$conn->query("UPDATE troopers SET ".$queryAdd." = '".cleanInput($_POST['permission'])."' WHERE id = '".cleanInput($_POST['trooperid'])."'");
+}
+
 /******************** TROOPER CHECK *******************************/
 
 // Set reserve
@@ -57,9 +90,33 @@ if(isset($_GET['do']) && $_GET['do'] == "troopercheckreserve" && loggedIn() && i
 	}
 	else
 	{
+		$queryAdd = "";
+		
+		// Which club to get
+		if($_POST['club'] <= count($squadArray))
+		{
+			$queryAdd = "p501";
+		}
+		else if($_POST['club'] == 6)
+		{
+			$queryAdd = "pRebel";
+		}
+		else if($_POST['club'] == 7)
+		{
+			$queryAdd = "pDroid";
+		}
+		else if($_POST['club'] == 8)
+		{
+			$queryAdd = "pMando";
+		}
+		else if($_POST['club'] == 9)
+		{
+			$queryAdd = "pOther";
+		}
+	
 		foreach($_POST['trooper'] as $trooper)
 		{
-			$conn->query("UPDATE troopers SET permissions = '3' WHERE id = '".cleanInput($trooper)."'");
+			$conn->query("UPDATE troopers SET ".$queryAdd." = '2' WHERE id = '".cleanInput($trooper)."'");
 		}
 		
 		// Send JSON
@@ -81,7 +138,31 @@ if(isset($_GET['do']) && $_GET['do'] == "troopercheckretired" && loggedIn() && i
 	{
 		foreach($_POST['trooper'] as $trooper)
 		{
-			$conn->query("UPDATE troopers SET permissions = '4' WHERE id = '".cleanInput($trooper)."'");
+			$queryAdd = "";
+			
+			// Which club to get
+			if($_POST['club'] <= count($squadArray))
+			{
+				$queryAdd = "p501";
+			}
+			else if($_POST['club'] == 6)
+			{
+				$queryAdd = "pRebel";
+			}
+			else if($_POST['club'] == 7)
+			{
+				$queryAdd = "pDroid";
+			}
+			else if($_POST['club'] == 8)
+			{
+				$queryAdd = "pMando";
+			}
+			else if($_POST['club'] == 9)
+			{
+				$queryAdd = "pOther";
+			}
+			
+			$conn->query("UPDATE troopers SET ".$queryAdd." = '3' WHERE id = '".cleanInput($trooper)."'");
 		}
 		
 		// Send JSON
@@ -1043,7 +1124,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$array = array('id' => $db->id, 'name' => $db->name, 'email' => $db->email, 'phone' => $db->phone, 'squad' => $db->squad, 'permissions' => $db->permissions, 'tkid' => $db->tkid, 'forumid' => $db->forum_id, 'rebelforum' => $db->rebelforum, 'mandoid' => $db->mandoid, 'sgid' => $db->sgid, 'supporter' => $db->supporter);
+				$array = array('id' => $db->id, 'name' => $db->name, 'email' => $db->email, 'phone' => $db->phone, 'squad' => $db->squad, 'permissions' => $db->permissions, 'p501' => $db->p501, 'pRebel' => $db->pRebel, 'pDroid' => $db->pDroid, 'pMando' => $db->pMando, 'pOther' => $db->pOther, 'tkid' => $db->tkid, 'forumid' => $db->forum_id, 'rebelforum' => $db->rebelforum, 'mandoid' => $db->mandoid, 'sgid' => $db->sgid, 'supporter' => $db->supporter);
 
 				echo json_encode($array);
 			}
@@ -1072,7 +1153,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 				sendNotification(getName($_SESSION['id']) . " has updated user ID [" . cleanInput($_POST['userIDE']) . "]", cleanInput($_SESSION['id']), 11, convertDataToJSON("SELECT * FROM troopers WHERE id = '".cleanInput($_POST['userIDE'])."'"));
 				
 				// Query the database
-				$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['user'])."', email =  '".cleanInput($_POST['email'])."', phone = '".cleanInput(cleanInput($_POST['phone']))."', squad = '".cleanInput($_POST['squad'])."', permissions = '".cleanInput($_POST['permissions'])."', tkid = '".$tkid."', forum_id = '".cleanInput($_POST['forumid'])."', rebelforum = '".cleanInput($_POST['rebelforum'])."', mandoid = '".cleanInput($_POST['mandoid'])."', sgid = '".cleanInput($_POST['sgid'])."', supporter = '".cleanInput($_POST['supporter'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'") or die($conn->error);
+				$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['user'])."', email =  '".cleanInput($_POST['email'])."', phone = '".cleanInput(cleanInput($_POST['phone']))."', squad = '".cleanInput($_POST['squad'])."', permissions = '".cleanInput($_POST['permissions'])."', p501 = '".cleanInput($_POST['p501'])."', pRebel = '".cleanInput($_POST['pRebel'])."', pDroid = '".cleanInput($_POST['pDroid'])."', pMando = '".cleanInput($_POST['pMando'])."', pOther = '".cleanInput($_POST['pOther'])."', tkid = '".$tkid."', forum_id = '".cleanInput($_POST['forumid'])."', rebelforum = '".cleanInput($_POST['rebelforum'])."', mandoid = '".cleanInput($_POST['mandoid'])."', sgid = '".cleanInput($_POST['sgid'])."', supporter = '".cleanInput($_POST['supporter'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'") or die($conn->error);
 
 				$array = array('success' => 'true', 'newname' => cleanInput($_POST['user']) . " - " . readTKNumber($tkid, getTrooperSquad(cleanInput($_POST['userIDE']))), 'data' => 'User has been updated!');
 				echo json_encode($array);

@@ -2578,15 +2578,32 @@ function getPermissionName($value)
 	{
 		return 'Moderator';
 	}
-	else if($value == 3)
+	else
+	{
+		return 'Unknown';
+	}
+}
+
+// getClubPermissionName: Converts value to title string of permission
+function getClubPermissionName($value)
+{
+	if($value == 0)
+	{
+		return 'Not A Member';
+	}
+	else if($value == 1)
+	{
+		return 'Regular Member';
+	}
+	else if($value == 2)
 	{
 		return 'Reserve Member';
 	}
-	else if($value == 4)
+	else if($value == 3)
 	{
 		return 'Retired Member';
 	}
-	else if($value == 5)
+	else if($value == 4)
 	{
 		return 'Handler';
 	}
@@ -2594,6 +2611,54 @@ function getPermissionName($value)
 	{
 		return 'Unknown';
 	}
+}
+
+// canAccess: Determines if a trooper can access the troop tracker to sign up for events
+function canAccess($id)
+{
+	global $conn;
+	
+	// Set up var
+	$canAccess = false;
+	
+	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// 501
+			if($db->p501 != 3 && $db->p501 != 0)
+			{
+				$canAccess = true;
+			}
+			
+			// Rebel
+			if($db->pRebel != 3 && $db->pRebel != 0)
+			{
+				$canAccess = true;
+			}
+			
+			// Droid
+			if($db->pDroid != 3 && $db->pDroid != 0)
+			{
+				$canAccess = true;
+			}
+			
+			// Mando
+			if($db->pMando != 3 && $db->pMando != 0)
+			{
+				$canAccess = true;
+			}
+			
+			// Other
+			if($db->pOther != 3 && $db->pOther != 0)
+			{
+				$canAccess = true;
+			}
+		}
+	}
+	
+	return $canAccess;
 }
 
 // emailSettingStatus: Is the setting on or off
@@ -2672,8 +2737,8 @@ if(!loggedIn() && !isset($_POST['loginWithTK']))
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				// Check credentials
-				if(password_verify($_COOKIE['TroopTrackerPassword'], $db->password))
+				// Check credentials and make sure trooper still has access
+				if(password_verify($_COOKIE['TroopTrackerPassword'], $db->password) && canAccess($db->id))
 				{
 					// Set session
 					$_SESSION['id'] = $db->id;

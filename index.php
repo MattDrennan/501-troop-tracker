@@ -1443,10 +1443,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			
 			if(hasPermission(1))
 			{
-				echo '
-				<a href="index.php?action=commandstaff&do=troopercheck" class="button">Trooper Check</a> 
+				echo ' 
 				<a href="index.php?action=commandstaff&do=managecostumes" class="button">Costume Management</a> 
-				<a href="index.php?action=commandstaff&do=createuser" class="button">Create Trooper</a> 
 				<a href="index.php?action=commandstaff&do=managetroopers" class="button">Trooper Management</a> 
 				<a href="index.php?action=commandstaff&do=approvetroopers" class="button" id="trooperRequestButton" name="trooperRequestButton">Approve Trooper Requests - ('.$getTrooperNotifications->num_rows.')</a> 
 				<a href="index.php?action=commandstaff&do=assignawards" class="button">Award Management</a>
@@ -1640,7 +1638,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				$i++;
 			}
 			
-			echo '<br /><hr />';
+			echo '
+			<a href="index.php?action=commandstaff&do=troopercheck" class="button">Trooper Check</a>
+			<br /><hr />';
 			
 			// Set up
 			$queryAdd = "";
@@ -1648,7 +1648,29 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			// Check if squad is requested
 			if(isset($_GET['squad']))
 			{
-				$queryAdd = "WHERE squad = '".cleanInput($_GET['squad'])."'";
+				$queryAdd = "WHERE ";
+				
+				// Which club to get
+				if($_GET['squad'] <= count($squadArray))
+				{
+					$queryAdd .= "squad = '".cleanInput($_GET['squad'])."' AND p501 > 0";
+				}
+				else if($_GET['squad'] == 6)
+				{
+					$queryAdd .= " pRebel > 0";
+				}
+				else if($_GET['squad'] == 7)
+				{
+					$queryAdd .= " pDroid > 0";
+				}
+				else if($_GET['squad'] == 8)
+				{
+					$queryAdd .= " pMando > 0";
+				}
+				else if($_GET['squad'] == 9)
+				{
+					$queryAdd .= " pOther > 0";
+				}
 			}
 			
 			// Query database
@@ -1664,11 +1686,27 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					// If first data
 					if($i == 0)
 					{
+						// If squad set, have hidden field
+						if(isset($_GET['squad']))
+						{
+							echo '
+							<input type="hidden" name="club" id="club" value="'.cleanInput($_GET['squad']).'" />';
+						}
+						
 						echo '
 						<div style="overflow-x: auto;">
 						<table>
 							<tr>
-								<th>Name</th>	<th>TKID</th>
+								<th>Name</th>	<th>TKID</th>';
+								
+								// Only show if squad set
+								if(isset($_GET['squad']))
+								{
+									echo '
+									<th>Status</th>';
+								}
+								
+							echo '
 							</tr>';
 					}
 					
@@ -1680,9 +1718,63 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						
 						<td>
 							'.readTKNumber($db->tkid, $db->squad).'
-						</td>
-					</tr>
-					';
+						</td>';
+						
+						// Only show if squad set
+						if(isset($_GET['squad']))
+						{
+							// Set up permission variable
+							$permission = "";
+							
+							// Which club to get
+							if($_GET['squad'] <= count($squadArray))
+							{
+								$permission = $db->p501;
+							}
+							else if($_GET['squad'] == 6)
+							{
+								$permission = $db->pRebel;
+							}
+							else if($_GET['squad'] == 7)
+							{
+								$permission = $db->pDroid;
+							}
+							else if($_GET['squad'] == 8)
+							{
+								$permission = $db->pMando;
+							}
+							else if($_GET['squad'] == 9)
+							{
+								$permission = $db->pOther;
+							}
+							
+							// If a moderator
+							if($db->permissions == 1 || $db->permissions == 2)
+							{
+								// Don't allow to edit
+								echo '
+								<td>
+									'.getPermissionName($db->permissions).'
+								</td>';
+							}
+							else
+							{
+								// Not moderator - allow edit
+								echo '
+								<td>
+									<select name="changepermission" trooperid="'.$db->id.'">
+										<option value="0" '.echoSelect(0, $permission).'>Not A Member</option>
+										<option value="1" '.echoSelect(1, $permission).'>Regular Member</option>
+										<option value="2" '.echoSelect(2, $permission).'>Reserve Member</option>
+										<option value="3" '.echoSelect(3, $permission).'>Retired Member</option>
+										<option value="4" '.echoSelect(4, $permission).'>Handler</option>
+									</select>
+								</td>';
+							}
+						}
+		
+					echo '
+					</tr>';
 					
 					// Increment
 					$i++;
@@ -1705,7 +1797,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		
 		/**************************** Trooper Check *********************************/
 		
-		if(isset($_GET['do']) && $_GET['do'] == "troopercheck" && hasPermission(1))
+		if(isset($_GET['do']) && $_GET['do'] == "troopercheck" && isAdmin())
 		{
 			echo '
 			<h3>Trooper Check</h3>
@@ -1740,11 +1832,31 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			// Check if squad is requested
 			if(isset($_GET['squad']))
 			{
-				$queryAdd = "troopers.squad = '".cleanInput($_GET['squad'])."' AND";
+				// Which club to get
+				if($_GET['squad'] <= count($squadArray))
+				{
+					$queryAdd .= "troopers.squad = '".cleanInput($_GET['squad'])."' AND (p501 = 1 OR p501 = 2) AND";
+				}
+				else if($_GET['squad'] == 6)
+				{
+					$queryAdd .= "(troopers.pRebel = 1 OR troopers.pRebel = 2) AND";
+				}
+				else if($_GET['squad'] == 7)
+				{
+					$queryAdd .= "(troopers.pDroid = 1 OR troopers.pDroid = 2) AND";
+				}
+				else if($_GET['squad'] == 8)
+				{
+					$queryAdd .= "(troopers.pMando = 1 OR troopers.pMando = 2) AND";
+				}
+				else if($_GET['squad'] == 9)
+				{
+					$queryAdd .= "(troopers.pOther = 1 OR troopers.pOther = 2) AND";
+				}
 			}
 			
 			// Query database
-			$query = "SELECT * FROM troopers WHERE ".$queryAdd." troopers.permissions != 4 AND troopers.id NOT IN (SELECT event_sign_up.trooperid FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.dateEnd > NOW() - INTERVAL 1 YEAR) ORDER BY troopers.name";
+			$query = "SELECT * FROM troopers WHERE ".$queryAdd." troopers.permissions = 0 AND troopers.id NOT IN (SELECT event_sign_up.trooperid FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.dateEnd > NOW() - INTERVAL 1 YEAR) ORDER BY troopers.name";
 			
 			// Query count
 			$i = 0;
@@ -1757,33 +1869,97 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					if($i == 0)
 					{
 						echo '
-						<form action="process.php?do=troopercheck" method="POST" name="trooperCheckForm" id="trooperCheckForm">
+						<form action="process.php?do=troopercheck" method="POST" name="trooperCheckForm" id="trooperCheckForm">';
+						
+						// If squad set, have hidden field
+						if(isset($_GET['squad']))
+						{
+							echo '
+							<input type="hidden" name="club" value="'.cleanInput($_GET['squad']).'" />';
+						}
+						
+						echo '
 						<div style="overflow-x: auto;">
 						<table>
-							<tr>
-								<th>Selection</th>	<th>Name</th>	<th>TKID</th>	<th>Tracker Status</th>
+							<tr>';
+								// If squad set
+								if(isset($_GET['squad']))
+								{
+									echo '
+									<th>Selection</th>';
+								}
+								
+								echo '
+								<th>Name</th>	<th>TKID</th>';
+								
+								// If squad set
+								if(isset($_GET['squad']))
+								{
+									echo '
+									<th>Tracker Status</th>';
+								}
+							
+							echo '
 							</tr>';
 					}
 					
 					echo '
-					<tr name="row_'.$db->id.'">
-						<td>
-							<input type="checkbox" name="trooper[]" value="'.$db->id.'" />
-						</td>
+					<tr name="row_'.$db->id.'">';
+					
+						// If squad set
+						if(isset($_GET['squad']))
+						{
+							echo '
+							<td>
+								<input type="checkbox" name="trooper[]" value="'.$db->id.'" />
+							</td>';
+						}
 						
+						echo '
 						<td>
 							<a href="index.php?profile='.$db->id.'">'.$db->name.'</a>
 						</td>
 						
 						<td>
 							'.readTKNumber($db->tkid, $db->squad).'
-						</td>
+						</td>';
 						
-						<td name="permission">
-							'.getPermissionName($db->permissions).'
-						</td>
-					</tr>
-					';
+						// If squad set
+						if(isset($_GET['squad']))
+						{
+							// Set up permission variable
+							$permission = "";
+							
+							// Which club to get
+							if($_GET['squad'] <= count($squadArray))
+							{
+								$permission = $db->p501;
+							}
+							else if($_GET['squad'] == 6)
+							{
+								$permission = $db->pRebel;
+							}
+							else if($_GET['squad'] == 7)
+							{
+								$permission = $db->pDroid;
+							}
+							else if($_GET['squad'] == 8)
+							{
+								$permission = $db->pMando;
+							}
+							else if($_GET['squad'] == 9)
+							{
+								$permission = $db->pOther;
+							}
+						
+							echo '
+							<td name="permission">
+								'.getClubPermissionName($permission).'
+							</td>';
+						}
+						
+					echo '
+					</tr>';
 					
 					// Increment
 					$i++;
@@ -1795,11 +1971,16 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			{
 				echo '
 				</table>
-				</div>
+				</div>';
 				
-				<input type="submit" name="submitTroopCheckReserve" id="submitTroopCheckReserve" value="Change to Reserve" />
-				<input type="submit" name="submitTroopCheckRetired" id="submitTroopCheckRetired" value="Change to Retired" />
+				if(isset($_GET['squad']))
+				{
+					echo '
+					<input type="submit" name="submitTroopCheckReserve" id="submitTroopCheckReserve" value="Change to Reserve" />
+					<input type="submit" name="submitTroopCheckRetired" id="submitTroopCheckRetired" value="Change to Retired" />';
+				}
 				
+				echo '
 				</form>';
 			}
 			else
@@ -2767,11 +2948,53 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<p>Permissions:</p>
 						<select name="permissions" id="permissions">
 							<option value="0">Regular Member</option>
-							<option value="3">Reserve Member</option>
-							<option value="4">Retired Member</option>
-							<option value="5">Handler</option>
 							<option value="2">Moderator</option>
 							<option value="1">Super Admin</option>
+						</select>
+						
+						<p>501st Member Permissions:</p>
+						<select name="p501" id="p501">
+							<option value="0">Not A Member</option>
+							<option value="1">Regular Member</option>
+							<option value="2">Reserve Member</option>
+							<option value="3">Retired Member</option>
+							<option value="4">Handler</option>
+						</select>
+						
+						<p>Rebel Legion Member Permissions:</p>
+						<select name="pRebel" id="pRebel">
+							<option value="0">Not A Member</option>
+							<option value="1">Regular Member</option>
+							<option value="2">Reserve Member</option>
+							<option value="3">Retired Member</option>
+							<option value="4">Handler</option>
+						</select>
+						
+						<p>Droid Builders Member Permissions:</p>
+						<select name="pDroid" id="pDroid">
+							<option value="0">Not A Member</option>
+							<option value="1">Regular Member</option>
+							<option value="2">Reserve Member</option>
+							<option value="3">Retired Member</option>
+							<option value="4">Handler</option>
+						</select>
+						
+						<p>Mando Mercs Member Permissions:</p>
+						<select name="pMando" id="pMando">
+							<option value="0">Not A Member</option>
+							<option value="1">Regular Member</option>
+							<option value="2">Reserve Member</option>
+							<option value="3">Retired Member</option>
+							<option value="4">Handler</option>
+						</select>
+						
+						<p>Other Member Permissions:</p>
+						<select name="pOther" id="pOther">
+							<option value="0">Not A Member</option>
+							<option value="1">Regular Member</option>
+							<option value="2">Reserve Member</option>
+							<option value="3">Retired Member</option>
+							<option value="4">Handler</option>
 						</select>
 
 						<p>TKID:</p>
@@ -2801,6 +3024,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					</form>
 				</div>';
 			}
+			
+			echo '
+			<p>
+				<a href="index.php?action=commandstaff&do=createuser" class="button">Create Trooper</a>
+			</p>';
 		}
 
 		// Create a user
@@ -2840,11 +3068,53 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<p>Permissions:</p>
 				<select name="permissions" id="permissions">
 					<option value="0">Regular Member</option>
-					<option value="3">Reserve Member</option>
-					<option value="4">Retired Member</option>
-					<option value="5">Handler</option>
 					<option value="2">Moderator</option>
 					<option value="1">Super Admin</option>
+				</select>
+		
+				<p>501st Member Permissions:</p>
+				<select name="p501" id="p501">
+					<option value="0" SELECTED>Not A Member</option>
+					<option value="1">Regular Member</option>
+					<option value="2">Reserve Member</option>
+					<option value="3">Retired Member</option>
+					<option value="4">Handler</option>
+				</select>
+				
+				<p>Rebel Legion Member Permissions:</p>
+				<select name="pRebel" id="pRebel">
+					<option value="0" SELECTED>Not A Member</option>
+					<option value="1">Regular Member</option>
+					<option value="2">Reserve Member</option>
+					<option value="3">Retired Member</option>
+					<option value="4">Handler</option>
+				</select>
+				
+				<p>Droid Builders Member Permissions:</p>
+				<select name="pDroid" id="pDroid">
+					<option value="0" SELECTED>Not A Member</option>
+					<option value="1">Regular Member</option>
+					<option value="2">Reserve Member</option>
+					<option value="3">Retired Member</option>
+					<option value="4">Handler</option>
+				</select>
+				
+				<p>Mando Mercs Member Permissions:</p>
+				<select name="pMando" id="pMando">
+					<option value="0" SELECTED>Not A Member</option>
+					<option value="1">Regular Member</option>
+					<option value="2">Reserve Member</option>
+					<option value="3">Retired Member</option>
+					<option value="4">Handler</option>
+				</select>
+				
+				<p>Other Member Permissions:</p>
+				<select name="pOther" id="pOther">
+					<option value="0" SELECTED>Not A Member</option>
+					<option value="1">Regular Member</option>
+					<option value="2">Reserve Member</option>
+					<option value="3">Retired Member</option>
+					<option value="4">Handler</option>
 				</select>
 
 				<p>TKID:</p>
@@ -3292,37 +3562,47 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 				{
 					if($db->approved != 0)
 					{
-						// Set session
-						$_SESSION['id'] = $db->id;
-						$_SESSION['tkid'] = $db->tkid;
-						
-						// Set log in cookie, if set to keep logged in
-						if(isset($_POST['keepLog']) && $_POST['keepLog'] == 1)
+						if(canAccess($db->id))
 						{
-							// Set cookies
-							setcookie("TroopTrackerUsername", $db->forum_id, time() + (10 * 365 * 24 * 60 * 60));
-							setcookie("TroopTrackerPassword", cleanInput($_POST['password']), time() + (10 * 365 * 24 * 60 * 60));
-						}
-
-						// Cookie set
-						if(isset($_COOKIE["TroopTrackerLastEvent"]))
-						{
-							echo '
-							<meta http-equiv="refresh" content="5; URL=index.php?event='.cleanInput($_COOKIE["TroopTrackerLastEvent"]).'" />
-							You have now logged in! <a href="index.php?event='.cleanInput($_COOKIE["TroopTrackerLastEvent"]).'">Click here to view the event</a> or you will be redirected shortly.';
+							// Set session
+							$_SESSION['id'] = $db->id;
+							$_SESSION['tkid'] = $db->tkid;
 							
-							// Clear cookie
-							setcookie("TroopTrackerLastEvent", "", time() - 3600);
+							// Set log in cookie, if set to keep logged in
+							if(isset($_POST['keepLog']) && $_POST['keepLog'] == 1)
+							{
+								// Set cookies
+								setcookie("TroopTrackerUsername", $db->forum_id, time() + (10 * 365 * 24 * 60 * 60));
+								setcookie("TroopTrackerPassword", cleanInput($_POST['password']), time() + (10 * 365 * 24 * 60 * 60));
+							}
+
+							// Cookie set
+							if(isset($_COOKIE["TroopTrackerLastEvent"]))
+							{
+								echo '
+								<meta http-equiv="refresh" content="5; URL=index.php?event='.cleanInput($_COOKIE["TroopTrackerLastEvent"]).'" />
+								You have now logged in! <a href="index.php?event='.cleanInput($_COOKIE["TroopTrackerLastEvent"]).'">Click here to view the event</a> or you will be redirected shortly.';
+								
+								// Clear cookie
+								setcookie("TroopTrackerLastEvent", "", time() - 3600);
+							}
+							else
+							{
+								// Cookie not set
+								echo '
+								You have now logged in! <a href="index.php">Click here to go home.</a>';
+							}
 						}
 						else
 						{
-							// Cookie not set
-							echo 'You have now logged in! <a href="index.php">Click here to go home.</a>';
+							echo '
+							Your account is retired. Please contact the GML for further instructions on how to get re-approved.';
 						}
 					}
 					else
 					{
-						echo 'Your access has not been approved yet.';
+						echo '
+						Your access has not been approved yet.';
 					}
 				}
 				else
