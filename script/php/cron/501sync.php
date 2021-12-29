@@ -1,7 +1,7 @@
 <?php
 
-// Include config file
-include(aPath . 'config.php');
+// Include config
+include(realpath("../../../") . '/config.php');
 
 // Reset databases
 $conn->query("DELETE FROM 501st_troopers");
@@ -34,6 +34,41 @@ foreach($obj->unit->members as $value)
 		// Insert into database
 		$conn->query("INSERT INTO 501st_costumes (legionid, costumeid, prefix, costumename, photo, thumbnail, bucketoff) VALUES ('".$value->legionId."', '".$costume->costumeId."', '".$costume->prefix."', '".$costume->costumeName."', '".$costume->photoURL."', '".$costume->thumbnail."', '".$costume->bucketOffPhoto."')");
 	}
+}
+
+// Pull extra data from spreadsheet - Troopers
+$url = 'https://sheets.googleapis.com/v4/spreadsheets/10_w4Fz41iUCYe3G1bQSqHDY6eK4fXP0Ue3pnfA4LoZg/values/Roster?key=' . googleSheets;
+$json = json_decode(file_get_contents($url));
+$rows = $json->values;
+
+// Set up count
+$i = 0;
+
+foreach($rows as $row)
+{
+	// If not first
+	if($i != 0)
+	{
+		// Query
+		if($row[1] == "Retired")
+		{
+			$conn->query("UPDATE troopers SET p501 = 3 WHERE tkid = '".cleanInput($row[6])."' AND squad <= ".count($squadArray)."") or die($conn->error);
+			echo cleanInput($row[6]) . ' - Retired<br /><br />';
+		}
+		else if($row[1] == "Reserve")
+		{
+			$conn->query("UPDATE troopers SET p501 = 2 WHERE tkid = '".cleanInput($row[6])."' AND squad <= ".count($squadArray)."") or die($conn->error);
+			echo cleanInput($row[6]) . ' - Reserve<br /><br />';
+		}
+		else if($row[1] == "Active")
+		{
+			$conn->query("UPDATE troopers SET p501 = 1 WHERE tkid = '".cleanInput($row[6])."' AND squad <= ".count($squadArray)."") or die($conn->error);
+			echo cleanInput($row[6]) . ' - Active<br /><br />';
+		}
+	}
+	
+	// Increment count
+	$i++;
 }
 
 $getNumOfTroopers = $conn->query("SELECT legionid FROM 501st_troopers");

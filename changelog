@@ -1,5 +1,10 @@
 **Changelog**
 
+_12/29/2021_
+
+-Fixed cron job PHP files
+-Automatically mark 501st members as retired, reserve, and active
+
 _12/28/2021_
 
 -Canceled troop noticeboard
