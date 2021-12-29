@@ -591,7 +591,8 @@ $(function()
 			},
             sgid:
             {
-                digits: true,             
+				required: false,
+                digits: true          
             },
             forumid: "required",
             password: "required",

@@ -1295,10 +1295,22 @@ if(isset($_GET['do']) && $_GET['do'] == "createuser" && loggedIn())
 					$pMando = 1;
 				}
 				
+				// Mando is nothing
+				if(cleanInput($_POST['mandoid']) == "")
+				{
+					$_POST['mandoid'] = 0;
+				}
+				
 				// Other
 				if(cleanInput($_POST['sgid']) > 0)
 				{
 					$pOther = 1;
+				}
+				
+				// Saber Guild is nothing
+				if(cleanInput($_POST['sgid']) == "")
+				{
+					$_POST['sgid'] = 0;
 				}
 				
 				// Insert into database
@@ -1583,7 +1595,51 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			// If failed
 			if(!$failed)
 			{
-				$conn->query("INSERT INTO troopers (name, tkid, email, forum_id, rebelforum, mandoid, sgid, phone, squad, password) VALUES ('".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['rebelforum'])."', '".cleanInput($_POST['mandoid'])."', '".cleanInput($_POST['sgid'])."', '".cleanInput($_POST['phone'])."', '".$squad."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."')") or die($conn->error);
+				// Set up permission vars
+				$p501 = 0;
+				$pRebel = 0;
+				$pDroid = 0;
+				$pMando = 0;
+				$pOther = 0;
+				
+				// Set permissions
+				// 501
+				if(cleanInput($_POST['squad']) <= count($squadArray))
+				{
+					$p501 = 1;
+				}
+				
+				// Rebel
+				if(cleanInput($_POST['rebelforum']) != "")
+				{
+					$pRebel = 1;
+				}
+				
+				// Mando
+				if(cleanInput($_POST['mandoid']) > 0)
+				{
+					$pMando = 1;
+				}
+				
+				// Mando is nothing
+				if(cleanInput($_POST['mandoid']) == "")
+				{
+					$_POST['mandoid'] = 0;
+				}
+				
+				// Other
+				if(cleanInput($_POST['sgid']) > 0)
+				{
+					$pOther = 1;
+				}
+				
+				// Saber Guild is nothing
+				if(cleanInput($_POST['sgid']) == "")
+				{
+					$_POST['sgid'] = 0;
+				}
+				
+				$conn->query("INSERT INTO troopers (name, tkid, email, forum_id, rebelforum, mandoid, sgid, p501, pRebel, pDroid, pMando, pOther, phone, squad, password) VALUES ('".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['rebelforum'])."', '".cleanInput($_POST['mandoid'])."', '".cleanInput($_POST['sgid'])."', '".$p501."', '".$pRebel."', '".$pDroid."', '".$pMando."', '".$pOther."', '".cleanInput($_POST['phone'])."', '".$squad."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."')") or die($conn->error);
 				echo '<li>Request submitted! You will receive an e-mail when your request is approved or denied.</li>';
 			}
 
