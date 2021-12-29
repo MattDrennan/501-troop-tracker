@@ -1,7 +1,7 @@
 <?php
 
 // Include config
-include(realpath("../../../") . '/config.php');
+include(dirname(__DIR__) . '/../../config.php');
 
 // Purge Droids
 $conn->query("DELETE FROM droid_troopers") or die($conn->error);

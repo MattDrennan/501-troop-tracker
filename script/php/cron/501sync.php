@@ -1,7 +1,7 @@
 <?php
 
 // Include config
-include(realpath("../../../") . '/config.php');
+include(dirname(__DIR__) . '/../../config.php');
 
 // Reset databases
 $conn->query("DELETE FROM 501st_troopers");

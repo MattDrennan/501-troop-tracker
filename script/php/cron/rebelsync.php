@@ -1,10 +1,10 @@
 <?php
 
 // Include config
-include(realpath("../../../") . '/config.php');
+include(dirname(__DIR__) . '/../../config.php');
 
 // Get Simple PHP DOM Tool - just a note, for this code to work, $stripRN must be false in tool
-include(realpath("../../../") . '/tool/dom/simple_html_dom.php');
+include(dirname(__DIR__) . '/../../tool/dom/simple_html_dom.php');
 
 // Purge rebel troopers
 $conn->query("DELETE FROM rebel_troopers") or die($conn->error);
