@@ -1536,6 +1536,14 @@ if(isset($_GET['do']) && $_GET['do'] == "createuser" && loggedIn())
 				
 				// Send notification to command staff
 				sendNotification(getName($_SESSION['id']) . " has added a trooper.", cleanInput($_SESSION['id']), 12, convertDataToJSON("SELECT * FROM troopers WHERE id = '".$last_id."'"));
+				
+				// Check if Rebel Legion Sign Up
+				if($pRebel == 1)
+				{
+					// Add to Google Sheets
+					$newValues = ['' . getRebelLegionUser($last_id), '' . getName($last_id), getEmail($last_id)];
+					addToSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster", $newValues);
+				}
 
 				$array = array('success' => 'success', 'data' => 'User created!');
 				echo json_encode($array);
