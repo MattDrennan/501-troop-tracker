@@ -5,6 +5,7 @@ _12/30/2021_
 -Added Google Cloud API for Google Sheets
 -Improved security for spreadsheets on Google Drive
 -Added ability to keep excel sheets up using Troop Tracker
+-Troopers will now get comment notifications when they press "Subscribe Updates", even if they are not signed up for the event
 
 _12/29/2021_
 
