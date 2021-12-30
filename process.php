@@ -45,6 +45,27 @@ if(isset($_GET['do']) && $_GET['do'] == "changepassword")
 	}
 }
 
+/******************** EDIT COMMENT *******************************/
+
+if(isset($_GET['do']) && isset($_POST['commentid']) && isset($_POST['comment']) && $_GET['do'] == "editcomment")
+{
+	// Query database for comment
+	$query = "SELECT * FROM comments WHERE id = '".cleanInput($_POST['commentid'])."'";
+	
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Check comment matches ID of trooper
+			if($_SESSION['id'] == $db->trooperid)
+			{
+				// Update comment
+				$conn->query("UPDATE comments SET comment = '".cleanInput($_POST['comment'])."' WHERE id = '".cleanInput($_POST['commentid'])."' AND trooperid = '".cleanInput($_SESSION['id'])."'");
+			}
+		}
+	}
+}
+
 /******************** CHANGE PERMISSION *******************************/
 
 if(isset($_GET['do']) && isset($_POST['trooperid']) && isset($_POST['permission']) && $_GET['do'] == "changepermission" && isAdmin())
@@ -490,6 +511,12 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 				if(isAdmin())
 				{
 					$admin = '<span style="margin-right: 15px;"><a href="#/" id="deleteComment_'.$db->id.'" name="'.$db->id.'"><img src="images/trash.png" alt="Delete Comment" /></a></span>';
+				}
+				
+				// If is trooper, set up edit option
+				if($db->trooperid == $_SESSION['id'])
+				{
+					$admin .= '<span style="margin-right: 15px;"><a href="#/" id="editComment_'.$db->id.'" name="'.$db->id.'"><img src="images/edit.png" alt="Edit Comment" /></a></span>';
 				}
 
 				// Convert date/time

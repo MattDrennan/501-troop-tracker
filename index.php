@@ -5198,6 +5198,12 @@ if(isset($_GET['event']))
 							$admin = '<span style="margin-right: 15px;"><a href="#/" id="deleteComment_'.$db->id.'" name="'.$db->id.'"><img src="images/trash.png" alt="Delete Comment" /></a></span>';
 						}
 						
+						// If is trooper, set up edit option
+						if($db->trooperid == $_SESSION['id'])
+						{
+							$admin .= '<span style="margin-right: 15px;"><a href="#/" id="editComment_'.$db->id.'" name="'.$db->id.'"><img src="images/edit.png" alt="Edit Comment" /></a></span>';
+						}
+						
 						// Convert date/time
 						$date = strtotime($db->posted);
 						$newdate = date("F j, Y, g:i a", $date);

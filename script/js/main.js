@@ -1287,15 +1287,42 @@ $(document).ready(function()
 	});
 	
 	// When trooper quotes a comment
-	$("body").on("click", "[id^=quoteComment]", function(e)
+	$("body").on("click", "[id^=editComment]", function(e)
 	{
 		e.preventDefault();
 
 		// Get ID of comment
 		var id = $(this).attr("name");
 		
-		// Add comment to comment text area
-		$("#comment").val($("#comment").val() + "[quotec trooperid=" + $(this).attr("trooperid") + " name=" + $(this).attr("troopername") + " tkid=" + $(this).attr("tkid") + " commentid=" + id + "]" + $("table[name=comment_" + id + "] td[name=insideComment]").text() + "[/quotec]\n\n");
+		// Add comment to comment text area with HTML for display purposes
+		$("table[name=comment_" + id + "] td[name=insideComment]").html('<textarea commentid="' + id + '">' + $("table[name=comment_" + id + "] td[name=insideComment]").text().replace('<br/>', '\n').replace('<br />', '\n') + '</textarea><br /><input type="submit" name="editCommentSubmit" commentid="' + id + '" value="Save" />');
+	});
+	
+	// When trooper quotes a comment
+	$("body").on("click", "[name=editCommentSubmit]", function(e)
+	{
+		e.preventDefault();
+
+		// Get ID of comment
+		var id = $(this).attr("commentid");
+		
+		// Get comment
+		var comment = $("table[name=comment_" + id + "] td[name=insideComment] textarea").val().replace(/\n/g, '\n<br />')
+		
+		// Add text area to comment
+		$("table[name=comment_" + id + "] td[name=insideComment]").html(comment);
+		
+		// Save comment
+		$.ajax({
+			type: "POST",
+			url: "process.php?do=editcomment",
+			data: "commentid=" + id + "&comment=" + comment,
+			success: function(data)
+			{
+				// Alert to success
+				alert("Comment updated!");
+			}
+		});
 	});
 
 	$("#changephoneLink").click(function(e)
