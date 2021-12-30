@@ -1855,7 +1855,19 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 				}
 				
 				$conn->query("INSERT INTO troopers (name, tkid, email, forum_id, rebelforum, mandoid, sgid, p501, pRebel, pDroid, pMando, pOther, phone, squad, password) VALUES ('".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['rebelforum'])."', '".cleanInput($_POST['mandoid'])."', '".cleanInput($_POST['sgid'])."', '".$p501."', '".$pRebel."', '".$pDroid."', '".$pMando."', '".$pOther."', '".cleanInput($_POST['phone'])."', '".$squad."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."')") or die($conn->error);
+				
+				// Last ID
+				$last_id = $conn->insert_id;
+				
 				echo '<li>Request submitted! You will receive an e-mail when your request is approved or denied.</li>';
+				
+				// Check if Rebel Legion Sign Up
+				if($pRebel == 1)
+				{
+					// Add to Google Sheets
+					$newValues = ['' . getRebelLegionUser($last_id), '' . getName($last_id), getEmail($last_id)];
+					addToSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster", $newValues);
+				}
 			}
 
 			echo '</ul>';
