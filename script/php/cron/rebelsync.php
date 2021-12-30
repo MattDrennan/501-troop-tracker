@@ -171,41 +171,70 @@ for($i = 0; $i <= 1000; $i += 10)
 	}
 }
 
-// Pull extra data from spreadsheet - Troopers
-$url = 'https://sheets.googleapis.com/v4/spreadsheets/1I3FuS_uPg2nuC80PEA6tKYaVBd1Qh1allTOdVz3M6x0/values/Troopers?key=' . googleSheets;
-$json = json_decode(file_get_contents($url));
-$rows = $json->values;
+// Pull extra data from spreadsheet
+$values = getSheet("1I3FuS_uPg2nuC80PEA6tKYaVBd1Qh1allTOdVz3M6x0", "Troopers");
+
+// Set up count
 $i = 0;
 
-foreach($rows as $row)
+foreach($values as $value)
 {
 	// If not first
 	if($i != 0)
 	{
 		// Query
-		$conn->query("INSERT INTO rebel_troopers (rebelid, name, rebelforum) VALUES ('".$row[0]."', '".$row[1]."', '".$row[2]."')") or die($conn->error);
+		$conn->query("INSERT INTO rebel_troopers (rebelid, name, rebelforum) VALUES ('".$value[0]."', '".$value[1]."', '".$value[2]."')") or die($conn->error);
 	}
 
 	// Increment
 	$i++;
 }
 
-// Pull extra data from spreadsheet - Costumes
-$url = 'https://sheets.googleapis.com/v4/spreadsheets/1I3FuS_uPg2nuC80PEA6tKYaVBd1Qh1allTOdVz3M6x0/values/Costumes?key=' . googleSheets;
-$json = json_decode(file_get_contents($url));
-$rows = $json->values;
+// Pull extra data from spreadsheet
+$values = getSheet("1I3FuS_uPg2nuC80PEA6tKYaVBd1Qh1allTOdVz3M6x0", "Costumes");
+
+// Set up count
 $i = 0;
 
-foreach($rows as $row)
+foreach($values as $value)
 {
 	// If not first
 	if($i != 0)
 	{
 		// Insert into database
-		$conn->query("INSERT INTO rebel_costumes (rebelid, costumename, costumeimage) VALUES ('".$row[0]."', '".$row[1]."', '".$row[2]."')") or die($conn->error);
+		$conn->query("INSERT INTO rebel_costumes (rebelid, costumename, costumeimage) VALUES ('".$value[0]."', '".$value[1]."', '".$value[2]."')") or die($conn->error);
 	}
 
 	// Increment
+	$i++;
+}
+
+// Reset user permissions
+$conn->query("UPDATE troopers SET pRebel = '3' WHERE pRebel = '1'");
+
+// Pull extra data from spreadsheet - this is for checking if a valid member
+$values = getSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster");
+
+// Set up count
+$i = 0;
+
+foreach($values as $value)
+{
+	// If not first
+	if($i != 0)
+	{
+		// Check if we can match with member in Troop Tracker database
+		$doesExist = $conn->query("SELECT id FROM troopers WHERE rebelforum = '".$value[0]."'");
+		
+		// Check if we got a match
+		if($doesExist !== false && $doesExist->num_rows > 0)
+		{
+			// Match
+			$conn->query("UPDATE troopers SET pRebel = '1' WHERE rebelforum = '".$value[0]."'");
+		}
+	}
+	
+	// Increment count
 	$i++;
 }
 

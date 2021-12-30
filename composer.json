@@ -3,6 +3,7 @@
         "spatie/calendar-links": "^1.6",
         "phpmailer/phpmailer": "^6.5",
         "benhall14/php-calendar": "^1.2",
-        "dg/twitter-php": "^4.1"
+        "dg/twitter-php": "^4.1",
+        "google/apiclient": "2.12.1"
     }
 }

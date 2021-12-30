@@ -269,6 +269,46 @@ $(document).ready(function()
 		$.LoadingOverlay("hide");
 	});
 	
+	// Master Roster - Add Trooper
+	$("body").on("click", "#addTrooperMaster", function(e)
+	{
+		e.preventDefault();
+		
+		var r = confirm("Are you sure you want to add this trooper to the roster?");
+		
+		// If confirmed
+		if(r == true)
+		{
+			// Send data
+			var form = $("#addMasterRosterForm");
+			
+			// Get trooper values
+			var trooperid = $("#userID option:selected").val();
+			var troopername = $("#userID option:selected").attr("troopername");
+			var tkid = $("#userID option:selected").attr("tkid");
+
+			$.ajax({
+				type: "POST",
+				url: "process.php?do=addmasterroster",
+				data: form.serialize(),
+				success: function(data)
+				{
+					// Get JSON
+					var json = JSON.parse(data);
+					
+					// Remove option
+					$("#userID option:selected").remove();
+					
+					// Add to table
+					$("#masterRosterTable").append('<tr name="row_' + trooperid + '"><td><a href="index.php?profile=' + trooperid + '" target="_blank">' + troopername + '</a></td><td>' + tkid + '</td><td><select name="changepermission" trooperid="' + trooperid + '"><option value="0">Not A Member</option><option value="1" SELECTED>Regular Member</option><option value="2">Reserve Member</option><option value="3">Retired Member</option><option value="4">Handler</option></select></td></tr>');
+					
+					// Alert user
+					alert(json.data);
+				}
+			});
+		}
+	})
+	
 	// Roster - Update member status
 	$("body").on("change", "[name=changepermission]", function(e)
 	{
@@ -283,7 +323,6 @@ $(document).ready(function()
 			data: "trooperid=" + trooperid + "&permission=" + permission + "&club=" + club,
 			success: function(data)
 			{
-				console.log(data);
 				alert("Updated!");
 			}
 		});

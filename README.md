@@ -54,9 +54,6 @@ define('accessTokenSecret', 'access_secret_here');
 // Make sure you get a Google Maps API key to use the Google API. The Google Maps API is used to automatically detect where an event is located
 define('googleKey', 'GOOGLE_MAP_API_KEY_HERE');
 
-// Google API - Sheets
-define('googleSheets', 'GOOGLE_CLOUD_API_HERE');
-
 // PayPal Info
 // See PayPal IPN documentation for more information. This file is used to store donations into the database for tracking.
 define('ipn', 'script/php/paypal.php');
@@ -85,6 +82,8 @@ $clubArray = array("Rebel Legion" => "test", "Droid Builders" => "test", "Mando 
 
 <li>Set file permissions to 'images/uploads' to 777</li>
 <li>Manually modify getSquad() function in 'config.php' to fit your needs</li>
+<li>Set up a Google Cloud API for Google Sheets, then create a service account under "Credentials"</li>
+<li>Download the JSON file from the service account, rename it to "sheets_api_secret.json", and upload it the root directory"</li>
 <li>On a live server, set up cron jobs located in other/cron.txt</li>
 <li>To use 'nodescraper', create a '.env' file in same directory. Add the following:</li>
 </ol>

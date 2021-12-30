@@ -1624,7 +1624,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			$i = 1;
 			
 			echo '
-			<a href="index.php?action=commandstaff&do=roster" class="button">All</a>';
+			<a href="index.php?action=commandstaff&do=roster" class="button">All</a> 
+			<a href="index.php?action=commandstaff&do=roster&squad=all" class="button">All (501st)</a> ';
 			
 			foreach($squadArray as $squad => $squad_value)
 			{
@@ -1639,21 +1640,32 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			}
 			
 			echo '
-			<a href="index.php?action=commandstaff&do=troopercheck" class="button">Trooper Check</a>
+			<a href="index.php?action=commandstaff&do=troopercheck" class="button">Trooper Check</a>';
+			
+			echo '
 			<br /><hr />';
 			
+			// Check if on a squad
+			if(isset($_GET['squad']) && $_GET['squad'] != "all")
+			{
+				echo '
+				<a href="#addtrooper" class="button">Add Trooper</a>';
+			}
+			
 			// Set up
-			$queryAdd = "";
+			$queryAdd = "WHERE ";
 			
 			// Check if squad is requested
 			if(isset($_GET['squad']))
-			{
-				$queryAdd = "WHERE ";
-				
+			{	
 				// Which club to get
 				if($_GET['squad'] <= count($squadArray))
 				{
 					$queryAdd .= "squad = '".cleanInput($_GET['squad'])."' AND p501 > 0";
+				}
+				else if($_GET['squad'] == "all")
+				{
+					$queryAdd .= "p501 > 0";
 				}
 				else if($_GET['squad'] == 6)
 				{
@@ -1671,10 +1683,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				{
 					$queryAdd .= " pOther > 0";
 				}
+				
+				$queryAdd .= " AND";
 			}
 			
 			// Query database
-			$query = "SELECT * FROM troopers ".$queryAdd." ORDER BY name";
+			$query = "SELECT * FROM troopers ".$queryAdd." id != ".placeholder." ORDER BY name";
 			
 			// Query count
 			$i = 0;
@@ -1695,7 +1709,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						
 						echo '
 						<div style="overflow-x: auto;">
-						<table>
+						<table id="masterRosterTable">
 							<tr>
 								<th>Name</th>	<th>TKID</th>';
 								
@@ -1727,7 +1741,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							$permission = "";
 							
 							// Which club to get
-							if($_GET['squad'] <= count($squadArray))
+							if($_GET['squad'] <= count($squadArray) || $_GET['squad'] == "all")
 							{
 								$permission = $db->p501;
 							}
@@ -1792,6 +1806,76 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			{
 				echo '
 				<p style="text-align: center;">Nothing to display for this squad / club.</p>';
+			}
+			
+			if(isset($_GET['squad']) && $_GET['squad'] != "all")
+			{
+				// Set up query add
+				$queryAdd = "";
+				
+				// Which club to get
+				if($_GET['squad'] <= count($squadArray))
+				{
+					$queryAdd = "p501";
+				}
+				else if($_GET['squad'] == 6)
+				{
+					$queryAdd = "rebelforum != '' AND pRebel";
+				}
+				else if($_GET['squad'] == 7)
+				{
+					$queryAdd = "pDroid";
+				}
+				else if($_GET['squad'] == 8)
+				{
+					$queryAdd = "pMando";
+				}
+				else if($_GET['squad'] == 9)
+				{
+					$queryAdd = "pOther";
+				}
+	
+				// Get data
+				$query = "SELECT * FROM troopers WHERE ".$queryAdd." = 0 AND id != ".placeholder." ORDER BY name";
+
+				// Amount of users
+				$i = 0;
+
+				if($result = mysqli_query($conn, $query))
+				{
+					while ($db = mysqli_fetch_object($result))
+					{
+						// Formatting
+						if($i == 0)
+						{
+							echo '
+							<h3 id="addtrooper">Add Trooper</h3>
+							<form action="process.php?do=addmasterroster" method="POST" id="addMasterRosterForm">
+							<input type="hidden" name="squad" value="'.cleanInput($_GET['squad']).'" />
+							<select name="userID" id="userID">';
+						}
+
+						echo '<option value="'.$db->id.'" tkid="'.readTKNumber($db->tkid, $db->squad).'" troopername="'.$db->name.'">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</option>';
+
+						// Increment
+						$i++;
+					}
+				}
+				
+				// If troopers exist
+				if($i > 0)
+				{
+					echo '
+					</select>
+					
+					<input type="submit" value="Add Trooper" id="addTrooperMaster" />
+					</form>';
+				}
+				else
+				{
+					echo '
+					<p id="addtrooper"><i>No troopers to add. Make sure they have a Rebel Legion Forum username assigned to their account.</i></p>';
+				}
 			}
 		}
 		

@@ -36,34 +36,32 @@ foreach($obj->unit->members as $value)
 	}
 }
 
-// Pull extra data from spreadsheet - Troopers
-$url = 'https://sheets.googleapis.com/v4/spreadsheets/10_w4Fz41iUCYe3G1bQSqHDY6eK4fXP0Ue3pnfA4LoZg/values/Roster?key=' . googleSheets;
-$json = json_decode(file_get_contents($url));
-$rows = $json->values;
+// Pull extra data from spreadsheet
+$values = getSheet("10_w4Fz41iUCYe3G1bQSqHDY6eK4fXP0Ue3pnfA4LoZg", "Roster");
 
 // Set up count
 $i = 0;
 
-foreach($rows as $row)
+foreach($values as $value)
 {
 	// If not first
 	if($i != 0)
 	{
 		// Query
-		if($row[1] == "Retired")
+		if($value[1] == "Retired")
 		{
-			$conn->query("UPDATE troopers SET p501 = 3 WHERE tkid = '".get_numerics(cleanInput($row[6]))."' AND squad <= ".count($squadArray)."") or die($conn->error);
-			echo get_numerics(cleanInput($row[6])) . ' - Retired<br /><br />';
+			$conn->query("UPDATE troopers SET p501 = 3 WHERE tkid = '".get_numerics(cleanInput($value[6]))."' AND squad <= ".count($squadArray)."") or die($conn->error);
+			echo get_numerics(cleanInput($value[6])) . ' - Retired<br /><br />';
 		}
-		else if($row[1] == "Reserve")
+		else if($value[1] == "Reserve")
 		{
-			$conn->query("UPDATE troopers SET p501 = 2 WHERE tkid = '".get_numerics(cleanInput($row[6]))."' AND squad <= ".count($squadArray)."") or die($conn->error);
-			echo get_numerics(cleanInput($row[6])) . ' - Reserve<br /><br />';
+			$conn->query("UPDATE troopers SET p501 = 2 WHERE tkid = '".get_numerics(cleanInput($value[6]))."' AND squad <= ".count($squadArray)."") or die($conn->error);
+			echo get_numerics(cleanInput($value[6])) . ' - Reserve<br /><br />';
 		}
-		else if($row[1] == "Active")
+		else if($value[1] == "Active")
 		{
-			$conn->query("UPDATE troopers SET p501 = 1 WHERE tkid = '".get_numerics(cleanInput($row[6]))."' AND squad <= ".count($squadArray)."") or die($conn->error);
-			echo get_numerics(cleanInput($row[6])) . ' - Active<br /><br />';
+			$conn->query("UPDATE troopers SET p501 = 1 WHERE tkid = '".get_numerics(cleanInput($value[6]))."' AND squad <= ".count($squadArray)."") or die($conn->error);
+			echo get_numerics(cleanInput($value[6])) . ' - Active<br /><br />';
 		}
 	}
 	
@@ -173,13 +171,6 @@ function convertSquadId($value)
 	}
 
 	return $returnValue;
-}
-
-// get_numerics: Gets the numbers
-function get_numerics($str)
-{
-    preg_match_all('/\d+/', $str, $matches);
-    return $matches[0][0];
 }
 
 ?>

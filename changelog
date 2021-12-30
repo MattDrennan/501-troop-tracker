@@ -1,5 +1,11 @@
 **Changelog**
 
+_12/30/2021_
+
+-Added Google Cloud API for Google Sheets
+-Improved security for spreadsheets on Google Drive
+-Added ability to keep excel sheets up using Troop Tracker
+
 _12/29/2021_
 
 -Fixed cron job PHP files

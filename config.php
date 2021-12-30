@@ -1769,17 +1769,32 @@ function profileExist($id)
 	return $doesExist;
 }
 
-// getName: gets the user's name
+// getName: gets the troopers's name
 function getName($id)
 {
 	global $conn;
 	
-	$query = "SELECT * FROM troopers WHERE id='".$id."'";
+	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
 			return $db->name;
+		}
+	}
+}
+
+// getEmail: gets the troopers's e-mail
+function getEmail($id)
+{
+	global $conn;
+	
+	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			return $db->email;
 		}
 	}
 }
@@ -2585,7 +2600,7 @@ function getPermissionName($value)
 }
 
 // getClubPermissionName: Converts value to title string of permission
-function getClubPermissionName($value)
+function getClubPermissionName($value, $type = "")
 {
 	if($value == 0)
 	{
@@ -2593,15 +2608,36 @@ function getClubPermissionName($value)
 	}
 	else if($value == 1)
 	{
-		return 'Regular Member';
+		if($type == "sheets")
+		{
+			return 'Active';
+		}
+		else
+		{
+			return 'Regular Member';
+		}
 	}
 	else if($value == 2)
 	{
-		return 'Reserve Member';
+		if($type == "sheets")
+		{
+			return 'Reserve';
+		}
+		else
+		{
+			return 'Reserve Member';
+		}
 	}
 	else if($value == 3)
 	{
-		return 'Retired Member';
+		if($type == "sheets")
+		{
+			return 'Retired';
+		}
+		else
+		{
+			return 'Retired Member';
+		}
 	}
 	else if($value == 4)
 	{
@@ -2721,6 +2757,111 @@ function isLink($id)
 	}
 	
 	return $link;
+}
+
+// getSheet: Gets the Google Sheet values
+// spreadsheetId: ID of spreadsheet (in URL)
+// get_range: Sheet Name OR Sheet Name!A1:G3
+function getSheet($spreadsheetId, $get_range)
+{
+	// Google API set up
+	$client = new \Google_Client();
+	$client->setApplicationName('Troop Tracker Google Sheets API');
+	$client->setScopes([\Google_Service_Sheets::SPREADSHEETS]);
+	$client->setAccessType('offline');
+	$client->setAuthConfig(__DIR__ . '/sheets_api_secret.json');
+	$service = new Google_Service_Sheets($client);
+	$response = $service->spreadsheets_values->get($spreadsheetId, $get_range);
+	$values = $response->getValues();
+	return $values;
+}
+
+// editSheet: Edit's the Google Sheet
+// spreadsheetId: ID of spreadsheet (in URL)
+// sheetName: Name of the sheet we want to edit
+// columnFrom: The letter of column we want to start editing from
+// columnTo: The letter of column we want to stop editing from
+// newValues: The new values (array) we want to change the values to
+function editSheet($spreadsheetId, $sheetName, $columnFrom, $columnTo, $newValues)
+{
+	// Google API set up
+	$client = new \Google_Client();
+	$client->setApplicationName('Troop Tracker Google Sheets API');
+	$client->setScopes([\Google_Service_Sheets::SPREADSHEETS]);
+	$client->setAccessType('offline');
+	$client->setAuthConfig(__DIR__ . '/sheets_api_secret.json');
+	$service = new Google_Service_Sheets($client);
+	
+	// Update range of the sheet
+	$update_range = $sheetName . "!" . $columnFrom . ":" . $columnTo;
+	
+	// Change to value
+	$values = [$newValues];
+	
+	// Google Sheet API to update
+	$body = new Google_Service_Sheets_ValueRange(['values' => $values]);
+	$params = ['valueInputOption' => 'RAW'];
+	$update_sheet = $service->spreadsheets_values->update($spreadsheetId, $update_range, $body, $params);
+}
+
+// addToSheet: Adds to bottom of Google Sheet
+// spreadsheetId: The ID of the spreadsheet
+// sheetName: The name of the spreadsheet we want to add to
+// newValues: Array of new values to add
+function addToSheet($spreadsheetId, $sheetName, $newValues)
+{
+	// Google API set up
+	$client = new \Google_Client();
+	$client->setApplicationName('Troop Tracker Google Sheets API');
+	$client->setScopes([\Google_Service_Sheets::SPREADSHEETS]);
+	$client->setAccessType('offline');
+	$client->setAuthConfig(__DIR__ . '/sheets_api_secret.json');
+	$service = new Google_Service_Sheets($client);
+	
+	// Add to sheet
+	$range = $sheetName;
+	$valueRange = new Google_Service_Sheets_ValueRange();
+	$valueRange->setValues(["values" => $newValues]); 
+	$conf = ["valueInputOption" => "RAW"];
+	$service->spreadsheets_values->append($spreadsheetId, $range, $valueRange, $conf);
+}
+
+// deleteSheetRows: Deletes rows from sheet
+// spreadsheetId: The ID of the spreadsheet
+// sheetID: The ID of the spreadsheet GID in URL
+// start: Index to start delete
+// end: Index to end delete
+function deleteSheetRows($spreadsheetId, $sheetID, $start, $end)
+{
+	// Google API set up
+	$client = new \Google_Client();
+	$client->setApplicationName('Troop Tracker Google Sheets API');
+	$client->setScopes([\Google_Service_Sheets::SPREADSHEETS]);
+	$client->setAccessType('offline');
+	$client->setAuthConfig(__DIR__ . '/sheets_api_secret.json');
+	$service = new Google_Service_Sheets($client);
+
+	// Delete
+	$deleteOperation = array(
+		'range' => array(
+		'sheetId'   => $sheetID,
+		'dimension' => 'ROWS',
+		'startIndex'=> $start,
+		'endIndex'  => ($end)
+		)
+	);
+
+	$deletable_row[] = new Google_Service_Sheets_Request(array('deleteDimension' =>  $deleteOperation));
+
+	$delete_body = new Google_Service_Sheets_BatchUpdateSpreadsheetRequest(array('requests' => $deletable_row));
+	$result = $service->spreadsheets->batchUpdate($spreadsheetId, $delete_body);
+}
+
+// get_numerics: Gets the numbers
+function get_numerics($str)
+{
+    preg_match_all('/\d+/', $str, $matches);
+    return $matches[0][0];
 }
 
 // If trooper is not logged in and not set to login from login page

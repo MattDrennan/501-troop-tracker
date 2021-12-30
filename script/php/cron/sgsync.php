@@ -59,18 +59,18 @@ foreach($html->find('div.single-team-area') as $a)
 }
 
 // Pull extra data from spreadsheet
-$url = 'https://sheets.googleapis.com/v4/spreadsheets/1PcveycMujakkKeG2m4y8iFunrFbo2KVpQJ00GyPI3b8/values/Sheet1?key=' . googleSheets;
-$json = json_decode(file_get_contents($url));
-$rows = $json->values;
+$values = getSheet("1PcveycMujakkKeG2m4y8iFunrFbo2KVpQJ00GyPI3b8", "Sheet1");
+
+// Set up count
 $i = 0;
 
-foreach($rows as $row)
+foreach($values as $value)
 {
 	// If not first
 	if($i != 0)
 	{
 		// Insert into database
-		$conn->query("INSERT INTO sg_troopers (sgid, name, image, link) VALUES ('".$row[0]."', '".$row[1]."', '".$row[2]."', '')") or die($conn->error);
+		$conn->query("INSERT INTO sg_troopers (sgid, name, image, link) VALUES ('".$value[0]."', '".$value[1]."', '".$value[2]."', '')") or die($conn->error);
 	}
 
 	// Increment
