@@ -238,6 +238,10 @@ function selectAdd()
 	$("#awardIDAssign").select2();
 	$("#awardIDEdit").select2();
 	$("#awardID").select2();
+	$("#userIDTitle").select2();
+	$("#titleIDAssign").select2();
+	$("#titleIDEdit").select2();
+	$("#titleID").select2();
 	$("select[name^=eventId]").select2();
 	$("select[name^=userID]").select2();
 	$("select[name^=modifysignupFormCostume]").select2();
@@ -624,7 +628,7 @@ $(document).ready(function()
 	$("body").on("input", "input[id='trooperSearch']", function(e)
 	{
 		// Loop through options
-		$("#trooperSelect option, #userID option, #userIDAward option").each(function(index)
+		$("#trooperSelect option, #userID option, #userIDAward option, #userIDTitle option").each(function(index)
 		{	
 			// If contains search query
 			if($(this).is(":contains(" + $("input[id='trooperSearch']").val() + ")"))
@@ -2194,6 +2198,194 @@ $(document).ready(function()
 			alert("Please select a costume.");
 		}
 	})
+
+	/************ TITLES ********************/
+
+	// Titles - Edit select change
+	$("body").on("change", "#titleIDEdit", function(e)
+	{
+		// If click please select, hide list
+		if($("#titleIDEdit :selected").val() == 0)
+		{
+			$("#editTitleList").hide();
+		}
+		else
+		{
+			$("#editTitleList").show();
+		}
+
+		$("#editTitle").val($("#titleIDEdit :selected").attr("title"));
+		$("#editTitleImage").val($("#titleIDEdit :selected").attr("titleImage"));
+	});
+
+	// Titles - Finsih Edit
+	$("body").on("click", "#submitEditTitle", function(e)
+	{
+		e.preventDefault();
+
+		var form = $("#titleEdit");
+		var url = form.attr("action");
+
+		var r = confirm("Are you sure you want to edit this title?");
+
+		if (r == true)
+		{
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitEditTitle=1",
+				success: function(data)
+				{
+					// Change values for delete form
+					$("#titleID").children("option[value='" + $("#titleIDEdit :selected").val() + "']").text($("#editTitle").val());
+					$("#titleID").select2();
+
+					$("#titleIDAssign").children("option[value='" + $("#titleIDEdit :selected").val() + "']").text($("#editTitle").val());
+					$("#titleIDAssign").select2();
+					
+					// Change values in edit form select
+					$("#titleIDEdit :selected").text($("#editTitle").val());
+					$("#titleIDEdit :selected").attr("title", $("#editTitle").val());
+					$("#titleIDEdit :selected").attr("titleImage", $("#editTitleImage").val());
+					$("#titleIDEdit").select2();
+
+					$("#editTitleList").hide();
+
+					$("#titleIDEdit").val(0);
+
+					// Alert to success
+			  		alert("The title was edited successfully!");
+				}
+			});
+		}
+	})
+
+	// Titles - Add title
+	$("body").on("click", "#submitTitleAdd", function(e)
+	{
+		e.preventDefault();
+
+		var form = $("#addTitle");
+		var url = form.attr("action");
+
+		var r = confirm("Are you sure you want to add this title?");
+
+		if (r == true)
+		{
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitAddTitle=1",
+				success: function(data)
+				{
+					var json = JSON.parse(data);
+
+					// Clear form
+					$("#titleName").val("");
+					$("#titleImage").val("");
+
+					// Alert to success
+			  		alert(json[0].message);
+					
+					if($("#titleID option").length <= 1)
+					{
+						// Populate result
+						$("#titlearea").html(json[0].result);
+						$("#assignarea").html(json[0].result2);
+						selectAdd();
+					}
+				}
+			});
+		}
+	})
+
+	// Titles - Give title
+	$("body").on("click", "#title", function(e)
+	{
+		e.preventDefault();
+
+		var form = $("#titleUser");
+		var url = form.attr("action");
+
+		var r = confirm("Are you sure you want to give this title to this trooper?");
+
+		if (r == true)
+		{
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitTitle=1",
+				success: function(data)
+				{
+					var json = JSON.parse(data);
+
+					// Alert to success
+			  		alert(json[0].message);
+				}
+			});
+		}
+	})
+
+	// Titles - Delete Title
+	$("body").on("click", "#submitDeleteTitle", function(e)
+	{
+		e.preventDefault();
+
+		var form = $("#titleUserDelete");
+		var url = form.attr("action");
+
+		var r = confirm("Are you sure you want to delete this title?");
+
+		if (r == true)
+		{
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitDeleteTitle=1",
+				success: function(data)
+				{
+					// Delete from title list
+					$("#titleIDEdit").children("option[value='" + $("#titleID :selected").val() + "']").remove();
+
+					// Delete from title assign list
+					$("#titleIDAssign").children("option[value='" + $("#titleID :selected").val() + "']").remove();
+					
+					// Clear
+					$("#titleID").find("option:selected").remove();
+
+					// Clear edit area
+					$("#editTitleList").hide();
+
+					// Alert to success
+			  		alert("The title was deleted successfully!");
+
+			  		// Show message if empty
+			  		if($("#titleID option").length <= 0)
+			  		{
+			  			$("#titleUserDelete").html("No title to display.");
+			  		}
+					
+			  		// Show message if empty - edit
+			  		if($("#titleIDEdit option").length <= 1)
+			  		{
+			  			$("#titleEdit").html("No title to display.");
+			  		}
+					
+			  		// Show message if empty - assign
+			  		if($("#titleIDAssign option").length <= 0)
+			  		{
+			  			$("#assignarea").html("No title to display.");
+			  		}
+				}
+			});
+
+	  		// Show message if empty
+	  		if($("#titleID option").length <= 0)
+	  		{
+	  			$("#titleUserDelete").html("No title to display.");
+	  		}
+		}
+	})
 	
 	/************ AWARD ********************/
 
@@ -2342,6 +2534,9 @@ $(document).ready(function()
 				{
 					// Delete from award list
 					$("#awardIDEdit").children("option[value='" + $("#awardID :selected").val() + "']").remove();
+
+					// Delete from title assign list
+					$("#awardIDAssign").children("option[value='" + $("#awardID :selected").val() + "']").remove();
 					
 					// Clear
 					$("#awardID").find("option:selected").remove();

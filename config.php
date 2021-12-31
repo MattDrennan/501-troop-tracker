@@ -1389,6 +1389,10 @@ function sendNotification($message, $trooperid, $type = 0, $json = "")
 	// 17 - Set Charity
 	// 18 - Remove Trooper From Event
 	// 19 - Add Shift From Edit
+	// 20 - Add Title
+	// 21 - Delete Title
+	// 22 - Give Title
+	// 23 - Edit Title
 	
 	$conn->query("INSERT INTO notifications (message, trooperid, type, json) VALUES ('".$message."', '".$trooperid."', '".$type."', '".$json."')");
 }
@@ -1823,7 +1827,21 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 			<img src="https://www.501st.com/memberdata/templates/tk_head.jpg" />
 		</p>';
 	}
+
+	// Title ranks
+	$query2 = "SELECT title_troopers.titleid, title_troopers.trooperid, titles.id, titles.title, titles.icon FROM title_troopers LEFT JOIN titles ON titles.id = title_troopers.titleid WHERE title_troopers.trooperid = '".cleanInput($_GET['profile'])."'";
+	if ($result2 = mysqli_query($conn, $query2))
+	{
+		while ($db2 = mysqli_fetch_object($result2))
+		{
+			echo '
+			<p style="text-align: center;">
+				<img src="images/ranks/'.$db2->icon.'" />
+			</p>';
+		}
+	}
 	
+	// Ranks for members
 	$query2 = "SELECT * FROM troopers WHERE id = '".cleanInput($_GET['profile'])."'";
 	if ($result2 = mysqli_query($conn, $query2))
 	{
