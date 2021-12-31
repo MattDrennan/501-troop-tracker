@@ -273,12 +273,122 @@ function addSquadLink($squad, $match, $name)
 	return $link;
 }
 
+// costume_restrict_query: Restricts the trooper's costume based on there membership
+function costume_restrict_query()
+{
+	global $conn;
+	
+	// Set up query
+	$returnQuery = "";
+	
+	// Set up club checks
+	$p501 = false;
+	$dual = false;
+	$rebel = false;
+	$mando = false;
+	$droid = false;
+	$other = false;
+	
+	$query = "SELECT * FROM troopers WHERE id = '".cleanInput($_SESSION['id'])."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// 501
+			if($db->p501 == 1 || $db->p501 == 2)
+			{
+				$returnQuery .= "costumes.club = 0";
+				
+				// Set
+				$p501 = true;
+			}
+			
+			// Dual
+			if(($db->p501 == 1 || $db->p501 == 2) && ($db->pRebel == 1 || $db->pRebel == 2))
+			{
+				// Check if trooper has a previous query result
+				if($p501)
+				{
+					$returnQuery .= " OR ";
+				}
+				
+				$returnQuery .= "costumes.club = 5";
+				
+				// Set
+				$dual = true;
+			}
+			
+			// Rebel
+			if($db->pRebel == 1 || $db->pRebel == 2)
+			{
+				// Check if trooper has a previous query result
+				if($p501 || $dual)
+				{
+					$returnQuery .= " OR ";
+				}
+				
+				$returnQuery .= "costumes.club = 1";
+				
+				// Set
+				$rebel = true;
+			}
+			
+			// Mando
+			if($db->pMando == 1 || $db->pMando == 2)
+			{
+				// Check if trooper has a previous query result
+				if($p501 || $dual || $rebel)
+				{
+					$returnQuery .= " OR ";
+				}
+				
+				$returnQuery .= "costumes.club = 2";
+				
+				// Set
+				$mando = true;
+			}
+			
+			// Droid
+			if($db->pDroid == 1 || $db->pDroid == 2)
+			{
+				// Check if trooper has a previous query result
+				if($p501 || $dual || $rebel || $mando)
+				{
+					$returnQuery .= " OR ";
+				}
+				
+				$returnQuery .= "costumes.club = 3";
+				
+				// Set
+				$droid = true;
+			}
+			
+			// Other
+			if($db->pOther == 1 || $db->pOther == 2)
+			{
+				// Check if trooper has a previous query result
+				if($p501 || $dual || $rebel || $mando || $droid)
+				{
+					$returnQuery .= " OR ";
+				}
+				
+				$returnQuery .= "costumes.club = 4";
+				
+				// Set
+				$other = true;
+			}
+		}
+	}
+	
+	return $returnQuery;
+}
+
 // email_check: Checks if e-mail is verified
 function email_check()
 {
 	global $conn;
 	
-	$query = "SELECT * FROM troopers WHERE id='".$_SESSION['id']."'";
+	$query = "SELECT * FROM troopers WHERE id = '".$_SESSION['id']."'";
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
