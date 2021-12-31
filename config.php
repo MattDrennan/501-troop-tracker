@@ -1704,6 +1704,177 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 		</p>';
 	}
 	
+	$query2 = "SELECT * FROM troopers WHERE id = '".cleanInput($_GET['profile'])."'";
+	if ($result2 = mysqli_query($conn, $query2))
+	{
+		while ($db2 = mysqli_fetch_object($result2))
+		{
+			echo '
+			<div style="text-align: center;">';
+			
+			// 501
+			// Active
+			if($db2->p501 == 1)
+			{
+				echo '
+				<p>
+					<img src="images/ranks/legion_member.png" />
+				</p>';
+			}
+			// Reserve
+			else if($db2->p501 == 2)
+			{
+				echo '
+				<p>
+					<img src="images/ranks/legion_reserve.png" />
+				</p>';
+			}
+			// Retired
+			else if($db2->p501 == 3)
+			{
+				echo '
+				<p>
+					<img src="images/ranks/legion_retired.png" />
+				</p>';
+			}
+			
+			// Everglades Member
+			if($db2->squad == 1)
+			{
+				echo '
+				<p>
+					<img src="images/ranks/everglades_sm.png" />
+				</p>';
+			}
+			
+			// Makaze Member
+			if($db2->squad == 2)
+			{
+				echo '
+				<p>
+					<img src="images/ranks/makaze_sm.png" />
+				</p>';
+			}
+			
+			// Parjai Member
+			if($db2->squad == 3)
+			{
+				echo '
+				<p>
+					<img src="images/ranks/parjai_sm.png" />
+				</p>';
+			}
+			
+			// Squad 7 Member
+			if($db2->squad == 4)
+			{
+				echo '
+				<p>
+					<img src="images/ranks/s7_sm.png" />
+				</p>';
+			}
+			
+			// Squad 7 Member
+			if($db2->squad == 5)
+			{
+				echo '
+				<p>
+					<img src="images/ranks/tampa_sm.png" />
+				</p>';
+			}
+			
+			// Rebel
+			// Active
+			if($db2->pRebel == 1)
+			{
+				echo '
+				<p>
+					<img src="images/ranks/rebel.png" />
+				</p>';
+			}
+			// Reserve
+			else if($db2->pRebel == 2)
+			{
+				echo '
+				<p>
+					<img src="images/ranks/rebel_reserve.png" />
+				</p>';
+			}
+			// Retired
+			else if($db2->pRebel == 3)
+			{
+				echo '
+				<p>
+					<img src="images/ranks/rebel_retired.png" />
+				</p>';
+			}
+			
+			// Droid Builders
+			// Active
+			if($db2->pDroid == 1)
+			{
+				echo '
+				<p>
+					<img src="images/ranks/r2.png" />
+				</p>';
+			}
+			// Reserve
+			else if($db2->pDroid == 2)
+			{
+				echo '
+				<p>
+					<img src="images/ranks/r2_reserve.png" />
+				</p>';
+			}
+			// Retired
+			else if($db2->pDroid == 3)
+			{
+				echo '
+				<p>
+					<img src="images/ranks/r2_retired.png" />
+				</p>';
+			}
+			
+			// Mando Mercs
+			// Active
+			if($db2->pMando == 1)
+			{
+				echo '
+				<p>
+					<img src="images/ranks/mercs.png" />
+				</p>';
+			}
+			// Reserve
+			else if($db2->pMando == 2)
+			{
+				echo '
+				<p>
+					<img src="images/ranks/mercs_reserve.png" />
+				</p>';
+			}
+			// Retired
+			else if($db2->pMando == 3)
+			{
+				echo '
+				<p>
+					<img src="images/ranks/mercs_retired.png" />
+				</p>';
+			}
+			
+			// Saber Guild
+			if($db2->sgid > 0)
+			{
+				echo '
+				<p>
+					<img src="images/ranks/saberguildmember.png" />
+				</p>';
+			}
+			
+			echo '
+			</div>';
+		}
+	}
+	
 	echo '
 	<p style="text-align: center;"><a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un='.urlencode($forum).'" target="_blank">View Boards Profile</a></p>';
 	

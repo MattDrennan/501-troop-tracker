@@ -475,7 +475,7 @@ if(isset($_GET['profile']))
 			echo '
 			</table>
 			</div>
-
+			
 			<h2 class="tm-section-header">Awards</h2>';
 			
 			// Check if supporter
