@@ -79,17 +79,55 @@ if(isset($_GET['do']) && isset($_POST['userID']) && isset($_POST['squad']) && $_
 	{
 		$queryAdd = "p501";
 		
-		// Add to Google Sheets
-		$newValues = ['Approved Member', 'Active', '', 'Forum Account: ' . getTrooperForum(cleanInput($_POST['userID'])), '', '', '' . getTKNumber(cleanInput($_POST['userID'])), '' . getName(cleanInput($_POST['userID'])), '' . getEmail(cleanInput($_POST['userID'])), '', 'Florida Garrison', '' . date("d-M-y")];
-		addToSheet("10_w4Fz41iUCYe3G1bQSqHDY6eK4fXP0Ue3pnfA4LoZg", "Roster", $newValues);
+		// Set up exist variable
+		$doesExist = false;
+		
+		// Pull extra data from spreadsheet - this is for checking if a valid member
+		$values = getSheet("10_w4Fz41iUCYe3G1bQSqHDY6eK4fXP0Ue3pnfA4LoZg", "Roster");
+
+		// Loop through results
+		foreach($values as $value)
+		{
+			if(@get_numerics($value[6]) == getTKNumber(cleanInput($_POST['userID'])))
+			{
+				$doesExist = true;
+			}
+		}
+		
+		// Does not exist
+		if(!$doesExist)
+		{
+			// Add to Google Sheets
+			$newValues = ['Approved Member', 'Active', '', 'Forum Account: ' . getTrooperForum(cleanInput($_POST['userID'])), '', '', '' . getTKNumber(cleanInput($_POST['userID'])), '' . getName(cleanInput($_POST['userID'])), '' . getEmail(cleanInput($_POST['userID'])), '', 'Florida Garrison', '' . date("d-M-y")];
+			addToSheet("10_w4Fz41iUCYe3G1bQSqHDY6eK4fXP0Ue3pnfA4LoZg", "Roster", $newValues);
+		}
 	}
 	else if($_POST['squad'] == 6)
 	{
 		$queryAdd = "pRebel";
 		
-		// Add to Google Sheets
-		$newValues = ['' . getRebelLegionUser(cleanInput($_POST['userID'])), '' . getName(cleanInput($_POST['userID'])), getEmail(cleanInput($_POST['userID']))];
-		addToSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster", $newValues);
+		// Set up exist variable
+		$doesExist = false;
+		
+		// Pull extra data from spreadsheet - this is for checking if a valid member
+		$values = getSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster");
+
+		// Loop through results
+		foreach($values as $value)
+		{
+			if($value[0] == getRebelLegionUser(cleanInput($_POST['userID'])))
+			{
+				$doesExist = true;
+			}
+		}
+		
+		// Does not exist
+		if(!$doesExist)
+		{
+			// Add to Google Sheets
+			$newValues = ['' . getRebelLegionUser(cleanInput($_POST['userID'])), '' . getName(cleanInput($_POST['userID'])), getEmail(cleanInput($_POST['userID']))];
+			addToSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster", $newValues);
+		}
 	}
 	else if($_POST['squad'] == 7)
 	{
@@ -1369,6 +1407,33 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 				
 				// Query the database
 				$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['user'])."', email =  '".cleanInput($_POST['email'])."', phone = '".cleanInput(cleanInput($_POST['phone']))."', squad = '".cleanInput($_POST['squad'])."', permissions = '".cleanInput($_POST['permissions'])."', p501 = '".cleanInput($_POST['p501'])."', pRebel = '".cleanInput($_POST['pRebel'])."', pDroid = '".cleanInput($_POST['pDroid'])."', pMando = '".cleanInput($_POST['pMando'])."', pOther = '".cleanInput($_POST['pOther'])."', tkid = '".$tkid."', forum_id = '".cleanInput($_POST['forumid'])."', rebelforum = '".cleanInput($_POST['rebelforum'])."', mandoid = '".cleanInput($_POST['mandoid'])."', sgid = '".cleanInput($_POST['sgid'])."', supporter = '".cleanInput($_POST['supporter'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'") or die($conn->error);
+				
+				// Check if Rebel is on spreadsheet
+				if(cleanInput($_POST['pRebel']) != 0 || cleanInput($_POST['pRebel']) != 3)
+				{
+					// Set up exist variable
+					$doesExist = false;
+					
+					// Pull extra data from spreadsheet - this is for checking if a valid member
+					$values = getSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster");
+
+					// Loop through results
+					foreach($values as $value)
+					{
+						if($value[0] == cleanInput($_POST['rebelforum']))
+						{
+							$doesExist = true;
+						}
+					}
+					
+					// Does not exist
+					if(!$doesExist)
+					{
+						// Add to Google Sheets
+						$newValues = ['' . getRebelLegionUser(cleanInput($_POST['userIDE'])), '' . getName(cleanInput($_POST['userIDE'])), getEmail(cleanInput($_POST['userIDE']))];
+						addToSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster", $newValues);
+					}
+				}
 
 				$array = array('success' => 'true', 'newname' => cleanInput($_POST['user']) . " - " . readTKNumber($tkid, getTrooperSquad(cleanInput($_POST['userIDE']))), 'data' => 'User has been updated!');
 				echo json_encode($array);
@@ -1540,9 +1605,28 @@ if(isset($_GET['do']) && $_GET['do'] == "createuser" && loggedIn())
 				// Check if Rebel Legion Sign Up
 				if($pRebel == 1)
 				{
-					// Add to Google Sheets
-					$newValues = ['' . getRebelLegionUser($last_id), '' . getName($last_id), getEmail($last_id)];
-					addToSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster", $newValues);
+					// Set up exist variable
+					$doesExist = false;
+					
+					// Pull extra data from spreadsheet - this is for checking if a valid member
+					$values = getSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster");
+
+					// Loop through results
+					foreach($values as $value)
+					{
+						if($value[0] == cleanInput($_POST['rebelforum']))
+						{
+							$doesExist = true;
+						}
+					}
+					
+					// Does not exist
+					if(!$doesExist)
+					{
+						// Add to Google Sheets
+						$newValues = ['' . getRebelLegionUser($last_id), '' . getName($last_id), getEmail($last_id)];
+						addToSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster", $newValues);
+					}
 				}
 
 				$array = array('success' => 'success', 'data' => 'User created!');
@@ -1872,9 +1956,28 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 				// Check if Rebel Legion Sign Up
 				if($pRebel == 1)
 				{
-					// Add to Google Sheets
-					$newValues = ['' . getRebelLegionUser($last_id), '' . getName($last_id), getEmail($last_id)];
-					addToSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster", $newValues);
+					// Set up exist variable
+					$doesExist = false;
+					
+					// Pull extra data from spreadsheet - this is for checking if a valid member
+					$values = getSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster");
+
+					// Loop through results
+					foreach($values as $value)
+					{
+						if($value[0] == cleanInput($_POST['rebelforum']))
+						{
+							$doesExist = true;
+						}
+					}
+					
+					// Does not exist
+					if(!$doesExist)
+					{
+						// Add to Google Sheets
+						$newValues = ['' . getRebelLegionUser($last_id), '' . getName($last_id), getEmail($last_id)];
+						addToSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster", $newValues);
+					}
 				}
 			}
 
