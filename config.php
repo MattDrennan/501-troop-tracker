@@ -274,12 +274,20 @@ function addSquadLink($squad, $match, $name)
 }
 
 // costume_restrict_query: Restricts the trooper's costume based on there membership
-function costume_restrict_query()
+function costume_restrict_query($addWhere = false)
 {
 	global $conn;
 	
 	// Set up query
-	$returnQuery = "";
+	$returnQuery = " ";
+	
+	// Should add where?
+	if($addWhere)
+	{
+		$returnQuery .= "WHERE ";
+	}
+	
+	$returnQuery .= "(";
 	
 	// Set up club checks
 	$p501 = false;
@@ -379,6 +387,8 @@ function costume_restrict_query()
 			}
 		}
 	}
+	
+	$returnQuery .= ")";
 	
 	return $returnQuery;
 }

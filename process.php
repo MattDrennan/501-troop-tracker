@@ -3000,15 +3000,15 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 									<select name="modifysignupFormCostume" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
 
 									// Display costumes
-									$query3 = "SELECT * FROM costumes";
+									$query3 = "SELECT * FROM costumes WHERE ";
 									
 									// If limited to certain costumes, only show certain costumes...
 									if($db->limitTo < 4)
 									{
-										$query3 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
+										$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
 									}
 									
-									$query3 .= " ORDER BY FIELD(costume, ".$mainCostumes."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
+									$query3 .= costume_restrict_query() . " ORDER BY FIELD(costume, ".$mainCostumes."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
 									
 									if ($result3 = mysqli_query($conn, $query3))
 									{
@@ -3037,15 +3037,15 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 									<select name="modiftybackupcostumeForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
 
 									// Display costumes
-									$query3 = "SELECT * FROM costumes";
+									$query3 = "SELECT * FROM costumes WHERE ";
 									
 									// If limited to certain costumes, only show certain costumes...
 									if($db->limitTo < 4)
 									{
-										$query3 .= " WHERE era = '".$db->limitTo."' OR era = '4'";
+										$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
 									}
 									
-									$query3 .= " ORDER BY FIELD(costume, ".$mainCostumes."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
+									$query3 .= costume_restrict_query() . " ORDER BY FIELD(costume, ".$mainCostumes."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
 									
 									// Count results
 									$c = 0;
