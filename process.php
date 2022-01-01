@@ -1758,6 +1758,19 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 			}
 			else
 			{
+				// Set up message
+				$message = "Trooper has been updated!";
+				
+				// Check if Rebel has a Rebel Forum to change status
+				if(cleanInput($_POST['pRebel']) != 0 && cleanInput($_POST['rebelforum']) == "")
+				{
+					// Reset Rebel due to it not being able to put value in spreadsheet
+					$_POST['pRebel'] = 0;
+					
+					// Add to message
+					$message = "Rebel Legion member status can not be changed, unless a Rebel Legion Forum username is set.";
+				}
+				
 				// Set up TKID
 				$tkid = cleanInput($_POST['tkid']);
 
@@ -1794,7 +1807,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 					}
 				}
 
-				$array = array('success' => 'true', 'newname' => cleanInput($_POST['user']) . " - " . readTKNumber($tkid, getTrooperSquad(cleanInput($_POST['userIDE']))), 'data' => 'User has been updated!');
+				$array = array('success' => 'true', 'newname' => cleanInput($_POST['user']) . " - " . readTKNumber($tkid, getTrooperSquad(cleanInput($_POST['userIDE']))), 'data' => $message);
 				echo json_encode($array);
 			}
 		}
