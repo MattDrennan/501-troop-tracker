@@ -4389,6 +4389,14 @@ if(isset($_GET['event']))
 					<p><b>Amenities available at venue:</b> '.ifEmpty($db->amenities, "No amenities for this event.").'</p>
 					<p><b>Comments:</b><br />'.ifEmpty(nl2br(showBBcodes($db->comments)), "No comments for this event.").'</p>
 					<p><b>Referred by:</b> '.ifEmpty($db->referred, "Not available").'</p>';
+
+					// If attached to a forum thread
+					if($db->thread_id > 0)
+					{
+						// Show link to forum
+						echo '
+						<p><b>View post on forum:</b> <a href="https://www.fl501st.com/forums/index.php?threads/'.$db->thread_id.'" target="_blank">https://www.fl501st.com/forums/index.php?threads/'.$db->thread_id.'</a></p>';
+					}
 				
 					// Get number of events with link
 					$getNumOfLinks = $conn->query("SELECT id FROM events WHERE link = '".$db->id."'");

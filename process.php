@@ -2432,6 +2432,37 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 			{
 				// Send to database to send out notifictions later
 				$conn->query("INSERT INTO notification_check (troopid) VALUES ($eventId)");
+
+
+				// Make thread body
+				$thread_body = '
+				[b]Event Name:[/b] '.cleanInput($_POST['eventName']).'
+				[b]Venue:[/b] '.cleanInput($_POST['eventVenue']).'
+				[b]Venue address:[/b] '.cleanInput($_POST['location']).'
+				[b]Event Start:[/b] '.date("m/d/y h:i A", strtotime(cleanInput($date1))).'
+				[b]Event End:[/b] '.date("m/d/y h:i A", strtotime(cleanInput($date2))).'
+				[b]Event Website:[/b] '.cleanInput($_POST['website']).'
+				[b]Expected number of attendees:[/b] '.cleanInput($_POST['numberOfAttend']).'
+				[b]Requested number of characters:[/b] '.cleanInput($_POST['requestedNumber']).'
+				[b]Requested character types:[/b] '.cleanInput($_POST['requestedCharacter']).'
+				[b]Secure changing/staging area:[/b] '.yesNo(cleanInput($_POST['secure'])).'
+				[b]Can troopers carry blasters:[/b] '.yesNo(cleanInput($_POST['blasters'])).'
+				[b]Can troopers carry/bring props like lightsabers and staffs:[/b] '.yesNo(cleanInput($_POST['lightsabers'])).'
+				[b]Is parking available:[/b] '.yesNo(cleanInput($_POST['parking'])).'
+				[b]Is venue accessible to those with limited mobility:[/b] '.yesNo(cleanInput($_POST['mobility'])).'
+				[b]Amenities available at venue:[/b] '.yesNo(cleanInput($_POST['amenities'])).'
+				[b]Comments:[/b] '.cleanInput($_POST['comments']).'
+				[b]Referred by:[/b] '.cleanInput($_POST['referred']).'
+
+				[b][u]Sign Up / Event Roster:[/u][/b]
+
+				[url]https://fl501st.com/troop-tracker/index.php?event=' . $last_id . '[/url]';
+
+				// Create thread on forum
+				$thread = createThread(8, date("m/d/y", strtotime(cleanInput($date1))) . " " . cleanInput($_POST['eventName']), $thread_body);
+
+				// Update event
+				$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."' WHERE id = '".$eventId."'");
 			}
 			
 			// Loop through shifts
@@ -2455,6 +2486,36 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 
 						// Last ID
 						$last_id = $conn->insert_id;
+
+						// Make thread body
+						$thread_body = '
+						[b]Event Name:[/b] '.cleanInput($_POST['eventName']).'
+						[b]Venue:[/b] '.cleanInput($_POST['eventVenue']).'
+						[b]Venue address:[/b] '.cleanInput($_POST['location']).'
+						[b]Event Start:[/b] '.date("m/d/y h:i A", strtotime(cleanInput($date1))).'
+						[b]Event End:[/b] '.date("m/d/y h:i A", strtotime(cleanInput($date2))).'
+						[b]Event Website:[/b] '.cleanInput($_POST['website']).'
+						[b]Expected number of attendees:[/b] '.cleanInput($_POST['numberOfAttend']).'
+						[b]Requested number of characters:[/b] '.cleanInput($_POST['requestedNumber']).'
+						[b]Requested character types:[/b] '.cleanInput($_POST['requestedCharacter']).'
+						[b]Secure changing/staging area:[/b] '.yesNo(cleanInput($_POST['secure'])).'
+						[b]Can troopers carry blasters:[/b] '.yesNo(cleanInput($_POST['blasters'])).'
+						[b]Can troopers carry/bring props like lightsabers and staffs:[/b] '.yesNo(cleanInput($_POST['lightsabers'])).'
+						[b]Is parking available:[/b] '.yesNo(cleanInput($_POST['parking'])).'
+						[b]Is venue accessible to those with limited mobility:[/b] '.yesNo(cleanInput($_POST['mobility'])).'
+						[b]Amenities available at venue:[/b] '.yesNo(cleanInput($_POST['amenities'])).'
+						[b]Comments:[/b] '.cleanInput($_POST['comments']).'
+						[b]Referred by:[/b] '.cleanInput($_POST['referred']).'
+
+						[b][u]Sign Up / Event Roster:[/u][/b]
+
+						[url]https://fl501st.com/troop-tracker/index.php?event=' . $last_id . '[/url]';
+
+						// Create thread on forum
+						$thread = createThread(8, date("m/d/y", strtotime(cleanInput($date1))) . " " . cleanInput($_POST['eventName']), $thread_body);
+
+						// Update event
+						$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."' WHERE id = '".$last_id."'");
 
 						// Send notification to command staff
 						sendNotification(getName($_SESSION['id']) . " has added an event: [" . $last_id . "][" . cleanInput($_POST['eventName']) . "]", cleanInput($_SESSION['id']), 13, convertDataToJSON("SELECT * FROM events WHERE id = '".$last_id."'"));
