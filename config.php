@@ -562,7 +562,7 @@ function drawSupportGraph()
 				}
 			</style>
 			
-			<h2 class="tm-section-header">'.date("F", strtotime('m')).' - Donation Goal</h2>
+			<h2 class="tm-section-header">'.date("F").' - Donation Goal</h2>
 			
 			<p style="text-align: center;">
 				<div class="bargraph">
