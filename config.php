@@ -1364,6 +1364,92 @@ function convertDataToJSON($query)
 	return json_encode($array);
 }
 
+// hasAward: Does the trooper have this award
+function hasAward($trooperid, $awardid, $echo = false, $remove = false)
+{
+	global $conn;
+	
+	// Get data
+	$query = "SELECT * FROM award_troopers WHERE trooperid = '".$trooperid."' AND awardid = '".$awardid."'";
+
+	// Set up return variable
+	$hasAward = false;
+	
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Set
+			$hasAward = true;
+		}
+	}
+	
+	// Does not print
+	if(!$echo)
+	{
+		return $hasAward;
+	}
+	else
+	{
+		// Does not have award
+		if($hasAward && !$remove)
+		{
+			return 'style = "display: none;"';
+		}
+		else if(!$hasAward && $remove)
+		{
+			return 'style = "display: none;"';
+		}
+		else
+		{
+			return '';
+		}
+	}
+}
+
+// hasTitle: Does the trooper have this title
+function hasTitle($trooperid, $awardid, $echo = false, $remove = false)
+{
+	global $conn;
+	
+	// Get data
+	$query = "SELECT * FROM title_troopers WHERE trooperid = '".$trooperid."' AND titleid = '".$awardid."'";
+
+	// Set up return variable
+	$hasTitle = false;
+	
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Set
+			$hasTitle = true;
+		}
+	}
+	
+	// Does not print
+	if(!$echo)
+	{
+		return $hasTitle;
+	}
+	else
+	{
+		// Does not have title
+		if($hasTitle && !$remove)
+		{
+			return 'style = "display: none;"';
+		}
+		else if(!$hasTitle && $remove)
+		{
+			return 'style = "display: none;"';
+		}
+		else
+		{
+			return '';
+		}
+	}
+}
+
 // sendNotification: Sends a notification to the log
 function sendNotification($message, $trooperid, $type = 0, $json = "")
 {
@@ -1393,6 +1479,8 @@ function sendNotification($message, $trooperid, $type = 0, $json = "")
 	// 21 - Delete Title
 	// 22 - Give Title
 	// 23 - Edit Title
+	// 24 - Remove Title
+	// 25 - Remove Award
 	
 	$conn->query("INSERT INTO notifications (message, trooperid, type, json) VALUES ('".$message."', '".$trooperid."', '".$type."', '".$json."')");
 }

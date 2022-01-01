@@ -2547,7 +2547,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						// Formatting
 						if($j == 0)
 						{
-							$getId = $db->id;
+							$getId2 = $db->id;
 
 							echo '<select id="titleIDAssign" name="titleIDAssign">';
 						}
@@ -2564,15 +2564,16 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				{
 					echo '
 					</select>
-
-					<input type="submit" name="title" id="title" value="Assign!" />';
+					
+					<input type="submit" name="title" id="title" value="Assign" '.hasTitle($getId, $getId2, true).' />
+					<input type="submit" name="titleRemove" id="titleRemove" value="Remove" '.hasTitle($getId, $getId2, true, true).' />';
 				}
 				else
 				{
 					echo 'No titles to display.';
 				}
 			}
-
+			
 			echo '</form></div>';
 
 			echo '<br /><hr /><br /><h3>Create Title</h3>
@@ -2748,7 +2749,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						// Formatting
 						if($j == 0)
 						{
-							$getId = $db->id;
+							$getId2 = $db->id;
 
 							echo '<select id="awardIDAssign" name="awardIDAssign">';
 						}
@@ -2766,7 +2767,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					echo '
 					</select>
 
-					<input type="submit" name="award" id="award" value="Assign!" />';
+					<input type="submit" name="award" id="award" value="Assign" '.hasAward($getId, $getId2, true).' /> <input type="submit" name="awardRemove" id="awardRemove" value="Remove" '.hasAward($getId, $getId2, true, true).' />';
 				}
 				else
 				{

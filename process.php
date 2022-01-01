@@ -992,6 +992,29 @@ if(isset($_GET['do']) && $_GET['do'] == "eventsubscribe" && isset($_POST['events
 // Titles to troopers
 if(isset($_GET['do']) && $_GET['do'] == "assigntitles" && loggedIn() && isAdmin())
 {
+	// Get title details
+	if(isset($_POST['gettitle']))
+	{
+		// Set up return variable
+		$hasTitle = 0;
+
+		// Get data
+		$query = "SELECT * FROM title_troopers WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND titleid = '".cleanInput($_POST['titleid'])."'";
+		
+		if ($result = mysqli_query($conn, $query))
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				// Set
+				$hasTitle = 1;
+			}
+		}
+		
+		// Output
+		$array = array('hasTitle' => $hasTitle);
+		echo json_encode($array);
+	}
+	
 	// Title submitted for deletion...
 	if(isset($_POST['submitDeleteTitle']))
 	{
@@ -1173,12 +1196,11 @@ if(isset($_GET['do']) && $_GET['do'] == "assigntitles" && loggedIn() && isAdmin(
 					// Formatting
 					if($j == 0)
 					{
-						$getId = $db->id;
-
-							$returnMessage2 .= '<select id="titleIDAssign" name="titleIDAssign">';
+						$getId2 = $db->id;
+						$returnMessage2 .= '<select id="titleIDAssign" name="titleIDAssign">';
 					}
 
-						$returnMessage2 .= '<option value="'.$db->id.'">'.$db->title.'</option>';
+					$returnMessage2 .= '<option value="'.$db->id.'">'.$db->title.'</option>';
 
 					// Increment $j
 					$j++;
@@ -1188,14 +1210,15 @@ if(isset($_GET['do']) && $_GET['do'] == "assigntitles" && loggedIn() && isAdmin(
 			// If title exist
 			if($j > 0)
 			{
-					$returnMessage2 .= '
+				$returnMessage2 .= '
 				</select>
 
-				<input type="submit" name="title" id="title" value="Assign!" />';
+				<input type="submit" name="title" id="title" value="Assign" '.hasTitle($getId, $getId2, true).' />
+				<input type="submit" name="titleRemove" id="titleRemove" value="Remove" '.hasTitle($getId, $getId2, true, true).' />';
 			}
 			else
 			{
-					$returnMessage2 .= 'No titles to display.';
+				$returnMessage2 .= 'No titles to display.';
 			}
 		}
 
@@ -1205,6 +1228,7 @@ if(isset($_GET['do']) && $_GET['do'] == "assigntitles" && loggedIn() && isAdmin(
 		echo json_encode($array);
 	}
 
+	// Add's title to trooper
 	if(isset($_POST['submitTitle']))
 	{
 		// Check how many rewards
@@ -1241,6 +1265,33 @@ if(isset($_GET['do']) && $_GET['do'] == "assigntitles" && loggedIn() && isAdmin(
 		$array = array(array('message' => $message));
 		echo json_encode($array);
 	}
+	
+	// Remove's title from trooper
+	if(isset($_POST['removeTitle']))
+	{
+		// Check how many rewards
+		$result = mysqli_query($conn, "SELECT count(*) FROM title_troopers WHERE trooperid = '".cleanInput($_POST['userIDTitle'])."' AND titleid = '".cleanInput($_POST['titleIDAssign'])."'");
+		$num_rows = mysqli_fetch_row($result)[0];
+
+		$message = "The title was removed successfully!";
+
+		// If no duplicates
+		if($num_rows > 0)
+		{
+			// Remove
+			$conn->query("DELETE FROM title_troopers WHERE trooperid = '".cleanInput($_POST['userIDTitle'])."' AND titleid = '".cleanInput($_POST['titleIDAssign'])."'");
+			
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has removed title ID [" . cleanInput($_POST['titleIDAssign']) . "] from " . getName(cleanInput($_POST['userIDTitle'])), cleanInput($_SESSION['id']), 24, json_encode(array("trooperid" => cleanInput($_POST['userIDTitle']), "titleid" => cleanInput($_POST['titleIDAssign']))));
+		}
+		else
+		{
+			$message = "Trooper does not have this title!";
+		}
+
+		$array = array(array('message' => $message));
+		echo json_encode($array);
+	}
 
 	if(isset($_POST['submitEditTitle']))
 	{
@@ -1256,6 +1307,29 @@ if(isset($_GET['do']) && $_GET['do'] == "assigntitles" && loggedIn() && isAdmin(
 // Awards to troopers
 if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin())
 {
+	// Get award details
+	if(isset($_POST['getaward']))
+	{
+		// Set up return variable
+		$hasAward = 0;
+
+		// Get data
+		$query = "SELECT * FROM award_troopers WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND awardid = '".cleanInput($_POST['awardid'])."'";
+		
+		if ($result = mysqli_query($conn, $query))
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				// Set
+				$hasAward = 1;
+			}
+		}
+		
+		// Output
+		$array = array('hasAward' => $hasAward);
+		echo json_encode($array);
+	}
+	
 	// Award submitted for deletion...
 	if(isset($_POST['submitDeleteAward']))
 	{
@@ -1437,12 +1511,11 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 					// Formatting
 					if($j == 0)
 					{
-						$getId = $db->id;
-
-							$returnMessage2 .= '<select id="awardIDAssign" name="awardIDAssign">';
+						$getId2 = $db->id;
+						$returnMessage2 .= '<select id="awardIDAssign" name="awardIDAssign">';
 					}
-
-						$returnMessage2 .= '<option value="'.$db->id.'">'.$db->title.'</option>';
+					
+					$returnMessage2 .= '<option value="'.$db->id.'">'.$db->title.'</option>';
 
 					// Increment $j
 					$j++;
@@ -1452,14 +1525,15 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 			// If awards exist
 			if($j > 0)
 			{
-					$returnMessage2 .= '
+				$returnMessage2 .= '
 				</select>
 
-				<input type="submit" name="award" id="award" value="Assign!" />';
+				<input type="submit" name="award" id="award" value="Assign" '.hasAward($getId, $getId2, true).' />
+				<input type="submit" name="awardRemove" id="awardRemove" value="Remove" '.hasAward($getId, $getId2, true, true).' />';
 			}
 			else
 			{
-					$returnMessage2 .= 'No awards to display.';
+				$returnMessage2 .= 'No awards to display.';
 			}
 		}
 
@@ -1469,6 +1543,7 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 		echo json_encode($array);
 	}
 
+	// Give award to trooper
 	if(isset($_POST['submitAward']))
 	{
 		// Check how many rewards
@@ -1505,7 +1580,35 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 		$array = array(array('message' => $message));
 		echo json_encode($array);
 	}
+	
+	// Remove's award from trooper
+	if(isset($_POST['removeAward']))
+	{
+		// Check how many rewards
+		$result = mysqli_query($conn, "SELECT count(*) FROM award_troopers WHERE trooperid = '".cleanInput($_POST['userIDAward'])."' AND awardid = '".cleanInput($_POST['awardIDAssign'])."'");
+		$num_rows = mysqli_fetch_row($result)[0];
 
+		$message = "The award was removed successfully!";
+
+		// If no duplicates
+		if($num_rows > 0)
+		{
+			// Remove
+			$conn->query("DELETE FROM award_troopers WHERE trooperid = '".cleanInput($_POST['userIDAward'])."' AND awardid = '".cleanInput($_POST['awardIDAssign'])."'");
+			
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has removed award ID [" . cleanInput($_POST['awardIDAssign']) . "] from " . getName(cleanInput($_POST['userIDAward'])), cleanInput($_SESSION['id']), 25, json_encode(array("trooperid" => cleanInput($_POST['userIDAward']), "awardid" => cleanInput($_POST['awardIDAssign']))));
+		}
+		else
+		{
+			$message = "Trooper does not have this award!";
+		}
+
+		$array = array(array('message' => $message));
+		echo json_encode($array);
+	}
+
+	// Edit an award
 	if(isset($_POST['submitEditAward']))
 	{
 		// Query the database

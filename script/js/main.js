@@ -2200,6 +2200,38 @@ $(document).ready(function()
 	})
 
 	/************ TITLES ********************/
+	
+	// Titles - select change
+	$("body").on("change", "#userIDTitle", function(e)
+	{
+		// Get trooper ID
+		var trooperid = $("#userIDTitle option:selected").val();
+		var titleid = $("#titleIDAssign option:selected").val();
+		
+		$.ajax({
+			type: "POST",
+			url: "process.php?do=assigntitles",
+			data: "gettitle=1&titleid=" + titleid + "&trooperid=" + trooperid,
+			success: function(data)
+			{
+				console.log(data);
+				// Get JSON
+				var json = JSON.parse(data);
+				
+				// Check if has award
+				if(json.hasTitle == 0)
+				{
+					$("#title").show();
+					$("#titleRemove").hide();
+				}
+				else
+				{
+					$("#title").hide();
+					$("#titleRemove").show();
+				}
+			}
+		});
+	});
 
 	// Titles - Edit select change
 	$("body").on("change", "#titleIDEdit", function(e)
@@ -2298,6 +2330,7 @@ $(document).ready(function()
 			});
 		}
 	})
+	
 
 	// Titles - Give title
 	$("body").on("click", "#title", function(e)
@@ -2318,6 +2351,41 @@ $(document).ready(function()
 				success: function(data)
 				{
 					var json = JSON.parse(data);
+					
+					// Show / Hide
+					$("#title").hide();
+					$("#titleRemove").show();
+
+					// Alert to success
+			  		alert(json[0].message);
+				}
+			});
+		}
+	})
+	
+	// Titles - Remove title
+	$("body").on("click", "#titleRemove", function(e)
+	{
+		e.preventDefault();
+
+		var form = $("#titleUser");
+		var url = form.attr("action");
+
+		var r = confirm("Are you sure you want to remove this title from this trooper?");
+
+		if (r == true)
+		{
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&removeTitle=1",
+				success: function(data)
+				{
+					var json = JSON.parse(data);
+					
+					// Show / Hide
+					$("#title").show();
+					$("#titleRemove").hide();
 
 					// Alert to success
 			  		alert(json[0].message);
@@ -2388,6 +2456,37 @@ $(document).ready(function()
 	})
 	
 	/************ AWARD ********************/
+	
+	// Awards - select change
+	$("body").on("change", "#userIDAward", function(e)
+	{
+		// Get trooper ID
+		var trooperid = $("#userIDAward option:selected").val();
+		var awardid = $("#awardIDAssign option:selected").val();
+		
+		$.ajax({
+			type: "POST",
+			url: "process.php?do=assignawards",
+			data: "getaward=1&awardid=" + awardid + "&trooperid=" + trooperid,
+			success: function(data)
+			{
+				// Get JSON
+				var json = JSON.parse(data);
+				
+				// Check if has award
+				if(json.hasAward == 0)
+				{
+					$("#award").show();
+					$("#awardRemove").hide();
+				}
+				else
+				{
+					$("#award").hide();
+					$("#awardRemove").show();
+				}
+			}
+		});
+	});
 
 	// Awards - Edit select change
 	$("body").on("change", "#awardIDEdit", function(e)
@@ -2506,6 +2605,41 @@ $(document).ready(function()
 				success: function(data)
 				{
 					var json = JSON.parse(data);
+					
+					// Hide / Show
+					$("#award").hide();
+					$("#awardRemove").show();
+
+					// Alert to success
+			  		alert(json[0].message);
+				}
+			});
+		}
+	})
+	
+	// Awards - Remove award
+	$("body").on("click", "#awardRemove", function(e)
+	{
+		e.preventDefault();
+
+		var form = $("#awardUser");
+		var url = form.attr("action");
+
+		var r = confirm("Are you sure you want to remove this award from this trooper?");
+
+		if (r == true)
+		{
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&removeAward=1",
+				success: function(data)
+				{
+					var json = JSON.parse(data);
+					
+					// Show / Hide
+					$("#award").show();
+					$("#awardRemove").hide();
 
 					// Alert to success
 			  		alert(json[0].message);
