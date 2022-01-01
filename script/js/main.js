@@ -2319,13 +2319,10 @@ $(document).ready(function()
 					// Alert to success
 			  		alert(json[0].message);
 					
-					if($("#titleID option").length <= 1)
-					{
-						// Populate result
-						$("#titlearea").html(json[0].result);
-						$("#assignarea").html(json[0].result2);
-						selectAdd();
-					}
+					// Populate result
+					$("#titlearea").html(json[0].result);
+					$("#assignarea").html(json[0].result2);
+					selectAdd();
 				}
 			});
 		}
@@ -2574,13 +2571,10 @@ $(document).ready(function()
 					// Alert to success
 			  		alert(json[0].message);
 					
-					if($("#awardID option").length <= 1)
-					{
-						// Populate result
-						$("#awardarea").html(json[0].result);
-						$("#assignarea").html(json[0].result2);
-						selectAdd();
-					}
+					// Populate result
+					$("#awardarea").html(json[0].result);
+					$("#assignarea").html(json[0].result2);
+					selectAdd();
 				}
 			});
 		}
