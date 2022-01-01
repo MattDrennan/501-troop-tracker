@@ -614,6 +614,84 @@ function drawSupportGraph()
 	return $return;
 }
 
+// getAuthForum: Get's auth data from Xenforo
+function getAuthForum($user_id)
+{
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/auth/login-token",
+	  CURLOPT_POST => 1,
+	  CURLOPT_POSTFIELDS => "user_id=" . $user_id,
+	  CURLOPT_CUSTOMREQUEST => "POST",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI_superuser,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+// loginWithForum: Login the trooper with there xenforo credentials
+function loginWithForum($username, $password)
+{
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/auth",
+	  CURLOPT_POST => 1,
+	  CURLOPT_POSTFIELDS => "login=" . $username . "&password=" . $password . "",
+	  CURLOPT_CUSTOMREQUEST => "POST",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI_superuser,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+// createThread: Create's a thread in Xenforo
+function createThread($id, $title, $message)
+{
+	// Create Thread
+	$curl = curl_init();
+
+	$params = array('nodeid' => $id, 'title' => $title, 'message' => $message);
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/threads",
+	  CURLOPT_POST => 1,
+	  CURLOPT_POSTFIELDS => "node_id=" . $id . "&title=" . $title . "&message=" . $message,
+	  CURLOPT_CUSTOMREQUEST => "POST",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
 // isSupporter: A function to determine if a trooper is a supporter
 function isSupporter($id)
 {

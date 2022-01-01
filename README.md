@@ -35,6 +35,10 @@ define('placeholder', 1196);
 // Forum User Database (FL 501ST BOARDS DATABASE)
 define('forum_user_database', 'DATABASE.TABLE HERE');
 
+// Forum API Key (Xenforo)
+define('xenforoAPI', 'API_KEY_HERE');
+define('xenforoAPI_superuser', 'API_SUPER_USER_KEY_HERE');
+
 // E-mail Creds
 // This is the email server and account you are going to send e-mails from
 define('emailFrom', 'EMAIL_ADDRESS');
