@@ -670,13 +670,139 @@ function createThread($id, $title, $message)
 	// Create Thread
 	$curl = curl_init();
 
-	$params = array('nodeid' => $id, 'title' => $title, 'message' => $message);
-
 	curl_setopt_array($curl, [
 	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/threads",
 	  CURLOPT_POST => 1,
 	  CURLOPT_POSTFIELDS => "node_id=" . $id . "&title=" . $title . "&message=" . $message,
 	  CURLOPT_CUSTOMREQUEST => "POST",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+// editThread: Edit's a thread in Xenforo
+function editThread($id, $title, $discussion = false)
+{
+	// Edit Thread
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/threads/" . $id,
+	  CURLOPT_POST => 1,
+	  CURLOPT_POSTFIELDS => "title=" . $title . "&discussion_open=" . $discussion,
+	  CURLOPT_CUSTOMREQUEST => "POST",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+// createPost: Create's a post in Xenforo
+function createPost($id, $message)
+{
+	// Create Post
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/posts",
+	  CURLOPT_POST => 1,
+	  CURLOPT_POSTFIELDS => "thread_id=" . $id . "&message=" . $message,
+	  CURLOPT_CUSTOMREQUEST => "POST",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+// editPost: Edits a post in Xenforo
+function editPost($id, $message)
+{
+	// Edit Post
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/posts/" . $id,
+	  CURLOPT_POST => 1,
+	  CURLOPT_POSTFIELDS => "message=" . $message,
+	  CURLOPT_CUSTOMREQUEST => "POST",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+// deletePost: Deletes a post in Xenforo
+function deletePost($id, $hard_delete = false)
+{
+	// Delete Post
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/posts/" . $id,
+	  CURLOPT_CUSTOMREQUEST => "DELETE",
+	  CURLOPT_POSTFIELDS => "hard_delete=" . $hard_delete,
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+// deleteThread: Deletes thread in Xenforo
+function deleteThread($id, $hard_delete = false)
+{
+	// Delete Thread
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/threads/" . $id,
+	  CURLOPT_CUSTOMREQUEST => "DELETE",
+	  CURLOPT_POSTFIELDS => "hard_delete=" . $hard_delete,
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
@@ -1593,7 +1719,7 @@ function getEventTitle($id, $link = false)
 {
 	global $conn;
 	
-	$query = "SELECT * FROM events WHERE id='".$id."'";
+	$query = "SELECT * FROM events WHERE id = '".$id."'";
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
@@ -1606,6 +1732,21 @@ function getEventTitle($id, $link = false)
 			{
 				return $db->name;
 			}
+		}
+	}
+}
+
+// getEventThreadID: Gets event thread ID on forum
+function getEventThreadID($id)
+{
+	global $conn;
+	
+	$query = "SELECT * FROM events WHERE id = '".$id."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			return $db->thread_id;
 		}
 	}
 }

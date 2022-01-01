@@ -656,7 +656,19 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 		{
 			// Query the database
 			$conn->query("INSERT INTO comments (troopid, trooperid, comment, important) VALUES ('".cleanInput($_POST['eventId'])."', '".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['comment'])."', '".cleanInput($_POST['important'])."')") or die($conn->error);
+
+			// Get last ID of comment
 			$last_id = $conn->insert_id;
+
+			// Get thread ID
+			$thread_id = getEventThreadID(cleanInput($_POST['eventId']));
+
+			// Check if there is a forum thread
+			if($thread_id > 0)
+			{
+				// Post to forum
+				$post = createPost($thread_id, cleanInput($_POST['comment']));
+			}
 		}
 
 		// Set up query string
@@ -2462,7 +2474,7 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 				$thread = createThread(8, date("m/d/y", strtotime(cleanInput($date1))) . " " . cleanInput($_POST['eventName']), $thread_body);
 
 				// Update event
-				$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."' WHERE id = '".$eventId."'");
+				$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."', post_id = '".$thread['thread']['last_post_id']."' WHERE id = '".$eventId."'");
 			}
 			
 			// Loop through shifts
@@ -2515,7 +2527,7 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 						$thread = createThread(8, date("m/d/y", strtotime(cleanInput($date1))) . " " . cleanInput($_POST['eventName']), $thread_body);
 
 						// Update event
-						$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."' WHERE id = '".$last_id."'");
+						$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."', post_id = '".$thread['thread']['last_post_id']."' WHERE id = '".$last_id."'");
 
 						// Send notification to command staff
 						sendNotification(getName($_SESSION['id']) . " has added an event: [" . $last_id . "][" . cleanInput($_POST['eventName']) . "]", cleanInput($_SESSION['id']), 13, convertDataToJSON("SELECT * FROM events WHERE id = '".$last_id."'"));
