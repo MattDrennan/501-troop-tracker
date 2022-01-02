@@ -3436,8 +3436,11 @@ if(!loggedIn() && !isset($_POST['loginWithTK']))
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
+				// Login with forum
+				$forumLogin = loginWithForum($tkid, cleanInput($_POST['password']));
+
 				// Check credentials and make sure trooper still has access
-				if(password_verify($_COOKIE['TroopTrackerPassword'], $db->password) && canAccess($db->id))
+				if(password_verify($_COOKIE['TroopTrackerPassword'], $db->password) && canAccess($db->id) || (isset($forumLogin['success']) && $forumLogin['success'] == 1))
 				{
 					// Set session
 					$_SESSION['id'] = $db->id;

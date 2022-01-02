@@ -3875,23 +3875,23 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 		$squad = loginWithTKID($tkid);
 
 		// Get data
-		$query = "SELECT * FROM troopers WHERE (tkid = '".removeLetters($tkid)."' AND squad = '".$squad."') OR forum_id = '".cleanInput($_POST['tkid'])."' OR rebelforum = '".cleanInput($_POST['tkid'])."'";
+		$query = "SELECT * FROM troopers WHERE (tkid = '".removeLetters($tkid)."' AND squad = '".$squad."') OR forum_id = '".cleanInput($_POST['tkid'])."' OR rebelforum = '".cleanInput($_POST['tkid'])."' LIMIT 1";
+
+		// Trooper count
 		$i = 0;
+
 		if ($result = mysqli_query($conn, $query))
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
+				// Increment trooper count
 				$i++;
-				
-				// Check if old MD5 password
-				if(cleanInput(md5($_POST['password'])) == $db->password)
-				{
-					// Update MySQL password
-					$conn->query("UPDATE troopers SET password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."' WHERE id = '".$db->id."'");
-				}
+
+				// Login with forum
+				$forumLogin = loginWithForum($tkid, cleanInput($_POST['password']));
 
 				// Check credentials
-				if(password_verify(cleanInput($_POST['password']), $db->password))
+				if(password_verify(cleanInput($_POST['password']), $db->password) || (isset($forumLogin['success']) && $forumLogin['success'] == 1))
 				{
 					if($db->approved != 0)
 					{
