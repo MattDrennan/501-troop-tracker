@@ -690,8 +690,8 @@ function createThread($id, $title, $message)
 	return json_decode($response, true);
 }
 
-// editThread: Edit's a thread in Xenforo
-function editThread($id, $title, $discussion = false)
+// editThread: Locks a thread in Xenforo
+function lockThread($id)
 {
 	// Edit Thread
 	$curl = curl_init();
@@ -699,7 +699,7 @@ function editThread($id, $title, $discussion = false)
 	curl_setopt_array($curl, [
 	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/threads/" . $id,
 	  CURLOPT_POST => 1,
-	  CURLOPT_POSTFIELDS => "title=" . $title . "&discussion_open=" . $discussion,
+	  CURLOPT_POSTFIELDS => "discussion_open=" . false,
 	  CURLOPT_CUSTOMREQUEST => "POST",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
@@ -1747,6 +1747,36 @@ function getEventThreadID($id)
 		while ($db = mysqli_fetch_object($result))
 		{
 			return $db->thread_id;
+		}
+	}
+}
+
+// getEventPostID: Gets event post ID on forum
+function getEventPostID($id)
+{
+	global $conn;
+	
+	$query = "SELECT * FROM events WHERE id = '".$id."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			return $db->post_id;
+		}
+	}
+}
+
+// getCommentPostID: Gets comment post ID on forum
+function getCommentPostID($id)
+{
+	global $conn;
+	
+	$query = "SELECT * FROM comments WHERE id = '".$id."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			return $db->post_id;
 		}
 	}
 }

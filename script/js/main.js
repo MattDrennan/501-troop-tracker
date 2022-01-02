@@ -1328,6 +1328,18 @@ $(document).ready(function()
 			});
 		}
 	});
+
+	// When trooper quotes a comment
+	$("body").on("click", "[id^=quoteComment]", function(e)
+	{
+		e.preventDefault();
+
+		// Get ID of comment
+		var id = $(this).attr("name");
+
+		// Add comment to comment text area
+		$("#comment").val($("#comment").val() + "[quotec trooperid=" + $(this).attr("trooperid") + " name=" + $(this).attr("troopername") + " tkid=" + $(this).attr("tkid") + " commentid=" + id + "]" + $("table[name=comment_" + id + "] td[name=insideComment]").text() + "[/quotec]\n\n");
+	});
 	
 	// When trooper quotes a comment
 	$("body").on("click", "[id^=editComment]", function(e)

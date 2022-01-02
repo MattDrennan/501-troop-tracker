@@ -396,6 +396,7 @@ $(function()
                     data: $(form).serialize() + "&submitEventEdit=1",
                     success: function(data)
                     {
+                        console.log(data);
                         var json = JSON.parse(data);
 
                         // Hide interface

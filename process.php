@@ -61,6 +61,9 @@ if(isset($_GET['do']) && isset($_POST['commentid']) && isset($_POST['comment']) 
 			{
 				// Update comment
 				$conn->query("UPDATE comments SET comment = '".cleanInput($_POST['comment'])."' WHERE id = '".cleanInput($_POST['commentid'])."' AND trooperid = '".cleanInput($_SESSION['id'])."'");
+
+				// Edit comment
+				editPost(getCommentPostID(cleanInput($_POST['commentid'])), cleanInput($_POST['comment']));
 			}
 		}
 	}
@@ -668,6 +671,9 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 			{
 				// Post to forum
 				$post = createPost($thread_id, cleanInput($_POST['comment']));
+
+				// Update comment
+				$conn->query("UPDATE comments SET post_id = '".$post['post']['post_id']."' WHERE id = '".$last_id."'");
 			}
 		}
 
@@ -2473,6 +2479,9 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 				// Create thread on forum
 				$thread = createThread(8, date("m/d/y", strtotime(cleanInput($date1))) . " " . cleanInput($_POST['eventName']), $thread_body);
 
+				// Lock the thread
+				lockThread($thread['thread']['thread_id']);
+
 				// Update event
 				$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."', post_id = '".$thread['thread']['last_post_id']."' WHERE id = '".$eventId."'");
 			}
@@ -2625,6 +2634,9 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 
 		// Delete from sign ups - event_sign_up
 		$conn->query("DELETE FROM event_sign_up WHERE troopid = '".cleanInput($_POST['eventId'])."'");
+
+		// Delete thread on forum
+		deleteThread(getEventThreadID(cleanInput($_POST['eventId'])), true);
 		
 		// If this event is the main link to others
 		if($getNumOfLinks->num_rows > 0)
@@ -3047,6 +3059,28 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			
 			// Get number of events with link
 			$getNumOfLinks = $conn->query("SELECT id FROM events WHERE link = '".cleanInput($_POST['eventIdE'])."'");
+
+			// Make thread body
+			$thread_body = '
+			[b]Event Name:[/b] '.cleanInput($_POST['eventName']).'
+			[b]Venue:[/b] '.cleanInput($_POST['eventVenue']).'
+			[b]Venue address:[/b] '.cleanInput($_POST['location']).'
+			[b]Event Start:[/b] '.date("m/d/y h:i A", strtotime(cleanInput($date1))).'
+			[b]Event End:[/b] '.date("m/d/y h:i A", strtotime(cleanInput($date2))).'
+			[b]Event Website:[/b] '.cleanInput($_POST['website']).'
+			[b]Expected number of attendees:[/b] '.cleanInput($_POST['numberOfAttend']).'
+			[b]Requested number of characters:[/b] '.cleanInput($_POST['requestedNumber']).'
+			[b]Requested character types:[/b] '.cleanInput($_POST['requestedCharacter']).'
+			[b]Secure changing/staging area:[/b] '.yesNo(cleanInput($_POST['secure'])).'
+			[b]Can troopers carry blasters:[/b] '.yesNo(cleanInput($_POST['blasters'])).'
+			[b]Can troopers carry/bring props like lightsabers and staffs:[/b] '.yesNo(cleanInput($_POST['lightsabers'])).'
+			[b]Is parking available:[/b] '.yesNo(cleanInput($_POST['parking'])).'
+			[b]Is venue accessible to those with limited mobility:[/b] '.yesNo(cleanInput($_POST['mobility'])).'
+			[b]Amenities available at venue:[/b] '.yesNo(cleanInput($_POST['amenities'])).'
+			[b]Comments:[/b] '.cleanInput($_POST['comments']).'
+			[b]Referred by:[/b] '.cleanInput($_POST['referred']).'
+
+			[b][u]Sign Up / Event Roster:[/u][/b]';
 			
 			// If event is linked
 			if($_POST['eventLink'] > 0)
@@ -3056,6 +3090,22 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				
 				// Update date
 				$conn->query("UPDATE events SET dateStart = '".cleanInput($date1)."', dateEnd = '".cleanInput($date2)."' WHERE id = '".cleanInput($_POST['eventIdE'])."'") or die($conn->error);
+
+				// Query database for event info from above
+				$query = "SELECT * FROM events WHERE id = '".cleanInput($_POST['eventIdE'])."' OR link = '".cleanInput($_POST['eventLink'])."' OR id = '".cleanInput($_POST['eventLink'])."'";
+				if ($result = mysqli_query($conn, $query))
+				{
+					while ($db = mysqli_fetch_object($result))
+					{
+						// Add to thread body
+						$thread_body .= '
+
+						[url]https://fl501st.com/troop-tracker/index.php?event=' . $db->id . '[/url]';
+
+						// Update thread
+						editPost($db->post_id, $thread_body);
+					}
+				}
 			}
 			else if($getNumOfLinks->num_rows > 0)
 			{
@@ -3064,11 +3114,35 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				
 				// Update date
 				$conn->query("UPDATE events SET dateStart = '".cleanInput($date1)."', dateEnd = '".cleanInput($date2)."' WHERE id = '".cleanInput($_POST['eventIdE'])."'") or die($conn->error);
+
+				// Query database for event info from above
+				$query = "SELECT * FROM events WHERE id = '".cleanInput($_POST['eventIdE'])."' OR link = '".cleanInput($_POST['eventIdE'])."'";
+				if ($result = mysqli_query($conn, $query))
+				{
+					while ($db = mysqli_fetch_object($result))
+					{
+						// Add to thread body
+						$thread_body .= '
+
+						[url]https://fl501st.com/troop-tracker/index.php?event=' . $db->id . '[/url]';
+
+						// Update thread
+						editPost($db->post_id, $thread_body);
+					}
+				}
 			}
 			else
 			{
 				// Query the database - if not linked
 				$conn->query("UPDATE events SET name = '".cleanInput($_POST['eventName'])."', venue =  '".cleanInput($_POST['eventVenue'])."', dateStart = '".cleanInput($date1)."', dateEnd = '".cleanInput($date2)."', website = '".cleanInput($_POST['website'])."', numberOfAttend = '".cleanInput($_POST['numberOfAttend'])."', requestedNumber = '".cleanInput($_POST['requestedNumber'])."', requestedCharacter = '".cleanInput($_POST['requestedCharacter'])."', secureChanging = '".cleanInput($_POST['secure'])."', blasters = '".cleanInput($_POST['blasters'])."', lightsabers = '".cleanInput($_POST['lightsabers'])."', parking = '".cleanInput($_POST['parking'])."', mobility = '".cleanInput($_POST['mobility'])."', amenities = '".cleanInput($_POST['amenities'])."', referred = '".cleanInput($_POST['referred'])."', comments = '".cleanInput($_POST['comments'])."', location = '".cleanInput($_POST['location'])."', squad = '".cleanInput($_POST['squadm'])."', label = '".cleanInput($_POST['label'])."', limitedEvent = '".cleanInput($_POST['limitedEvent'])."', limitTo = '".cleanInput($_POST['era'])."', limitRebels = '".cleanInput($_POST['limitRebels'])."', limit501st = '".cleanInput($_POST['limit501st'])."', limitMando = '".cleanInput($_POST['limitMando'])."', limitDroid = '".cleanInput($_POST['limitDroid'])."', limitOther = '".cleanInput($_POST['limitOther'])."' WHERE id = '".cleanInput($_POST['eventIdE'])."'") or die($conn->error);
+
+				// Add to thread body
+				$thread_body .= '
+
+				[url]https://fl501st.com/troop-tracker/index.php?event=' . cleanInput($_POST['eventIdE']) . '[/url]';
+
+				// Update thread
+				editPost(getEventPostID(cleanInput($_POST['eventIdE'])), $thread_body);
 			}
 			
 			// Set up if we should send notification

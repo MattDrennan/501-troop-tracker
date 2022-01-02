@@ -4217,6 +4217,10 @@ if(isset($_GET['event']))
 	// Delete Comment
 	if(isset($_POST['deleteComment']) && isAdmin())
 	{
+		// Delete from thread forum
+		deletePost(getCommentPostID(cleanInput($_POST['comment'])), true);
+
+		// Delete
 		$conn->query("DELETE FROM comments WHERE id = '".cleanInput($_POST['comment'])."'") or die($conn->error);
 	}
 
@@ -4393,7 +4397,6 @@ if(isset($_GET['event']))
 					// If attached to a forum thread
 					if($db->thread_id > 0)
 					{
-						// Show link to forum
 						echo '
 						<p><b>View post on forum:</b> <a href="https://www.fl501st.com/forums/index.php?threads/'.$db->thread_id.'" target="_blank">https://www.fl501st.com/forums/index.php?threads/'.$db->thread_id.'</a></p>';
 					}
