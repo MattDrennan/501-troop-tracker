@@ -2468,9 +2468,9 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 				[b]Can troopers carry/bring props like lightsabers and staffs:[/b] '.yesNo(cleanInput($_POST['lightsabers'])).'
 				[b]Is parking available:[/b] '.yesNo(cleanInput($_POST['parking'])).'
 				[b]Is venue accessible to those with limited mobility:[/b] '.yesNo(cleanInput($_POST['mobility'])).'
-				[b]Amenities available at venue:[/b] '.yesNo(cleanInput($_POST['amenities'])).'
-				[b]Comments:[/b] '.cleanInput($_POST['comments']).'
-				[b]Referred by:[/b] '.cleanInput($_POST['referred']).'
+				[b]Amenities available at venue:[/b] '.ifEmpty(cleanInput($_POST['amenities']), "No amenities for this event.").'
+				[b]Comments:[/b] '.ifEmpty(cleanInput($_POST['comments']), "No comments for this event.").'
+				[b]Referred by:[/b] '.ifEmpty(cleanInput($_POST['referred'], "Not available")).'
 
 				[b][u]Sign Up / Event Roster:[/u][/b]
 
@@ -2524,9 +2524,9 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 						[b]Can troopers carry/bring props like lightsabers and staffs:[/b] '.yesNo(cleanInput($_POST['lightsabers'])).'
 						[b]Is parking available:[/b] '.yesNo(cleanInput($_POST['parking'])).'
 						[b]Is venue accessible to those with limited mobility:[/b] '.yesNo(cleanInput($_POST['mobility'])).'
-						[b]Amenities available at venue:[/b] '.yesNo(cleanInput($_POST['amenities'])).'
-						[b]Comments:[/b] '.cleanInput($_POST['comments']).'
-						[b]Referred by:[/b] '.cleanInput($_POST['referred']).'
+						[b]Amenities available at venue:[/b] '.ifEmpty(cleanInput($_POST['amenities']), "No amenities for this event.").'
+						[b]Comments:[/b] '.ifEmpty(cleanInput($_POST['comments']), "No comments for this event.").'
+						[b]Referred by:[/b] '.ifEmpty(cleanInput($_POST['referred'], "Not available")).'
 
 						[b][u]Sign Up / Event Roster:[/u][/b]
 
@@ -3076,9 +3076,9 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			[b]Can troopers carry/bring props like lightsabers and staffs:[/b] '.yesNo(cleanInput($_POST['lightsabers'])).'
 			[b]Is parking available:[/b] '.yesNo(cleanInput($_POST['parking'])).'
 			[b]Is venue accessible to those with limited mobility:[/b] '.yesNo(cleanInput($_POST['mobility'])).'
-			[b]Amenities available at venue:[/b] '.yesNo(cleanInput($_POST['amenities'])).'
-			[b]Comments:[/b] '.cleanInput($_POST['comments']).'
-			[b]Referred by:[/b] '.cleanInput($_POST['referred']).'
+			[b]Amenities available at venue:[/b] '.ifEmpty(cleanInput($_POST['amenities']), "No amenities for this event.").'
+			[b]Comments:[/b] '.ifEmpty(cleanInput($_POST['comments']), "No comments for this event.").'
+			[b]Referred by:[/b] '.ifEmpty(cleanInput($_POST['referred'], "Not available")).'
 
 			[b][u]Sign Up / Event Roster:[/u][/b]';
 			
