@@ -768,15 +768,76 @@ function editPost($id, $message)
 	return json_decode($response, true);
 }
 
-// getUserForum: Get's Xenforo forum user
+// getUserForum: Get's Xenforo forum user by username
 function getUserForum($username)
 {
-	// Delete Post
+	// Get user forum info by forum name
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
 	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/users/find-name&username=" . $username,
 	  CURLOPT_CUSTOMREQUEST => "GET",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+// getUserForumID: Get's Xenforo forum user by ID
+function getUserForumID($id)
+{
+	// Get user forum info by forum ID
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/users/" . $id,
+	  CURLOPT_CUSTOMREQUEST => "GET",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+// updateUserForumGroup: Update's user forum groups by ID
+function updateUserForumGroup($id, $groupid, $group_ids)
+{
+	// Update user by forum groups by ID
+	$curl = curl_init();
+
+	// Set up
+	$groupString = "";
+
+	// Create string for secondary group IDs
+	foreach($group_ids as $value)
+	{
+		$groupString .= "secondary_group_ids[]=" . $value . "&";
+	}
+
+	$groupString = substr($groupString, 0, -1);
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/users/" . $id,
+	  CURLOPT_POST => 1,
+	  CURLOPT_POSTFIELDS => "user_group_id=" . $groupid . "&" . $groupString,
+	  CURLOPT_CUSTOMREQUEST => "POST",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
@@ -2351,6 +2412,21 @@ function profileExist($id)
 	return $doesExist;
 }
 
+// getUserID: gets the user's ID Xenforo Forum
+function getUserID($id)
+{
+	global $conn;
+	
+	$query = "SELECT * FROM troopers WHERE id='".$id."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			return $db->user_id;
+		}
+	}
+}
+
 // getName: gets the troopers's name
 function getName($id)
 {
@@ -2386,7 +2462,7 @@ function getPhone($id)
 {
 	global $conn;
 	
-	$query = "SELECT * FROM troopers WHERE id='".$id."'";
+	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))

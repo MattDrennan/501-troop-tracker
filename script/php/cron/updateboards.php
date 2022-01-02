@@ -38,7 +38,7 @@ if ($result = mysqli_query($conn, $query))
 			while ($db2 = mysqli_fetch_object($result2))
 			{
 				$thread_body .= '
-				'.getName($db2->trooperid).' - '.getCostume($db2->costume).'
+				-[i]'.getStatus($db2->status).'[/i]: '.getName($db2->trooperid).' ('.getCostume($db2->costume).')
 				';
 			}
 		}
@@ -52,4 +52,5 @@ if ($result = mysqli_query($conn, $query))
 		editPost($db->post_id, $thread_body);
 	}
 }
+
 ?>

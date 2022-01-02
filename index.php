@@ -3900,6 +3900,11 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 							// Set session
 							$_SESSION['id'] = $db->id;
 							$_SESSION['tkid'] = $db->tkid;
+
+							if((isset($forumLogin['success']) && $forumLogin['success'] == 1) && getUserID($db->id) == 0)
+							{
+								$conn->query("UPDATE troopers SET user_id = '".$forumLogin['user']['user_id']."', forum_id = '".$forumLogin['user']['username']."' WHERE id = '".$db->id."'");
+							}
 							
 							// Set log in cookie, if set to keep logged in
 							if(isset($_POST['keepLog']) && $_POST['keepLog'] == 1)
