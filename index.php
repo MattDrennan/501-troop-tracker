@@ -1218,7 +1218,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		if($_GET['squad'] != 0)
 		{
 			// If is a squad, add to query
-			$add = "WHERE squad = '".cleanInput($_GET['squad'])."'";
+			$add = "WHERE squad = '".cleanInput($_GET['squad'])."' AND closed = 1";
 			$add2 = "AND events.squad = '".cleanInput($_GET['squad'])."'";
 		}
 		
