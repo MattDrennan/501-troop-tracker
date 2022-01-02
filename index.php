@@ -179,7 +179,6 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 	<a href="#/" id="changeemailLink" class="button">Change E-mail</a> 
 	<a href="#/" id="changephoneLink" class="button">Change Phone</a> 
 	<a href="#/" id="changenameLink" class="button">Change Name</a> 
-	<a href="#/" id="changepasswordLink" class="button">Change Password</a>
 	<a href="#/" id="changethemeLink" class="button">Change Theme</a> 
 	<a href="index.php?action=donation" class="button">Donate</a> 
 	<a href="index.php?profile='.$_SESSION['id'].'" class="button">View Your Profile</a>
@@ -302,25 +301,6 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 		</form>
 	</div>
 
-	<div id="changepassword" style="display:none;">
-		<h2 class="tm-section-header">Change Your Password</h2>
-
-		<form action="process.php?do=changepassword" method="POST" name="changePasswordForm" id="changePasswordForm">
-			<p>Old Password:</p>
-			<input type="password" name="oldpassword" id="oldpassword" />
-
-			<p>New Password:</p>
-			<input type="password" name="newpassword" id="newpassword" />
-
-			<p>Re-enter New Password:</p>
-			<input type="password" name="newpassword2" id="newpassword2" />
-
-			<br /><br />
-
-			<input type="submit" value="Submit!" name="changePasswordSend" id="changePasswordSend" />
-		</form>
-	</div>
-
 	<div id="changephone" style="display:none;">
 		<h2 class="tm-section-header">Change Phone Number</h2>
 		<form action="process.php?do=changephone" method="POST" name="changePhoneForm" id="changePhoneForm">';
@@ -358,17 +338,15 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 			<br /><br />
 			Phone (Optional): <input type="text" name="phone" id="phone" />
 			<br /><br />
-			FL Garrison Forum Username: <input type="text" name="forumid" id="forumid" />
+			'.garrison.' Board Username: <input type="text" name="forumid" id="forumid" />
+			<br /><br />
+			'.garrison.' Board Password: <input type="password" name="password" id="password" />
 			<br /><br />
 			Rebel Legion Forum Username (if applicable): <input type="text" name="rebelforum" id="rebelforum" />
 			<br /><br />
 			Mando Mercs CAT # (if applicable): <input type="text" name="mandoid" id="mandoid" />
 			<br /><br />
 			Saber Guild SG # (if applicable): <input type="text" name="sgid" id="sgid" />
-			<br /><br />
-			Password: <input type="password" name="password" id="password" />
-			<br /><br />
-			Password (Confirm): <input type="password" name="passwordC" id="passwordC" />
 			<br /><br />
 			<p>Squad/Club:</p>
 			<select name="squad" id="squad">
@@ -3257,7 +3235,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<br /><br />
 
-				<input type="submit" name="submitDeleteUser" id="submitDeleteUser" value="Delete" /> <input type="submit" name="submitResetPasswordUser" id="submitResetPasswordUser" value="Reset Password" /> <input type="submit" name="submitViewProfile" id="submitViewProfile" value="View Profile" /> <input type="submit" name="submitEditUser" id="submitEditUser" value="Edit" />
+				<input type="submit" name="submitDeleteUser" id="submitDeleteUser" value="Delete" /> <input type="submit" name="submitViewProfile" id="submitViewProfile" value="View Profile" /> <input type="submit" name="submitEditUser" id="submitEditUser" value="Edit" />
 				</form>
 
 				<div name="editUserInfo" id="editUserInfo" style="display:none;">
@@ -3357,11 +3335,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					</form>
 				</div>';
 			}
-			
-			echo '
-			<p>
-				<a href="index.php?action=commandstaff&do=createuser" class="button">Create Trooper</a>
-			</p>';
 		}
 
 		// Create a user
@@ -3452,9 +3425,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<p>TKID:</p>
 				<input type="text" name="tkid" id="tkid" />
-				
-				<p>Password:</p>
-				<input type="text" name="password" id="password" />
 
 				<br /><br />
 
@@ -3875,7 +3845,7 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 		$squad = loginWithTKID($tkid);
 
 		// Get data
-		$query = "SELECT * FROM troopers WHERE (tkid = '".removeLetters($tkid)."' AND squad = '".$squad."') OR forum_id = '".cleanInput($_POST['tkid'])."' OR rebelforum = '".cleanInput($_POST['tkid'])."' LIMIT 1";
+		$query = "SELECT * FROM troopers WHERE forum_id = '".cleanInput($_POST['tkid'])."' LIMIT 1";
 
 		// Trooper count
 		$i = 0;
@@ -3891,7 +3861,7 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 				$forumLogin = loginWithForum($tkid, cleanInput($_POST['password']));
 
 				// Check credentials
-				if(password_verify(cleanInput($_POST['password']), $db->password) || (isset($forumLogin['success']) && $forumLogin['success'] == 1))
+				if(isset($forumLogin['success']) && $forumLogin['success'] == 1 || password_verify(cleanInput($_POST['password']), $db->password))
 				{
 					if($db->approved != 0)
 					{
@@ -3901,8 +3871,17 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 							$_SESSION['id'] = $db->id;
 							$_SESSION['tkid'] = $db->tkid;
 
+							// If logged in with forum details, and password does not match
+							if(isset($forumLogin['success']) && $forumLogin['success'] == 1 && !password_verify(cleanInput($_POST['password']), $db->password))
+							{
+								// Update password
+								$conn->query("UPDATE troopers SET password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."' WHERE id = '".$db->id."'");
+							}
+
+							// If user ID not set
 							if((isset($forumLogin['success']) && $forumLogin['success'] == 1) && getUserID($db->id) == 0)
 							{
+								// Set user_id
 								$conn->query("UPDATE troopers SET user_id = '".$forumLogin['user']['user_id']."', forum_id = '".$forumLogin['user']['username']."' WHERE id = '".$db->id."'");
 							}
 							
@@ -3946,9 +3925,7 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 				else
 				{
 					echo '
-					<p>Incorrect username or password. <a href="index.php?action=login">Try again?</a></p>
-					
-					<p><a href="index.php?action=forgotpassword">Need to recover your password? Click here.</a>';
+					<p>Incorrect username or password. <a href="index.php?action=login">Try again?</a></p>';
 				}
 			}
 		}
@@ -3957,22 +3934,14 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 		if($i == 0)
 		{
 			echo '
-			<p>Account not found. <a href="index.php?action=login">Try again?</a> - <span style="color: red;">BEFORE E-MAILING COMMAND STAFF FOR HELP, READ BELOW:</span></p>
-			
-			<p><b>IF YOU ARE USING YOUR TKID, NUMBERS ONLY! DO NOT USE A PREFIX</b></p>
-			
-			<p><b>YOU CAN USE YOUR FLORIDA GARRISON BOARDS OR REBEL LEGION FORUM USERNAME AS YOUR TKID, IF YOU DON\'T KNOW OR FORGOT YOUR TKID</b></p>
-			
-			<p><b>IF YOU HAD TROOPS ON THE OLD TROOP TRACKER, USE <a href="index.php?action=setup">ACCOUNT SETUP</a>. IF YOU ARE NEW, PLEASE <a href="index.php?action=requestaccess">REQUEST ACCESS</a>.</b></p>
-			
-			<p><b>IF THE ABOVE DID NOT SOLVE YOUR ISSUES, WHEN SENDING AN E-MAIL FOR HELP, INCLUDE (TKID, FL 501ST BOARDS NAME, REBEL LEGION FORUM NAME (IF APPLICABLE), AND AS MUCH DETAIL AS POSSIBLE. PLEASE DO NOT SEND AN E-MAIL ASKING FOR HELP AND NOTHING FURTHER.</b></p>';
+			<p>Account not found. <a href="index.php?action=login">Try again?</a></p>';
 		}
 	}
 	else
 	{
 		echo '
 		<form action="index.php?action=login" method="POST" name="loginForm" id="loginForm">
-			<p>TKID / Forum Name:</p>
+			<p>Board Name:</p>
 			<input type="text" name="tkid" id="tkid" />
 
 			<p>Password:</p>
@@ -3986,14 +3955,10 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 
 			<input type="submit" value="Login!" name="loginWithTK" />
 		</form>
-
-		<p><a href="index.php?action=forgotpassword" class="button">Forgot Your Password</a><p>
 		
 		<p>
 			<small>
-				<b>Remember:</b><br />If you are in a club other than the 501st, enter the first letter of your club, and then your TKID, or use your forum username.
-				<br />
-				<b>Example:</b><br />Rebel Legion: R1234
+				<b>Remember:</b><br />Login with your '.garrison.' board username and password.
 			</small>
 		</p>';
 	}
@@ -4014,64 +3979,61 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed())
 			// Is this TK ID registered?
 			if(!isTKRegistered(cleanInput($_POST['tkid']), cleanInput($_POST['squad'])))
 			{
-				if(strlen(cleanInput($_POST['password'])) >= 6)
-				{
-					if(cleanInput($_POST['password']) == cleanInput($_POST['password2']))
-					{
-						// Verify emails
-						include("script/lib/EmailAddressValidator.php");
+				// Login with forum
+				$forumLogin = loginWithForum($tkid, cleanInput($_POST['password']));
 
-						$validator = new EmailAddressValidator;
-						if ($validator->check_email_address(cleanInput($_POST['email'])))
+				// Verify forum login
+				if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
+				{
+					// Verify emails
+					include("script/lib/EmailAddressValidator.php");
+
+					$validator = new EmailAddressValidator;
+					if ($validator->check_email_address(cleanInput($_POST['email'])))
+					{
+						// If 501st
+						if(cleanInput($_POST['squad']) <= count($squadArray))
 						{
-							// If 501st
-							if(cleanInput($_POST['squad']) <= count($squadArray))
-							{
-								// Query the database
-								$conn->query("UPDATE troopers SET email = '".cleanInput($_POST['email'])."', password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE tkid = '".cleanInput($_POST['tkid'])."'");
-								
-								// Display output
-								echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';
-							}
-							else
-							{
-								$tkIDTaken = $conn->query("SELECT id FROM troopers WHERE tkid = '".cleanInput($_POST['tkid2'])."' AND squad = '".cleanInput($_POST['squad'])."'");
-								
-								if($tkIDTaken->num_rows == 0)
-								{
-									if(cleanInput($_POST['tkid2']) != "")
-									{
-										// If a club
-										// Query the database
-										$conn->query("UPDATE troopers SET email = '".cleanInput($_POST['email'])."', tkid = '".cleanInput($_POST['tkid2'])."', password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE rebelforum = '".cleanInput($_POST['tkid'])."'");
-										
-										// Display output
-										echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';
-									}
-									else
-									{
-										echo 'Please enter an ID.';
-									}
-								}
-								else
-								{
-									echo 'The ID you have chosen is already in use. Please pick another.';
-								}
-							}
+							// Query the database
+							$conn->query("UPDATE troopers SET email = '".cleanInput($_POST['email'])."', password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE tkid = '".cleanInput($_POST['tkid'])."'");
+							
+							// Display output
+							echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';
 						}
 						else
 						{
-						echo 'Please enter a valid e-mail address.';
+							$tkIDTaken = $conn->query("SELECT id FROM troopers WHERE tkid = '".cleanInput($_POST['tkid2'])."' AND squad = '".cleanInput($_POST['squad'])."'");
+							
+							if($tkIDTaken->num_rows == 0)
+							{
+								if(cleanInput($_POST['tkid2']) != "")
+								{
+									// If a club
+									// Query the database
+									$conn->query("UPDATE troopers SET email = '".cleanInput($_POST['email'])."', tkid = '".cleanInput($_POST['tkid2'])."', password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE rebelforum = '".cleanInput($_POST['tkid'])."'");
+									
+									// Display output
+									echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';
+								}
+								else
+								{
+									echo 'Please enter an ID.';
+								}
+							}
+							else
+							{
+								echo 'The ID you have chosen is already in use. Please pick another.';
+							}
 						}
 					}
 					else
 					{
-						echo 'Your passwords do not match.';
+					echo 'Please enter a valid e-mail address.';
 					}
 				}
 				else
 				{
-					echo 'Your password must be at least six (6) characters long.';
+					echo 'Your passwords do not match.';
 				}
 			}
 			else
@@ -4097,11 +4059,11 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed())
 			<p>What is your e-mail:</p>
 			<input type="text" name="email" id="email" />
 
-			<p>What do you want your password to be?</p>
-			<input type="password" name="password" id="password" />
+			<p>'.garrison.' Board Username:</p>
+			<input type="text" name="forum_id" id="forum_id" />
 
-			<p>Please re-enter your password:</p>
-			<input type="password" name="password2" id="password2" />
+			<p>'.garrison.' Board Password:</p>
+			<input type="password" name="password" id="password" />
 			
 			<p>Squad/Club</p>
 			
@@ -4140,68 +4102,6 @@ if(isset($_GET['action']) && $_GET['action'] == "logout")
 	<div style="margin-top: 25px;">
 		You have logged out! <a href="index.php">Click here to go home.</a>
 	</div>';
-}
-
-// Show the forgot your password page
-if(isset($_GET['action']) && $_GET['action'] == "forgotpassword")
-{
-	// Display submission for forgot your password, otherwise show the form
-	if(isset($_POST['forgotPasswordSend']))
-	{
-		// Does data exist
-		$i = 0;
-
-		// Get data
-		$query = "SELECT * FROM troopers WHERE (tkid = '".cleanInput($_POST['tkid'])."' OR forum_id = '".cleanInput($_POST['tkid'])."' OR rebelforum = '".cleanInput($_POST['tkid'])."') AND email != '' AND password != ''";
-		if ($result = mysqli_query($conn, $query))
-		{
-			while ($db = mysqli_fetch_object($result))
-			{
-				// Generate a new password
-				$newPassword = rand(100000, 900000);
-				
-				// Query the database
-				$conn->query("UPDATE troopers SET password = '".password_hash($newPassword, PASSWORD_DEFAULT)."' WHERE id = '".$db->id."'");
-				
-				// Send e-mail
-				sendEmail($db->email, readTKNumber($db->tkid, $db->squad), "FL 501st Troop Software Password Reset", "Your new password is:\n\n" . $newPassword . "\n\nPlease change your password as soon as possible.");
-				
-				echo '
-				<p>
-					An e-mail has been sent to your inbox with your new password. Be sure to check your spam folder. If an e-mail does not appear in your inbox within thirty minutes, please contact command staff for assistance.
-				</p>';
-
-				// Increment data exist
-				$i++;
-			}
-		}
-
-		if($i == 0)
-		{
-			echo '
-			<p>
-				Account not found.
-			</p>
-			
-			<p>
-				If you were on the old troop tracker, please do <a href="index.php?action=setup">account setup</a>. If you never trooped before, please do <a href="index.php?action=requestaccess">request access.</a> If you continue to have issues, please contact command staff for assistance.
-			</p>';
-		}
-	}
-	else
-	{
-		echo '
-		<h2 class="tm-section-header">Forgot Your Password</h2>
-
-		<form action="index.php?action=forgotpassword" method="POST" name="forgotPasswordForm" id="forgotPasswordForm">
-			<p>TKID / Forum Name:</p>
-			<input type="text" name="tkid" id="tkid" />
-
-			<br /><br />
-
-			<input type="submit" value="Retrieve Password!" name="forgotPasswordSend" />
-		</form>';	
-	}
 }
 
 if(isset($_POST['submitCancelTroop']))

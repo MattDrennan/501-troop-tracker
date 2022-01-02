@@ -1387,7 +1387,6 @@ $(document).ready(function()
 		$("#changename").hide();
 		$("#changeemail").hide();
 		$("#unsubscribe").hide();
-		$("#changepassword").hide();
 		$("#changetheme").hide();
 	});
 	
@@ -1398,7 +1397,6 @@ $(document).ready(function()
 		$("#changename").hide();
 		$("#changeemail").hide();
 		$("#unsubscribe").hide();
-		$("#changepassword").hide();
 		$("#changetheme").show();
 	});
 
@@ -1407,18 +1405,6 @@ $(document).ready(function()
 		e.preventDefault();
 		$("#changephone").hide();
 		$("#changename").show();
-		$("#changeemail").hide();
-		$("#unsubscribe").hide();
-		$("#changepassword").hide();
-		$("#changetheme").hide();
-	});
-
-	$("#changepasswordLink").click(function(e)
-	{
-		e.preventDefault();
-		$("#changephone").hide();
-		$("#changepassword").show();
-		$("#changename").hide();
 		$("#changeemail").hide();
 		$("#unsubscribe").hide();
 		$("#changetheme").hide();
@@ -1431,7 +1417,6 @@ $(document).ready(function()
 		$("#changename").hide();
 		$("#changeemail").show();
 		$("#unsubscribe").hide();
-		$("#changepassword").hide();
 		$("#changetheme").hide();
 	});
 
@@ -1442,7 +1427,6 @@ $(document).ready(function()
 		$("#changename").hide();
 		$("#changeemail").hide();
 		$("#unsubscribe").show();
-		$("#changepassword").hide();
 		$("#changetheme").hide();
 	});
 
@@ -1582,31 +1566,6 @@ $(document).ready(function()
 		
 		// Open in new tab
 		window.open('index.php?event=' + $("#eventId option:selected").val(), '_blank');
-	})
-	
-	// Manage Trooper - Reset Password
-	$("#submitResetPasswordUser").button().click(function(e)
-	{
-		e.preventDefault();
-
-		var form = $("#editUser");
-		var url = form.attr("action");
-
-		var r = confirm("Are you sure you want to reset this user's password?");
-
-		if (r == true)
-		{
-			$.ajax({
-				type: "POST",
-				url: url,
-				data: form.serialize() + "&submitResetUser=1",
-				success: function(data)
-				{
-					// Alert to success
-			  		alert("The user's password was reset! New password: ineedanewpassword123");
-				}
-			});
-		}
 	})
 	
 	// Manage Trooper - View Profile

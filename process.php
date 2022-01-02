@@ -1,50 +1,6 @@
 <?php
 include 'config.php';
 
-/******************** CHANGE PASSWORD *******************************/
-
-if(isset($_GET['do']) && $_GET['do'] == "changepassword")
-{
-	// Display submission for change your password, otherwise show the form
-	if(isset($_POST['changePasswordSend']))
-	{
-		// Get data
-		$query = "SELECT * FROM troopers WHERE id='".$_SESSION['id']."'";
-		if ($result = mysqli_query($conn, $query))
-		{
-			while ($db = mysqli_fetch_object($result))
-			{
-				// Check credentials
-				if(password_verify(cleanInput($_POST['oldpassword']), $db->password))
-				{
-					if($_POST['newpassword'] == $_POST['newpassword2'])
-					{
-						if(strlen($_POST['newpassword']) >= 6)
-						{
-							// Query the database
-							$conn->query("UPDATE troopers SET password = '".password_hash(cleanInput($_POST['newpassword']), PASSWORD_DEFAULT)."' WHERE id = '".$_SESSION['id']."'");
-
-							echo 'Your password has changed!';
-						}
-						else
-						{
-							echo 'Your password must be six (6) characters long.';
-						}
-					}
-					else
-					{
-						echo 'Your passwords do not match.';
-					}
-				}
-				else
-				{
-					echo 'Incorrect old password.';
-				}
-			}
-		}
-	}
-}
-
 /******************** EDIT COMMENT *******************************/
 
 if(isset($_GET['do']) && isset($_POST['commentid']) && isset($_POST['comment']) && $_GET['do'] == "editcomment")
@@ -1631,16 +1587,6 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 		$conn->query("DELETE FROM award_troopers WHERE trooperid = '".cleanInput($_POST['userID'])."'");
 		$conn->query("DELETE FROM comments WHERE trooperid = '".cleanInput($_POST['userID'])."'");
 	}
-	
-	// User password reset...
-	if(isset($_POST['submitResetUser']))
-	{
-		// Query the database
-		$conn->query("UPDATE troopers SET password = '".password_hash("ineedanewpassword123", PASSWORD_DEFAULT)."' WHERE id = '".cleanInput($_POST['userID'])."'");
-		
-		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has reset the password of user ID [" . cleanInput($_POST['userID']) . "]", cleanInput($_SESSION['id']));
-	}
 
 	// User submitted for edit...
 	if(isset($_POST['submitEditUser']))
@@ -1716,205 +1662,6 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 		else
 		{
 			$array = array('success' => 'failed', 'data' => '');
-			echo json_encode($array);
-		}
-	}
-}
-
-// Create user
-if(isset($_GET['do']) && $_GET['do'] == "createuser" && loggedIn())
-{
-	if(isset($_POST['submitUser']))
-	{
-		if(cleanInput($_POST['name']) != "" && cleanInput($_POST['email']) != "" && cleanInput($_POST['squad']) != "" && cleanInput($_POST['permissions']) != "" && cleanInput($_POST['tkid']) != "" && cleanInput($_POST['password']) != "")
-		{
-			// Verify emails
-			include("script/lib/EmailAddressValidator.php");
-			
-			// Set up error message
-			$errorMessage = "";
-			
-			// Set up fail variable
-			$failed = false;
-			
-			// Get TKID
-			$tkid = cleanInput($_POST['tkid']);
-			
-			// Check length
-			if(strlen($tkid) > 11)
-			{
-				$failed = true;
-				$errorMessage .= 'TKID must be less than eleven (11) characters. ';
-			}
-
-			// Check password length
-			if(strlen($_POST['password']) < 6)
-			{
-				$failed = true;
-				$errorMessage .= 'Password must be 6 (six) characters. ';
-			}
-
-			// TKID is number check
-			if(!is_numeric($tkid))
-			{
-				$failed = true;
-				$errorMessage .= 'TKID must be an integer. ';
-			}
-
-			// Query ID database
-			$idcheck = $conn->query("SELECT id FROM troopers WHERE tkid = '".$tkid."'") or die($conn->error);
-			
-			// Query 501st forum
-			$forumcheck = $conn->query("SELECT forum_id FROM troopers WHERE forum_id = '".cleanInput($_POST['forumid'])."'") or die($conn->error);
-			
-			// Check if 501st forum exists
-			if($forumcheck->num_rows > 0)
-			{
-				$failed = true;
-				$errorMessage .= 'FL Garrison Forum Name is already taken. Please contact the '.garrison.' Webmaster for further assistance. ';
-			}
-			
-			// Query Rebel forum - if specified
-			if(cleanInput($_POST['rebelforum']) != "")
-			{
-				$rebelcheck = $conn->query("SELECT rebelforum FROM troopers WHERE rebelforum = '".cleanInput($_POST['rebelforum'])."'") or die($conn->error);
-				
-				// Check if Rebel exists
-				if($rebelcheck->num_rows > 0)
-				{
-					$failed = true;
-					$errorMessage .= 'Rebel Forum Name is already taken. Please contact the '.garrison.' Webmaster for further assistance. ';
-				}
-			}
-			
-			// Query Mando ID - if specified
-			if(cleanInput($_POST['mandoid']) != "")
-			{
-				$mandoid = $conn->query("SELECT mandoid FROM troopers WHERE mandoid = '".cleanInput($_POST['mandoid'])."'") or die($conn->error);
-				
-				// Check if Rebel exists
-				if($mandoid->num_rows > 0)
-				{
-					$failed = true;
-					$errorMessage .= 'Mando Mercs ID is already taken. Please contact the '.garrison.' Webmaster for further assistance. ';
-				}
-			}
-
-			// Query SG ID - if specified
-			if(cleanInput($_POST['sgid']) != "")
-			{
-				$sgid = $conn->query("SELECT sgid FROM troopers WHERE sgid = '".cleanInput($_POST['sgid'])."'") or die($conn->error);
-				
-				// Check if Rebel exists
-				if($sgid->num_rows > 0)
-				{
-					$failed = true;
-					$errorMessage .= 'Saber Guild ID is already taken. Please contact the '.garrison.' Webmaster for further assistance. ';
-				}
-			}
-
-			// Check E-mail
-			$validator = new EmailAddressValidator;
-			if (!$validator->check_email_address(cleanInput($_POST['email'])))
-			{
-				$failed = true;
-				$errorMessage .= 'Invalid E-mail ';
-			}
-			
-			if(!$failed)
-			{
-				// Set up permission vars
-				$p501 = 0;
-				$pRebel = 0;
-				$pDroid = 0;
-				$pMando = 0;
-				$pOther = 0;
-				
-				// Set permissions
-				// 501
-				if(cleanInput($_POST['squad']) <= count($squadArray))
-				{
-					$p501 = 1;
-				}
-				
-				// Rebel
-				if(cleanInput($_POST['rebelforum']) != "")
-				{
-					$pRebel = 1;
-				}
-				
-				// Mando
-				if(cleanInput($_POST['mandoid']) > 0)
-				{
-					$pMando = 1;
-				}
-				
-				// Mando is nothing
-				if(cleanInput($_POST['mandoid']) == "")
-				{
-					$_POST['mandoid'] = 0;
-				}
-				
-				// Other
-				if(cleanInput($_POST['sgid']) > 0)
-				{
-					$pOther = 1;
-				}
-				
-				// Saber Guild is nothing
-				if(cleanInput($_POST['sgid']) == "")
-				{
-					$_POST['sgid'] = 0;
-				}
-				
-				// Insert into database
-				$conn->query("INSERT INTO troopers (name, email, forum_id, rebelforum, mandoid, sgid, phone, squad, permissions, p501, pRebel, pDroid, pMando, pOther, tkid, password, approved) VALUES ('".cleanInput($_POST['name'])."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', '".cleanInput($_POST['rebelforum'])."', '".cleanInput($_POST['mandoid'])."', '".cleanInput($_POST['sgid'])."', '".cleanInput($_POST['phone'])."', '".cleanInput($_POST['squad'])."', '".cleanInput($_POST['permissions'])."', '".$p501."', '".$pRebel."', '".$pDroid."', '".$pMando."', '".$pOther."', '".cleanInput($_POST['tkid'])."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', 1)") or die($conn->error);
-
-				// Get last ID
-				$last_id = $conn->insert_id;
-				
-				// Send notification to command staff
-				sendNotification(getName($_SESSION['id']) . " has added a trooper.", cleanInput($_SESSION['id']), 12, convertDataToJSON("SELECT * FROM troopers WHERE id = '".$last_id."'"));
-				
-				// Check if Rebel Legion Sign Up
-				if($pRebel == 1)
-				{
-					// Set up exist variable
-					$doesExist = false;
-					
-					// Pull extra data from spreadsheet - this is for checking if a valid member
-					$values = getSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster");
-
-					// Loop through results
-					foreach($values as $value)
-					{
-						if($value[0] == cleanInput($_POST['rebelforum']))
-						{
-							$doesExist = true;
-						}
-					}
-					
-					// Does not exist
-					if(!$doesExist)
-					{
-						// Add to Google Sheets
-						$newValues = ['' . getRebelLegionUser($last_id), '' . getName($last_id), getEmail($last_id)];
-						addToSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster", $newValues);
-					}
-				}
-
-				$array = array('success' => 'success', 'data' => 'User created!');
-				echo json_encode($array);
-			}
-			else
-			{
-				$array = array('success' => 'failed', 'data' => $errorMessage);
-				echo json_encode($array);
-			}
-		}
-		else
-		{
-			$array = array('success' => 'failed', 'data' => 'A value is missing.');
 			echo json_encode($array);
 		}
 	}
@@ -2025,7 +1772,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 	if($_POST['submitRequest'])
 	{
 		// Check we have all the data we need server side. JQuery should do this, but this is a backup
-		if($_POST['tkid'] != "" && $_POST['name'] != "" && $_POST['email'] != "" && $_POST['password'] != "" && $_POST['squad'] >= 0)
+		if($_POST['tkid'] != "" && $_POST['name'] != "" && $_POST['email'] != "" && $_POST['forum_id'] != "" && $_POST['password'] != "" && $_POST['squad'] >= 0)
 		{
 			$failed = false;
 
@@ -2063,13 +1810,6 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			{
 				$failed = true;
 				echo '<li>TKID must be less than eleven (11) characters.</li>';
-			}
-
-			// If password is less than six characters
-			if(strlen($_POST['password']) < 6)
-			{
-				$failed = true;
-				echo '<li>Password must be 6 (six) characters.</li>';
 			}
 
 			// If TKID is not numeric
@@ -2150,11 +1890,14 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 				echo '<li>TKID is taken. If you have troops on the old troop tracker, <a href="index.php?action=setup">click here to request access</a>.</li>';
 			}
 
-			// Verify passwords
-			if(cleanInput($_POST['password']) != cleanInput($_POST['passwordC']))
+			// Login with forum
+			$forumLogin = loginWithForum(cleanInput($_POST['forumid']), cleanInput($_POST['password']));
+
+			// Verify forum and password
+			if(isset($forumLogin['success']) && $forumLogin['success'] != 1)
 			{
 				$failed = true;
-				echo '<li>Password and password confirm do not match.</li>';
+				echo '<li>Incorrect '.garrison.' Board username and password.</li>';
 			}
 
 			// Verify emails

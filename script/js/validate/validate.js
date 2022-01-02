@@ -435,8 +435,8 @@ $(function()
         // Specify validation error messages
         messages:
         {
-            tkid: "Please enter your TKID or forum username.",
-            password: "Please enter your password."
+            tkid: "Please enter your FL Garrison Board username.",
+            password: "Please enter your FL Garrison Board password."
         },
         // Make sure the form is submitted to the destination defined
         // in the "action" attribute of the form when valid
@@ -596,7 +596,6 @@ $(function()
             },
             forumid: "required",
             password: "required",
-            passwordC: "required",
             name: "required"
         },
         // Specify validation error messages
@@ -605,7 +604,6 @@ $(function()
             tkid: "Please enter your TKID and make sure it is no more than eleven (11) characters.",
             forumid: "Please enter your FL 501st Forum Username.",
             password: "Please enter your password.",
-            passwordC: "Please re-enter your password to confirm it.",
             email: "Please enter a valid e-mail.",
             name: "Please enter your name.",
 			rebelforum: "Please enter your Rebel Legion forum username.",
@@ -821,127 +819,6 @@ $(function()
         }
     });
 
-    $("form[name='createUserForm']").validate(
-    {
-        // Specify validation rules
-        rules:
-        {
-            // The key name on the left side is the name attribute
-            // of an input field. Validation rules are defined
-            // on the right side
-            name: "required",
-            forumid: "required",
-            email:
-            {
-                required: true,
-                email: true
-            },
-            squad:
-            {
-                required: true,
-                range: [0, 1]
-            },
-            permissions:
-            {
-                required: true,
-                range: [0, 2]
-            },
-            p501:
-            {
-                required: true,
-                range: [0, 4]
-            },
-            pRebel:
-            {
-                required: true,
-                range: [0, 4]
-            },
-            pDroid:
-            {
-                required: true,
-                range: [0, 4]
-            },
-            pMando:
-            {
-                required: true,
-                range: [0, 4]
-            },
-            pOther:
-            {
-                required: true,
-                range: [0, 4]
-            },
-            tkid:
-            {
-                required: true,
-                digits: true
-            },
-			mandoid:
-			{
-				digits: true
-			},
-            sgid:
-            {
-                digits: true
-            },
-            password:
-            {
-                required: true,
-                minlength: 6
-            }
-        },
-        // Specify validation error messages
-        messages:
-        {
-            name: "Please enter a name.",
-            forumid: "Please enter the FL 501st Username.",
-            email: "Please enter a valid e-mail address.",
-            squad: "Please choose a squad.",
-            tkid: "Please enter a valid ID.",
-            password: "Please enter a valid password."
-        },
-        // Make sure the form is submitted to the destination defined
-        // in the "action" attribute of the form when valid
-        submitHandler: function(form)
-        {
-            var r = confirm("Are you sure you want to create this user?");
-
-            if (r == true)
-            {
-                $.ajax(
-                {
-                    type: "POST",
-                    url: form.action,
-                    data: $(form).serialize() + "&submitUser=1",
-                    success: function(data)
-                    {
-                        var json = JSON.parse(data);
-
-                        // If success
-                        if (json.success == "success")
-                        {
-                            // Clear Form
-                            $("#name").val("");
-                            $("#email").val("");
-                            $("#forumid").val("");
-							$("#rebelforum").val("");
-							$("#mandoid").val("");
-                            $("#sgid").val("");
-                            $("#phone").val("");
-                            $("#squad").val("1");
-                            $("#permissions").val("0");
-                            $("#tkid").val("");
-                            $("#password").val("");
-                        }
-
-                        // Alert to success
-                        alert(json.data);
-                    }
-                });
-            }
-        }
-    });
-
     $("form[name='commentForm']").validate(
     {
         // Specify validation rules
@@ -1018,15 +895,13 @@ $(function()
                 required: true,
                 email: true
             },
+            forum_id:
+            {
+                required: true
+            },
             password:
             {
-                required: true,
-                minlength: 6
-            },
-            password2:
-            {
-                required: true,
-                minlength: 6
+                required: true
             },
             tkid2:
             {
@@ -1041,8 +916,8 @@ $(function()
         messages:
         {
             tkid: "Please enter your TKID.",
-            password: "Please enter a six (6) character password.",
-            password2: "Please enter a matching six (6) character password.",
+            forum_id: "Please enter your FL Garrison Board username.",
+            password: "Please enter your FL Garrison Board password.",
             email: "Please enter a valid e-mail address.",
             tkid2: "Please enter an ID."
         },
@@ -1175,89 +1050,5 @@ $(function()
                 });
             }
         });
-    });
-
-    $("form[name='changePasswordForm']").validate(
-    {
-        // Specify validation rules
-        rules:
-        {
-            // The key name on the left side is the name attribute
-            // of an input field. Validation rules are defined
-            // on the right side
-            oldpassword: "required",
-            newpassword:
-            {
-                required: true,
-                minlength: 6
-            },
-            newpassword2:
-            {
-                required: true,
-                minlength: 6
-            }
-        },
-        // Specify validation error messages
-        messages:
-        {
-            oldpassword: "Please enter your old password.",
-            newpassword: "Please enter a six (6) character password.",
-            newpassword2: "Please enter a matching six (6) character password."
-        },
-        // Make sure the form is submitted to the destination defined
-        // in the "action" attribute of the form when valid
-        submitHandler: function(form)
-        {
-            var form = $("#changePasswordForm");
-            var url = form.attr("action");
-
-            $.ajax(
-            {
-                type: "POST",
-                url: url,
-                data: form.serialize() + "&changePasswordSend=1",
-                success: function(data)
-                {
-                    $("#oldpassword").val("");
-                    $("#newpassword").val("");
-                    $("#newpassword2").val("");
-                    alert(data);
-                }
-            });
-        }
-    });
-
-    $("form[name='forgotPasswordForm']").validate(
-    {
-        // Specify validation rules
-        rules:
-        {
-            // The key name on the left side is the name attribute
-            // of an input field. Validation rules are defined
-            // on the right side
-            tkid: "required"
-        },
-        // Specify validation error messages
-        messages:
-        {
-            tkid: "Please enter your TK ID or forum username.",
-            email: "Please enter a valid e-mail address.",
-        },
-        // Make sure the form is submitted to the destination defined
-        // in the "action" attribute of the form when valid
-        submitHandler: function(form)
-        {
-            $.ajax(
-            {
-                type: "POST",
-                url: url,
-                data: form.serialize(),
-                success: function(data)
-                {
-                    //alert(data); // show response from the php script.
-                }
-            });
-            form.submit();
-        }
     });
 });
