@@ -768,6 +768,30 @@ function editPost($id, $message)
 	return json_decode($response, true);
 }
 
+// getUserForum: Get's Xenforo forum user
+function getUserForum($username)
+{
+	// Delete Post
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/users/find-name&username=" . $username,
+	  CURLOPT_CUSTOMREQUEST => "GET",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
 // deletePost: Deletes a post in Xenforo
 function deletePost($id, $hard_delete = false)
 {

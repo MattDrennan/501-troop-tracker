@@ -2032,10 +2032,10 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			echo '<ul>';
 			
 			// Check to see if a forum username exists
-			$forum_name_exists = $conn->query("SELECT 1 FROM ".forum_user_database." WHERE LOWER(username) = LOWER('".cleanInput($_POST['forumid'])."')")->num_rows;
+			$forum_name_exists = getUserForum(cleanInput($_POST['forumid']));
 			
 			// Check forum name
-			if($forum_name_exists == 0)
+			if(isset($forum_name_exists['exact']))
 			{
 				$failed = true;
 				echo '<li>An account was not found on the FL 501st Boards. <a href="https://www.fl501st.com/boards/">Register here</a>.</li>';
