@@ -32,9 +32,6 @@ define('aPath', 'ABSOLUTE_PATH_HERE_TO_MAIN_DIRECTORY');
 // Placeholder Account ID (Used for signing up non-members)
 define('placeholder', 1196);
 
-// Forum User Database (FL 501ST BOARDS DATABASE)
-define('forum_user_database', 'DATABASE.TABLE HERE');
-
 // Forum API Key (Xenforo)
 define('xenforoAPI', 'API_KEY_HERE');
 define('xenforoAPI_superuser', 'API_SUPER_USER_KEY_HERE');
