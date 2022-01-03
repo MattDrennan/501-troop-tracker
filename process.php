@@ -1715,6 +1715,9 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 		$conn->query("DELETE FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['userID'])."'");
 		$conn->query("DELETE FROM award_troopers WHERE trooperid = '".cleanInput($_POST['userID'])."'");
 		$conn->query("DELETE FROM comments WHERE trooperid = '".cleanInput($_POST['userID'])."'");
+		$conn->query("DELETE FROM event_notifications WHERE trooperid = '".cleanInput($_POST['userID'])."'");
+		$conn->query("DELETE FROM notification_check WHERE trooperid = '".cleanInput($_POST['userID'])."'");
+		$conn->query("DELETE FROM title_troopers WHERE trooperid = '".cleanInput($_POST['userID'])."'");
 	}
 	
 	// User password reset...
@@ -2668,6 +2671,12 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 
 		// Delete from sign ups - event_sign_up
 		$conn->query("DELETE FROM event_sign_up WHERE troopid = '".cleanInput($_POST['eventId'])."'");
+		
+		// Delete from event_notifications
+		$conn->query("DELETE FROM event_notifications WHERE troopid = '".cleanInput($_POST['eventId'])."'");
+		
+		// Delete from notification_check
+		$conn->query("DELETE FROM notification_check WHERE troopid = '".cleanInput($_POST['eventId'])."'");
 		
 		// If this event is the main link to others
 		if($getNumOfLinks->num_rows > 0)
