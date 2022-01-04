@@ -1493,6 +1493,7 @@ $(document).ready(function()
 					$("#forumTable").html("");
 					$("#forumRebelTable").html("");
 					$("#mandoTable").html("");
+					$("#sgTable").html("");
 					$("#phoneTable").html("");
 					$("#squadTable").html("");
 					$("#tkTable").html("");
@@ -1543,6 +1544,9 @@ $(document).ready(function()
 					$("#nameTable").html("");
 					$("#emailTable").html("");
 					$("#forumTable").html("");
+					$("#forumRebelTable").html("");
+					$("#mandoTable").html("");
+					$("#sgTable").html("");
 					$("#phoneTable").html("");
 					$("#squadTable").html("");
 					$("#tkTable").html("");
