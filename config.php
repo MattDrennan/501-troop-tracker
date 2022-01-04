@@ -858,9 +858,11 @@ function getSGINfo($sgid)
 	$array['name'] = '';
 	$array['image'] = '';
 	$array['link'] = '';
+	$array['costumename'] = '';
+	$array['rank'] = '';
 	
 	// Get data
-	$query = "SELECT * FROM sg_troopers WHERE sgid = '".$sgid."'";
+	$query = "SELECT * FROM sg_troopers WHERE sgid = 'SG-".$sgid."'";
 	
 	// Run query...
 	if ($result = mysqli_query($conn, $query))
@@ -871,6 +873,8 @@ function getSGINfo($sgid)
 			$array['name'] = $db->name;
 			$array['image'] = $db->image;
 			$array['link'] = $db->link;
+			$array['costumename'] = $db->link;
+			$array['rank'] = $db->link;
 		}
 	}
 	
@@ -1042,7 +1046,7 @@ function showSGCostumes($id)
 	global $conn;
 	
 	// Get data
-	$query = "SELECT * FROM sg_troopers WHERE sgid = '".$id."'";
+	$query = "SELECT * FROM sg_troopers WHERE sgid = 'SG-".$id."'";
 	
 	// Set up count
 	$i = 0;
@@ -1055,10 +1059,10 @@ function showSGCostumes($id)
 			echo '
 			<div style="text-align: center;">
 					<h3>
-						<a href="'.$db->link.'" target="_blank">'.$db->name.'</a>
+						'.$db->costumename.'
 					</h3>
 					
-					<img src="'.$db->image.'" />
+					<img src="'.$db->image.'" style="width: 50%" height="500" />
 				</p>
 			</div>';
 			
@@ -1099,7 +1103,7 @@ function showDroids($forum)
 						'.$db->droidname.'
 					</h3>
 					
-					<img src="'.$db->imageurl.'" />
+					<img src="'.$db->imageurl.'" style="width: 50%" height="500" />
 				</p>
 			</div>';
 			
