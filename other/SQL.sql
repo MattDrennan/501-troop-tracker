@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Jan 04, 2022 at 02:14 AM
+-- Generation Time: Jan 04, 2022 at 03:16 AM
 -- Server version: 5.7.31
 -- PHP Version: 8.0.11
 
@@ -337,7 +337,7 @@ CREATE TABLE IF NOT EXISTS `sg_troopers` (
   `image` varchar(255) NOT NULL,
   `link` varchar(255) NOT NULL,
   `costumename` varchar(100) NOT NULL,
-  `rank` varchar(50) NOT NULL
+  `ranktitle` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------

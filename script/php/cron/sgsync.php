@@ -83,9 +83,9 @@ foreach($values as $value)
 			$image = explode("/", $image);
 			$image = "https://drive.google.com/uc?id=" . $image[5] . "";
 		}
-		
+
 		// Insert into database
-		$conn->query("INSERT INTO sg_troopers (sgid, name, image, rank, costumename, link) VALUES ('".$value[2]."', '".$value[0]."', '".$image."', '".$value[1]."', '".$value[3]."', '')") or die($conn->error);
+		$conn->query("INSERT INTO sg_troopers (sgid, name, image, ranktitle, costumename, link) VALUES ('".cleanInput($value[2])."', '".cleanInput($value[0])."', '".cleanInput($image)."', '".cleanInput($value[1])."', '".cleanInput($value[3])."', '')") or die($conn->error);
 		
 		// Update status to regular member
 		$conn->query("UPDATE troopers SET pOther = 1 WHERE sgid = '".str_replace("SG-", "", $value[2])."'") or die($conn->error);
