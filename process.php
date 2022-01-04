@@ -102,44 +102,50 @@ if(isset($_GET['do']) && isset($_POST['userID']) && isset($_POST['squad']) && $_
 			addToSheet("10_w4Fz41iUCYe3G1bQSqHDY6eK4fXP0Ue3pnfA4LoZg", "Roster", $newValues);
 		}
 	}
-	else if($_POST['squad'] == 6)
+	
+	// Set up count
+	$clubCount = count($squadArray) + 1;
+	
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
 	{
-		$queryAdd = "pRebel";
-		
-		// Set up exist variable
-		$doesExist = false;
-		
-		// Pull extra data from spreadsheet - this is for checking if a valid member
-		$values = getSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster");
-
-		// Loop through results
-		foreach($values as $value)
+		// Match
+		if($_POST['squad'] == $clubCount)
 		{
-			if($value[0] == getRebelLegionUser(cleanInput($_POST['userID'])))
+			// Add to query
+			$queryAdd = "".$club_value['db']."";
+			
+			// **CUSTOM**
+			// GOOGLE SHEETS
+			if($club_value['db'] == "pRebel")
 			{
-				$doesExist = true;
+				// Set up exist variable
+				$doesExist = false;
+				
+				// Pull extra data from spreadsheet - this is for checking if a valid member
+				$values = getSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster");
+
+				// Loop through results
+				foreach($values as $value)
+				{
+					if($value[0] == getRebelLegionUser(cleanInput($_POST['userID'])))
+					{
+						$doesExist = true;
+					}
+				}
+				
+				// Does not exist
+				if(!$doesExist)
+				{
+					// Add to Google Sheets
+					$newValues = ['' . getRebelLegionUser(cleanInput($_POST['userID'])), '' . getName(cleanInput($_POST['userID'])), getEmail(cleanInput($_POST['userID']))];
+					addToSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster", $newValues);
+				}
 			}
 		}
 		
-		// Does not exist
-		if(!$doesExist)
-		{
-			// Add to Google Sheets
-			$newValues = ['' . getRebelLegionUser(cleanInput($_POST['userID'])), '' . getName(cleanInput($_POST['userID'])), getEmail(cleanInput($_POST['userID']))];
-			addToSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster", $newValues);
-		}
-	}
-	else if($_POST['squad'] == 7)
-	{
-		$queryAdd = "pDroid";
-	}
-	else if($_POST['squad'] == 8)
-	{
-		$queryAdd = "pMando";
-	}
-	else if($_POST['squad'] == 9)
-	{
-		$queryAdd = "pOther";
+		// Increment
+		$clubCount++;
 	}
 	
 	// Check if 501st squad
@@ -211,44 +217,50 @@ if(isset($_GET['do']) && isset($_POST['trooperid']) && isset($_POST['permission'
 			}
 		}
 	}
-	else if($_POST['club'] == 6)
+	
+	// Set up count
+	$clubCount = count($squadArray) + 1;
+	
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
 	{
-		$queryAdd = "pRebel";
-		
-		// Check if setting to reserve
-		if(cleanInput($_POST['permission']) == 0 || cleanInput($_POST['permission']) == 3)
+		// Match
+		if($_POST['club'] == $clubCount)
 		{
-			// Get Google Sheet
-			$values = getSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster");
+			// Add to query
+			$queryAdd = "".$club_value['db']."";
 			
-			// Set up count
-			$i = 0;
-			
-			// Check if we have a match
-			foreach($values as $value)
+			// **CUSTOM**
+			// GOOGLE SHEETS
+			if($club_value['db'] == "pRebel")
 			{
-				if($value[0] == getRebelLegionUser(cleanInput($_POST['trooperid'])))
+				// Check if setting to reserve
+				if(cleanInput($_POST['permission']) == 0 || cleanInput($_POST['permission']) == 3)
 				{
-					// Delete from spreadsheet
-					deleteSheetRows("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "1724018043", ($i), ($i + 1));
+					// Get Google Sheet
+					$values = getSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster");
+					
+					// Set up count
+					$i = 0;
+					
+					// Check if we have a match
+					foreach($values as $value)
+					{
+						if($value[0] == getRebelLegionUser(cleanInput($_POST['trooperid'])))
+						{
+							// Delete from spreadsheet
+							deleteSheetRows("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "1724018043", ($i), ($i + 1));
+						}
+						
+						// Increment
+						$i++;
+					}
 				}
-				
-				// Increment
-				$i++;
 			}
 		}
-	}
-	else if($_POST['club'] == 7)
-	{
-		$queryAdd = "pDroid";
-	}
-	else if($_POST['club'] == 8)
-	{
-		$queryAdd = "pMando";
-	}
-	else if($_POST['club'] == 9)
-	{
-		$queryAdd = "pOther";
+		
+		// Increment
+		$clubCount++;
 	}
 				
 	// Query the database
@@ -298,22 +310,22 @@ if(isset($_GET['do']) && $_GET['do'] == "troopercheckreserve" && loggedIn() && i
 				}
 			}
 		}
-		else if($_POST['club'] == 6)
+
+		// Set up count
+		$clubCount = count($squadArray) + 1;
+		
+		// Loop through clubs
+		foreach($clubArray as $club => $club_value)
 		{
-			$queryAdd = "pRebel";
+			// Match
+			if($_POST['club'] == $clubCount)
+			{
+				// Add to query
+				$queryAdd = "".$club_value['db']."";
+			}
 			
-		}
-		else if($_POST['club'] == 7)
-		{
-			$queryAdd = "pDroid";
-		}
-		else if($_POST['club'] == 8)
-		{
-			$queryAdd = "pMando";
-		}
-		else if($_POST['club'] == 9)
-		{
-			$queryAdd = "pOther";
+			// Increment
+			$clubCount++;
 		}
 	
 		foreach($_POST['trooper'] as $trooper)
@@ -370,43 +382,49 @@ if(isset($_GET['do']) && $_GET['do'] == "troopercheckretired" && loggedIn() && i
 					}
 				}
 			}
-			else if($_POST['club'] == 6)
+			
+			// Set up count
+			$clubCount = count($squadArray) + 1;
+			
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
 			{
-				$queryAdd = "pRebel";
-				
-				// Get Google Sheet
-				$values = getSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster");
-				
-				foreach($_POST['trooper'] as $trooper)
+				// Match
+				if($_POST['club'] == $clubCount)
 				{
-					// Set up count
-					$i = 0;
+					// Add to query
+					$queryAdd = "".$club_value['db']."";
 					
-					// Check if we have a match
-					foreach($values as $value)
+					// ** CUSTOM **
+					// GOOGLE SHEETS
+					if($club_value['db'] == "pRebel")
 					{
-						if($value[0] == getRebelLegionUser(cleanInput($trooper)))
-						{
-							// Delete from spreadsheet
-							deleteSheetRows("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "1724018043", ($i), ($i + 1));
-						}
+						// Get Google Sheet
+						$values = getSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster");
 						
-						// Increment
-						$i++;
+						foreach($_POST['trooper'] as $trooper)
+						{
+							// Set up count
+							$i = 0;
+							
+							// Check if we have a match
+							foreach($values as $value)
+							{
+								if($value[0] == getRebelLegionUser(cleanInput($trooper)))
+								{
+									// Delete from spreadsheet
+									deleteSheetRows("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "1724018043", ($i), ($i + 1));
+								}
+								
+								// Increment
+								$i++;
+							}
+						}
 					}
 				}
-			}
-			else if($_POST['club'] == 7)
-			{
-				$queryAdd = "pDroid";
-			}
-			else if($_POST['club'] == 8)
-			{
-				$queryAdd = "pMando";
-			}
-			else if($_POST['club'] == 9)
-			{
-				$queryAdd = "pOther";
+				
+				// Increment
+				$clubCount++;
 			}
 			
 			$conn->query("UPDATE troopers SET ".$queryAdd." = '3' WHERE id = '".cleanInput($trooper)."'");

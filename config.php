@@ -86,7 +86,7 @@ function displaySquadLinks($squadLink)
 	{
 		// Add to return var
 		$returnVar .= 
-		' | ' . addSquadLink($squadID, $squadLink, $squad);
+		' | ' . addSquadLink($squadID, $squadLink, $squad_value['name']);
 		
 		// Increment
 		$squadID++;
@@ -162,7 +162,7 @@ function showSquadButtons()
 	{
 		// Add to return var
 		$returnVar .= '
-		<a href="index.php?squad='.$squadID.'"><img src="images/'.$squad_value.'" alt="'.$squad.' Troops" '.isSquadActive($squadID).' /></a>';
+		<a href="index.php?squad='.$squadID.'"><img src="images/'.$squad_value['logo'].'" alt="'.$squad_value['name'].' Troops" '.isSquadActive($squadID).' /></a>';
 		
 		// Increment
 		$squadID++;
@@ -190,21 +190,21 @@ function squadSelectList($clubs = true, $insideElement = "", $eid = 0, $squadP =
 		{
 			// Add to return var
 			$returnVar .= '
-			<option value="'.$squadID.'">'.$squad.'</option>';
+			<option value="'.$squadID.'">'.$squad_value['name'].'</option>';
 		}
 		// If insideElement is copy
 		else if($insideElement == "copy")
 		{
 			// Add to return var
 			$returnVar .= '
-			<option value="'.$squadID.'" '.copyEventSelect($eid, $squadP, $squadID).'>'.$squad.'</option>';
+			<option value="'.$squadID.'" '.copyEventSelect($eid, $squadP, $squadID).'>'.$squad_value['name'].'</option>';
 		}
 		// If insideElement is select
 		else if($insideElement == "select")
 		{
 			// Add to return var
 			$returnVar .= '
-			<option value="'.$squadID.'" '.echoSelect($squadID, cleanInput($_POST['squad'])).'>'.$squad.'</option>';
+			<option value="'.$squadID.'" '.echoSelect($squadID, cleanInput($_POST['squad'])).'>'.$squad_value['name'].'</option>';
 		}
 		
 		// Increment
@@ -222,21 +222,21 @@ function squadSelectList($clubs = true, $insideElement = "", $eid = 0, $squadP =
 			{
 				// Add to return var
 				$returnVar .= '
-				<option value="'.$squadID.'">'.$squad.'</option>';
+				<option value="'.$squadID.'">'.$squad_value['name'].'</option>';
 			}
 			// If insideElement is copy
 			else if($insideElement == "copy")
 			{
 				// Add to return var
 				$returnVar .= '
-				<option value="'.$squadID.'" '.copyEventSelect($eid, $squadP, $squadID).'>'.$squad.'</option>';
+				<option value="'.$squadID.'" '.copyEventSelect($eid, $squadP, $squadID).'>'.$squad_value['name'].'</option>';
 			}
 			// If insideElement is select
 			else if($insideElement == "select")
 			{
 				// Add to return var
 				$returnVar .= '
-				<option value="'.$squadID.'" '.echoSelect($squadID, cleanInput($_POST['squad'])).'>'.$squad.'</option>';
+				<option value="'.$squadID.'" '.echoSelect($squadID, cleanInput($_POST['squad'])).'>'.$squad_value['name'].'</option>';
 			}
 
 			// Stop at Rebels
@@ -1374,7 +1374,7 @@ function getSquadName($value)
 		if($squadID == $value)
 		{
 			// Set
-			$returnValue = $squad;
+			$returnValue = $squad_value['name'];
 		}
 		
 		// Increment
@@ -1388,7 +1388,7 @@ function getSquadName($value)
 		if($squadID == $value)
 		{
 			// Set
-			$returnValue = $club;
+			$returnValue = $club_value['name'];
 		}
 		
 		// Increment
@@ -1398,6 +1398,62 @@ function getSquadName($value)
 	return $returnValue;
 }
 
+// getCostumeQueryValues: Returns query for costume values for club
+function getCostumeQueryValues($clubid)
+{
+	global $squadArray, $clubArray;
+	
+	// Set up count
+	$clubCount = count($squadArray) + 1;
+	
+	// Query set up
+	$query = "";
+	
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
+	{
+		// Check if club matches
+		if($clubid == $clubCount)
+		{
+			// Get costume count
+			$costumeCount = count($club_value['costumes']);
+			
+			// Step count
+			$i = 0;
+			
+			// Add to query
+			$query .= "(";
+			
+			// Match
+			foreach($club_value['costumes'] as $costume)
+			{
+				// Add to query
+				$query .= "'".$costume."' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)";
+
+				// Increment step
+				$i++;
+				
+				// Check if need to add OR
+				if($i < $costumeCount)
+				{
+					// Add OR
+					$query .= " OR ";
+				}
+			}
+			
+			// Close query
+			$query .= ")";
+		}
+		
+		// Increment
+		$clubCount++;
+	}
+	
+	// Return
+	return $query;
+}
+
+// isImportant: Is the comment important? If so, we highlight it
 function isImportant($value, $text)
 {
 	if($value == 1)
@@ -1720,7 +1776,7 @@ function loginWithTKID($tkid)
 	foreach($clubArray as $club => $club_value)
 	{
 		// Get first letter of club
-		$firstLetter = strtoupper(substr($club, 0, 1));
+		$firstLetter = strtoupper(substr($club_value['name'], 0, 1));
 		
 		// Check if ID starts with a club
 		if(substr($tkid, 0, 1) === $firstLetter)
