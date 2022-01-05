@@ -1,7 +1,7 @@
 <?php
 
-// Include config file
-include "../../../config.php";
+// Include config
+include(dirname(__DIR__) . '/../../config.php');
 
 // Loop through all events to send notifications
 $query = "SELECT notification_check.troopid, notification_check.commentid, events.squad, events.name, events.id FROM notification_check LEFT JOIN events ON events.id = notification_check.troopid WHERE notification_check.troopid != 0 AND notification_check.commentid = 0 AND notification_check.trooperid = 0 AND notification_check.trooperstatus = 0 AND notification_check.troopstatus = 0";

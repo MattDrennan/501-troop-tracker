@@ -244,7 +244,7 @@ $(function()
         // in the "action" attribute of the form when valid
         submitHandler: function(form)
         {
-            var r = confirm("Are you sure you want to edit this user?");
+            var r = confirm("Are you sure you want to edit this trooper?");
 
             if (r == true)
             {

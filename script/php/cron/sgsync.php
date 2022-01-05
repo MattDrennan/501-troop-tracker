@@ -9,6 +9,7 @@ include(dirname(__DIR__) . '/../../tool/dom/simple_html_dom.php');
 // Purge SG troopers
 $conn->query("DELETE FROM sg_troopers") or die($conn->error);
 
+/*
 // get DOM from URL or file
 $html = file_get_html('https://saberguild.org/member-gallery/');
 
@@ -57,9 +58,13 @@ foreach($html->find('div.single-team-area') as $a)
 
 	echo '<hr />';
 }
+*/
 
 // Pull extra data from spreadsheet
 $values = getSheet("1PcveycMujakkKeG2m4y8iFunrFbo2KVpQJ00GyPI3b8", "Sheet1");
+
+// Reset Saber Guild Status
+$conn->query("UPDATE troopers SET pOther = 0 WHERE sgid > 0") or die($conn->error);
 
 // Set up count
 $i = 0;
@@ -69,8 +74,21 @@ foreach($values as $value)
 	// If not first
 	if($i != 0)
 	{
+		// Set up image
+		$image = $value[4];
+		
+		// Convert Google Drive link
+		if (strpos($image, "view?usp=drivesdk") !== false)
+		{
+			$image = explode("/", $image);
+			$image = "https://drive.google.com/uc?id=" . $image[5] . "";
+		}
+
 		// Insert into database
-		$conn->query("INSERT INTO sg_troopers (sgid, name, image, link) VALUES ('".$value[0]."', '".$value[1]."', '".$value[2]."', '')") or die($conn->error);
+		$conn->query("INSERT INTO sg_troopers (sgid, name, image, ranktitle, costumename, link) VALUES ('".cleanInput($value[2])."', '".cleanInput($value[0])."', '".cleanInput($image)."', '".cleanInput($value[1])."', '".cleanInput($value[3])."', '')") or die($conn->error);
+		
+		// Update status to regular member
+		$conn->query("UPDATE troopers SET pOther = 1 WHERE sgid = '".str_replace("SG-", "", $value[2])."'") or die($conn->error);
 	}
 
 	// Increment

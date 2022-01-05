@@ -562,7 +562,7 @@ function drawSupportGraph()
 				}
 			</style>
 			
-			<h2 class="tm-section-header">'.date("F", strtotime('m')).' - Donation Goal</h2>
+			<h2 class="tm-section-header">'.date("F").' - Donation Goal</h2>
 			
 			<p style="text-align: center;">
 				<div class="bargraph">
@@ -1069,9 +1069,11 @@ function getSGINfo($sgid)
 	$array['name'] = '';
 	$array['image'] = '';
 	$array['link'] = '';
+	$array['costumename'] = '';
+	$array['rank'] = '';
 	
 	// Get data
-	$query = "SELECT * FROM sg_troopers WHERE sgid = '".$sgid."'";
+	$query = "SELECT * FROM sg_troopers WHERE sgid = 'SG-".$sgid."'";
 	
 	// Run query...
 	if ($result = mysqli_query($conn, $query))
@@ -1082,6 +1084,8 @@ function getSGINfo($sgid)
 			$array['name'] = $db->name;
 			$array['image'] = $db->image;
 			$array['link'] = $db->link;
+			$array['costumename'] = $db->link;
+			$array['rank'] = $db->link;
 		}
 	}
 	
@@ -1253,7 +1257,7 @@ function showSGCostumes($id)
 	global $conn;
 	
 	// Get data
-	$query = "SELECT * FROM sg_troopers WHERE sgid = '".$id."'";
+	$query = "SELECT * FROM sg_troopers WHERE sgid = 'SG-".$id."'";
 	
 	// Set up count
 	$i = 0;
@@ -1266,10 +1270,10 @@ function showSGCostumes($id)
 			echo '
 			<div style="text-align: center;">
 					<h3>
-						<a href="'.$db->link.'" target="_blank">'.$db->name.'</a>
+						'.$db->costumename.'
 					</h3>
 					
-					<img src="'.$db->image.'" />
+					<img src="'.$db->image.'" style="width: 50%" height="500" />
 				</p>
 			</div>';
 			
@@ -1310,7 +1314,7 @@ function showDroids($forum)
 						'.$db->droidname.'
 					</h3>
 					
-					<img src="'.$db->imageurl.'" />
+					<img src="'.$db->imageurl.'" style="width: 50%" height="500" />
 				</p>
 			</div>';
 			
@@ -1653,6 +1657,92 @@ function convertDataToJSON($query)
 	return json_encode($array);
 }
 
+// hasAward: Does the trooper have this award
+function hasAward($trooperid, $awardid, $echo = false, $remove = false)
+{
+	global $conn;
+	
+	// Get data
+	$query = "SELECT * FROM award_troopers WHERE trooperid = '".$trooperid."' AND awardid = '".$awardid."'";
+
+	// Set up return variable
+	$hasAward = false;
+	
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Set
+			$hasAward = true;
+		}
+	}
+	
+	// Does not print
+	if(!$echo)
+	{
+		return $hasAward;
+	}
+	else
+	{
+		// Does not have award
+		if($hasAward && !$remove)
+		{
+			return 'style = "display: none;"';
+		}
+		else if(!$hasAward && $remove)
+		{
+			return 'style = "display: none;"';
+		}
+		else
+		{
+			return '';
+		}
+	}
+}
+
+// hasTitle: Does the trooper have this title
+function hasTitle($trooperid, $awardid, $echo = false, $remove = false)
+{
+	global $conn;
+	
+	// Get data
+	$query = "SELECT * FROM title_troopers WHERE trooperid = '".$trooperid."' AND titleid = '".$awardid."'";
+
+	// Set up return variable
+	$hasTitle = false;
+	
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Set
+			$hasTitle = true;
+		}
+	}
+	
+	// Does not print
+	if(!$echo)
+	{
+		return $hasTitle;
+	}
+	else
+	{
+		// Does not have title
+		if($hasTitle && !$remove)
+		{
+			return 'style = "display: none;"';
+		}
+		else if(!$hasTitle && $remove)
+		{
+			return 'style = "display: none;"';
+		}
+		else
+		{
+			return '';
+		}
+	}
+}
+
 // sendNotification: Sends a notification to the log
 function sendNotification($message, $trooperid, $type = 0, $json = "")
 {
@@ -1682,6 +1772,8 @@ function sendNotification($message, $trooperid, $type = 0, $json = "")
 	// 21 - Delete Title
 	// 22 - Give Title
 	// 23 - Edit Title
+	// 24 - Remove Title
+	// 25 - Remove Award
 	
 	$conn->query("INSERT INTO notifications (message, trooperid, type, json) VALUES ('".$message."', '".$trooperid."', '".$type."', '".$json."')");
 }

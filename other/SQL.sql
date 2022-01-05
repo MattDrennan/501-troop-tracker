@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Dec 29, 2021 at 01:31 AM
+-- Generation Time: Jan 04, 2022 at 03:16 AM
 -- Server version: 5.7.31
 -- PHP Version: 8.0.11
 
@@ -336,8 +336,38 @@ CREATE TABLE IF NOT EXISTS `sg_troopers` (
   `name` varchar(255) NOT NULL,
   `image` varchar(255) NOT NULL,
   `link` varchar(255) NOT NULL,
-  PRIMARY KEY (`sgid`)
+  `costumename` varchar(100) NOT NULL,
+  `ranktitle` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `titles`
+--
+
+DROP TABLE IF EXISTS `titles`;
+CREATE TABLE IF NOT EXISTS `titles` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `icon` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `title_troopers`
+--
+
+DROP TABLE IF EXISTS `title_troopers`;
+CREATE TABLE IF NOT EXISTS `title_troopers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `trooperid` int(11) NOT NULL,
+  `titleid` int(11) NOT NULL,
+  `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -348,7 +378,7 @@ CREATE TABLE IF NOT EXISTS `sg_troopers` (
 DROP TABLE IF EXISTS `troopers`;
 CREATE TABLE IF NOT EXISTS `troopers` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `oldid` int(11) NOT NULL,
+  `oldid` int(11) NOT NULL DEFAULT '0',
   `name` varchar(255) NOT NULL,
   `email` varchar(240) DEFAULT NULL,
   `phone` varchar(10) DEFAULT NULL,

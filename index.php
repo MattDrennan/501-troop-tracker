@@ -1585,7 +1585,53 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			// Total number of accounts
 			$totalAccounts = $conn->query("SELECT id FROM troopers");
 
+			// Total accounts not set up
 			$totalNotSet = $totalAccounts->num_rows - $totalAccountsSetUp->num_rows;
+			
+			// Count active members - 501
+			$totalActive501 = $conn->query("SELECT id FROM troopers WHERE p501 = '1'");
+			
+			// Count reserve members - 501
+			$totalReserve501 = $conn->query("SELECT id FROM troopers WHERE p501 = '2'");
+			
+			// Count retired members - 501
+			$totalRetired501 = $conn->query("SELECT id FROM troopers WHERE p501 = '3'");
+			
+			// Count active members - Rebel
+			$totalActiveRebel = $conn->query("SELECT id FROM troopers WHERE pRebel = '1'");
+			
+			// Count reserve members - Rebel
+			$totalReserveRebel = $conn->query("SELECT id FROM troopers WHERE pRebel = '2'");
+			
+			// Count retired members - Rebel
+			$totalRetiredRebel = $conn->query("SELECT id FROM troopers WHERE pRebel = '3'");
+			
+			// Count active members - Mando
+			$totalActiveMando = $conn->query("SELECT id FROM troopers WHERE pMando = '1'");
+			
+			// Count reserve members - Mando
+			$totalReserveMando = $conn->query("SELECT id FROM troopers WHERE pMando = '2'");
+			
+			// Count retired members - Mando
+			$totalRetiredMando = $conn->query("SELECT id FROM troopers WHERE pMando = '3'");
+			
+			// Count active members - Droid
+			$totalActiveDroid = $conn->query("SELECT id FROM troopers WHERE pDroid = '1'");
+			
+			// Count reserve members - Droid
+			$totalReserveDroid = $conn->query("SELECT id FROM troopers WHERE pDroid = '2'");
+			
+			// Count retired members - Droid
+			$totalRetiredDroid = $conn->query("SELECT id FROM troopers WHERE pDroid = '3'");
+			
+			// Count active members - Other
+			$totalActiveOther = $conn->query("SELECT id FROM troopers WHERE pOther = '1'");
+			
+			// Count reserve members - Other
+			$totalReserveOther = $conn->query("SELECT id FROM troopers WHERE pOther = '2'");
+			
+			// Count retired members - Other
+			$totalRetiredOther = $conn->query("SELECT id FROM troopers WHERE pOther = '3'");
 
 			echo '
 			<h2>Important People</h2>
@@ -1593,14 +1639,44 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<ul>';
 
 			// Show all super admins
-			$query = "SELECT * FROM troopers WHERE permissions = '1' ORDER BY name";
+			$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.squad, titles.title FROM troopers LEFT JOIN title_troopers ON troopers.id = title_troopers.trooperid LEFT JOIN titles ON title_troopers.titleid = titles.id WHERE (permissions = '1') ORDER BY name";
+
+			// Set up added array
+			$added = array();
+
+			// Trooper count set up
+			$i = 0;
 
 			if ($result = mysqli_query($conn, $query))
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
-					echo '<li><a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</a></li>';
+					if(!in_array($db->id, $added))
+					{
+						echo '<li><a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</a></li>';
+						array_push($added, $db->id);
+						
+						if($db->title != "" && !is_null($db->title))
+						{
+							echo '
+							<p>'.$db->title.'</p>';
+						}
+					}
+					else
+					{
+						echo '
+						<p>'.$db->title.'</p>';
+					}
+					
+					// Increment
+					$i++;
 				}
+			}
+			
+			// No troopers
+			if($i == 0)
+			{
+				echo '<li>No troopers to display.</li>';
 			}
 
 			echo '</ul>';
@@ -1609,20 +1685,92 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<h3>Moderator</h3>
 			<ul>';
 
-			// Show all super admins
-			$query = "SELECT * FROM troopers WHERE permissions = '2' ORDER BY name";
+			// Show all moderators
+			$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.squad, titles.title FROM troopers LEFT JOIN title_troopers ON troopers.id = title_troopers.trooperid LEFT JOIN titles ON title_troopers.titleid = titles.id WHERE (permissions = '2') ORDER BY name";
+
+			// Trooper count set up
+			$i = 0;
 
 			if ($result = mysqli_query($conn, $query))
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
-					echo '<li><a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</a></li>';
+					if(!in_array($db->id, $added))
+					{
+						echo '<li><a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</a></li>';
+						array_push($added, $db->id);
+						
+						if($db->title != "" && !is_null($db->title))
+						{
+							echo '
+							<p>'.$db->title.'</p>';
+						}
+					}
+					else
+					{
+						echo '
+						<p>'.$db->title.'</p>';
+					}
+					
+					// Increment
+					$i++;
 				}
+			}
+			
+			// No troopers
+			if($i == 0)
+			{
+				echo '<li>No troopers to display.</li>';
 			}
 
 			echo '</ul>
+			
+			<h3>Other</h3>
+			<ul>';
 
+			// Show all troopers with titles
+			$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.squad, titles.title FROM troopers LEFT JOIN title_troopers ON troopers.id = title_troopers.trooperid LEFT JOIN titles ON title_troopers.titleid = titles.id WHERE (troopers.permissions != 1 AND troopers.permissions != 2) AND titles.title != '' ORDER BY name";
+
+			// Trooper count set up
+			$i = 0;
+
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					if(!in_array($db->id, $added))
+					{
+						echo '<li><a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</a></li>';
+						array_push($added, $db->id);
+						
+						if($db->title != "" && !is_null($db->title))
+						{
+							echo '
+							<p>'.$db->title.'</p>';
+						}
+					}
+					else
+					{
+						echo '
+						<p>'.$db->title.'</p>';
+					}
+					
+					// Increment
+					$i++;
+				}
+			}
+			
+			// No troopers
+			if($i == 0)
+			{
+				echo '<li>No troopers to display.</li>';
+			}
+
+			echo '</ul>
+			
 			<h2>Statistics</h2>
+			
+			<h3>Troop Tracker Usage</h3>
 
 			<p><b>501st Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUp501->num_rows).'</p>
 			<p><b>Everglades Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpE->num_rows).'</p>
@@ -1630,13 +1778,51 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<p><b>Parjai Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpP->num_rows).'</p>
 			<p><b>Squad 7 Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpS->num_rows).'</p>
 			<p><b>Tampa Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpT->num_rows).'</p>
+			
+			<br />
+			
 			<p><b>Rebel Legion Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpRebel->num_rows).'</p>
 			<p><b>Mando Mercs Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpMando->num_rows).'</p>
 			<p><b>Droid Builders Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpDroid->num_rows).'</p>
 			<p><b>Other Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpOther->num_rows).'</p>
+			
+			<br />
+			
 			<p><b>Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUp->num_rows).'</p>
 			<p><b>Total Accounts (Not Set Up):</b> '.number_format($totalNotSet).'</p>
-			<p><b>Total Accounts:</b> '.number_format($totalAccounts->num_rows).'</p>';
+			<p><b>Total Accounts:</b> '.number_format($totalAccounts->num_rows).'</p>
+			
+			<br />
+			
+			<h3>Active/Reserve/Retired Members</h3>
+			
+			<p><b>501st Total Accounts (Active):</b> '.number_format($totalActive501->num_rows).'</p>
+			<p><b>501st Total Accounts (Reserve):</b> '.number_format($totalReserve501->num_rows).'</p>
+			<p><b>501st Total Accounts (Retired):</b> '.number_format($totalRetired501->num_rows).'</p>
+			
+			<br />
+			
+			<p><b>Rebel Legion Total Accounts (Active):</b> '.number_format($totalActiveRebel->num_rows).'</p>
+			<p><b>Rebel Legion Total Accounts (Reserve):</b> '.number_format($totalReserveRebel->num_rows).'</p>
+			<p><b>Rebel Legion Total Accounts (Retired):</b> '.number_format($totalRetiredRebel->num_rows).'</p>
+			
+			<br />
+			
+			<p><b>Mando Mercs Total Accounts (Active):</b> '.number_format($totalActiveMando->num_rows).'</p>
+			<p><b>Mando Mercs Total Accounts (Reserve):</b> '.number_format($totalReserveMando->num_rows).'</p>
+			<p><b>Mando Mercs Total Accounts (Retired):</b> '.number_format($totalRetiredMando->num_rows).'</p>
+			
+			<br />
+			
+			<p><b>Droid Builders Total Accounts (Active):</b> '.number_format($totalActiveDroid->num_rows).'</p>
+			<p><b>Droid Builders Total Accounts (Reserve):</b> '.number_format($totalReserveDroid->num_rows).'</p>
+			<p><b>Droid Builders Total Accounts (Retired):</b> '.number_format($totalRetiredDroid->num_rows).'</p>
+			
+			<br />
+			
+			<p><b>Other Total Accounts (Active):</b> '.number_format($totalActiveOther->num_rows).'</p>
+			<p><b>Other Total Accounts (Reserve):</b> '.number_format($totalReserveOther->num_rows).'</p>
+			<p><b>Other Total Accounts (Retired):</b> '.number_format($totalRetiredOther->num_rows).'</p>';
 		}
 
 		/**************************** Roster *********************************/
@@ -2525,7 +2711,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						// Formatting
 						if($j == 0)
 						{
-							$getId = $db->id;
+							$getId2 = $db->id;
 
 							echo '<select id="titleIDAssign" name="titleIDAssign">';
 						}
@@ -2542,15 +2728,16 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				{
 					echo '
 					</select>
-
-					<input type="submit" name="title" id="title" value="Assign!" />';
+					
+					<input type="submit" name="title" id="title" value="Assign" '.hasTitle($getId, $getId2, true).' />
+					<input type="submit" name="titleRemove" id="titleRemove" value="Remove" '.hasTitle($getId, $getId2, true, true).' />';
 				}
 				else
 				{
 					echo 'No titles to display.';
 				}
 			}
-
+			
 			echo '</form></div>';
 
 			echo '<br /><hr /><br /><h3>Create Title</h3>
@@ -2726,7 +2913,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						// Formatting
 						if($j == 0)
 						{
-							$getId = $db->id;
+							$getId2 = $db->id;
 
 							echo '<select id="awardIDAssign" name="awardIDAssign">';
 						}
@@ -2744,7 +2931,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					echo '
 					</select>
 
-					<input type="submit" name="award" id="award" value="Assign!" />';
+					<input type="submit" name="award" id="award" value="Assign" '.hasAward($getId, $getId2, true).' /> <input type="submit" name="awardRemove" id="awardRemove" value="Remove" '.hasAward($getId, $getId2, true, true).' />';
 				}
 				else
 				{

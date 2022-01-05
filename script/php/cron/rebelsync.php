@@ -224,13 +224,13 @@ foreach($values as $value)
 	if($i != 0)
 	{
 		// Check if we can match with member in Troop Tracker database
-		$doesExist = $conn->query("SELECT id FROM troopers WHERE rebelforum = '".$value[0]."'");
+		$doesExist = $conn->query("SELECT id FROM troopers WHERE rebelforum = '".$value[0]."' AND rebelforum != ''");
 		
 		// Check if we got a match
 		if($doesExist !== false && $doesExist->num_rows > 0)
 		{
 			// Match
-			$conn->query("UPDATE troopers SET pRebel = '1' WHERE rebelforum = '".$value[0]."'");
+			$conn->query("UPDATE troopers SET pRebel = '1' WHERE rebelforum = '".$value[0]."' AND rebelforum != ''");
 		}
 	}
 	
