@@ -59,31 +59,6 @@ $(function()
             {
                 required: true,
                 range: [0, 1]
-            },
-            limit501st:
-            {
-                required: false,
-                digits: true
-            },
-            limitDroid:
-            {
-                required: false,
-                digits: true
-            },
-            limitOther:
-            {
-                required: false,
-                digits: true
-            },
-            limitRebels:
-            {
-                required: false,
-                digits: true
-            },
-            limitMando:
-            {
-                required: false,
-                digits: true
             }
         },
         messages:
@@ -144,10 +119,13 @@ $(function()
                             $("#limitedEvent").val("null");
                             $("#era").val("4");
                             $("#limit501st").val("500");
-                            $("#limitRebels").val("500");
-                            $("#limitMando").val("500");
-                            $("#limitDroid").val("500");
-							$("#limitOther").val("500");
+
+                            // Loop through clubs
+                            for(var i = 0; i <= (clubArray.length - 1); i++)
+                            {
+                                $("#" + clubArray[i]).val(500);
+                            }
+
                             $("#referred").val("");
                             $("#options").show();
 
@@ -295,31 +273,6 @@ $(function()
             {
                 required: true,
                 range: [0, 1]
-            },
-            limit501st:
-            {
-                required: false,
-                digits: true
-            },
-            limitDroid:
-            {
-                required: false,
-                digits: true
-            },
-            limitOther:
-            {
-                required: false,
-                digits: true
-            },
-            limitRebels:
-            {
-                required: false,
-                digits: true
-            },
-            limitMando:
-            {
-                required: false,
-                digits: true
             }
         },
         messages:

@@ -90,6 +90,20 @@ echo '
 	}
 
 	echo'];
+
+	// Clear limits
+	function clearLimit()
+	{';
+
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
+	{
+		echo '
+		$("#'.$club_value['dbLimit'].'").val(500);';
+	}
+
+	echo '
+	}
 	</script>
 
 	<!-- JQUERY -->
@@ -3255,14 +3269,14 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						</select>
 
 						<p>Limit of 501st Troopers:</p>
-						<input type="number" name="limit501st" value="500" id="limit501st" />';
+						<input type="number" name="limit501st" value="500" id="limit501st" class="limitClass" />';
 
 						// Loop through clubs
 						foreach($clubArray as $club => $club_value)
 						{
 							echo '
 							<p>Limit of '.$club_value['name'].':</p>
-							<input type="number" name="'.$club_value['dbLimit'].'" value="500" id="'.$club_value['dbLimit'].'" />';
+							<input type="number" name="'.$club_value['dbLimit'].'" value="500" id="'.$club_value['dbLimit'].'" class="limitClass" />';
 						}
 
 						echo '
@@ -3742,14 +3756,14 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				</select>
 				
 				<p>Limit of 501st Troopers:</p>
-				<input type="number" name="limit501st" value="'.copyEvent($eid, $limit501st, 500).'" id="limit501st" />';
+				<input type="number" name="limit501st" value="'.copyEvent($eid, $limit501st, 500).'" id="limit501st" class="limitClass" />';
 
 				// Loop through clubs
 				foreach($clubArray as $club => $club_value)
 				{
 					echo '
 					<p>Limit of '.$club_value['name'].':</p>
-					<input type="number" name="'.$club_value['dbLimit'].'" value="'.copyEvent($eid, ${$club_value['dbLimit']}, 500).'" id="'.$club_value['dbLimit'].'" />';
+					<input type="number" name="'.$club_value['dbLimit'].'" value="'.copyEvent($eid, ${$club_value['dbLimit']}, 500).'" id="'.$club_value['dbLimit'].'" class="limitClass" />';
 				}
 
 				echo '

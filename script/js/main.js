@@ -273,6 +273,16 @@ $(document).ready(function()
         })
     });
 
+     // Add rules to clubs
+    $('.limitClass').each(function()
+    {
+        $(this).rules('add',
+        {
+            required: false,
+            digits: true
+        })
+    });
+
 	// Before / After Ajax
 	$(document).ajaxStart(function ()
 	{
@@ -441,10 +451,9 @@ $(document).ready(function()
 		// Reset
 		$("#era").val(4);
 		$("#limit501st").val(500);
-		$("#limitRebels").val(500);
-		$("#limitMando").val(500);
-		$("#limitDroid").val(500);
-		$("#limitOther").val(500);
+
+		// On index.php, clear all fields
+		clearLimit();
 	})
 
 	// Event Page - Change Status
@@ -1089,9 +1098,13 @@ $(document).ready(function()
 					$("#era").val(json.limitTo);
 					$("#limitRebels").val(json.limitRebels);
 					$("#limit501st").val(json.limit501st);
-					$("#limitMando").val(json.limitMando);
-					$("#limitDroid").val(json.limitDroid);
-					$("#limitOther").val(json.limitOther);
+
+					// Loop through clubs
+					for(var i = 0; i <= (clubArray.length - 1); i++)
+					{
+						$("#" + clubArray[i]).val(json[clubArray[i]]);
+					}
+
 					$("#referred").val(json.referred);
 
 					// Hide options if armor party
@@ -1836,23 +1849,50 @@ $(document).ready(function()
 			success: function(data)
 			{
 				var json = JSON.parse(data);
+
+				// Go to else?
+				var shouldElse = true;
 				
 				// If JSON did not fail
 				if(json.success != "failed")
 				{
-					// Adjust options based on costume
-					if((($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 0 && (json.limit501st - json.limit501stTotal) > 0) || ($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 1 && (json.limitRebels - json.limitRebelsTotal) > 0) || ($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 2 && (json.limitMando - json.limitMandoTotal) > 0) || ($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 3 && (json.limitDroid - json.limitDroidTotal) > 0) || ($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 4 && (json.limitOther - json.limitOtherTotal) > 0)) && json.staus != 4)
+					// Adjust options based on costume - 501
+					if(($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 0 && (json.limit501st - json.limit501stTotal) > 0) && json.staus != 4)
 					{
-						// Empty select
-						signupForm3.empty();
+							// Empty select
+							signupForm3.empty();
 
-						// Refill
-						signupForm3.append("<option value='0'>I'll be there</option> <option value='2'>Tentative</option> <option value='4'>Cancel</option>");
+							// Refill
+							signupForm3.append("<option value='0'>I'll be there</option> <option value='2'>Tentative</option> <option value='4'>Cancel</option>");
 
-						// Set selected value
-						signupForm3.val(json.status);
+							// Set selected value
+							signupForm3.val(json.status);
+
+							// Set
+							shouldElse = false;
 					}
-					else
+
+					// Loop through clubs
+					for(var i = 0; i <= (clubArray.length - 1); i++)
+					{
+						// Adjust options based on costumes - other clubs
+						if(($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 1 && (json[clubArray[i]] - json[clubArray[i] + "Total"]) > 0) && json.staus != 4)
+						{
+							// Empty select
+							signupForm3.empty();
+
+							// Refill
+							signupForm3.append("<option value='0'>I'll be there</option> <option value='2'>Tentative</option> <option value='4'>Cancel</option>");
+
+							// Set selected value
+							signupForm3.val(json.status);
+
+							// Set
+							shouldElse = false;
+						}
+					}
+
+					if(shouldElse)
 					{
 						// Empty select
 						signupForm3.empty();
