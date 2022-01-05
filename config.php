@@ -1758,65 +1758,6 @@ function getEventTitle($id, $link = false)
 	}
 }
 
-// loginWithTKID: Converts TK number into squad
-function loginWithTKID($tkid)
-{
-	global $clubArray, $squadArray, $conn;
-	
-	// Set club count
-	$clubCount = 0;
-	
-	// Check if in club
-	$inClub = false;
-	
-	// Set squad return
-	$squad = 0;
-	
-	// Loop through squads
-	foreach($clubArray as $club => $club_value)
-	{
-		// Get first letter of club
-		$firstLetter = strtoupper(substr($club_value['name'], 0, 1));
-		
-		// Check if ID starts with a club
-		if(substr($tkid, 0, 1) === $firstLetter)
-		{
-			// Set club
-			$squad = count($squadArray) + ($clubCount) + 1;
-			
-			// Set club check
-			$inClub = true;
-		}
-		
-		// Increment
-		$clubCount++;
-	}
-	
-	// If not in club, set default
-	if(!$inClub)
-	{
-		if(substr($tkid, 0, 2) === 'TK')
-		{
-			// Remove TK
-			$tkid = substr($tkid, 2);
-		}
-		
-		// Get squad from database
-		$getSquad = $conn->query("SELECT squad FROM troopers WHERE tkid = '".$tkid."'");
-		$getSquad_value = $getSquad->fetch_row();
-		
-		// To prevent warnings, make sure value is set
-		if(isset($getSquad_value[0]))
-		{
-			// Set squad
-			$squad = $getSquad_value[0];
-		}
-	}
-	
-	// Return
-	return $squad;
-}
-
 // removeLetters: Removes letters from string
 function removeLetters($string)
 {

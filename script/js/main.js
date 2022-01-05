@@ -2218,7 +2218,6 @@ $(document).ready(function()
 			data: "gettitle=1&titleid=" + titleid + "&trooperid=" + trooperid,
 			success: function(data)
 			{
-				console.log(data);
 				// Get JSON
 				var json = JSON.parse(data);
 				

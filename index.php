@@ -3459,11 +3459,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					</form>
 				</div>';
 			}
-			
-			echo '
-			<p>
-				<a href="index.php?action=commandstaff&do=createuser" class="button">Create Trooper</a>
-			</p>';
 		}
 
 		// Create a user
@@ -3973,11 +3968,8 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 		// Get TKID
 		$tkid = cleanInput($_POST['tkid']);
 
-		// Get squad from TKID
-		$squad = loginWithTKID($tkid);
-
 		// Get data
-		$query = "SELECT * FROM troopers WHERE (tkid = '".removeLetters($tkid)."' AND squad = '".$squad."') OR forum_id = '".cleanInput($_POST['tkid'])."' OR rebelforum = '".cleanInput($_POST['tkid'])."'";
+		$query = "SELECT * FROM troopers WHERE forum_id = '".cleanInput($_POST['tkid'])."' OR rebelforum = '".cleanInput($_POST['tkid'])."'";
 		$i = 0;
 		if ($result = mysqli_query($conn, $query))
 		{
