@@ -64,7 +64,33 @@ echo '
 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
 	
 	<!-- Setup Variable -->
-	<script>var placeholder = '.placeholder.';</script>
+	<script>
+	var placeholder = '.placeholder.';
+	var clubArray = [';
+
+	// Club count
+	$clubCount = count($clubArray);
+
+	// Club step
+	$i = 0;
+
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
+	{
+		echo '"'.$club_value['db'].'"';
+
+		// Add comma
+		if($i < ($clubCount - 1))
+		{
+			echo ',';
+		}
+
+		// Increment
+		$i++;
+	}
+
+	echo'];
+	</script>
 
 	<!-- JQUERY -->
 	<script src="script/lib/jquery-3.4.1.min.js"></script>
@@ -89,12 +115,12 @@ echo '
 	<script src="script/lib/lightbox.min.js"></script>
 
 	<script>
- 	$( function() {
+ 	$(function() {
 		$("#datepicker").datetimepicker();
 		$("#datepicker2").datetimepicker();
 		$("#datepicker3").datetimepicker();
 		$("#datepicker4").datetimepicker();
-	} );
+	});
 	</script>
 </head>
 
@@ -3419,7 +3445,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						{
 							echo '
 							<p>'.$club_value['name'].' Member Permissions:</p>
-							<select name="'.$club_value['db'].'" id="'.$club_value['db'].'">
+							<select name="'.$club_value['db'].'" id="'.$club_value['db'].'" class="clubs">
 								<option value="0">Not A Member</option>
 								<option value="1">Regular Member</option>
 								<option value="2">Reserve Member</option>
@@ -3459,104 +3485,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					</form>
 				</div>';
 			}
-		}
-
-		// Create a user
-		if(isset($_GET['do']) && $_GET['do'] == "createuser" && hasPermission(1))
-		{
-			// Display create user form
-			echo '
-			<h3>Create a user</h3>
-
-			<form action="process.php?do=createuser" id="createUserForm" name="createUserForm" method="POST">
-				<p>Name:</p>
-				<input type="text" name="name" id="name" />
-
-				<p>E-mail:</p>
-				<input type="text" name="email" id="email" />
-
-				<p>Phone (Optional):</p>
-				<input type="text" name="phone" id="phone" />
-				
-				<p>FLG Forum Username:</p>
-				<input type="text" name="forumid" id="forumid" />
-				
-				<p>Rebel Legion Forum Username (if applicable):</p>
-				<input type="text" name="rebelforum" id="rebelforum" />
-				
-				<p>Mando Mercs CAT # (if applicable):</p>
-				<input type="text" name="mandoid" id="mandoid" />
-
-				<p>Saber Guild SG # (if applicable):</p>
-				<input type="text" name="sgid" id="sgid" />
-
-				<p>Squad/Club:</p>
-				<select name="squad" id="squad">
-					'.squadSelectList().'
-				</select>
-
-				<p>Permissions:</p>
-				<select name="permissions" id="permissions">
-					<option value="0">Regular Member</option>
-					<option value="2">Moderator</option>
-					<option value="1">Super Admin</option>
-				</select>
-		
-				<p>501st Member Permissions:</p>
-				<select name="p501" id="p501">
-					<option value="0" SELECTED>Not A Member</option>
-					<option value="1">Regular Member</option>
-					<option value="2">Reserve Member</option>
-					<option value="3">Retired Member</option>
-					<option value="4">Handler</option>
-				</select>
-				
-				<p>Rebel Legion Member Permissions:</p>
-				<select name="pRebel" id="pRebel">
-					<option value="0" SELECTED>Not A Member</option>
-					<option value="1">Regular Member</option>
-					<option value="2">Reserve Member</option>
-					<option value="3">Retired Member</option>
-					<option value="4">Handler</option>
-				</select>
-				
-				<p>Droid Builders Member Permissions:</p>
-				<select name="pDroid" id="pDroid">
-					<option value="0" SELECTED>Not A Member</option>
-					<option value="1">Regular Member</option>
-					<option value="2">Reserve Member</option>
-					<option value="3">Retired Member</option>
-					<option value="4">Handler</option>
-				</select>
-				
-				<p>Mando Mercs Member Permissions:</p>
-				<select name="pMando" id="pMando">
-					<option value="0" SELECTED>Not A Member</option>
-					<option value="1">Regular Member</option>
-					<option value="2">Reserve Member</option>
-					<option value="3">Retired Member</option>
-					<option value="4">Handler</option>
-				</select>
-				
-				<p>Other Member Permissions:</p>
-				<select name="pOther" id="pOther">
-					<option value="0" SELECTED>Not A Member</option>
-					<option value="1">Regular Member</option>
-					<option value="2">Reserve Member</option>
-					<option value="3">Retired Member</option>
-					<option value="4">Handler</option>
-				</select>
-
-				<p>TKID:</p>
-				<input type="text" name="tkid" id="tkid" />
-				
-				<p>Password:</p>
-				<input type="text" name="password" id="password" />
-
-				<br /><br />
-
-				<input type="submit" name="submitUser" value="Create!" />
-			</form>';
 		}
 
 		// Create an event form

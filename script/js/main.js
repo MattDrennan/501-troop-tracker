@@ -263,6 +263,16 @@ $(document).ready(function()
 	// Add select2 to DOM
 	selectAdd();
 
+    // Add rules to clubs
+    $('.clubs').each(function()
+    {
+        $(this).rules('add',
+        {
+            required: true,
+            range: [0, 4]
+        })
+    });
+
 	// Before / After Ajax
 	$(document).ajaxStart(function ()
 	{
@@ -996,11 +1006,13 @@ $(document).ready(function()
 					$("#phone").val(json.phone);
 					$("#squad").val(json.squad);
 					$("#permissions").val(json.permissions);
-					$("#p501").val(json.p501);
-					$("#pRebel").val(json.pRebel);
-					$("#pDroid").val(json.pDroid);
-					$("#pMando").val(json.pMando);
-					$("#pOther").val(json.pOther);
+
+					// Loop through clubs
+					for(var i = 0; i <= (clubArray.length - 1); i++)
+					{
+						$("#" + clubArray[i]).val(json[clubArray[i]]);
+					}
+
 					$("#tkid").val(json.tkid);
 					$("#forumid").val(json.forumid);
 					$("#rebelforum").val(json.rebelforum);

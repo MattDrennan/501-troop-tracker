@@ -276,7 +276,7 @@ function addSquadLink($squad, $match, $name)
 // costume_restrict_query: Restricts the trooper's costume based on there membership
 function costume_restrict_query($addWhere = false)
 {
-	global $conn;
+	global $conn, $clubArray, $dualCostume;
 	
 	// Set up query
 	$returnQuery = " ";
@@ -288,14 +288,12 @@ function costume_restrict_query($addWhere = false)
 	}
 	
 	$returnQuery .= "(";
-	
-	// Set up club checks
-	$p501 = false;
-	$dual = false;
-	$rebel = false;
-	$mando = false;
-	$droid = false;
-	$other = false;
+
+	// Club detected
+	$hit = false;
+
+	// Count dual costume hit
+	$dualHit = 0;
 	
 	$query = "SELECT * FROM troopers WHERE id = '".cleanInput($_SESSION['id'])."'";
 	if ($result = mysqli_query($conn, $query))
@@ -308,82 +306,70 @@ function costume_restrict_query($addWhere = false)
 				$returnQuery .= "costumes.club = 0";
 				
 				// Set
-				$p501 = true;
+				$hit = true;
+
+				// Add to dual count
+				$dualHit++;
+			}
+
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
+			{
+				// Check club member status
+				if($db->{$club_value['db']} == 1 || $db->{$club_value['db']} == 2)
+				{
+					// If club from previous hit, add OR
+					if($hit)
+					{
+						$returnQuery .= " OR ";
+						$hit = false;
+					}
+
+					// Set even check
+					$i = 1;
+
+					foreach($club_value['costumes'] as $costume)
+					{
+						// Don't add dual costume yet
+						if($costume != $dualCostume)
+						{
+							// Add costome to query
+							$returnQuery .= "costumes.club = ".$costume."";
+
+							// Increment even count
+							$i++;
+
+							if($i % 2 == 0)
+							{
+								$returnQuery .= " OR ";
+							}
+						}
+						else
+						{
+							$dualHit++;
+						}
+					}
+
+					// Set hit
+					$hit = true;
+				}
 			}
 			
-			// Dual
-			if(($db->p501 == 1 || $db->p501 == 2) && ($db->pRebel == 1 || $db->pRebel == 2))
-			{
-				// Check if trooper has a previous query result
-				if($p501)
-				{
-					$returnQuery .= " OR ";
-				}
-				
-				$returnQuery .= "costumes.club = 5";
-				
-				// Set
-				$dual = true;
+			// Check if dual hit has been hit at least twice
+			if($dualHit >= 2)
+			{	
+				$returnQuery .= "costumes.club = ".$dualCostume."";
 			}
-			
-			// Rebel
-			if($db->pRebel == 1 || $db->pRebel == 2)
+			else
 			{
-				// Check if trooper has a previous query result
-				if($p501 || $dual)
+				// Trim query
+				$returnQueryCheck = substr($returnQuery, -3);
+
+				// If ends with OR, trim off
+				if($returnQueryCheck == "OR ")
 				{
-					$returnQuery .= " OR ";
+					$returnQuery = substr($returnQuery, 0, -3);
 				}
-				
-				$returnQuery .= "costumes.club = 1";
-				
-				// Set
-				$rebel = true;
-			}
-			
-			// Mando
-			if($db->pMando == 1 || $db->pMando == 2)
-			{
-				// Check if trooper has a previous query result
-				if($p501 || $dual || $rebel)
-				{
-					$returnQuery .= " OR ";
-				}
-				
-				$returnQuery .= "costumes.club = 2";
-				
-				// Set
-				$mando = true;
-			}
-			
-			// Droid
-			if($db->pDroid == 1 || $db->pDroid == 2)
-			{
-				// Check if trooper has a previous query result
-				if($p501 || $dual || $rebel || $mando)
-				{
-					$returnQuery .= " OR ";
-				}
-				
-				$returnQuery .= "costumes.club = 3";
-				
-				// Set
-				$droid = true;
-			}
-			
-			// Other
-			if($db->pOther == 1 || $db->pOther == 2)
-			{
-				// Check if trooper has a previous query result
-				if($p501 || $dual || $rebel || $mando || $droid)
-				{
-					$returnQuery .= " OR ";
-				}
-				
-				$returnQuery .= "costumes.club = 4";
-				
-				// Set
-				$other = true;
 			}
 		}
 	}
@@ -1932,7 +1918,7 @@ function getCostumeClub($id)
 // profileTop: Display's user information at top of profile page
 function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 {
-	global $conn, $squadArray;
+	global $conn, $squadArray, $clubArray;
 	
 	// Command Staff Edit Link
 	if(isAdmin())
@@ -2042,137 +2028,51 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 					<img src="images/ranks/legion_retired.png" />
 				</p>';
 			}
-			
-			// Everglades Member
-			if($db2->squad == 1)
+
+			// Set up squad count
+			$squadCount = 1;
+
+			// Loop through clubs
+			foreach($squadArray as $squad => $squad_value)
 			{
-				echo '
-				<p>
-					<img src="images/ranks/everglades_sm.png" />
-				</p>';
+				// Check
+				if($db2->squad == $squadCount)
+				{
+					echo '
+					<p>
+						<img src="images/ranks/'.$squad_value['rankRegular'].'" />
+					</p>';
+				}
+
+				// Increment
+				$squadCount++;
 			}
-			
-			// Makaze Member
-			if($db2->squad == 2)
+
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
 			{
-				echo '
-				<p>
-					<img src="images/ranks/makaze_sm.png" />
-				</p>';
-			}
-			
-			// Parjai Member
-			if($db2->squad == 3)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/parjai_sm.png" />
-				</p>';
-			}
-			
-			// Squad 7 Member
-			if($db2->squad == 4)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/s7_sm.png" />
-				</p>';
-			}
-			
-			// Squad 7 Member
-			if($db2->squad == 5)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/tampa_sm.png" />
-				</p>';
-			}
-			
-			// Rebel
-			// Active
-			if($db2->pRebel == 1)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/rebel.png" />
-				</p>';
-			}
-			// Reserve
-			else if($db2->pRebel == 2)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/rebel_reserve.png" />
-				</p>';
-			}
-			// Retired
-			else if($db2->pRebel == 3)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/rebel_retired.png" />
-				</p>';
-			}
-			
-			// Droid Builders
-			// Active
-			if($db2->pDroid == 1)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/r2.png" />
-				</p>';
-			}
-			// Reserve
-			else if($db2->pDroid == 2)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/r2_reserve.png" />
-				</p>';
-			}
-			// Retired
-			else if($db2->pDroid == 3)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/r2_retired.png" />
-				</p>';
-			}
-			
-			// Mando Mercs
-			// Active
-			if($db2->pMando == 1)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/mercs.png" />
-				</p>';
-			}
-			// Reserve
-			else if($db2->pMando == 2)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/mercs_reserve.png" />
-				</p>';
-			}
-			// Retired
-			else if($db2->pMando == 3)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/mercs_retired.png" />
-				</p>';
-			}
-			
-			// Saber Guild
-			if($db2->sgid > 0)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/saberguildmember.png" />
-				</p>';
+				// Check rank
+				if($db2->{$club_value['db']} == 1)
+				{
+					echo '
+					<p>
+						<img src="images/ranks/'.$club_value['rankRegular'].'" />
+					</p>';
+				}
+				else if($db2->{$club_value['db']} == 2)
+				{
+					echo '
+					<p>
+						<img src="images/ranks/'.$club_value['rankReserve'].'" />
+					</p>';
+				}
+				else if($db2->{$club_value['db']} == 3)
+				{
+					echo '
+					<p>
+						<img src="images/ranks/'.$club_value['rankRetired'].'" />
+					</p>';
+				}
 			}
 			
 			echo '
@@ -3143,29 +3043,15 @@ function canAccess($id)
 			{
 				$canAccess = true;
 			}
-			
-			// Rebel
-			if($db->pRebel != 3 && $db->pRebel != 0)
+
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
 			{
-				$canAccess = true;
-			}
-			
-			// Droid
-			if($db->pDroid != 3 && $db->pDroid != 0)
-			{
-				$canAccess = true;
-			}
-			
-			// Mando
-			if($db->pMando != 3 && $db->pMando != 0)
-			{
-				$canAccess = true;
-			}
-			
-			// Other
-			if($db->pOther != 3 && $db->pOther != 0)
-			{
-				$canAccess = true;
+				// Check member status per club
+				if($db->{$club_value['db']} != 3 && $db->{$club_value['db']} != 0)
+				{
+					$canAccess = true;
+				}
 			}
 		}
 	}
