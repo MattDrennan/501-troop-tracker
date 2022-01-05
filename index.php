@@ -3255,20 +3255,17 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						</select>
 
 						<p>Limit of 501st Troopers:</p>
-						<input type="number" name="limit501st" value="500" id="limit501st" />
+						<input type="number" name="limit501st" value="500" id="limit501st" />';
 
-						<p>Limit of Rebels:</p>
-						<input type="number" name="limitRebels" value="500" id="limitRebels" />
+						// Loop through clubs
+						foreach($clubArray as $club => $club_value)
+						{
+							echo '
+							<p>Limit of '.$club_value['name'].':</p>
+							<input type="number" name="'.$club_value['dbLimit'].'" value="500" id="'.$club_value['dbLimit'].'" />';
+						}
 
-						<p>Limit of Mandos:</p>
-						<input type="number" name="limitMando" value="500" id="limitMando" />
-
-						<p>Limit of Droid Builders:</p>
-						<input type="number" name="limitDroid" value="500" id="limitDroid" />
-						
-						<p>Limit of Others:</p>
-						<input type="number" name="limitOther" value="500" id="limitOther" />
-
+						echo '
 						<p>
 							<a href="#/" class="button" id="resetDefaultCount">Reset Default</a>
 						</p>
@@ -3516,11 +3513,15 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			$notes = "";
 			$limitedEvent = "";
 			$limitTo = "";
-			$limitRebels = "";
 			$limit501st = "";
-			$limitMando = "";
-			$limitDroid = "";
-			$limitOther = "";
+
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
+			{
+				// Add vars
+				${$club_value['dbLimit']} = "";
+			}
+
 			$closed = "";
 			$moneyRaised = "";
 			$squad = "";
@@ -3562,11 +3563,14 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						$notes = $db->notes;
 						$limitedEvent = $db->limitedEvent;
 						$limitTo = $db->limitTo;
-						$limitRebels = $db->limitRebels;
 						$limit501st = $db->limit501st;
-						$limitMando = $db->limitMando;
-						$limitDroid = $db->limitDroid;
-						$limitOther = $db->limitOther;
+
+						// Loop through clubs
+						foreach($clubArray as $club => $club_value)
+						{
+							${$club_value['dbLimit']} = $db->{$club_value['dbLimit']};
+						}
+
 						$closed = $db->closed;
 						$moneyRaised = $db->moneyRaised;
 						$squad = $db->squad;
@@ -3738,20 +3742,17 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				</select>
 				
 				<p>Limit of 501st Troopers:</p>
-				<input type="number" name="limit501st" value="'.copyEvent($eid, $limit501st, 500).'" id="limit501st" />
+				<input type="number" name="limit501st" value="'.copyEvent($eid, $limit501st, 500).'" id="limit501st" />';
 
-				<p>Limit of Rebels:</p>
-				<input type="number" name="limitRebels" value="'.copyEvent($eid, $limitRebels, 500).'" id="limitRebels" />
+				// Loop through clubs
+				foreach($clubArray as $club => $club_value)
+				{
+					echo '
+					<p>Limit of '.$club_value['name'].':</p>
+					<input type="number" name="'.$club_value['dbLimit'].'" value="'.copyEvent($eid, ${$club_value['dbLimit']}, 500).'" id="'.$club_value['dbLimit'].'" />';
+				}
 
-				<p>Limit of Mandos:</p>
-				<input type="number" name="limitMando" value="'.copyEvent($eid, $limitMando, 500).'" id="limitMando" />
-
-				<p>Limit of Droid Builders:</p>
-				<input type="number" name="limitDroid" value="'.copyEvent($eid, $limitDroid, 500).'" id="limitDroid" />
-				
-				<p>Limit of Others:</p>
-				<input type="number" name="limitOther" value="'.copyEvent($eid, $limitOther, 500).'" id="limitOther" />
-
+				echo '
 				<p>
 					<a href="#/" class="button" id="resetDefaultCount">Reset Default</a>
 				</p>
@@ -4265,7 +4266,14 @@ if(isset($_GET['event']))
 			$limitTo = $db->limitTo;
 			
 			// Set total
-			$limitTotal = $db->limit501st + $db->limitRebels + $db->limitMando + $db->limitDroid + $db->limitOther;
+			$limitTotal = $db->limit501st;
+
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
+			{
+				// Add
+				$limitTotal += ${$club_value['dbLimit']};
+			}
 			
 			// Set event exist
 			$eventExist = true;
@@ -4515,9 +4523,22 @@ if(isset($_GET['event']))
 							This event is limited to ' . getEra($db->limitTo) . ' era.
 						</div>';
 					}
+
+					// Set up is limited event?
+					$isLimited = false;
+
+					// Loop through clubs
+					foreach($clubArray as $club => $club_value)
+					{
+						// Check if limited
+						if($db->{$club_value['dbLimit']} < 500)
+						{
+							$isLimited = true;
+						}
+					}
 				
 					// If this event is limited in troopers
-					if($db->limit501st < 500 || $db->limitRebels < 500 || $db->limitMando < 500 || $db->limitDroid < 500 || $db->limitOther < 500)
+					if($db->limit501st < 500 || $isLimited)
 					{
 						echo '
 						<br />
@@ -4527,11 +4548,21 @@ if(isset($_GET['event']))
 						<div style="color: red;" name="troopersRemainingDisplay">
 							<ul>
 								<li>This event is limited to '.$limitTotal.' troopers.</li>
-								<li>This event is limited to '.$db->limit501st.' 501st troopers. '.troopersRemaining($db->limit501st, eventClubCount($db->id, 0)).' </li>
-								<li>This event is limited to '.$db->limitRebels.' Rebel Legion troopers. '.troopersRemaining($db->limitRebels, eventClubCount($db->id, 1)).'</li>
-								<li>This event is limited to '.$db->limitMando.' Mando Merc troopers. '.troopersRemaining($db->limitMando, eventClubCount($db->id, 2)).'</li>
-								<li>This event is limited to '.$db->limitDroid.' Droid Builder troopers. '.troopersRemaining($db->limitDroid, eventClubCount($db->id, 3)).'</li>
-								<li>This event is limited to '.$db->limitOther.' Other troopers. '.troopersRemaining($db->limitOther, eventClubCount($db->id, 4)).'</li>
+								<li>This event is limited to '.$db->limit501st.' 501st troopers. '.troopersRemaining($db->limit501st, eventClubCount($db->id, 0)).' </li>';
+
+								// Set up club count
+								$clubCount = 1;
+
+								// Loop through clubs
+								foreach($clubArray as $club => $club_value)
+								{
+									echo '
+									<li>This event is limited to '.$db->{$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining($db->{$club_value['dbLimit']}, eventClubCount($db->id, $clubCount)).'</li>';
+
+									// Increment club count
+									$clubCount++;
+								}
+						echo '
 							</ul>
 						</div>';
 					}
@@ -5012,8 +5043,17 @@ if(isset($_GET['event']))
 								// Get troop count
 								$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' AND status != '4' AND status != '1'");
 
+								// Set up total troopers
+								$totalTroopers = $db->limit501st;
+
+								// Loop through clubs
+								foreach($clubArray as $club => $club_value)
+								{
+									$totalTroopers += $db->{$club_value['dbLimit']};
+								}
+
 								// Is the event full?
-								if($getNumOfTroopers->num_rows >= ($db->limit501st + $db->limitRebels + $db->limitMando + $db->limitDroid + $db->limitOther))
+								if($getNumOfTroopers->num_rows >= $totalTroopers)
 								{
 									echo '
 									<b>This event is full, you will be placed on the stand by list.</b>';
@@ -5650,12 +5690,22 @@ else
 					<br />
 					<hr />';
 				}
+
+				// Set up add to query
+				$addToQuery = "";
+
+				// Loop through clubs
+				foreach($clubArray as $club => $club_value)
+				{
+					// Add
+					$addToQuery .= "events.".$club_value['dbLimit'].", ";
+				}
 				
 				// Was a squad defined? (Prevents displays div when not needed)
 				if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
 				{
 					// Query
-					$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, events.limitRebels, events.limitMando, events.limitDroid, events.limitOther, events.closed FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() - INTERVAL 1 DAY AND event_sign_up.status < 3 AND (events.closed = 0 OR events.closed = 3)";
+					$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, ".$addToQuery."events.closed FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() - INTERVAL 1 DAY AND event_sign_up.status < 3 AND (events.closed = 0 OR events.closed = 3)";
 				}
 				else if(isset($_GET['squad']) && $_GET['squad'] == "canceledtroops")
 				{
@@ -5754,6 +5804,16 @@ else
 						// Prevent on canceled events
 						if($db->closed != 2)
 						{
+							// Set total
+							$limitTotal = $db->limit501st;
+
+							// Loop through clubs
+							foreach($clubArray as $club => $club_value)
+							{
+								// Add
+								$limitTotal += ${$club_value['dbLimit']};
+							}
+
 							// If not enough troopers
 							if($getNumOfTroopers->num_rows <= 1)
 							{
@@ -5762,7 +5822,7 @@ else
 								<span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
 							}
 							// If full
-							else if($getNumOfTroopers->num_rows >= ($db->limit501st + $db->limitRebels + $db->limitMando + $db->limitDroid + $db->limitOther))
+							else if($getNumOfTroopers->num_rows >= $limitTotal)
 							{
 								echo '
 								<br />
@@ -5851,8 +5911,18 @@ else
 					// If on my troops
 					if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
 					{
+						// Set up add to query
+						$addToQuery = "";
+
+						// Loop through clubs
+						foreach($clubArray as $club => $club_value)
+						{
+							// Add
+							$addToQuery .= "events.".$club_value['dbLimit'].", ";
+						}
+
 						// Query
-						$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, events.limitRebels, events.limitMando, events.limitDroid, events.limitOther FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.closed = 1 ORDER BY dateEnd DESC LIMIT 20";
+						$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, ".$addToQuery."events.limit501st FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.closed = 1 ORDER BY dateEnd DESC LIMIT 20";
 					}
 					// If on squad
 					else if(isset($_GET['squad']))

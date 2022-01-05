@@ -2908,24 +2908,32 @@ function eventClubCount($eventID, $club)
 // isEventFull: Check to see if the event is full ($eventID = ID of the event, $costumeID = costume they are going to wear)
 function isEventFull($eventID, $costumeID)
 {
-	global $conn;
+	global $conn, $dualCostume;
 
 	// Set up variables
 	$eventFull = false;
 
 	// Set up limits
-	$limitRebels = "";
 	$limit501st = "";
-	$limitMando = "";
-	$limitDroid = "";
-	$limitOther = "";
 
 	// Set up limit totals
-	$limitRebelsTotal = eventClubCount($eventID, 1);
 	$limit501stTotal = eventClubCount($eventID, 0);
-	$limitMandoTotal = eventClubCount($eventID, 2);
-	$limitDroidTotal = eventClubCount($eventID, 3);
-	$limitOtherTotal = eventClubCount($eventID, 4);
+
+	// Set up club count
+	$clubCount = 1;
+
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
+	{
+		// Set up variables
+		${$club_value['dbLimit']} = "";
+
+		// Set up limit totals
+		${$club_value['dbLimit'] . "Total"} = eventClubCount($eventID, $clubCount);
+
+		// Increment club count
+		$clubCount++;
+	}
 
 	// Query to get limits
 	$query = "SELECT * FROM events WHERE id = '".$eventID."'";
@@ -2935,19 +2943,41 @@ function isEventFull($eventID, $costumeID)
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
-			$limitRebels = $db->limitRebels;
 			$limit501st = $db->limit501st;
-			$limitMando = $db->limitMando;
-			$limitDroid = $db->limitDroid;
-			$limitOther = $db->limitOther;
+
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
+			{
+				// Set up
+				${$club_value['dbLimit']} = $db->{$club_value['dbLimit']};
+			}
 		}
 	}
 
-	// Check if troop is full
-	if(((getCostumeClub($costumeID) == 0 && ($limit501st - eventClubCount($eventID, 0)) <= 0) || (getCostumeClub($costumeID) == 1 && ($limitRebels - eventClubCount($eventID, 1)) <= 0) || (getCostumeClub($costumeID) == 2 && ($limitMando - eventClubCount($eventID, 2)) <= 0) || (getCostumeClub($costumeID) == 3 && ($limitDroid - eventClubCount($eventID, 3)) <= 0) || (getCostumeClub($costumeID) == 4 && ($limitOther - eventClubCount($eventID, 4)) <= 0)))
+	// 501
+	if(getCostumeClub($costumeID) == 0 && ($limit501st - eventClubCount($eventID, 0)) <= 0)
 	{
 		// Set event full
 		$eventFull = true;
+	}
+
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
+	{
+		// Loop through costumes
+		foreach($club_value['costumes'] as $costume)
+		{
+			// Make sure not a dual costume
+			if($costume != $dualCostume)
+			{
+				// Check club
+				if(getCostumeClub($costumeID) == $costume && (${$club_value['dbLimit']} - eventClubCount($eventID, $costume)) <= 0)
+				{
+					// Set event full
+					$eventFull = true;
+				}
+			}
+		}
 	}
 
 	// Return
