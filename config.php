@@ -3058,7 +3058,7 @@ function getClubPermissionName($value, $type = "")
 // canAccess: Determines if a trooper can access the troop tracker to sign up for events
 function canAccess($id)
 {
-	global $conn;
+	global $conn, $clubArray;
 	
 	// Set up var
 	$canAccess = false;

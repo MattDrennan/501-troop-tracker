@@ -89,8 +89,39 @@ echo '
 		$i++;
 	}
 
-	echo'];
+	echo'];';
 
+	// Club count with value
+	$clubCount = array_filter($clubArray, function($x) { return !empty($x['db3Name']); });
+
+	// Club step
+	$i = 0;
+
+	echo '
+	var clubDB3Array = [';
+
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
+	{
+		// Don't allow empty result
+		if($club_value['db3Name'] != "")
+		{
+			echo '"'.$club_value['db3'].'"';
+
+			// Add comma
+			if($i < count($clubCount) - 1)
+			{
+				echo ',';
+			}
+
+			// Increment
+			$i++;
+		}
+	}
+
+	echo'];';
+
+	echo '
 	// Clear limits
 	function clearLimit()
 	{';
@@ -399,13 +430,21 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 			Phone (Optional): <input type="text" name="phone" id="phone" />
 			<br /><br />
 			FL Garrison Forum Username: <input type="text" name="forumid" id="forumid" />
-			<br /><br />
-			Rebel Legion Forum Username (if applicable): <input type="text" name="rebelforum" id="rebelforum" />
-			<br /><br />
-			Mando Mercs CAT # (if applicable): <input type="text" name="mandoid" id="mandoid" />
-			<br /><br />
-			Saber Guild SG # (if applicable): <input type="text" name="sgid" id="sgid" />
-			<br /><br />
+			<br /><br />';
+
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
+			{
+				// If DB3 defined
+				if($club_value['db3Name'] != "")
+				{
+					echo '
+					'.$club_value['db3Name'].' (if applicable): <input type="text" name="'.$club_value['db3'].'" id="'.$club_value['db3'].'" />
+					<br /><br />';
+				}
+			}
+
+			echo '
 			Password: <input type="password" name="password" id="password" />
 			<br /><br />
 			Password (Confirm): <input type="password" name="passwordC" id="passwordC" />
@@ -3349,7 +3388,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<th>Name</th>	<th>E-mail</th>	<th>Forum ID (FG)</th>	<th>Forum ID (RL)</th>	<th>Mando CAT</th>	<th>SG #</th>	<th>Phone</th>	<th>Squad</th>	<th>TKID</th>
 				</tr>
 					<tr id="userList" name="userList">
-						<td id="nameTable"></td>	<td id="emailTable"></td> <td id="forumTable"></td> <td id="forumRebelTable"></td> <td id="mandoTable"></td>	<td id="sgTable"></td>	<td id="phoneTable"></td>	<td id="squadTable"></td>	<td id="tkTable"></td>
+						<td id="nameTable"></td>	<td id="emailTable"></td> <td id="forumTable"></td> <td id="rebelforumTable"></td> <td id="mandoidTable"></td>	<td id="sgidTable"></td>	<td id="phoneTable"></td>	<td id="squadTable"></td>	<td id="tkTable"></td>
 					</tr>
 				</table>
 				</div>';
@@ -3473,17 +3512,21 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<input type="text" name="tkid" id="tkid" />
 						
 						<p>Forum ID ('.garrison.'):</p>
-						<input type="text" name="forumid" id="forumid" />
-						
-						<p>Forum ID (Rebel Legion):</p>
-						<input type="text" name="rebelforum" id="rebelforum" />
-						
-						<p>Mando Mercs CAT #:</p>
-						<input type="text" name="mandoid" id="mandoid" />
+						<input type="text" name="forumid" id="forumid" />';
 
-						<p>Saber Guild SG #:</p>
-						<input type="text" name="sgid" id="sgid" />
+						// Loop through clubs
+						foreach($clubArray as $club => $club_value)
+						{
+							// If DB3 defined
+							if($club_value['db3Name'] != "")
+							{
+								echo '
+								<p>'.$club_value['db3Name'].':</p>
+								<input type="text" name="'.$club_value['db3'].'" id="'.$club_value['db3'].'" />';
+							}
+						}
 						
+						echo '
 						<p>Supporter:</p>
 						<select name="supporter" id="supporter">
 							<option value="0">No</option>

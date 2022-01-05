@@ -1024,9 +1024,13 @@ $(document).ready(function()
 
 					$("#tkid").val(json.tkid);
 					$("#forumid").val(json.forumid);
-					$("#rebelforum").val(json.rebelforum);
-					$("#mandoid").val(json.mandoid);
-					$("#sgid").val(json.sgid);
+
+					// Loop through clubs
+					for(var i = 0; i <= (clubDB3Array.length - 1); i++)
+					{
+						$("#" + clubDB3Array[i]).val(json[clubDB3Array[i]]);
+					}
+
 					$("#supporter").val(json.supporter);
 				}
 				else
@@ -1516,9 +1520,13 @@ $(document).ready(function()
 					$("#nameTable").html("");
 					$("#emailTable").html("");
 					$("#forumTable").html("");
-					$("#forumRebelTable").html("");
-					$("#mandoTable").html("");
-					$("#sgTable").html("");
+
+					// Loop through clubs
+					for(var i = 0; i <= (clubDB3Array.length - 1); i++)
+					{
+						$("#" + clubDB3Array[i] + "Table").html("");
+					}
+
 					$("#phoneTable").html("");
 					$("#squadTable").html("");
 					$("#tkTable").html("");
@@ -1569,9 +1577,13 @@ $(document).ready(function()
 					$("#nameTable").html("");
 					$("#emailTable").html("");
 					$("#forumTable").html("");
-					$("#forumRebelTable").html("");
-					$("#mandoTable").html("");
-					$("#sgTable").html("");
+
+					// Loop through clubs
+					for(var i = 0; i <= (clubDB3Array.length - 1); i++)
+					{
+						$("#" + clubDB3Array[i] + "Table").html("");
+					}
+					
 					$("#phoneTable").html("");
 					$("#squadTable").html("");
 					$("#tkTable").html("");
@@ -2031,38 +2043,30 @@ $(document).ready(function()
 					$("#nameTable").html('<a href="index.php?action=commandstaff&do=managetroopers&uid=' + $("#userID2").val() + '">' + ifEmpty(json.name) + '</a>');
 					$("#emailTable").html(ifEmpty(json.email));
 					$("#forumTable").html('<a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un=' + json.forum + '" target="_blank">' + json.forum + '</a>');
-					
-					// If not a Rebel Legion member
-					if(json.rebelforum == "")
-					{
-						$("#forumRebelTable").html('N/A');
-					}
-					else
-					{
-						// If a Rebel Legion member
-						$("#forumRebelTable").html('<a href="https://www.forum.rebellegion.com/forum/profile.php?mode=viewprofile&u=' + json.rebelforum + '" target="_blank">' + json.rebelforum + '</a>');
-					}
-					
-					// If not a Mando member
-					if(json.mandoid == 0)
-					{
-						$("#mandoTable").html('N/A');
-					}
-					else
-					{
-						// If a Rebel Legion member
-						$("#mandoTable").html('CAT #' + json.mandoid);
-					}
 
-					// If not a Saber Guild member
-					if(json.sgid == 0)
+					// Loop through clubs
+					for(var i = 0; i <= (clubDB3Array.length - 1); i++)
 					{
-						$("#sgTable").html('N/A');
-					}
-					else
-					{
-						// If a Rebel Legion member
-						$("#sgTable").html('SG #' + json.sgid);
+						// Check
+						if(json[clubDB3Array[i]] == 0 || json[clubDB3Array[i]] == "")
+						{
+							// If not member
+							$("#" + clubDB3Array[i] + "Table").html('N/A');
+						}
+						else
+						{
+							// If Rebel Legion ** CUSTOM **
+							if(clubDB3Array[i].includes("rebel"))
+							{
+								// If member
+								$("#" + clubDB3Array[i] + "Table").html('<a href="https://www.forum.rebellegion.com/forum/profile.php?mode=viewprofile&u=' + json[clubDB3Array[i]] + '" target="_blank">' + json[clubDB3Array[i]] + '</a>');
+							}
+							else
+							{
+								// If member
+								$("#" + clubDB3Array[i] + "Table").html('#' + json[clubDB3Array[i]]);
+							}
+						}
 					}
 					
 					$("#phoneTable").html(ifEmpty(json.phone));
@@ -2086,9 +2090,13 @@ $(document).ready(function()
 			$("#nameTable").html("");
 			$("#emailTable").html("");
 			$("#forumTable").html("");
-			$("#forumRebelTable").html("");
-			$("#mandoTable").html("");
-			$("#sgTable").html("");
+
+			// Loop through clubs
+			for(var i = 0; i <= (clubDB3Array.length - 1); i++)
+			{
+				$("#" + clubDB3Array[i] + "Table").html("");
+			}
+			
 			$("#phoneTable").html("");
 			$("#squadTable").html("");
 			$("#tkTable").html("");

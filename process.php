@@ -1719,7 +1719,17 @@ if(isset($_GET['do']) && $_GET['do'] == "getuser" && loggedIn())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$array = array('name' => $db->name, 'email' => $db->email, 'forum' => $db->forum_id, 'rebelforum' => $db->rebelforum, 'mandoid' => $db->mandoid, 'sgid' => $db->sgid, 'phone' => $db->phone, 'squad' => getSquadName($db->squad), 'tkid' => readTKNumber($db->tkid, $db->squad), 'link' => get501Info($db->tkid, $db->squad)['link']);
+				$array = array('name' => $db->name, 'email' => $db->email, 'forum' => $db->forum_id, 'phone' => $db->phone, 'squad' => getSquadName($db->squad), 'tkid' => readTKNumber($db->tkid, $db->squad), 'link' => get501Info($db->tkid, $db->squad)['link']);
+
+				// Loop through clubs
+				foreach($clubArray as $club => $club_value)
+				{
+					// If DB3 defined
+					if($club_value['db3Name'] != "")
+					{
+						$array[$club_value['db3']] = $db->{$club_value['db3']}; 
+					}
+				}
 			}
 		}
 	}
@@ -1828,13 +1838,19 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$array = array('id' => $db->id, 'name' => $db->name, 'email' => $db->email, 'phone' => $db->phone, 'squad' => $db->squad, 'permissions' => $db->permissions, 'p501' => $db->p501, 'tkid' => $db->tkid, 'forumid' => $db->forum_id, 'rebelforum' => $db->rebelforum, 'mandoid' => $db->mandoid, 'sgid' => $db->sgid, 'supporter' => $db->supporter);
+				$array = array('id' => $db->id, 'name' => $db->name, 'email' => $db->email, 'phone' => $db->phone, 'squad' => $db->squad, 'permissions' => $db->permissions, 'p501' => $db->p501, 'tkid' => $db->tkid, 'forumid' => $db->forum_id, 'supporter' => $db->supporter);
 
 				// Loop through clubs
 				foreach($clubArray as $club => $club_value)
 				{
 					// Push to array
 					$array[$club_value['db']] = $db->{$club_value['db']};
+
+					// If DB3 defined
+					if($club_value['db3Name'] != "")
+					{
+						$array[$club_value['db3']] = $db->{$club_value['db3']}; 
+					}
 				}
 
 				echo json_encode($array);
@@ -1885,10 +1901,16 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 				{
 					// Add
 					$addToQuery .= "".$club_value['db']." = '".cleanInput($_POST[$club_value['db']])."', ";
+
+					// If DB3 defined
+					if($club_value['db3Name'] != "")
+					{
+						$addToQuery .= "".$club_value['db3']." = '".cleanInput($_POST[$club_value['db3']])."', ";
+					}
 				}
 				
 				// Query the database
-				$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['user'])."', email =  '".cleanInput($_POST['email'])."', phone = '".cleanInput(cleanInput($_POST['phone']))."', squad = '".cleanInput($_POST['squad'])."', permissions = '".cleanInput($_POST['permissions'])."', p501 = '".cleanInput($_POST['p501'])."', ".$addToQuery." tkid = '".$tkid."', forum_id = '".cleanInput($_POST['forumid'])."', rebelforum = '".cleanInput($_POST['rebelforum'])."', mandoid = '".cleanInput($_POST['mandoid'])."', sgid = '".cleanInput($_POST['sgid'])."', supporter = '".cleanInput($_POST['supporter'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'") or die($conn->error);
+				$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['user'])."', email =  '".cleanInput($_POST['email'])."', phone = '".cleanInput(cleanInput($_POST['phone']))."', squad = '".cleanInput($_POST['squad'])."', permissions = '".cleanInput($_POST['permissions'])."', p501 = '".cleanInput($_POST['p501'])."', ".$addToQuery." tkid = '".$tkid."', forum_id = '".cleanInput($_POST['forumid'])."', supporter = '".cleanInput($_POST['supporter'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'") or die($conn->error);
 				
 				// **CUSTOM**
 				// Check if Rebel is on spreadsheet
@@ -2114,42 +2136,24 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 				echo '<li>FL Garrison Forum Name is already taken. Please contact the '.garrison.' Webmaster for further assistance.</li>';
 			}
 			
-			// Query Rebel forum - if specified
-			if(cleanInput($_POST['rebelforum']) != "")
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
 			{
-				$rebelcheck = $conn->query("SELECT rebelforum FROM troopers WHERE rebelforum = '".cleanInput($_POST['rebelforum'])."'") or die($conn->error);
-				
-				// Check if Rebel exists
-				if($rebelcheck->num_rows > 0)
+				// If DB3 defined
+				if($club_value['db3Name'] != "")
 				{
-					$failed = true;
-					echo '<li>Rebel Forum Name is already taken. Please contact the '.garrison.' Webmaster for further assistance.</li>';
-				}
-			}
-			
-			// Query Mando ID - if specified
-			if(cleanInput($_POST['mandoid']) != "")
-			{
-				$mandoid = $conn->query("SELECT mandoid FROM troopers WHERE mandoid = '".cleanInput($_POST['mandoid'])."'") or die($conn->error);
-				
-				// Check if Rebel exists
-				if($mandoid->num_rows > 0)
-				{
-					$failed = true;
-					echo '<li>Mando Mercs ID is already taken. Please contact the '.garrison.' Webmaster for further assistance.</li>';
-				}
-			}
-
-			// Query Saber Guild ID - if specified
-			if(cleanInput($_POST['sgid']) != "")
-			{
-				$sgid = $conn->query("SELECT sgid FROM troopers WHERE sgid = '".cleanInput($_POST['sgid'])."'") or die($conn->error);
-				
-				// Check if Rebel exists
-				if($sgid->num_rows > 0)
-				{
-					$failed = true;
-					echo '<li>Saber Guild ID is already taken. Please contact the '.garrison.' Webmaster for further assistance.</li>';
+					// Query Club - if specified
+					if(cleanInput($_POST[$club_value['db3']]) != "")
+					{
+						$clubid = $conn->query("SELECT ".$club_value['db3']." FROM troopers WHERE ".$club_value['db3']." = '".cleanInput($_POST[$club_value['db3']])."'") or die($conn->error);
+						
+						// Check if club ID exists
+						if($clubid->num_rows > 0)
+						{
+							$failed = true;
+							echo '<li>'.$club_value['name'].' ID is already taken. Please contact the '.garrison.' Webmaster for further assistance.</li>';
+						}
+					}
 				}
 			}
 

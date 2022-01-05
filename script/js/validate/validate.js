@@ -751,9 +751,13 @@ $(function()
                             $("#name").val("");
                             $("#email").val("");
                             $("#forumid").val("");
-							$("#rebelforum").val("");
-							$("#mandoid").val("");
-                            $("#sgid").val("");
+
+                            // Loop through clubs
+                            for(var i = 0; i <= (clubDB3Array.length - 1); i++)
+                            {
+                                $("#" + clubDB3Array[i]).val("");
+                            }
+
                             $("#phone").val("");
                             $("#squad").val("1");
                             $("#permissions").val("0");
