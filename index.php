@@ -5825,7 +5825,7 @@ else
 							foreach($clubArray as $club => $club_value)
 							{
 								// Add
-								$limitTotal += ${$club_value['dbLimit']};
+								$limitTotal += $db->{$club_value['dbLimit']};
 							}
 
 							// If not enough troopers
