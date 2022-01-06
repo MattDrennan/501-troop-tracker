@@ -1,5 +1,12 @@
 **Changelog**
 
+_01/06/2022_
+
+-Unapproved troopers will no longer display on the roster or trooper check
+-When editing a shift event, it will now update to the proper event name in the select box
+-Fixed an issue where a chosen sign up would default to "I'll be there"
+-Tips will now display at the top of the page
+
 _01/01/2022_
 
 -Added titles to statistics page

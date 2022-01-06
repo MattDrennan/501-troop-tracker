@@ -44,6 +44,48 @@ if ($conn->connect_error)
 // Main costume string
 $mainCostumes = "'501st: N/A', '501st: Command Staff', '501st: Handler'";
 
+// randomTip: Returns random tip
+function dailyTip()
+{
+	// Get a random number
+	$randomNumber = rand(0, 3);
+
+	// Set tip
+	$tip = '';
+
+	// Set link
+	$link = '';
+
+	// Give tip based on number
+	switch($randomNumber)
+	{
+		case 0:
+			$tip = 'Did you know you could upload photos and share them with other troopers?';
+			$link = '';
+		break;
+
+		case 1:
+			$tip = 'Did you know you could acheive milestone awards and show them off on your profile?';
+			$link = '';
+		break;
+
+		default:
+			$tip = 'Did you know you can add a shortcut on your phone? <a href="https://www.youtube.com/watch?v=_UhtyHbL8uY" target="_blank">IOS</a> / <a href="https://www.youtube.com/watch?v=S4Xu_N4ByBs" target="_blank">Android</a>';
+			$link = '';
+		break;
+	}
+
+	// If link set
+	if($link != "")
+	{
+		return '<p style="text-align: center;"><a href="'.$link.'" target="_blank"><b>TIP:</b> ' . $tip . '</a></p>';
+	}
+	else
+	{
+		return '<p style="text-align: center;"><b>TIP:</b> ' . $tip . '</p>';
+	}
+}
+
 // showCalendarLinks: Returns links to add event to calendar
 function showCalendarLinks($name, $location, $description, $date1, $date2)
 {

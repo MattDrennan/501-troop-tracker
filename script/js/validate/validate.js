@@ -403,8 +403,18 @@ $(function()
                         $("#options").show();
                         $("#editEventInfo").hide();
 
-                        // Fix text when changing the title
-                        $("#eventId option:selected").text($("#eventName").val());
+                        // Is linked event
+                        if($("#eventId option:selected").attr("link") != 0)
+                        {
+                            // Fix text when changing the title
+                            $("#eventId option:selected").text(json.newdate + $("#eventName").val());
+                        }
+                        else
+                        {
+                            // Fix text when changing the title
+                            $("#eventId option:selected").text($("#eventName").val());
+                        }
+
                         $("#eventId").select2();
 						
 						// Remove all shift boxes
