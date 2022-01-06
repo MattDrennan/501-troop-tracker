@@ -2536,12 +2536,17 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				
 				<b>Costume Club:</b></br />
 				<select name="costumeClub" id="costumeClub">
-					<option value="0" SELECTED>501st Legion</option>
-					<option value="1">Rebel Legion</option>
-					<option value="2">Mando Mercs</option>
-					<option value="3">Droid Builders</option>
-					<option value="4">Other</option>
-					<option value="5">Dual (501st + Rebel)</option>
+					<option value="0" SELECTED>501st Legion</option>';
+
+					// Loop through clubs
+					foreach($clubArray as $club => $club_value)
+					{
+						echo '
+						<option value="'.$club_value['costumes'][0].'">'.$club_value['name'].'</option>';
+					}
+
+					echo '
+					<option value="'.$dualCostume.'">Dual (501st + Rebel)</option>
 				</select>
 				
 				<input type="submit" name="addCostumeButton" id="addCostumeButton" value="Add Costume" />
@@ -2615,12 +2620,17 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<b>Costume Club:</b></br />
 				<select name="costumeClubEdit" id="costumeClubEdit">
-					<option value="0" SELECTED>501st Legion</option>
-					<option value="1">Rebel Legion</option>
-					<option value="2">Mando Mercs</option>
-					<option value="3">Droid Builders</option>
-					<option value="4">Other</option>
-					<option value="5">Dual (501st + Rebel)</option>
+					<option value="0" SELECTED>501st Legion</option>';
+
+					// Loop through clubs
+					foreach($clubArray as $club => $club_value)
+					{
+						echo '
+						<option value="'.$club_value['costumes'][0].'">'.$club_value['name'].'</option>';
+					}
+
+					echo '
+					<option value="'.$dualCostume.'">Dual (501st + Rebel)</option>
 				</select>
 
 				<br />
