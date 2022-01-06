@@ -596,6 +596,9 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 		$clubCount++;
 	}
 
+	// Set total
+	$limitTotal = 0;
+
 	// Query to get limits
 	$query = "SELECT * FROM events WHERE id = '".cleanInput($_POST['troopid'])."'";
 
@@ -604,20 +607,23 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
+			// Add total
+			$limitTotal += $db->limit501st;
+
+			// Set 501
 			$limit501st = $db->limit501st;
 
 			// Loop through clubs
 			foreach($clubArray as $club => $club_value)
 			{
-				// Add variables
+				// Set variables
 				${$club_value['dbLimit']} = $db->{$club_value['dbLimit']};
+
+				// Add variables
+				$limitTotal += $db->{$club_value['dbLimit']};
 			}
 		}
 	}
-
-
-	// Set total
-	$limitTotal = $db->limit501st;
 
 	// Loop through clubs
 	foreach($clubArray as $club => $club_value)
@@ -707,8 +713,8 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 		// Loop through clubs
 		foreach($clubArray as $club => $club_value)
 		{
-			data .= '
-			<li>This event is limited to '.$db->{$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining(${$club_value['dbLimit']}, eventClubCount(cleanInput($_POST['troopid']), $clubCount)).'</li>';
+			$data .= '
+			<li>This event is limited to '.${$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining(${$club_value['dbLimit']}, eventClubCount(cleanInput($_POST['troopid']), $clubCount)).'</li>';
 
 			// Increment club count
 			$clubCount++;
@@ -2210,15 +2216,26 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 				// Add to query set up
 				$addToQuery1 = "";
 				$addToQuery2 = "";
+				$addToQuery3 = "";
+				$addToQuery4 = "";
 
 				// Loop through clubs
 				foreach($clubArray as $club => $club_value)
 				{
 					// If has value
-					if(cleanInput($_POST[$club_value['db3']]) != "" || cleanInput($_POST[$club_value['db3']]) > 0)
+					if(isset($_POST[$club_value['db3']]) && (cleanInput($_POST[$club_value['db3']]) != "" || cleanInput($_POST[$club_value['db3']]) > 0))
 					{
 						// Change value
 						${$club_value['db']} = 1;
+					}
+					else
+					{
+						// If contains ID
+						if (isset($_POST[$club_value['db3']]) && strpos($club_value['db3'], "id") !== false)
+						{
+							// Set as int
+							$_POST[$club_value['db3']] = 0;
+						}
 					}
 
 					// If database 3 set
@@ -2227,11 +2244,13 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 						// Add to query
 						$addToQuery1 .= "".$club_value['db3'].", ";
 						$addToQuery2 .= "'".cleanInput($_POST[$club_value['db3']])."', ";
+						$addToQuery3 .= "".$club_value['db'].", ";
+						$addToQuery4 .= "'".${$club_value['db']}."', ";
 					}
 				}
 				
 				// Insert
-				$conn->query("INSERT INTO troopers (name, tkid, email, forum_id, rebelforum, ".$addToQuery1."phone, squad, password) VALUES ('".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."', ".$addToQuery2."'".$p501."', '".$pRebel."', '".$pDroid."', '".$pMando."', '".$pOther."', '".cleanInput($_POST['phone'])."', '".$squad."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."')") or die($conn->error);
+				$conn->query("INSERT INTO troopers (name, tkid, email, forum_id, ".$addToQuery1."p501,".$addToQuery3."phone, squad, password) VALUES ('".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."',".$addToQuery2."'".$p501."',".$addToQuery4."'".cleanInput($_POST['phone'])."', '".$squad."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."')") or die($conn->error);
 				
 				// Last ID
 				$last_id = $conn->insert_id;
@@ -3230,6 +3249,9 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 		// Query to get limits
 		$query = "SELECT * FROM events WHERE id = '".cleanInput($_POST['event'])."'";
 
+		// Set limit total
+		$limitTotal = 0;
+
 		// Output
 		if ($result = mysqli_query($conn, $query))
 		{
@@ -3238,24 +3260,20 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 				// Set 501
 				$limit501st = $db->limit501st;
 
+				// Add
+				$limitTotal += $db->limit501st;
+
 
 				// Loop through clubs
 				foreach($clubArray as $club => $club_value)
 				{
 					// Set
 					${$club_value['dbLimit']} = $db->{$club_value['dbLimit']};
+
+					// Add
+					$limitTotal += $db->{$club_value['dbLimit']};
 				}
 			}
-		}
-
-		// Set total
-		$limitTotal = $db->limit501st;
-
-		// Loop through clubs
-		foreach($clubArray as $club => $club_value)
-		{
-			// Add
-			$limitTotal += ${$club_value['dbLimit']};
 		}
 
 		// Set troop full - not used at the moment, but will keep it here for now

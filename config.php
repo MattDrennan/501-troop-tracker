@@ -2908,7 +2908,7 @@ function eventClubCount($eventID, $club)
 // isEventFull: Check to see if the event is full ($eventID = ID of the event, $costumeID = costume they are going to wear)
 function isEventFull($eventID, $costumeID)
 {
-	global $conn, $dualCostume;
+	global $conn, $dualCostume, $clubArray;
 
 	// Set up variables
 	$eventFull = false;

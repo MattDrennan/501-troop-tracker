@@ -4329,7 +4329,7 @@ if(isset($_GET['event']))
 			foreach($clubArray as $club => $club_value)
 			{
 				// Add
-				$limitTotal += ${$club_value['dbLimit']};
+				$limitTotal += $db->{$club_value['dbLimit']};
 			}
 			
 			// Set event exist
