@@ -6233,6 +6233,96 @@ If you are missing troops or notice incorrect data, please refer to your squad l
       
 </script>
 
+<script>
+$(document).ready(function()
+{';
+
+// Loop through clubs - add rules for validation
+foreach($clubArray as $club => $club_value)
+{
+	// Get array
+	$getArray = explode(",", $club_value['db3Require']);
+
+	// If squad set
+	if($getArray[2] != "0")
+	{
+		// Get squad
+		$getSquad = explode(":", $getArray[2])[1];
+
+		echo '
+	    // Add rules to clubs - IDs
+	    $(\'#'.$club_value['db3'].'\').each(function()
+	    {
+	        $(this).rules(\'add\',
+	        {';
+	        	// If digits
+	        	if($getArray[1] == "digits")
+	        	{
+					echo '
+					digits: true,';
+				}
+				else
+				{
+					echo '
+					digits: false,';
+				}
+
+				// If squad
+				if($getArray[2] != "0")
+				{
+					echo '
+					required: function()
+					{
+						return $(\'#squad\').val() == '.$getSquad.';
+					}';
+				}
+				else
+				{
+					echo '
+					required: false';
+				}
+
+			echo '
+	        })
+	    });';
+	}
+	else
+	{
+		// If value set
+		if($club_value['db3'] != "")
+		{
+			// Squad not set
+			echo '
+		    // Add rules to clubs - IDs
+		    $(\'#'.$club_value['db3'].'\').each(function()
+		    {
+		        $(this).rules(\'add\',
+		        {';
+		        	// If digits
+		        	if($getArray[1] == "digits")
+		        	{
+						echo '
+						digits: true,';
+					}
+					else
+					{
+						echo '
+						digits: false,';
+					}
+
+					echo '
+					required: false
+		        })
+		    });';
+		}
+	}
+}
+
+echo '
+});
+</script>';
+
+echo '
 <!-- External JS File -->
 <script type="text/javascript" src="script/js/main.js"></script>
 </body>

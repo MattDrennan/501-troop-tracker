@@ -452,26 +452,6 @@ $(function()
                 required: true,
                 email: true
             },
-			rebelforum:
-			{
-				required: function()
-				{
-					return $('#squad').val() == 6;
-				}				
-			},
-			mandoid:
-			{
-				digits: true,
-				required: function()
-				{
-					return $('#squad').val() == 8;
-				}				
-			},
-            sgid:
-            {
-				required: false,
-                digits: true          
-            },
             forumid: "required",
             password: "required",
             passwordC: "required",
@@ -672,104 +652,6 @@ $(function()
                     }
                 }
             });
-        }
-    });
-
-    $("form[name='createUserForm']").validate(
-    {
-        rules:
-        {
-            name: "required",
-            forumid: "required",
-            email:
-            {
-                required: true,
-                email: true
-            },
-            squad:
-            {
-                required: true,
-                range: [0, 1]
-            },
-            permissions:
-            {
-                required: true,
-                range: [0, 2]
-            },
-            p501:
-            {
-                required: true,
-                range: [0, 4]
-            },
-            tkid:
-            {
-                required: true,
-                digits: true
-            },
-			mandoid:
-			{
-				digits: true
-			},
-            sgid:
-            {
-                digits: true
-            },
-            password:
-            {
-                required: true,
-                minlength: 6
-            }
-        },
-        messages:
-        {
-            name: "Please enter a name.",
-            forumid: "Please enter the FL 501st Username.",
-            email: "Please enter a valid e-mail address.",
-            squad: "Please choose a squad.",
-            tkid: "Please enter a valid ID.",
-            password: "Please enter a valid password."
-        },
-        submitHandler: function(form)
-        {
-            var r = confirm("Are you sure you want to create this user?");
-
-            if (r == true)
-            {
-                $.ajax(
-                {
-                    type: "POST",
-                    url: form.action,
-                    data: $(form).serialize() + "&submitUser=1",
-                    success: function(data)
-                    {
-                        var json = JSON.parse(data);
-
-                        // If success
-                        if (json.success == "success")
-                        {
-                            // Clear Form
-                            $("#name").val("");
-                            $("#email").val("");
-                            $("#forumid").val("");
-
-                            // Loop through clubs
-                            for(var i = 0; i <= (clubDB3Array.length - 1); i++)
-                            {
-                                $("#" + clubDB3Array[i]).val("");
-                            }
-
-                            $("#phone").val("");
-                            $("#squad").val("1");
-                            $("#permissions").val("0");
-                            $("#tkid").val("");
-                            $("#password").val("");
-                        }
-
-                        // Alert to success
-                        alert(json.data);
-                    }
-                });
-            }
         }
     });
 

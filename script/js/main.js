@@ -263,7 +263,7 @@ $(document).ready(function()
 	// Add select2 to DOM
 	selectAdd();
 
-    // Add rules to clubs
+    // Add rules to clubs - clubs
     $('.clubs').each(function()
     {
         $(this).rules('add',
@@ -273,7 +273,7 @@ $(document).ready(function()
         })
     });
 
-     // Add rules to clubs
+    // Add rules to clubs - limits
     $('.limitClass').each(function()
     {
         $(this).rules('add',
