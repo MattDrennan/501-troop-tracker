@@ -231,6 +231,9 @@ echo '
 // Show support graph
 echo drawSupportGraph();
 
+// Show tip
+echo dailyTip();
+
 // Show the account page
 if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 {
@@ -1929,7 +1932,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			}
 			
 			// Query database
-			$query = "SELECT * FROM troopers ".$queryAdd." id != ".placeholder." ORDER BY name";
+			$query = "SELECT * FROM troopers ".$queryAdd." id != ".placeholder." AND approved = '1' ORDER BY name";
 			
 			// Query count
 			$i = 0;
@@ -2182,7 +2185,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			}
 			
 			// Query database
-			$query = "SELECT * FROM troopers WHERE ".$queryAdd." troopers.permissions = 0 AND troopers.id NOT IN (SELECT event_sign_up.trooperid FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.dateEnd > NOW() - INTERVAL 1 YEAR) ORDER BY troopers.name";
+			$query = "SELECT * FROM troopers WHERE ".$queryAdd." approved = '1' AND troopers.permissions = 0 AND troopers.id NOT IN (SELECT event_sign_up.trooperid FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.dateEnd > NOW() - INTERVAL 1 YEAR) ORDER BY troopers.name";
 			
 			// Query count
 			$i = 0;
@@ -3147,7 +3150,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						$add .= "[" . date("l", strtotime($db->dateStart)) . " : " . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "] ";
 					}
 
-					echo '<option value="'.$db->id.'" '.echoSelect($db->id, $eid).'>'.$add.''.$db->name.'</option>';
+					echo '<option value="'.$db->id.'" link="'.isLink($db->id).'" '.echoSelect($db->id, $eid).'>'.$add.''.$db->name.'</option>';
 
 					// Increment
 					$i++;
