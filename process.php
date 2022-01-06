@@ -3065,7 +3065,10 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				sendNotification(getName($_SESSION['id']) . " has edited event ID: [" . cleanInput($_POST['eventIdE']) . "]", cleanInput($_SESSION['id']), 14, convertDataToJSON("SELECT * FROM events WHERE id = '".cleanInput($_POST['eventIdE'])."'"));
 			}
 
-			$array = array('success' => 'true', 'data' => 'Event has been updated!');
+			// For updating title, send date back
+			$newDate = "[" . date("l", strtotime($date1)) . " : " . date("m/d - h:i A", strtotime($date1)) . " - " . date("h:i A", strtotime($date2)) . "] ";
+
+			$array = array('success' => 'true', 'data' => 'Event has been updated!', 'newdate' => $newDate);
 			echo json_encode($array);
 		}
 		else
@@ -3177,10 +3180,10 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 		else
 		{
 			// If status is not updated, let's update it to prevent blank data
-			if($status != 0 && $status != 1 && $status != 4 && $status != 5)
+			/*if($status != 0 && $status != 1 && $status != 2 && $status != 4 && $status != 5)
 			{
 				$status = 0;
-			}
+			}*/
 		}
 		// End of check to see if this event is full
 		
