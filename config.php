@@ -1055,7 +1055,7 @@ function getMyCostumes($id, $squad)
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$costume .= ", '" . $db->costumename . "'";
+				$costume .= ", '501st: " . $db->costumename . "'";
 			}
 		}
 	}
