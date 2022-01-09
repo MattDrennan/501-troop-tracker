@@ -48,7 +48,7 @@ $mainCostumes = "'501st: N/A', '501st: Command Staff', '501st: Handler'";
 function dailyTip()
 {
 	// Get a random number
-	$randomNumber = rand(0, 3);
+	$randomNumber = rand(0, 14);
 
 	// Set tip
 	$tip = '';
@@ -61,13 +61,72 @@ function dailyTip()
 	{
 		case 0:
 			$tip = 'Did you know you could upload photos and share them with other troopers?';
-			$link = '';
+			$link = 'https://youtu.be/aODHyWMMVUQ';
 		break;
 
 		case 1:
 			$tip = 'Did you know you could acheive milestone awards and show them off on your profile?';
-			$link = '';
+			$link = 'https://youtu.be/W-wcceu6xzI';
 		break;
+
+		case 2:
+			$tip = 'Did you know you could add a friend to a troop, without them logging in?';
+			$link = 'https://youtu.be/C0WCxIRZafQ';
+		break;
+
+		case 3:
+			$tip = 'Did you know you could change the theme of the troop tracker?';
+			$link = 'https://youtu.be/IPykBoeDGcg';
+		break;
+
+		case 4:
+			$tip = 'Did you know you could search past troops and search for troop counts between a time range?';
+			$link = 'https://youtu.be/-pXqGZLiVpM';
+		break;
+
+		case 5:
+			$tip = 'Did you know you could see all troops that have occured in the past?';
+			$link = 'https://youtu.be/17UPK4AoKxg';
+		break;
+
+		case 6:
+			$tip = 'Did you know you could sort troops by squad on the homepage?';
+			$link = 'https://youtu.be/H-nnM5jndZA';
+		break;
+
+		case 7:
+			$tip = 'Did you know you can view the troops you\'re signed up for?';
+			$link = 'https://youtu.be/Rn3EnhudHyc';
+		break;
+
+		case 8:
+			$tip = 'Did you know you there is a calendar view?';
+			$link = 'https://youtu.be/02ERoFw7XlY';
+		break;
+
+		case 9:
+			$tip = 'Did you know you can sort troops by the troop name?';
+			$link = 'https://youtu.be/y_I8ssRjek8';
+		break;
+
+		case 10:
+			$tip = 'Did you know you can subscribe for event updates, and it will send e-mails when troopers sign up, cancel, or post comments?';
+			$link = 'https://youtu.be/5pp7_FKg7cI';
+		break;
+
+		case 11:
+			$tip = 'Did you know you can add events to your Google, Apple, or other calendar?';
+			$link = 'https://youtu.be/cefnojYUy-Y';
+		break;
+
+		case 12:
+			$tip = 'Did you know you can post comments or have a discussion on the troop tracker?';
+			$link = 'https://youtu.be/tS-bCXbCzs4';
+		break;
+
+		case 13:
+			$tip = 'Did you know you can type when selecting a costume to find it easier?';
+			$link = 'https://youtu.be/YLjiVGgqe-Y';
 
 		default:
 			$tip = 'Did you know you can add a shortcut on your phone? <a href="https://www.youtube.com/watch?v=_UhtyHbL8uY" target="_blank">IOS</a> / <a href="https://www.youtube.com/watch?v=S4Xu_N4ByBs" target="_blank">Android</a>';
