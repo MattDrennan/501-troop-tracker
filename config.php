@@ -48,7 +48,7 @@ $mainCostumes = "'501st: N/A', '501st: Command Staff', '501st: Handler'";
 function dailyTip()
 {
 	// Get a random number
-	$randomNumber = rand(0, 13);
+	$randomNumber = rand(0, 14);
 
 	// Set tip
 	$tip = '';
@@ -123,6 +123,10 @@ function dailyTip()
 			$tip = 'Did you know you can post comments or have a discussion on the troop tracker?';
 			$link = 'https://youtu.be/tS-bCXbCzs4';
 		break;
+
+		case 13:
+			$tip = 'Did you know you can type when selecting a costume to find it easier?';
+			$link = 'https://youtu.be/YLjiVGgqe-Y';
 
 		default:
 			$tip = 'Did you know you can add a shortcut on your phone? <a href="https://www.youtube.com/watch?v=_UhtyHbL8uY" target="_blank">IOS</a> / <a href="https://www.youtube.com/watch?v=S4Xu_N4ByBs" target="_blank">Android</a>';
