@@ -59,6 +59,7 @@ echo '
 	<link href="css/calendar.css" rel="stylesheet" />
 	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 	<link href="css/all.css" rel="stylesheet" />
+	<link rel="stylesheet" href="https://unpkg.com/balloon-css/balloon.min.css">
 	
 	<!-- Icon -->
 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
@@ -4910,7 +4911,7 @@ if(isset($_GET['event']))
 							}
 							
 							echo '
-							<td id="'.$db2->trooperId.'Status" title="'.date("F j, Y, g:i:s a", strtotime($db2->signuptime)).'">
+							<td id="'.$db2->trooperId.'Status" aria-label="'.date("F j, Y, g:i:s a", strtotime($db2->signuptime)).'" data-balloon-pos="up">
 							<div name="'.$db2->trooperId.'trooperRosterStatus" id="'.$db2->trooperId.'trooperRosterStatus">';
 							
 								// If not a limited event
@@ -5026,7 +5027,7 @@ if(isset($_GET['event']))
 								'.ifEmpty(getCostume($db2->costume_backup), "N/A").'
 							</td>
 							
-							<td id="'.$db2->trooperId.'Status" title="'.date("F j, Y, g:i:s a", strtotime($db2->signuptime)).'">';
+							<td id="'.$db2->trooperId.'Status" aria-label="'.date("F j, Y, g:i:s a", strtotime($db2->signuptime)).'" data-balloon-pos="up">';
 								echo '
 								<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
 
