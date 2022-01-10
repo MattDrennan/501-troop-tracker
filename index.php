@@ -4673,7 +4673,7 @@ if(isset($_GET['event']))
 			<div style="overflow-x: auto;" id="signuparea1" name="signuparea1">';
 
 			// Query database for roster info
-			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, event_sign_up.status, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' ORDER BY event_sign_up.id ASC";
+			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, event_sign_up.status, event_sign_up.signuptime, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' ORDER BY event_sign_up.id ASC";
 			$i = 0;
 			
 			if ($result2 = mysqli_query($conn, $query2))
@@ -4843,7 +4843,7 @@ if(isset($_GET['event']))
 							}
 							
 							echo '
-							<td id="'.$db2->trooperId.'Status">
+							<td id="'.$db2->trooperId.'Status" title="'.date("F j, Y, g:i:s a", strtotime($db2->signuptime)).'">
 							<div name="'.$db2->trooperId.'trooperRosterStatus" id="'.$db2->trooperId.'trooperRosterStatus">';
 							
 								// If not a limited event
@@ -4959,7 +4959,7 @@ if(isset($_GET['event']))
 								'.ifEmpty(getCostume($db2->costume_backup), "N/A").'
 							</td>
 							
-							<td id="'.$db2->trooperId.'Status">';
+							<td id="'.$db2->trooperId.'Status" title="'.date("F j, Y, g:i:s a", strtotime($db2->signuptime)).'">';
 								echo '
 								<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
 
