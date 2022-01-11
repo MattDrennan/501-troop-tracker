@@ -263,6 +263,26 @@ $(document).ready(function()
 	// Add select2 to DOM
 	selectAdd();
 
+    // Add rules to clubs - clubs
+    $('.clubs').each(function()
+    {
+        $(this).rules('add',
+        {
+            required: true,
+            range: [0, 4]
+        })
+    });
+
+    // Add rules to clubs - limits
+    $('.limitClass').each(function()
+    {
+        $(this).rules('add',
+        {
+            required: false,
+            digits: true
+        })
+    });
+
 	// Before / After Ajax
 	$(document).ajaxStart(function ()
 	{
@@ -431,10 +451,9 @@ $(document).ready(function()
 		// Reset
 		$("#era").val(4);
 		$("#limit501st").val(500);
-		$("#limitRebels").val(500);
-		$("#limitMando").val(500);
-		$("#limitDroid").val(500);
-		$("#limitOther").val(500);
+
+		// On index.php, clear all fields
+		clearLimit();
 	})
 
 	// Event Page - Change Status
@@ -996,16 +1015,22 @@ $(document).ready(function()
 					$("#phone").val(json.phone);
 					$("#squad").val(json.squad);
 					$("#permissions").val(json.permissions);
-					$("#p501").val(json.p501);
-					$("#pRebel").val(json.pRebel);
-					$("#pDroid").val(json.pDroid);
-					$("#pMando").val(json.pMando);
-					$("#pOther").val(json.pOther);
+
+					// Loop through clubs
+					for(var i = 0; i <= (clubArray.length - 1); i++)
+					{
+						$("#" + clubArray[i]).val(json[clubArray[i]]);
+					}
+
 					$("#tkid").val(json.tkid);
 					$("#forumid").val(json.forumid);
-					$("#rebelforum").val(json.rebelforum);
-					$("#mandoid").val(json.mandoid);
-					$("#sgid").val(json.sgid);
+
+					// Loop through clubs
+					for(var i = 0; i <= (clubDB3Array.length - 1); i++)
+					{
+						$("#" + clubDB3Array[i]).val(json[clubDB3Array[i]]);
+					}
+
 					$("#supporter").val(json.supporter);
 				}
 				else
@@ -1077,9 +1102,13 @@ $(document).ready(function()
 					$("#era").val(json.limitTo);
 					$("#limitRebels").val(json.limitRebels);
 					$("#limit501st").val(json.limit501st);
-					$("#limitMando").val(json.limitMando);
-					$("#limitDroid").val(json.limitDroid);
-					$("#limitOther").val(json.limitOther);
+
+					// Loop through clubs
+					for(var i = 0; i <= (clubArray.length - 1); i++)
+					{
+						$("#" + clubArray[i]).val(json[clubArray[i]]);
+					}
+
 					$("#referred").val(json.referred);
 
 					// Hide options if armor party
@@ -1487,9 +1516,13 @@ $(document).ready(function()
 					$("#nameTable").html("");
 					$("#emailTable").html("");
 					$("#forumTable").html("");
-					$("#forumRebelTable").html("");
-					$("#mandoTable").html("");
-					$("#sgTable").html("");
+
+					// Loop through clubs
+					for(var i = 0; i <= (clubDB3Array.length - 1); i++)
+					{
+						$("#" + clubDB3Array[i] + "Table").html("");
+					}
+
 					$("#phoneTable").html("");
 					$("#squadTable").html("");
 					$("#tkTable").html("");
@@ -1540,9 +1573,13 @@ $(document).ready(function()
 					$("#nameTable").html("");
 					$("#emailTable").html("");
 					$("#forumTable").html("");
-					$("#forumRebelTable").html("");
-					$("#mandoTable").html("");
-					$("#sgTable").html("");
+
+					// Loop through clubs
+					for(var i = 0; i <= (clubDB3Array.length - 1); i++)
+					{
+						$("#" + clubDB3Array[i] + "Table").html("");
+					}
+					
 					$("#phoneTable").html("");
 					$("#squadTable").html("");
 					$("#tkTable").html("");
@@ -1795,23 +1832,50 @@ $(document).ready(function()
 			success: function(data)
 			{
 				var json = JSON.parse(data);
+
+				// Go to else?
+				var shouldElse = true;
 				
 				// If JSON did not fail
 				if(json.success != "failed")
 				{
-					// Adjust options based on costume
-					if((($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 0 && (json.limit501st - json.limit501stTotal) > 0) || ($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 1 && (json.limitRebels - json.limitRebelsTotal) > 0) || ($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 2 && (json.limitMando - json.limitMandoTotal) > 0) || ($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 3 && (json.limitDroid - json.limitDroidTotal) > 0) || ($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 4 && (json.limitOther - json.limitOtherTotal) > 0)) && json.staus != 4)
+					// Adjust options based on costume - 501
+					if(($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 0 && (json.limit501st - json.limit501stTotal) > 0) && json.staus != 4)
 					{
-						// Empty select
-						signupForm3.empty();
+							// Empty select
+							signupForm3.empty();
 
-						// Refill
-						signupForm3.append("<option value='0'>I'll be there</option> <option value='2'>Tentative</option> <option value='4'>Cancel</option>");
+							// Refill
+							signupForm3.append("<option value='0'>I'll be there</option> <option value='2'>Tentative</option> <option value='4'>Cancel</option>");
 
-						// Set selected value
-						signupForm3.val(json.status);
+							// Set selected value
+							signupForm3.val(json.status);
+
+							// Set
+							shouldElse = false;
 					}
-					else
+
+					// Loop through clubs
+					for(var i = 0; i <= (clubArray.length - 1); i++)
+					{
+						// Adjust options based on costumes - other clubs
+						if(($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 1 && (json[clubArray[i]] - json[clubArray[i] + "Total"]) > 0) && json.staus != 4)
+						{
+							// Empty select
+							signupForm3.empty();
+
+							// Refill
+							signupForm3.append("<option value='0'>I'll be there</option> <option value='2'>Tentative</option> <option value='4'>Cancel</option>");
+
+							// Set selected value
+							signupForm3.val(json.status);
+
+							// Set
+							shouldElse = false;
+						}
+					}
+
+					if(shouldElse)
 					{
 						// Empty select
 						signupForm3.empty();
@@ -1950,38 +2014,30 @@ $(document).ready(function()
 					$("#nameTable").html('<a href="index.php?action=commandstaff&do=managetroopers&uid=' + $("#userID2").val() + '">' + ifEmpty(json.name) + '</a>');
 					$("#emailTable").html(ifEmpty(json.email));
 					$("#forumTable").html('<a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un=' + json.forum + '" target="_blank">' + json.forum + '</a>');
-					
-					// If not a Rebel Legion member
-					if(json.rebelforum == "")
-					{
-						$("#forumRebelTable").html('N/A');
-					}
-					else
-					{
-						// If a Rebel Legion member
-						$("#forumRebelTable").html('<a href="https://www.forum.rebellegion.com/forum/profile.php?mode=viewprofile&u=' + json.rebelforum + '" target="_blank">' + json.rebelforum + '</a>');
-					}
-					
-					// If not a Mando member
-					if(json.mandoid == 0)
-					{
-						$("#mandoTable").html('N/A');
-					}
-					else
-					{
-						// If a Rebel Legion member
-						$("#mandoTable").html('CAT #' + json.mandoid);
-					}
 
-					// If not a Saber Guild member
-					if(json.sgid == 0)
+					// Loop through clubs
+					for(var i = 0; i <= (clubDB3Array.length - 1); i++)
 					{
-						$("#sgTable").html('N/A');
-					}
-					else
-					{
-						// If a Rebel Legion member
-						$("#sgTable").html('SG #' + json.sgid);
+						// Check
+						if(json[clubDB3Array[i]] == 0 || json[clubDB3Array[i]] == "")
+						{
+							// If not member
+							$("#" + clubDB3Array[i] + "Table").html('N/A');
+						}
+						else
+						{
+							// If Rebel Legion ** CUSTOM **
+							if(clubDB3Array[i].includes("rebel"))
+							{
+								// If member
+								$("#" + clubDB3Array[i] + "Table").html('<a href="https://www.forum.rebellegion.com/forum/profile.php?mode=viewprofile&u=' + json[clubDB3Array[i]] + '" target="_blank">' + json[clubDB3Array[i]] + '</a>');
+							}
+							else
+							{
+								// If member
+								$("#" + clubDB3Array[i] + "Table").html('#' + json[clubDB3Array[i]]);
+							}
+						}
 					}
 					
 					$("#phoneTable").html(ifEmpty(json.phone));
@@ -2005,9 +2061,13 @@ $(document).ready(function()
 			$("#nameTable").html("");
 			$("#emailTable").html("");
 			$("#forumTable").html("");
-			$("#forumRebelTable").html("");
-			$("#mandoTable").html("");
-			$("#sgTable").html("");
+
+			// Loop through clubs
+			for(var i = 0; i <= (clubDB3Array.length - 1); i++)
+			{
+				$("#" + clubDB3Array[i] + "Table").html("");
+			}
+			
 			$("#phoneTable").html("");
 			$("#squadTable").html("");
 			$("#tkTable").html("");
@@ -2189,7 +2249,6 @@ $(document).ready(function()
 			data: "gettitle=1&titleid=" + titleid + "&trooperid=" + trooperid,
 			success: function(data)
 			{
-				console.log(data);
 				// Get JSON
 				var json = JSON.parse(data);
 				

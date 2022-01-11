@@ -68,15 +68,136 @@ define('garrison', 'Florida Garrison');
 define('garrisonImage', 'garrison_emblem.png');
 
 // Please note: Do not change the order of squads and clubs after your set up your troop tracker, otherwise you will mess up the squad IDs
-// Make sure you run queries on your database if you need to change the order or add squads
+// Make sure you run queries on your database if you need to change the order after installation.
+
+// Dual costume
+$dualCostume = 5;
 
 // Squads
-// An array of squads in your garrison and their squad logo file name in the images folder
-$squadArray = array("Everglades Squad" => "everglades_emblem.png", "Makaze Squad" => "makaze_emblem.png", "Parjai Squad" => "parjai_emblem.png", "Squad 7" => "squad7_emblem.png", "Tampa Bay Squad" => "tampabay_emblem.png");
+// name: Name of squad
+// logo: Image logo of squad
+// db: Membership database (EX: p501)
+// db2: Custom DB code (not required)
+// rankRegular: Title image of regular members
+// rankReserve: Title image of reserve members
+// rankRetired: Title image of retired members
+
+$squadArray = array(
+	array(
+		"name" => "Everglades Squad",
+		"logo" => "everglades_emblem.png",
+		"costumes" => array(0, 5),
+		"db" => "p501",
+		"db2" => "",
+		"rankRegular" => "everglades_sm.png",
+		"rankReserve" => "",
+		"rankRetired" => ""),
+	array(
+		"name" => "Makaze Squad",
+		"logo" => "makaze_emblem.png",
+		"costumes" => array(0, 5),
+		"db" => "p501",
+		"db2" => "",
+		"rankRegular" => "makaze_sm.png",
+		"rankReserve" => "",
+		"rankRetired" => ""),
+	array(
+		"name" => "Parjai Squad",
+		"logo" => "parjai_emblem.png",
+		"costumes" => array(0, 5),
+		"db" => "p501", "db2" => "",
+		"rankRegular" => "parjai_sm.png",
+		"rankReserve" => "",
+		"rankRetired" => ""),
+	array(
+		"name" => "Squad 7",
+		"logo" => "squad7_emblem.png",
+		"costumes" => array(0, 5),
+		"db" => "p501",
+		"db2" => "",
+		"rankRegular" => "s7_sm.png",
+		"rankReserve" => "",
+		"rankRetired" => ""),
+	array(
+		"name" => "Tampa Bay Squad",
+		"logo" => "tampabay_emblem.png",
+		"costumes" => array(0, 5),
+		"db" => "p501",
+		"db2" => "",
+		"rankRegular" => "tampa_sm.png",
+		"rankReserve" => "",
+		"rankRetired" => "")
+);
 
 // Clubs
-// An array of squads and their club image file name in the images folder
-$clubArray = array("Rebel Legion" => "test", "Droid Builders" => "test", "Mando Mercs" => "test", "Other" => "test");
+// name: Name of club
+// logo: Image logo of club
+// costumes: Array of costume ID's assigned to this club
+// db: Membership database (EX: p501)
+// db2: Custom DB code (not required)
+// db3: ID / Username of club DB table
+// db3Name: Name of db3 (EX: ID / Username)
+// db3Require: Instructions for how to handle sign up requirements
+// dbLimit: DB table in events where this club will have a set limit
+// rankRegular: Title image of regular members
+// rankReserve: Title image of reserve members
+// rankRetired: Title image of retired members
+
+$clubArray = array(
+	array(
+		"name" => "Rebel Legion",
+		"logo" => "test",
+		"costumes" => array(1, 5),
+		"db" => "pRebel",
+		"db2" => "rebelforum != \"\" AND ",
+		"db3" => "rebelforum",
+		"db3Name" => "Rebel Legion Forum Username",
+		"db3Require" => "0,0,squad:6",
+		"dbLimit" => "limitRebels",
+		"rankRegular" => "rebel.png",
+		"rankReserve" => "rebel_reserve.png",
+		"rankRetired" => "rebel_retired.png"),
+	array(
+		"name" => "Droid Builders",
+		"logo" => "test", "costumes" => array(3),
+		"db" => "pDroid",
+		"db2" => "",
+		"db3" => "",
+		"db3Name" => "",
+		"db3Require" => "0,0,0",
+		"dbLimit" => "limitDroid",
+		"rankRegular" => "r2.png",
+		"rankReserve" => "r2_reserve.png",
+		"rankRetired" => "r2_retired.png"),
+	array(
+		"name" => "Mando Mercs",
+		"logo" => "test",
+		"costumes" => array(2),
+		"db" => "pMando",
+		"db2" => "",
+		"db3" => "mandoid",
+		"db3Name" => "Mando Mercs CAT #",
+		"db3Require" => "0,digits,squad:8",
+		"db3Link" => "",
+		"dbLimit" => "limitMando",
+		"rankRegular" => "mercs.png",
+		"rankReserve" => "mercs_reserve.png",
+		"rankRetired" => "mercs_retired.png"), 
+	array(
+		"name" => "Other",
+		"logo" => "test",
+		"costumes" => array(4),
+		"db" => "pOther",
+		"db2" => "",
+		"db3" => "sgid",
+		"db3Name" => "Saber Guild SG #",
+		"db3Require" => "0,digits,0",
+		"db3Link" => "",
+		"dbLimit" => "limitOther",
+		"rankRegular" => "saberguildmember.png",
+		"rankReserve" => "",
+		"rankRetired" => "")
+);
 
 ?>
 ```

@@ -187,7 +187,7 @@ function displaySquadLinks($squadLink)
 	{
 		// Add to return var
 		$returnVar .= 
-		' | ' . addSquadLink($squadID, $squadLink, $squad);
+		' | ' . addSquadLink($squadID, $squadLink, $squad_value['name']);
 		
 		// Increment
 		$squadID++;
@@ -199,13 +199,37 @@ function displaySquadLinks($squadLink)
 // getTroopCounts: Returns the users total troop counts for each club
 function getTroopCounts($id)
 {
-	global $conn;
+	global $conn, $dualCostume, $clubArray, $squadArray;
+
+	// Set up string
+	$troopCountString = "";
 
 	// Get troop counts - 501st
-	$count_501 = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
+	$count = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '".$dualCostume."' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
+
+	// Add to string
+	$troopCountString .= '
+	<p><b>501st Troops:</b> '.number_format($count->num_rows).'</p>';
+
+	// Set up Squad ID
+	$clubID = count($squadArray) + 1;
+	
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
+	{
+		// Count query
+		$count = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ".getCostumeQueryValues($clubID)." GROUP BY events.id, event_sign_up.id") or die($conn->error);
+
+		// Add to string
+		$troopCountString .= '
+		<p><b>'.$club_value['name'].' Troops:</b> '.number_format($count->num_rows).'</p>';
+
+		// Increment club ID
+		$clubID++;
+	}
 
 	// Get troop counts - Rebel
-	$count_rebel = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('1' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
+	/*$count = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('1' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
 
 	// Get troop counts - Mando Mercs
 	$count_mando = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('2' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
@@ -214,7 +238,7 @@ function getTroopCounts($id)
 	$count_droid = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('3' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
 
 	// Get troop counts - Other
-	$count_other = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
+	$count_other = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);*/
 
 	// Get total count
 	$count_total = $conn->query("SELECT id FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3'");
@@ -233,15 +257,14 @@ function getTroopCounts($id)
 		$favoriteCostume['costume'] = 0;
 	}
 
-	return '
-	<p><b>501st Troops:</b> ' . number_format($count_501->num_rows) . '</p>
-	<p><b>Rebel Legion Troops:</b> ' . number_format($count_rebel->num_rows) . '</p>
-	<p><b>Mando Mercs Troops:</b> ' . number_format($count_mando->num_rows) . '</p>
-	<p><b>Droid Builder Troops:</b> ' . number_format($count_droid->num_rows) . '</p>
-	<p><b>Other Troops:</b> ' . number_format($count_other->num_rows) . '</p>
+	// Add to string
+	$troopCountString .= '
 	<p><b>Total Finished Troops:</b> ' . number_format($count_total->num_rows) . '</p>
 	<p><b>Favorite Costume:</b> '.ifEmpty(getCostume($favoriteCostume['costume']), "N/A").'</p>
 	<p><b>Money Raised:</b> $'.number_format($moneyRaised[0]).'</p>';
+
+	// Return
+	return $troopCountString;
 }
 
 // showSquadButtons: Returns garrison and squad images on front page
@@ -263,7 +286,7 @@ function showSquadButtons()
 	{
 		// Add to return var
 		$returnVar .= '
-		<a href="index.php?squad='.$squadID.'"><img src="images/'.$squad_value.'" alt="'.$squad.' Troops" '.isSquadActive($squadID).' /></a>';
+		<a href="index.php?squad='.$squadID.'"><img src="images/'.$squad_value['logo'].'" alt="'.$squad_value['name'].' Troops" '.isSquadActive($squadID).' /></a>';
 		
 		// Increment
 		$squadID++;
@@ -291,21 +314,21 @@ function squadSelectList($clubs = true, $insideElement = "", $eid = 0, $squadP =
 		{
 			// Add to return var
 			$returnVar .= '
-			<option value="'.$squadID.'">'.$squad.'</option>';
+			<option value="'.$squadID.'">'.$squad_value['name'].'</option>';
 		}
 		// If insideElement is copy
 		else if($insideElement == "copy")
 		{
 			// Add to return var
 			$returnVar .= '
-			<option value="'.$squadID.'" '.copyEventSelect($eid, $squadP, $squadID).'>'.$squad.'</option>';
+			<option value="'.$squadID.'" '.copyEventSelect($eid, $squadP, $squadID).'>'.$squad_value['name'].'</option>';
 		}
 		// If insideElement is select
 		else if($insideElement == "select")
 		{
 			// Add to return var
 			$returnVar .= '
-			<option value="'.$squadID.'" '.echoSelect($squadID, cleanInput($_POST['squad'])).'>'.$squad.'</option>';
+			<option value="'.$squadID.'" '.echoSelect($squadID, cleanInput($_POST['squad'])).'>'.$squad_value['name'].'</option>';
 		}
 		
 		// Increment
@@ -323,21 +346,21 @@ function squadSelectList($clubs = true, $insideElement = "", $eid = 0, $squadP =
 			{
 				// Add to return var
 				$returnVar .= '
-				<option value="'.$squadID.'">'.$squad.'</option>';
+				<option value="'.$squadID.'">'.$squad_value['name'].'</option>';
 			}
 			// If insideElement is copy
 			else if($insideElement == "copy")
 			{
 				// Add to return var
 				$returnVar .= '
-				<option value="'.$squadID.'" '.copyEventSelect($eid, $squadP, $squadID).'>'.$squad.'</option>';
+				<option value="'.$squadID.'" '.copyEventSelect($eid, $squadP, $squadID).'>'.$squad_value['name'].'</option>';
 			}
 			// If insideElement is select
 			else if($insideElement == "select")
 			{
 				// Add to return var
 				$returnVar .= '
-				<option value="'.$squadID.'" '.echoSelect($squadID, cleanInput($_POST['squad'])).'>'.$squad.'</option>';
+				<option value="'.$squadID.'" '.echoSelect($squadID, cleanInput($_POST['squad'])).'>'.$squad_value['name'].'</option>';
 			}
 
 			// Stop at Rebels
@@ -377,7 +400,7 @@ function addSquadLink($squad, $match, $name)
 // costume_restrict_query: Restricts the trooper's costume based on there membership
 function costume_restrict_query($addWhere = false)
 {
-	global $conn;
+	global $conn, $clubArray, $dualCostume;
 	
 	// Set up query
 	$returnQuery = " ";
@@ -389,14 +412,12 @@ function costume_restrict_query($addWhere = false)
 	}
 	
 	$returnQuery .= "(";
-	
-	// Set up club checks
-	$p501 = false;
-	$dual = false;
-	$rebel = false;
-	$mando = false;
-	$droid = false;
-	$other = false;
+
+	// Club detected
+	$hit = false;
+
+	// Count dual costume hit
+	$dualHit = 0;
 	
 	$query = "SELECT * FROM troopers WHERE id = '".cleanInput($_SESSION['id'])."'";
 	if ($result = mysqli_query($conn, $query))
@@ -409,82 +430,70 @@ function costume_restrict_query($addWhere = false)
 				$returnQuery .= "costumes.club = 0";
 				
 				// Set
-				$p501 = true;
+				$hit = true;
+
+				// Add to dual count
+				$dualHit++;
+			}
+
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
+			{
+				// Check club member status
+				if($db->{$club_value['db']} == 1 || $db->{$club_value['db']} == 2)
+				{
+					// If club from previous hit, add OR
+					if($hit)
+					{
+						$returnQuery .= " OR ";
+						$hit = false;
+					}
+
+					// Set even check
+					$i = 1;
+
+					foreach($club_value['costumes'] as $costume)
+					{
+						// Don't add dual costume yet
+						if($costume != $dualCostume)
+						{
+							// Add costome to query
+							$returnQuery .= "costumes.club = ".$costume."";
+
+							// Increment even count
+							$i++;
+
+							if($i % 2 == 0)
+							{
+								$returnQuery .= " OR ";
+							}
+						}
+						else
+						{
+							$dualHit++;
+						}
+					}
+
+					// Set hit
+					$hit = true;
+				}
 			}
 			
-			// Dual
-			if(($db->p501 == 1 || $db->p501 == 2) && ($db->pRebel == 1 || $db->pRebel == 2))
-			{
-				// Check if trooper has a previous query result
-				if($p501)
-				{
-					$returnQuery .= " OR ";
-				}
-				
-				$returnQuery .= "costumes.club = 5";
-				
-				// Set
-				$dual = true;
+			// Check if dual hit has been hit at least twice
+			if($dualHit >= 2)
+			{	
+				$returnQuery .= "costumes.club = ".$dualCostume."";
 			}
-			
-			// Rebel
-			if($db->pRebel == 1 || $db->pRebel == 2)
+			else
 			{
-				// Check if trooper has a previous query result
-				if($p501 || $dual)
+				// Trim query
+				$returnQueryCheck = substr($returnQuery, -3);
+
+				// If ends with OR, trim off
+				if($returnQueryCheck == "OR ")
 				{
-					$returnQuery .= " OR ";
+					$returnQuery = substr($returnQuery, 0, -3);
 				}
-				
-				$returnQuery .= "costumes.club = 1";
-				
-				// Set
-				$rebel = true;
-			}
-			
-			// Mando
-			if($db->pMando == 1 || $db->pMando == 2)
-			{
-				// Check if trooper has a previous query result
-				if($p501 || $dual || $rebel)
-				{
-					$returnQuery .= " OR ";
-				}
-				
-				$returnQuery .= "costumes.club = 2";
-				
-				// Set
-				$mando = true;
-			}
-			
-			// Droid
-			if($db->pDroid == 1 || $db->pDroid == 2)
-			{
-				// Check if trooper has a previous query result
-				if($p501 || $dual || $rebel || $mando)
-				{
-					$returnQuery .= " OR ";
-				}
-				
-				$returnQuery .= "costumes.club = 3";
-				
-				// Set
-				$droid = true;
-			}
-			
-			// Other
-			if($db->pOther == 1 || $db->pOther == 2)
-			{
-				// Check if trooper has a previous query result
-				if($p501 || $dual || $rebel || $mando || $droid)
-				{
-					$returnQuery .= " OR ";
-				}
-				
-				$returnQuery .= "costumes.club = 4";
-				
-				// Set
-				$other = true;
 			}
 		}
 	}
@@ -1686,7 +1695,7 @@ function getSquadName($value)
 		if($squadID == $value)
 		{
 			// Set
-			$returnValue = $squad;
+			$returnValue = $squad_value['name'];
 		}
 		
 		// Increment
@@ -1700,7 +1709,7 @@ function getSquadName($value)
 		if($squadID == $value)
 		{
 			// Set
-			$returnValue = $club;
+			$returnValue = $club_value['name'];
 		}
 		
 		// Increment
@@ -1710,6 +1719,62 @@ function getSquadName($value)
 	return $returnValue;
 }
 
+// getCostumeQueryValues: Returns query for costume values for club
+function getCostumeQueryValues($clubid)
+{
+	global $squadArray, $clubArray;
+	
+	// Set up count
+	$clubCount = count($squadArray) + 1;
+	
+	// Query set up
+	$query = "";
+	
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
+	{
+		// Check if club matches
+		if($clubid == $clubCount)
+		{
+			// Get costume count
+			$costumeCount = count($club_value['costumes']);
+			
+			// Step count
+			$i = 0;
+			
+			// Add to query
+			$query .= "(";
+			
+			// Match
+			foreach($club_value['costumes'] as $costume)
+			{
+				// Add to query
+				$query .= "'".$costume."' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)";
+
+				// Increment step
+				$i++;
+				
+				// Check if need to add OR
+				if($i < $costumeCount)
+				{
+					// Add OR
+					$query .= " OR ";
+				}
+			}
+			
+			// Close query
+			$query .= ")";
+		}
+		
+		// Increment
+		$clubCount++;
+	}
+	
+	// Return
+	return $query;
+}
+
+// isImportant: Is the comment important? If so, we highlight it
 function isImportant($value, $text)
 {
 	if($value == 1)
@@ -2292,7 +2357,7 @@ function getCostumeClub($id)
 // profileTop: Display's user information at top of profile page
 function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 {
-	global $conn, $squadArray;
+	global $conn, $squadArray, $clubArray;
 	
 	// Command Staff Edit Link
 	if(isAdmin())
@@ -2402,137 +2467,51 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 					<img src="images/ranks/legion_retired.png" />
 				</p>';
 			}
-			
-			// Everglades Member
-			if($db2->squad == 1)
+
+			// Set up squad count
+			$squadCount = 1;
+
+			// Loop through clubs
+			foreach($squadArray as $squad => $squad_value)
 			{
-				echo '
-				<p>
-					<img src="images/ranks/everglades_sm.png" />
-				</p>';
+				// Check
+				if($db2->squad == $squadCount)
+				{
+					echo '
+					<p>
+						<img src="images/ranks/'.$squad_value['rankRegular'].'" />
+					</p>';
+				}
+
+				// Increment
+				$squadCount++;
 			}
-			
-			// Makaze Member
-			if($db2->squad == 2)
+
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
 			{
-				echo '
-				<p>
-					<img src="images/ranks/makaze_sm.png" />
-				</p>';
-			}
-			
-			// Parjai Member
-			if($db2->squad == 3)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/parjai_sm.png" />
-				</p>';
-			}
-			
-			// Squad 7 Member
-			if($db2->squad == 4)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/s7_sm.png" />
-				</p>';
-			}
-			
-			// Squad 7 Member
-			if($db2->squad == 5)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/tampa_sm.png" />
-				</p>';
-			}
-			
-			// Rebel
-			// Active
-			if($db2->pRebel == 1)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/rebel.png" />
-				</p>';
-			}
-			// Reserve
-			else if($db2->pRebel == 2)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/rebel_reserve.png" />
-				</p>';
-			}
-			// Retired
-			else if($db2->pRebel == 3)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/rebel_retired.png" />
-				</p>';
-			}
-			
-			// Droid Builders
-			// Active
-			if($db2->pDroid == 1)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/r2.png" />
-				</p>';
-			}
-			// Reserve
-			else if($db2->pDroid == 2)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/r2_reserve.png" />
-				</p>';
-			}
-			// Retired
-			else if($db2->pDroid == 3)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/r2_retired.png" />
-				</p>';
-			}
-			
-			// Mando Mercs
-			// Active
-			if($db2->pMando == 1)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/mercs.png" />
-				</p>';
-			}
-			// Reserve
-			else if($db2->pMando == 2)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/mercs_reserve.png" />
-				</p>';
-			}
-			// Retired
-			else if($db2->pMando == 3)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/mercs_retired.png" />
-				</p>';
-			}
-			
-			// Saber Guild
-			if($db2->sgid > 0)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/saberguildmember.png" />
-				</p>';
+				// Check rank
+				if($db2->{$club_value['db']} == 1)
+				{
+					echo '
+					<p>
+						<img src="images/ranks/'.$club_value['rankRegular'].'" />
+					</p>';
+				}
+				else if($db2->{$club_value['db']} == 2)
+				{
+					echo '
+					<p>
+						<img src="images/ranks/'.$club_value['rankReserve'].'" />
+					</p>';
+				}
+				else if($db2->{$club_value['db']} == 3)
+				{
+					echo '
+					<p>
+						<img src="images/ranks/'.$club_value['rankRetired'].'" />
+					</p>';
+				}
 			}
 			
 			echo '
@@ -3383,24 +3362,32 @@ function eventClubCount($eventID, $club)
 // isEventFull: Check to see if the event is full ($eventID = ID of the event, $costumeID = costume they are going to wear)
 function isEventFull($eventID, $costumeID)
 {
-	global $conn;
+	global $conn, $dualCostume, $clubArray;
 
 	// Set up variables
 	$eventFull = false;
 
 	// Set up limits
-	$limitRebels = "";
 	$limit501st = "";
-	$limitMando = "";
-	$limitDroid = "";
-	$limitOther = "";
 
 	// Set up limit totals
-	$limitRebelsTotal = eventClubCount($eventID, 1);
 	$limit501stTotal = eventClubCount($eventID, 0);
-	$limitMandoTotal = eventClubCount($eventID, 2);
-	$limitDroidTotal = eventClubCount($eventID, 3);
-	$limitOtherTotal = eventClubCount($eventID, 4);
+
+	// Set up club count
+	$clubCount = 1;
+
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
+	{
+		// Set up variables
+		${$club_value['dbLimit']} = "";
+
+		// Set up limit totals
+		${$club_value['dbLimit'] . "Total"} = eventClubCount($eventID, $clubCount);
+
+		// Increment club count
+		$clubCount++;
+	}
 
 	// Query to get limits
 	$query = "SELECT * FROM events WHERE id = '".$eventID."'";
@@ -3410,19 +3397,41 @@ function isEventFull($eventID, $costumeID)
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
-			$limitRebels = $db->limitRebels;
 			$limit501st = $db->limit501st;
-			$limitMando = $db->limitMando;
-			$limitDroid = $db->limitDroid;
-			$limitOther = $db->limitOther;
+
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
+			{
+				// Set up
+				${$club_value['dbLimit']} = $db->{$club_value['dbLimit']};
+			}
 		}
 	}
 
-	// Check if troop is full
-	if(((getCostumeClub($costumeID) == 0 && ($limit501st - eventClubCount($eventID, 0)) <= 0) || (getCostumeClub($costumeID) == 1 && ($limitRebels - eventClubCount($eventID, 1)) <= 0) || (getCostumeClub($costumeID) == 2 && ($limitMando - eventClubCount($eventID, 2)) <= 0) || (getCostumeClub($costumeID) == 3 && ($limitDroid - eventClubCount($eventID, 3)) <= 0) || (getCostumeClub($costumeID) == 4 && ($limitOther - eventClubCount($eventID, 4)) <= 0)))
+	// 501
+	if(getCostumeClub($costumeID) == 0 && ($limit501st - eventClubCount($eventID, 0)) <= 0)
 	{
 		// Set event full
 		$eventFull = true;
+	}
+
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
+	{
+		// Loop through costumes
+		foreach($club_value['costumes'] as $costume)
+		{
+			// Make sure not a dual costume
+			if($costume != $dualCostume)
+			{
+				// Check club
+				if(getCostumeClub($costumeID) == $costume && (${$club_value['dbLimit']} - eventClubCount($eventID, $costume)) <= 0)
+				{
+					// Set event full
+					$eventFull = true;
+				}
+			}
+		}
 	}
 
 	// Return
@@ -3503,7 +3512,7 @@ function getClubPermissionName($value, $type = "")
 // canAccess: Determines if a trooper can access the troop tracker to sign up for events
 function canAccess($id)
 {
-	global $conn;
+	global $conn, $clubArray;
 	
 	// Set up var
 	$canAccess = false;
@@ -3518,29 +3527,15 @@ function canAccess($id)
 			{
 				$canAccess = true;
 			}
-			
-			// Rebel
-			if($db->pRebel != 3 && $db->pRebel != 0)
+
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
 			{
-				$canAccess = true;
-			}
-			
-			// Droid
-			if($db->pDroid != 3 && $db->pDroid != 0)
-			{
-				$canAccess = true;
-			}
-			
-			// Mando
-			if($db->pMando != 3 && $db->pMando != 0)
-			{
-				$canAccess = true;
-			}
-			
-			// Other
-			if($db->pOther != 3 && $db->pOther != 0)
-			{
-				$canAccess = true;
+				// Check member status per club
+				if($db->{$club_value['db']} != 3 && $db->{$club_value['db']} != 0)
+				{
+					$canAccess = true;
+				}
 			}
 		}
 	}
