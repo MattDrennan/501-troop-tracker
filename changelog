@@ -3,6 +3,8 @@
 _01/12/2022_
 
 -Command Staff Notifications
+-Added lastimportantcomment and syncdate to settings
+-501 sync improvement to prevent an issue where when the script failed, it would take a week to fix
 
 _01/09/2022_
 
