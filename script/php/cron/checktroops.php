@@ -22,7 +22,7 @@ if ($result = mysqli_query($conn, $query))
 }
 
 // Set up message
-$message = "";
+$message = "Trooper Milestones:\n\n";
 
 // Set up count
 $i = 0;
@@ -44,7 +44,43 @@ if ($result = mysqli_query($conn, $query))
 	}
 }
 
-$message .= "You can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com";
+// Check count
+if($i == 0)
+{
+	$message .= "-None";
+}
+
+// Important Comment message
+$message .= "\n\nImportant Comments:\n\n";
+
+// Count important messages
+$j = 0;
+
+// Loop through all comments that are important
+$query = "SELECT * FROM comments, settings WHERE id > settings.lastimportantcomment AND comments.important = '1'";
+if ($result = mysqli_query($conn, $query))
+{
+	while ($db = mysqli_fetch_object($result))
+	{
+		// Update message
+		$message .= getName($db->trooperid) . ': ' . $db->comment . "\nhttps://fl501st.com/troop-tracker/index.php?event=".$db->troopid."\n\n";
+		
+		// Update last notification
+		$conn->query("UPDATE settings SET lastimportantcomment = '".$db->id."'");
+		
+		// Increment
+		$i++;
+		$j++;
+	}
+}
+
+// Check count
+if($j == 0)
+{
+	$message .= "-None";
+}
+
+$message .= "\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com";
 
 
 // If notifications
@@ -57,7 +93,7 @@ if($i > 0)
 		while ($db = mysqli_fetch_object($result))
 		{
 			// Send E-mail
-			//sendEmail($db->email, $db->name, "Troop Tracker: Trooper(s) has hit a milestone!", $message);
+			sendEmail($db->email, $db->name, "Troop Tracker: Command Staff Notifications", $message);
 		}
 	}
 }
