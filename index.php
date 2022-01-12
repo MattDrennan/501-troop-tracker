@@ -3957,6 +3957,101 @@ if(isset($_GET['action']) && $_GET['action'] == "faq")
 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/ycwFdQQvGoc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 	</p>
 
+	<h3>How to add an iOS shortcut</h3>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/_UhtyHbL8uY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
+
+	<h3>How to add an Android shortcut</h3>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/S4Xu_N4ByBs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
+
+	<h3>How to upload photos</h3>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/aODHyWMMVUQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
+
+	<h3>How to view milestones and awards</h3>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/W-wcceu6xzI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
+
+	<h3>How to add a friend to a troop</h3>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/C0WCxIRZafQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
+
+	<h3>How to search for troops and troop counts</h3>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/-pXqGZLiVpM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
+
+	<h3>How to view past troops</h3>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/17UPK4AoKxg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
+
+	<h3>How to sort by squad</h3>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/H-nnM5jndZA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
+
+	<h3>How to show troops your signed up for</h3>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/Rn3EnhudHyc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
+
+	<h3>How to use calendar view</h3>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/02ERoFw7XlY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
+
+	<h3>How to search troops on the homepage</h3>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/y_I8ssRjek8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
+
+	<h3>How to subscribe to events</h3>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/5pp7_FKg7cI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
+
+	<h3>How to add an event to your calendar</h3>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/cefnojYUy-Y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
+
+	<h3>How to add discussion to a troop</h3>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/tS-bCXbCzs4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
+
+	<h3>How to change the theme</h3>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/IPykBoeDGcg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
+
+	<h3>How to search costumes</h3>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/YLjiVGgqe-Y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
+
+	<h3>Command Staff - Create an Event</h3>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/MFdLu9aWwlI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
+
+	<h3>Command Staff - Edit an Event</h3>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/WADjtDcmeJo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
+
+	<h3>Command Staff - Edit Roster</h3>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/c8IT_s0qSxc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
+
 	<h3>Troop Tracker Manual</h3>
 	<p>
 		<a href="https://github.com/MattDrennan/501-troop-tracker/blob/master/manual/troop_tracker_manual.pdf" target="_blank">Click here to view PDF manual.</a>
