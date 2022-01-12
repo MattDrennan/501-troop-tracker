@@ -3,6 +3,21 @@
 // Include config
 include(dirname(__DIR__) . '/../../config.php');
 
+// Check date time for sync
+$query = "SELECT syncdate FROM settings";
+if ($result = mysqli_query($conn, $query) or die($conn->error))
+{
+	while ($db = mysqli_fetch_object($result))
+	{
+		// Compare dates
+		if(strtotime($db->syncdate) >= strtotime("-7 day"))
+		{
+			// Prevent script from continuing
+			die("Already updated recently.");
+		}
+	}
+}
+
 // Reset databases
 $conn->query("DELETE FROM 501st_troopers");
 $conn->query("DELETE FROM 501st_costumes");
@@ -92,6 +107,9 @@ Total Members (Parjai): ' . $getNumOfTroopersParjai->num_rows . '
 Total Members (Squad 7): ' . $getNumOfTroopersSquad7->num_rows . '
 <br />
 Total Members (Tampa): ' . $getNumOfTroopersTampa->num_rows . '';
+
+// Update date time for last sync
+$conn->query("UPDATE settings SET syncdate = NOW()");
 
 // convertMemberApproved: Returns an int based on the member approved
 function convertMemberApproved($value)
