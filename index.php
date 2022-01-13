@@ -290,7 +290,7 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 		</form>
 		
 		<div id="emailSettingsOptions" '.$subscribe.'>
-			<h3>Squads</h3>
+			<h3>Squads / Clubs</h3>
 			<form action="process.php?do=emailsettings" method="POST" id="emailsettingsForm" name="emailsettingsForm">';
 			
 			// Squad count
@@ -301,6 +301,16 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 			{
 				echo '
 				<input type="checkbox" name="esquad'.$i.'" id="esquad'.$i.'" ' . emailSettingStatus("esquad" . $i, true) . ' />' . $squad_value['name'] . '<br />';
+				
+				// Increment squad count
+				$i++;
+			}
+			
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
+			{
+				echo '
+				<input type="checkbox" name="esquad'.$i.'" id="esquad'.$i.'" ' . emailSettingStatus("esquad" . $i, true) . ' />' . $club . '<br />';
 				
 				// Increment squad count
 				$i++;
@@ -5794,7 +5804,7 @@ else
 				if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
 				{
 					// Query
-					$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, ".$addToQuery."events.closed FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() - INTERVAL 1 DAY AND event_sign_up.status < 3 AND (events.closed = 0 OR events.closed = 3)";
+					$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, ".$addToQuery."events.closed FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() - INTERVAL 1 DAY AND event_sign_up.status < 3 AND (events.closed = 0 OR events.closed = 3) ORDER BY events.dateStart";
 				}
 				else if(isset($_GET['squad']) && $_GET['squad'] == "canceledtroops")
 				{
