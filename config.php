@@ -228,18 +228,6 @@ function getTroopCounts($id)
 		$clubID++;
 	}
 
-	// Get troop counts - Rebel
-	/*$count = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('1' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
-
-	// Get troop counts - Mando Mercs
-	$count_mando = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('2' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
-
-	// Get troop counts - Droid
-	$count_droid = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('3' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
-
-	// Get troop counts - Other
-	$count_other = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);*/
-
 	// Get total count
 	$count_total = $conn->query("SELECT id FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3'");
 
@@ -1947,7 +1935,7 @@ function sendNotification($message, $trooperid, $type = 0, $json = "")
 // troopCheck: Checks the troop counts of all clubs
 function troopCheck($id)
 {
-	global $conn;
+	global $conn, $clubArray, $squadArray;
 	
 	// Notify how many troops did a trooper attend - 501st
 	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR EXISTS(SELECT events.id, events.oldid FROM events WHERE events.oldid != 0 AND events.id = event_sign_up.troopid))") or die($conn->error);
@@ -1956,33 +1944,22 @@ function troopCheck($id)
 	// 501st
 	checkTroopCounts($count[0], "501ST: " . getName($id) . " now has [COUNT] troop(s)", $id, "501ST");
 	
-	// Notify how many troops did a trooper attend - Rebel Legion
-	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ('1' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume))") or die($conn->error);
-	$count = $trooperCount_get->fetch_row();
+	// Set club ID
+	$clubID = count($squadArray) + 1;
 	
-	// Rebel Legion
-	checkTroopCounts($count[0], "REBEL LEGION: " . getName($id) . " now has [COUNT] troop(s)", $id, "REBEL LEGION");
-	
-	// Notify how many troops did a trooper attend - Mando Mercs
-	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ('2' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume))") or die($conn->error);
-	$count = $trooperCount_get->fetch_row();
-	
-	// Mando Mercs
-	checkTroopCounts($count[0], "MANDO MERCS: " . getName($id) . " now has [COUNT] troop(s)", $id, "MANDO MERCS");
-	
-	// Notify how many troops did a trooper attend - Droid Builders
-	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ('3' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume))") or die($conn->error);
-	$count = $trooperCount_get->fetch_row();
-	
-	// Droid Builders
-	checkTroopCounts($count[0], "DROID BUILDERS: " . getName($id) . " now has [COUNT] troop(s)", $id, "DROID BUILDERS");
-	
-	// Notify how many troops did a trooper attend - Other
-	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ('4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume))") or die($conn->error);
-	$count = $trooperCount_get->fetch_row();
-	
-	// Other
-	checkTroopCounts($count[0], "OTHER: " . getName($id) . " now has [COUNT] troop(s)", $id, "OTHER");
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
+	{
+		// Notify how many troops did a trooper attend of club
+		$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ".getCostumeQueryValues($clubID)."") or die($conn->error);
+		$count = $trooperCount_get->fetch_row();
+		
+		// Check troop count of club
+		checkTroopCounts($count[0], strtoupper($club_value['name']) . ": " . getName($id) . " now has [COUNT] troop(s)", $id, strtoupper($club_value['name']));
+		
+		// Increment club count
+		$clubID++;
+	}
 }
 
 // checkTroopCounts: Checks the troop counts, and puts the information into notifications
