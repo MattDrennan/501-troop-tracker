@@ -3235,19 +3235,25 @@ function troopersRemaining($value1, $value2)
 }
 
 // eventClubCount: Returns number of troopers signed up for this event based on costume
-function eventClubCount($eventID, $club)
+function eventClubCount($eventID, $clubID)
 {
-	global $conn;
-
+	global $conn, $clubArray, $dualCostume;
+	
 	// Variables
-	$i = 0;	// 501st
-	$rl = 0;	// Rebel Legion
-	$droidb = 0;	// Droid builders
-	$mandos = 0;	// Mandos
-	$other = 0;	// Others
-	$total = 0; // Total count
-	$eventFull = false;	// Is the event full?
-	$returnVal = 0; // Number to return
+	$c501 = 0;
+	
+	// Loop through clubs to make variables
+	foreach($clubArray as $club => $club_value)
+	{
+		// Set up variables
+		${"c" . $club_value['dbLimit']} = 0;
+	}
+	
+	// Total count
+	$total = 0;
+	
+	// Set up return number
+	$returnVal = 0;
 
 	// Query database for roster info
 	$query = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".$eventID."' AND status != '1' AND status != '4' AND status != '6'";
@@ -3265,38 +3271,31 @@ function eventClubCount($eventID, $club)
 					// 501st
 					if($db2->club == 0)
 					{
-						$i++;
-						$total++;
+						$c501++;
 					}
-					// Rebel Legion
-					else if($db2->club == 1)
+					
+					// Loop through clubs
+					foreach($clubArray as $club => $club_value)
 					{
-						$rl++;
-						$total++;
+						// Loop through costumes
+						foreach($club_value['costumes'] as $costume)
+						{
+							// Club
+							if($db2->club == $costume)
+							{
+								// Increment to club
+								${"c" . $club_value['dbLimit']}++;
+							}
+						}
 					}
-					// Mandos
-					else if($db2->club == 2)
+					
+					// Dual costume
+					if($db2->club == $dualCostume)
 					{
-						$mandos++;
-						$total++;
-					}
-					// Droid Builders
-					else if($db2->club == 3)
-					{
-						$droidb++;
-						$total++;
-					}
-					// Other
-					else if($db2->club == 4)
-					{
-						$other++;
-						$total++;
-					}
-					// DUAL
-					else if($db2->club == 5)
-					{
-						$i++;
-						$rl++;
+						// Just 501 because it will be added in the loop above as well
+						$c501++;
+						
+						// Add to total
 						$total++;
 					}							
 				}
@@ -3304,27 +3303,32 @@ function eventClubCount($eventID, $club)
 		}
 	}
 	
-	if($club == 0)
+	// If 501
+	if($clubID == 0)
 	{
-		$returnVal = $i;
+		$returnVal = $c501;
 	}
-	else if($club == 1)
+	
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
 	{
-		$returnVal = $rl;
+		// Loop through costumes
+		foreach($club_value['costumes'] as $costume)
+		{
+			// Make sure not a dual costume
+			if($clubID != $dualCostume)
+			{
+				// If club
+				if($clubID == $costume)
+				{
+					$returnVal = ${"c" . $club_value['dbLimit']};
+				}
+			}
+		}
 	}
-	else if($club == 2)
-	{
-		$returnVal = $mandos;
-	}
-	else if($club == 3)
-	{
-		$returnVal = $droidb;
-	}
-	else if($club == 4)
-	{
-		$returnVal = $other;
-	}
-	else if($club == 5)
+	
+	// Dual costume
+	if($clubID == $dualCostume)
 	{
 		$returnVal = $total;
 	}
@@ -3395,15 +3399,11 @@ function isEventFull($eventID, $costumeID)
 		// Loop through costumes
 		foreach($club_value['costumes'] as $costume)
 		{
-			// Make sure not a dual costume
-			if($costume != $dualCostume)
+			// Check club
+			if(getCostumeClub($costumeID) == $costume && (${$club_value['dbLimit']} - eventClubCount($eventID, $costume)) <= 0)
 			{
-				// Check club
-				if(getCostumeClub($costumeID) == $costume && (${$club_value['dbLimit']} - eventClubCount($eventID, $costume)) <= 0)
-				{
-					// Set event full
-					$eventFull = true;
-				}
+				// Set event full
+				$eventFull = true;
 			}
 		}
 	}
