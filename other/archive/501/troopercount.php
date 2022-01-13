@@ -16,4 +16,8 @@ if ($result = mysqli_query($conn, $query))
 	}
 }
 
+// Update settings
+$last_id = $conn->insert_id;
+$conn->query("UPDATE settings SET lastnotification = '".$last_id."'");
+
 ?>
