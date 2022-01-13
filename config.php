@@ -3292,14 +3292,11 @@ function eventClubCount($eventID, $club)
 						$other++;
 						$total++;
 					}
-					// All
+					// DUAL
 					else if($db2->club == 5)
 					{
 						$i++;
 						$rl++;
-						$mandos++;
-						$droidb++;
-						$other++;
 						$total++;
 					}							
 				}
