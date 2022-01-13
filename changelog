@@ -1,5 +1,12 @@
 **Changelog**
 
+_01/13/2022_
+
+-esquad for clubs added
+-Added clubs to e-mail settings
+-Updated command staff e-mail to send customized e-mails based on their squad/club settings
+-Added troopercount.php which will retotal all trooper counts
+
 _01/12/2022_
 
 -Command Staff Notifications
