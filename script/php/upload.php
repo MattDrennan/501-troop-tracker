@@ -19,7 +19,7 @@ if (!empty($_FILES))
 	$targetFile =  $targetPath . $fileName;
 	move_uploaded_file($tempFile, $targetFile);
 	
-	// Check if admin (command staff) checkbox checked
+	// Check if troop instruction image
 	if($_POST['admin'] == 0)
 	{
 		// Insert file into database

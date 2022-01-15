@@ -476,22 +476,19 @@ if(isset($_GET['do']) && $_GET['do'] == "adminphoto" && loggedIn())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
-			if(isAdmin())
+			if($db->admin == 0)
 			{
-				if($db->admin == 0)
-				{
-					// Query database
-					$conn->query("UPDATE uploads SET admin = '1' WHERE id = '".cleanInput($_POST['photoid'])."'");
-				}
-				else
-				{
-					// Query database
-					$conn->query("UPDATE uploads SET admin = '0' WHERE id = '".cleanInput($_POST['photoid'])."'");
-				}
-				
-				// Increment
-				$i++;
+				// Query database
+				$conn->query("UPDATE uploads SET admin = '1' WHERE id = '".cleanInput($_POST['photoid'])."'");
 			}
+			else
+			{
+				// Query database
+				$conn->query("UPDATE uploads SET admin = '0' WHERE id = '".cleanInput($_POST['photoid'])."'");
+			}
+			
+			// Increment
+			$i++;
 		}
 	}
 	

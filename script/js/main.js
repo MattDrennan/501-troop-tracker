@@ -796,13 +796,13 @@ $(document).ready(function()
 					// If success
 					if(json.data == 1)
 					{
-						if(elementS.text() == "Make Admin Photo")
+						if(elementS.text() == "Make Troop Instruction Photo")
 						{
 							elementS.text("Make Regular Photo");
 						}
 						else if(elementS.text() == "Make Regular Photo")
 						{
-							elementS.text("Make Admin Photo");
+							elementS.text("Make Troop Instruction Photo");
 						}
 					}
 				}

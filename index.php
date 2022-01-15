@@ -4124,22 +4124,22 @@ if(isset($_GET['action']) && $_GET['action'] == "editphoto")
 					<p>
 						<b>Uploaded by:</b> <a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.getTKNumber($db->trooperid, true).'</a>
 					</p>';
-				
-					// Check if admin photo
-					if($db->admin == 0)
-					{
-						echo '
-						<p>
-							<a href="#/" photoid="'.$db->id.'" class="button" name="adminphoto">Make Admin Photo</a>
-						</p>';
-					}
-					else
-					{
-						echo '
-						<p>
-							<a href="#/" photoid="'.$db->id.'" class="button" name="adminphoto">Make Regular Photo</a>
-						</p>';
-					}
+				}
+
+				// Check if admin photo
+				if($db->admin == 0)
+				{
+					echo '
+					<p>
+						<a href="#/" photoid="'.$db->id.'" class="button" name="adminphoto">Make Troop Instruction Photo</a>
+					</p>';
+				}
+				else
+				{
+					echo '
+					<p>
+						<a href="#/" photoid="'.$db->id.'" class="button" name="adminphoto">Make Regular Photo</a>
+					</p>';
 				}
 				
 				echo '
@@ -5531,15 +5531,9 @@ if(isset($_GET['event']))
 				if(loggedIn())
 				{
 					echo '
-					<p>';
-						// If logged in and command staff
-						if(loggedIn() && isAdmin())
-						{
-							echo '
-							<a href="#/" class="button" id="changeUpload">Change To: Troop Instructional Image Upload</a>';
-						}
+					<p>
+						<a href="#/" class="button" id="changeUpload">Change To: Troop Instructional Image Upload</a>
 
-						echo '
 						<form action="script/php/upload.php" class="dropzone" id="photoupload">
 							<input type="hidden" name="admin" value="0" />
 							<input type="hidden" name="troopid" value="'.cleanInput($_GET['event']).'" />
