@@ -503,28 +503,6 @@ function costume_restrict_query($addWhere = false)
 	return $returnQuery;
 }
 
-// email_check: Checks if e-mail is verified
-function email_check()
-{
-	global $conn;
-	
-	$query = "SELECT * FROM troopers WHERE id = '".$_SESSION['id']."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			if($db->email_verify == 0)
-			{
-				return false;
-			}
-			else
-			{
-				return true;
-			}
-		}
-	}
-}
-
 // showBBcodes: Converts text to BB Code
 function showBBcodes($text)
 {
@@ -3725,7 +3703,14 @@ if(!loggedIn() && !isset($_POST['loginWithTK']))
 			while ($db = mysqli_fetch_object($result))
 			{
 				// Login with forum
-				$forumLogin = loginWithForum($tkid, cleanInput($_POST['password']));
+				$forumLogin = loginWithForum($_COOKIE['TroopTrackerUsername'], $_COOKIE['TroopTrackerPassword']);
+
+				// If logged in with forum details, and password does not match
+				if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
+				{
+					// Update password, e-mail, and user ID
+					$conn->query("UPDATE troopers SET password = '".password_hash(cleanInput($_COOKIE['TroopTrackerPassword']), PASSWORD_DEFAULT)."', email = '".$forumLogin['user']['email']."', user_id = '".$forumLogin['user']['user_id']."', forum_id = '".$forumLogin['user']['username']."' WHERE id = '".$db->id."'");
+				}
 
 				// Check credentials and make sure trooper still has access
 				if((isset($forumLogin['success']) && $forumLogin['success'] == 1 || password_verify(cleanInput($_POST['password']), $db->password)) && canAccess($db->id))

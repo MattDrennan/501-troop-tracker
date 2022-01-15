@@ -150,11 +150,6 @@ $(function()
         {
             user: "required",
             forumid: "required",
-            email:
-            {
-                //required: true,
-                email: true
-            },
             squad:
             {
                 required: true,
@@ -360,38 +355,6 @@ $(function()
         }
     });
 
-    $("form[name='changeEmailForm']").validate(
-    {
-        rules:
-        {
-            email:
-            {
-                required: true,
-                email: true
-            }
-        },
-        messages:
-        {
-            email: "Please enter a valid e-mail."
-        },
-        submitHandler: function(form)
-        {
-            var form = $("#changeEmailForm");
-            var url = form.attr("action");
-
-            $.ajax(
-            {
-                type: "POST",
-                url: url,
-                data: form.serialize() + "&emailButton=1",
-                success: function(data)
-                {
-                    alert(data);
-                }
-            });
-        }
-    });
-
     $("form[name='changePhoneForm']").validate(
     {
         rules:
@@ -457,11 +420,6 @@ $(function()
                 digits: true,
                 maxlength: 11
             },
-            email:
-            {
-                required: true,
-                email: true
-            },
             forumid: "required",
             password: "required",
             name: "required"
@@ -471,7 +429,6 @@ $(function()
             tkid: "Please enter your TKID and make sure it is no more than eleven (11) characters.",
             forumid: "Please enter your FL 501st Forum Username.",
             password: "Please enter your password.",
-            email: "Please enter a valid e-mail.",
             name: "Please enter your name.",
 			rebelforum: "Please enter your Rebel Legion forum username.",
 			mandoid: "Please enter your Mando Mercs CAT #."
@@ -723,11 +680,6 @@ $(function()
             {
                 required: true
             },
-            email:
-            {
-                required: true,
-                email: true
-            },
             forum_id:
             {
                 required: true
@@ -750,7 +702,6 @@ $(function()
             tkid: "Please enter your TKID.",
             forum_id: "Please enter your FL Garrison Board username.",
             password: "Please enter your FL Garrison Board password.",
-            email: "Please enter a valid e-mail address.",
             tkid2: "Please enter an ID."
         },
         submitHandler: function(form)

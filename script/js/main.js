@@ -1011,7 +1011,6 @@ $(document).ready(function()
 					var json = JSON.parse(data);
 					$("#userIDE").val(json.id);
 					$("#user").val(json.name);
-					$("#email").val(json.email);
 					$("#phone").val(json.phone);
 					$("#squad").val(json.squad);
 					$("#permissions").val(json.permissions);
@@ -1414,7 +1413,6 @@ $(document).ready(function()
 		e.preventDefault();
 		$("#changephone").show();
 		$("#changename").hide();
-		$("#changeemail").hide();
 		$("#unsubscribe").hide();
 		$("#changetheme").hide();
 	});
@@ -1424,7 +1422,6 @@ $(document).ready(function()
 		e.preventDefault();
 		$("#changephone").hide();
 		$("#changename").hide();
-		$("#changeemail").hide();
 		$("#unsubscribe").hide();
 		$("#changetheme").show();
 	});
@@ -1434,27 +1431,16 @@ $(document).ready(function()
 		e.preventDefault();
 		$("#changephone").hide();
 		$("#changename").show();
-		$("#changeemail").hide();
 		$("#unsubscribe").hide();
 		$("#changetheme").hide();
 	});
 
-	$("#changeemailLink").click(function(e)
-	{
-		e.preventDefault();
-		$("#changephone").hide();
-		$("#changename").hide();
-		$("#changeemail").show();
-		$("#unsubscribe").hide();
-		$("#changetheme").hide();
-	});
 
 	$("#emailSettingLink").click(function(e)
 	{
 		e.preventDefault();
 		$("#changephone").hide();
 		$("#changename").hide();
-		$("#changeemail").hide();
 		$("#unsubscribe").show();
 		$("#changetheme").hide();
 	});

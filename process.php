@@ -1808,7 +1808,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$array = array('id' => $db->id, 'name' => $db->name, 'email' => $db->email, 'phone' => $db->phone, 'squad' => $db->squad, 'permissions' => $db->permissions, 'p501' => $db->p501, 'tkid' => $db->tkid, 'forumid' => $db->forum_id, 'supporter' => $db->supporter);
+				$array = array('id' => $db->id, 'name' => $db->name, 'phone' => $db->phone, 'squad' => $db->squad, 'permissions' => $db->permissions, 'p501' => $db->p501, 'tkid' => $db->tkid, 'forumid' => $db->forum_id, 'supporter' => $db->supporter);
 
 				// Loop through clubs
 				foreach($clubArray as $club => $club_value)
@@ -1832,87 +1832,77 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 	if(isset($_POST['submitUserEdit']))
 	{
 		// Check we have all the data we need server side. JQuery should do this, but this is a backup
-		if(cleanInput($_POST['user']) != "" && cleanInput($_POST['email']) != "" && cleanInput($_POST['squad']) != "" && cleanInput($_POST['permissions']) != "" && cleanInput($_POST['tkid']) != "" && cleanInput($_POST['forumid']) != "")
+		if(cleanInput($_POST['user']) != "" && cleanInput($_POST['squad']) != "" && cleanInput($_POST['permissions']) != "" && cleanInput($_POST['tkid']) != "" && cleanInput($_POST['forumid']) != "")
 		{
-			include("script/lib/EmailAddressValidator.php");
-			$validator = new EmailAddressValidator;
-			if (!$validator->check_email_address(cleanInput($_POST['email'])))
+			// Set up message
+			$message = "Trooper has been updated!";
+			
+			// **CUSTOM**
+			// Check if Rebel has a Rebel Forum to change status
+			if(cleanInput($_POST['pRebel']) != 0 && cleanInput($_POST['rebelforum']) == "")
 			{
-				$array = array('success' => 'failed', 'data' => 'Invalid e-mail.');
-				echo json_encode($array);
+				// Reset Rebel due to it not being able to put value in spreadsheet
+				$_POST['pRebel'] = 0;
+				
+				// Add to message
+				$message = "Rebel Legion member status can not be changed, unless a Rebel Legion Forum username is set.";
 			}
-			else
+			
+			// Set up TKID
+			$tkid = cleanInput($_POST['tkid']);
+
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has updated user ID [" . cleanInput($_POST['userIDE']) . "]", cleanInput($_SESSION['id']), 11, convertDataToJSON("SELECT * FROM troopers WHERE id = '".cleanInput($_POST['userIDE'])."'"));
+
+			// Set up add to query
+			$addToQuery = "";
+
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
 			{
-				// Set up message
-				$message = "Trooper has been updated!";
-				
-				// **CUSTOM**
-				// Check if Rebel has a Rebel Forum to change status
-				if(cleanInput($_POST['pRebel']) != 0 && cleanInput($_POST['rebelforum']) == "")
+				// Add
+				$addToQuery .= "".$club_value['db']." = '".cleanInput($_POST[$club_value['db']])."', ";
+
+				// If DB3 defined
+				if($club_value['db3Name'] != "")
 				{
-					// Reset Rebel due to it not being able to put value in spreadsheet
-					$_POST['pRebel'] = 0;
-					
-					// Add to message
-					$message = "Rebel Legion member status can not be changed, unless a Rebel Legion Forum username is set.";
+					$addToQuery .= "".$club_value['db3']." = '".cleanInput($_POST[$club_value['db3']])."', ";
 				}
-				
-				// Set up TKID
-				$tkid = cleanInput($_POST['tkid']);
-
-				// Send notification to command staff
-				sendNotification(getName($_SESSION['id']) . " has updated user ID [" . cleanInput($_POST['userIDE']) . "]", cleanInput($_SESSION['id']), 11, convertDataToJSON("SELECT * FROM troopers WHERE id = '".cleanInput($_POST['userIDE'])."'"));
-
-				// Set up add to query
-				$addToQuery = "";
-
-				// Loop through clubs
-				foreach($clubArray as $club => $club_value)
-				{
-					// Add
-					$addToQuery .= "".$club_value['db']." = '".cleanInput($_POST[$club_value['db']])."', ";
-
-					// If DB3 defined
-					if($club_value['db3Name'] != "")
-					{
-						$addToQuery .= "".$club_value['db3']." = '".cleanInput($_POST[$club_value['db3']])."', ";
-					}
-				}
-				
-				// Query the database
-				$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['user'])."', email =  '".cleanInput($_POST['email'])."', phone = '".cleanInput(cleanInput($_POST['phone']))."', squad = '".cleanInput($_POST['squad'])."', permissions = '".cleanInput($_POST['permissions'])."', p501 = '".cleanInput($_POST['p501'])."', ".$addToQuery." tkid = '".$tkid."', forum_id = '".cleanInput($_POST['forumid'])."', supporter = '".cleanInput($_POST['supporter'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'") or die($conn->error);
-				
-				// **CUSTOM**
-				// Check if Rebel is on spreadsheet
-				if(cleanInput($_POST['pRebel']) != 0 || cleanInput($_POST['pRebel']) != 3)
-				{
-					// Set up exist variable
-					$doesExist = false;
-					
-					// Pull extra data from spreadsheet - this is for checking if a valid member
-					$values = getSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster");
-
-					// Loop through results
-					foreach($values as $value)
-					{
-						if($value[0] == cleanInput($_POST['rebelforum']))
-						{
-							$doesExist = true;
-						}
-					}
-					
-					// Does not exist
-					if(!$doesExist)
-					{
-						// Add to Google Sheets
-						$newValues = ['' . getRebelLegionUser(cleanInput($_POST['userIDE'])), '' . getName(cleanInput($_POST['userIDE'])), getEmail(cleanInput($_POST['userIDE']))];
-						addToSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster", $newValues);
-					}
-				}
-
-				$array = array('success' => 'true', 'newname' => cleanInput($_POST['user']) . " - " . readTKNumber($tkid, getTrooperSquad(cleanInput($_POST['userIDE']))), 'data' => $message);
-				echo json_encode($array);
 			}
+			
+			// Query the database
+			$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['user'])."', phone = '".cleanInput(cleanInput($_POST['phone']))."', squad = '".cleanInput($_POST['squad'])."', permissions = '".cleanInput($_POST['permissions'])."', p501 = '".cleanInput($_POST['p501'])."', ".$addToQuery." tkid = '".$tkid."', forum_id = '".cleanInput($_POST['forumid'])."', supporter = '".cleanInput($_POST['supporter'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'") or die($conn->error);
+			
+			// **CUSTOM**
+			// Check if Rebel is on spreadsheet
+			if(cleanInput($_POST['pRebel']) != 0 || cleanInput($_POST['pRebel']) != 3)
+			{
+				// Set up exist variable
+				$doesExist = false;
+				
+				// Pull extra data from spreadsheet - this is for checking if a valid member
+				$values = getSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster");
+
+				// Loop through results
+				foreach($values as $value)
+				{
+					if($value[0] == cleanInput($_POST['rebelforum']))
+					{
+						$doesExist = true;
+					}
+				}
+				
+				// Does not exist
+				if(!$doesExist)
+				{
+					// Add to Google Sheets
+					$newValues = ['' . getRebelLegionUser(cleanInput($_POST['userIDE'])), '' . getName(cleanInput($_POST['userIDE'])), getEmail(cleanInput($_POST['userIDE']))];
+					addToSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster", $newValues);
+				}
+			}
+
+			$array = array('success' => 'true', 'newname' => cleanInput($_POST['user']) . " - " . readTKNumber($tkid, getTrooperSquad(cleanInput($_POST['userIDE']))), 'data' => $message);
+			echo json_encode($array);
 		}
 		else
 		{
@@ -1949,37 +1939,6 @@ if(isset($_GET['do']) && $_GET['do'] == "changename" && loggedIn())
 		{
 			$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['name'])."' WHERE id = '".$_SESSION['id']."'");
 			echo 'Name updated sucessfully!';
-		}
-	}
-}
-
-// Change e-mail
-if(isset($_GET['do']) && $_GET['do'] == "changeemail" && loggedIn())
-{
-	if(isset($_POST['emailButton']))
-	{
-		$failed = false;
-
-		if(cleanInput($_POST['email']) == "")
-		{
-			$failed = true;
-			echo 'Please enter a valid e-mail address.';
-		}
-
-		// Verify emails
-		include("script/lib/EmailAddressValidator.php");
-
-		$validator = new EmailAddressValidator;
-		if (!$validator->check_email_address(cleanInput($_POST['email'])))
-		{
-			$failed = true;
-			echo '\n\n-Please enter a valid e-mail address.';
-		}
-
-		if(!$failed)
-		{
-			$conn->query("UPDATE troopers SET email = '".cleanInput($_POST['email'])."' WHERE id = '".$_SESSION['id']."'");
-			echo 'E-mail updated sucessfully!';
 		}
 	}
 }
@@ -2027,7 +1986,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 	if($_POST['submitRequest'])
 	{
 		// Check we have all the data we need server side. JQuery should do this, but this is a backup
-		if($_POST['tkid'] != "" && $_POST['name'] != "" && $_POST['email'] != "" && $_POST['forum_id'] != "" && $_POST['password'] != "" && $_POST['squad'] >= 0)
+		if($_POST['tkid'] != "" && $_POST['name'] != "" && $_POST['forum_id'] != "" && $_POST['password'] != "" && $_POST['squad'] >= 0)
 		{
 			$failed = false;
 
@@ -2137,16 +2096,6 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 				echo '<li>Incorrect '.garrison.' Board username and password.</li>';
 			}
 
-			// Verify emails
-			include("script/lib/EmailAddressValidator.php");
-
-			$validator = new EmailAddressValidator;
-			if (!$validator->check_email_address(cleanInput($_POST['email'])))
-			{
-				$failed = true;
-				echo '<li>Please input a valid email address.</li>';
-			}
-
 			if(strlen(cleanInput($_POST['phone'])) < 10 && cleanInput($_POST['phone']) != "")
 			{
 				$failed = true;
@@ -2210,7 +2159,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 				}
 				
 				// Insert
-				$conn->query("INSERT INTO troopers (name, tkid, email, forum_id, ".$addToQuery1."p501,".$addToQuery3."phone, squad, password) VALUES ('".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".cleanInput($_POST['email'])."', '".cleanInput($_POST['forumid'])."',".$addToQuery2."'".$p501."',".$addToQuery4."'".cleanInput($_POST['phone'])."', '".$squad."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."')") or die($conn->error);
+				$conn->query("INSERT INTO troopers (name, tkid, email, forum_id, ".$addToQuery1."p501,".$addToQuery3."phone, squad, password) VALUES ('".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".$forumLogin['user']['email']."', '".cleanInput($_POST['forumid'])."',".$addToQuery2."'".$p501."',".$addToQuery4."'".cleanInput($_POST['phone'])."', '".$squad."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."')") or die($conn->error);
 				
 				// Last ID
 				$last_id = $conn->insert_id;
