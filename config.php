@@ -228,18 +228,6 @@ function getTroopCounts($id)
 		$clubID++;
 	}
 
-	// Get troop counts - Rebel
-	/*$count = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('1' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
-
-	// Get troop counts - Mando Mercs
-	$count_mando = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('2' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
-
-	// Get troop counts - Droid
-	$count_droid = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('3' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
-
-	// Get troop counts - Other
-	$count_other = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);*/
-
 	// Get total count
 	$count_total = $conn->query("SELECT id FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3'");
 
@@ -1925,7 +1913,7 @@ function sendNotification($message, $trooperid, $type = 0, $json = "")
 // troopCheck: Checks the troop counts of all clubs
 function troopCheck($id)
 {
-	global $conn;
+	global $conn, $clubArray, $squadArray;
 	
 	// Notify how many troops did a trooper attend - 501st
 	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR EXISTS(SELECT events.id, events.oldid FROM events WHERE events.oldid != 0 AND events.id = event_sign_up.troopid))") or die($conn->error);
@@ -1934,33 +1922,22 @@ function troopCheck($id)
 	// 501st
 	checkTroopCounts($count[0], "501ST: " . getName($id) . " now has [COUNT] troop(s)", $id, "501ST");
 	
-	// Notify how many troops did a trooper attend - Rebel Legion
-	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ('1' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume))") or die($conn->error);
-	$count = $trooperCount_get->fetch_row();
+	// Set club ID
+	$clubID = count($squadArray) + 1;
 	
-	// Rebel Legion
-	checkTroopCounts($count[0], "REBEL LEGION: " . getName($id) . " now has [COUNT] troop(s)", $id, "REBEL LEGION");
-	
-	// Notify how many troops did a trooper attend - Mando Mercs
-	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ('2' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume))") or die($conn->error);
-	$count = $trooperCount_get->fetch_row();
-	
-	// Mando Mercs
-	checkTroopCounts($count[0], "MANDO MERCS: " . getName($id) . " now has [COUNT] troop(s)", $id, "MANDO MERCS");
-	
-	// Notify how many troops did a trooper attend - Droid Builders
-	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ('3' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume))") or die($conn->error);
-	$count = $trooperCount_get->fetch_row();
-	
-	// Droid Builders
-	checkTroopCounts($count[0], "DROID BUILDERS: " . getName($id) . " now has [COUNT] troop(s)", $id, "DROID BUILDERS");
-	
-	// Notify how many troops did a trooper attend - Other
-	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ('4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume))") or die($conn->error);
-	$count = $trooperCount_get->fetch_row();
-	
-	// Other
-	checkTroopCounts($count[0], "OTHER: " . getName($id) . " now has [COUNT] troop(s)", $id, "OTHER");
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
+	{
+		// Notify how many troops did a trooper attend of club
+		$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ".getCostumeQueryValues($clubID)."") or die($conn->error);
+		$count = $trooperCount_get->fetch_row();
+		
+		// Check troop count of club
+		checkTroopCounts($count[0], strtoupper($club_value['name']) . ": " . getName($id) . " now has [COUNT] troop(s)", $id, strtoupper($club_value['name']));
+		
+		// Increment club count
+		$clubID++;
+	}
 }
 
 // checkTroopCounts: Checks the troop counts, and puts the information into notifications
@@ -3236,19 +3213,25 @@ function troopersRemaining($value1, $value2)
 }
 
 // eventClubCount: Returns number of troopers signed up for this event based on costume
-function eventClubCount($eventID, $club)
+function eventClubCount($eventID, $clubID)
 {
-	global $conn;
-
+	global $conn, $clubArray, $dualCostume;
+	
 	// Variables
-	$i = 0;	// 501st
-	$rl = 0;	// Rebel Legion
-	$droidb = 0;	// Droid builders
-	$mandos = 0;	// Mandos
-	$other = 0;	// Others
-	$total = 0; // Total count
-	$eventFull = false;	// Is the event full?
-	$returnVal = 0; // Number to return
+	$c501 = 0;
+	
+	// Loop through clubs to make variables
+	foreach($clubArray as $club => $club_value)
+	{
+		// Set up variables
+		${"c" . $club_value['dbLimit']} = 0;
+	}
+	
+	// Total count
+	$total = 0;
+	
+	// Set up return number
+	$returnVal = 0;
 
 	// Query database for roster info
 	$query = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".$eventID."' AND status != '1' AND status != '4' AND status != '6'";
@@ -3266,41 +3249,31 @@ function eventClubCount($eventID, $club)
 					// 501st
 					if($db2->club == 0)
 					{
-						$i++;
-						$total++;
+						$c501++;
 					}
-					// Rebel Legion
-					else if($db2->club == 1)
+					
+					// Loop through clubs
+					foreach($clubArray as $club => $club_value)
 					{
-						$rl++;
-						$total++;
+						// Loop through costumes
+						foreach($club_value['costumes'] as $costume)
+						{
+							// Club
+							if($db2->club == $costume)
+							{
+								// Increment to club
+								${"c" . $club_value['dbLimit']}++;
+							}
+						}
 					}
-					// Mandos
-					else if($db2->club == 2)
+					
+					// Dual costume
+					if($db2->club == $dualCostume)
 					{
-						$mandos++;
-						$total++;
-					}
-					// Droid Builders
-					else if($db2->club == 3)
-					{
-						$droidb++;
-						$total++;
-					}
-					// Other
-					else if($db2->club == 4)
-					{
-						$other++;
-						$total++;
-					}
-					// All
-					else if($db2->club == 5)
-					{
-						$i++;
-						$rl++;
-						$mandos++;
-						$droidb++;
-						$other++;
+						// Just 501 because it will be added in the loop above as well
+						$c501++;
+						
+						// Add to total
 						$total++;
 					}							
 				}
@@ -3308,27 +3281,32 @@ function eventClubCount($eventID, $club)
 		}
 	}
 	
-	if($club == 0)
+	// If 501
+	if($clubID == 0)
 	{
-		$returnVal = $i;
+		$returnVal = $c501;
 	}
-	else if($club == 1)
+	
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
 	{
-		$returnVal = $rl;
+		// Loop through costumes
+		foreach($club_value['costumes'] as $costume)
+		{
+			// Make sure not a dual costume
+			if($clubID != $dualCostume)
+			{
+				// If club
+				if($clubID == $costume)
+				{
+					$returnVal = ${"c" . $club_value['dbLimit']};
+				}
+			}
+		}
 	}
-	else if($club == 2)
-	{
-		$returnVal = $mandos;
-	}
-	else if($club == 3)
-	{
-		$returnVal = $droidb;
-	}
-	else if($club == 4)
-	{
-		$returnVal = $other;
-	}
-	else if($club == 5)
+	
+	// Dual costume
+	if($clubID == $dualCostume)
 	{
 		$returnVal = $total;
 	}
@@ -3399,15 +3377,11 @@ function isEventFull($eventID, $costumeID)
 		// Loop through costumes
 		foreach($club_value['costumes'] as $costume)
 		{
-			// Make sure not a dual costume
-			if($costume != $dualCostume)
+			// Check club
+			if(getCostumeClub($costumeID) == $costume && (${$club_value['dbLimit']} - eventClubCount($eventID, $costume)) <= 0)
 			{
-				// Check club
-				if(getCostumeClub($costumeID) == $costume && (${$club_value['dbLimit']} - eventClubCount($eventID, $costume)) <= 0)
-				{
-					// Set event full
-					$eventFull = true;
-				}
+				// Set event full
+				$eventFull = true;
 			}
 		}
 	}

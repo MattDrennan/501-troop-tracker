@@ -21,11 +21,41 @@ if ($result = mysqli_query($conn, $query))
 	}
 }
 
-// Set up message
-$message = "Trooper Milestones:\n\n";
+// Set up squad count - milestones
+$y = 1;
 
-// Set up count
-$i = 0;
+// Loop through squads - milestones
+foreach($squadArray as $squad => $squad_value)
+{
+	// Set up troops for e-mail
+	${"sM" . $y} = "";
+
+	// Increment
+	$y++;
+}
+
+// Loop through clubs - milestones
+foreach($clubArray as $club => $club_value)
+{
+	// Set up troops for e-mail
+	${"sM" . $y} = "";
+
+	// Increment
+	$y++;
+}
+
+// Set up squad count - comments
+$l = 1;
+
+// Loop through squads - comments
+foreach($squadArray as $squad => $squad_value)
+{
+	// Set up troops for e-mail
+	${"sC" . $l} = "";
+
+	// Increment
+	$l++;
+}
 
 // Loop through all notifications
 $query = "SELECT notifications.id, notifications.message, notifications.trooperid, settings.lastnotification FROM notifications JOIN settings WHERE notifications.id > settings.lastnotification AND notifications.message LIKE '%now has%'";
@@ -33,66 +63,163 @@ if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))
 	{
-		// Update message
-		$message .= $db->message . "\n\n";
-		
-		// Update last notification
-		$conn->query("UPDATE settings SET lastnotification = '".$db->id."'");
-		
-		// Increment
-		$i++;
+		// Loop through all troopers and get trooper
+		$query2 = "SELECT * FROM troopers WHERE id = '".$db->trooperid."'";
+		if ($result2 = mysqli_query($conn, $query2))
+		{
+			while ($db2 = mysqli_fetch_object($result2))
+			{
+				// Update message
+				${"sM" . $db2->squad} .= $db->message . "\n\n";
+				
+				// Update last notification
+				$conn->query("UPDATE settings SET lastnotification = '".$db->id."'");
+			}
+		}
 	}
 }
 
-// Check count
-if($i == 0)
-{
-	$message .= "-None";
-}
-
-// Important Comment message
-$message .= "\n\nImportant Comments:\n\n";
-
-// Count important messages
-$j = 0;
-
 // Loop through all comments that are important
-$query = "SELECT * FROM comments, settings WHERE id > settings.lastimportantcomment AND comments.important = '1'";
+$query = "SELECT * FROM comments, settings WHERE comments.id > settings.lastimportantcomment AND comments.important = '1'";
 if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))
 	{
-		// Update message
-		$message .= getName($db->trooperid) . ': ' . $db->comment . "\nhttps://fl501st.com/troop-tracker/index.php?event=".$db->troopid."\n\n";
-		
-		// Update last notification
-		$conn->query("UPDATE settings SET lastimportantcomment = '".$db->id."'");
-		
-		// Increment
-		$i++;
-		$j++;
+		// Loop through all comments that are important
+		$query2 = "SELECT * FROM events WHERE id = '".$db->id."'";
+		if ($result2 = mysqli_query($conn, $query2))
+		{
+			while ($db2 = mysqli_fetch_object($result2))
+			{
+				// Update message
+				${"sC" . $db2->squad} .= getName($db->trooperid) . ': ' . $db->comment . "\nhttps://fl501st.com/troop-tracker/index.php?event=".$db->troopid."\n\n";
+			}
+		}
 	}
 }
 
-// Check count
-if($j == 0)
+// Set up squad count
+$i = 1;
+
+// Set up add to query
+$addToQuery = "";
+
+// Loop through squads
+foreach($squadArray as $squad => $squad_value)
 {
-	$message .= "-None";
+	// Build query
+	$addToQuery .= ", troopers.esquad" . $i;
+
+	// Increment squad count
+	$i++;
 }
 
-$message .= "\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com";
-
-
-// If notifications
-if($i > 0)
+// Loop through squads
+foreach($clubArray as $club => $club_value)
 {
-	// Loop through all members with admin
-	$query = "SELECT troopers.email, troopers.name, troopers.permissions FROM troopers WHERE (troopers.permissions = '1' OR troopers.permissions = '2') AND troopers.email != '' AND troopers.subscribe = '1' AND troopers.ecommandnotify = '1'";
-	if ($result = mysqli_query($conn, $query))
+	// Build query
+	$addToQuery .= ", troopers.esquad" . $i;
+
+	// Increment squad count
+	$i++;
+}
+
+// Loop through all members with admin
+$query = "SELECT troopers.email, troopers.name, troopers.permissions".$addToQuery." FROM troopers WHERE (troopers.permissions = '1' OR troopers.permissions = '2') AND troopers.email != '' AND troopers.subscribe = '1' AND troopers.ecommandnotify = '1'";
+if ($result = mysqli_query($conn, $query))
+{
+	while ($db = mysqli_fetch_object($result))
 	{
-		while ($db = mysqli_fetch_object($result))
+		// Set up message
+		$message = "";
+		
+		// Set up milestone count
+		$mC = 0;
+
+		// Set up comment count
+		$cC = 0;
+		
+		// Trooper Milestones
+		$message .= "Trooper Milestones:\n\n";
+		
+		// Set up squad count
+		$i = 1;
+		
+		// Loop through squads
+		foreach($squadArray as $squad => $squad_value)
 		{
-			// Send E-mail
+			// Check allow e-mails for squad
+			if($db->{"esquad" . $i} == 1)
+			{
+				// Add squad information to e-mail
+				$message .= ${"sM" . $i};
+
+				// Increment milestone count
+				$mC++;
+			}
+
+			// Increment squad count
+			$i++;
+		}
+		
+		// Loop through clubs
+		foreach($clubArray as $club => $club_value)
+		{
+			// Check allow e-mails for club
+			if($db->{"esquad" . $i} == 1)
+			{
+				// Add club information to e-mail
+				$message .= ${"sM" . $i};
+
+				// Increment milestone count
+				$mC++;
+			}
+
+			// Increment club count
+			$i++;
+		}
+		
+		// If no milestones
+		if($mC == 0)
+		{
+			$message .= "-None\n\n";
+		}
+		
+		// Trooper Comments
+		$message .= "Important Comments:\n\n";
+		
+		// Set up squad count
+		$i = 1;
+		
+		// Loop through squads
+		foreach($squadArray as $squad => $squad_value)
+		{
+			// Check allow e-mails for squad
+			if($db->{"esquad" . $i} == 1)
+			{
+				// Add squad information to e-mail
+				$message .= ${"sC" . $i};
+
+				// Increment milestone count
+				$cC++;
+			}
+
+			// Increment squad count
+			$i++;
+		}
+		
+		// If no comments
+		if($cC == 0)
+		{
+			$message .= "-None\n\n";
+		}
+		
+		// Add footer to e-mail
+		$message .= "\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com";
+		
+		// Send e-mail if something to send
+		if($mC > 0 || $cC > 0)
+		{
 			sendEmail($db->email, $db->name, "Troop Tracker: Command Staff Notifications", $message);
 		}
 	}
