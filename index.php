@@ -4576,10 +4576,8 @@ if(isset($_GET['event']))
 				
 				// Create button variable
 				$button = '
-				<p style="text-align: center;">
+				<p style="text-align: center;" aria-label="Get updates on sign ups, cancellations, and discussion." data-balloon-pos="up">
 					<a href="#/" class="button" id="subscribeupdates" event="'.cleanInput($_GET['event']).'">'.$subscribeText.'</a>
-					<br />
-					<i>Get updates on sign ups, cancellations, and discussion.</i>
 				</p>';
 
 				// If this event is over, don't show it
@@ -5747,7 +5745,7 @@ if(isset($_GET['event']))
 
 					<br />
 
-					<p>Is this an important message?</p>
+					<p aria-label="This will highlight and notify command staff of your comment." data-balloon-pos="up">Is this an important message?</p>
 					<select name="important" id="important">
 						<option value="0">No</option>
 						<option value="1">Yes</option>
@@ -5896,14 +5894,13 @@ else
 			if(loggedIn())
 			{
 				echo '
-				<h2 class="tm-section-header">Troops</h2>'
+				<h2 class="tm-section-header">Troops</h2>
+				<div aria-label="Press an image to sort by squad / garrison." data-balloon-pos="down">'
 				
 				. showSquadButtons() . '
+				</div>
 				
 				<p style="text-align: center;">
-					<small>Press a squad above to sort by squad.</small>
-					<br />
-					<br />
 					<a href="index.php?squad=mytroops" class="button">My Troops</a>
 				</p>
 

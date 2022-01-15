@@ -1630,7 +1630,20 @@ if(isset($_GET['do']) && $_GET['do'] == "getuser" && loggedIn())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$array = array('name' => $db->name, 'email' => $db->email, 'forum' => $db->forum_id, 'rebelforum' => $db->rebelforum, 'mandoid' => $db->mandoid, 'sgid' => $db->sgid, 'phone' => $db->phone, 'squad' => getSquadName($db->squad), 'tkid' => readTKNumber($db->tkid, $db->squad), 'link' => get501Info($db->tkid, $db->squad)['link']);
+				// Set up link
+				$link = '';
+
+				// Create link
+				if(get501Info($db->tkid, $db->squad)['link'] != "")
+				{
+					$link = get501Info($db->tkid, $db->squad)['link'];
+				}
+				else if($db->squad <= count($squadArray))
+				{
+					$link = 'https://www.501st.com/memberAPI/v3/legionId/' . $db->tkid;
+				}
+
+				$array = array('name' => $db->name, 'email' => $db->email, 'forum' => $db->forum_id, 'rebelforum' => $db->rebelforum, 'mandoid' => $db->mandoid, 'sgid' => $db->sgid, 'phone' => $db->phone, 'squad' => getSquadName($db->squad), 'tkid' => readTKNumber($db->tkid, $db->squad), 'link' => $link);
 			}
 		}
 	}
