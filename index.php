@@ -4355,7 +4355,7 @@ if(isset($_GET['event']))
 				
 				// Create button variable
 				$button = '
-				<p style="text-align: center;" aria-label="Get updates on sign ups, cancellations, and discussion." data-balloon-pos="up">
+				<p style="text-align: center;" aria-label="Get updates on sign ups, cancellations, and discussion." data-balloon-pos="up" data-balloon-length="fit">
 					<a href="#/" class="button" id="subscribeupdates" event="'.cleanInput($_GET['event']).'">'.$subscribeText.'</a>
 				</p>';
 
@@ -4823,7 +4823,7 @@ if(isset($_GET['event']))
 							}
 							
 							echo '
-							<td id="'.$db2->trooperId.'Status" aria-label="'.date("F j, Y, g:i:s a", strtotime($db2->signuptime)).'" data-balloon-pos="up">
+							<td id="'.$db2->trooperId.'Status" aria-label="'.date("F j, Y, g:i:s a", strtotime($db2->signuptime)).'" data-balloon-pos="up" data-balloon-length="fit">
 							<div name="'.$db2->trooperId.'trooperRosterStatus" id="'.$db2->trooperId.'trooperRosterStatus">';
 							
 								// If not a limited event
@@ -4939,7 +4939,7 @@ if(isset($_GET['event']))
 								'.ifEmpty(getCostume($db2->costume_backup), "N/A").'
 							</td>
 							
-							<td id="'.$db2->trooperId.'Status" aria-label="'.date("F j, Y, g:i:s a", strtotime($db2->signuptime)).'" data-balloon-pos="up">';
+							<td id="'.$db2->trooperId.'Status" aria-label="'.date("F j, Y, g:i:s a", strtotime($db2->signuptime)).'" data-balloon-pos="up" data-balloon-length="fit">';
 								echo '
 								<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
 
@@ -5350,7 +5350,7 @@ if(isset($_GET['event']))
 				{
 					echo '
 					<p>
-						<a href="#/" class="button" id="changeUpload" aria-label="Regular Upload: Share photos from troops / Instructional Image: Help troopers with troop information" data-balloon-pos="down">Change To: Troop Instructional Image Upload</a>
+						<a href="#/" class="button" id="changeUpload" aria-label="Regular Upload: Share photos from troops / Instructional Image: Help troopers with troop information" data-balloon-pos="down" data-balloon-length="fit">Change To: Troop Instructional Image Upload</a>
 
 						<form action="script/php/upload.php" class="dropzone" id="photoupload">
 							<input type="hidden" name="admin" value="0" />
@@ -5557,7 +5557,7 @@ if(isset($_GET['event']))
 
 					<br />
 
-					<p aria-label="This will highlight and notify command staff of your comment." data-balloon-pos="up">Is this an important message?</p>
+					<p aria-label="This will highlight and notify command staff of your comment." data-balloon-pos="up" data-balloon-length="fit">Is this an important message?</p>
 					<select name="important" id="important">
 						<option value="0">No</option>
 						<option value="1">Yes</option>
@@ -5707,7 +5707,7 @@ else
 			{
 				echo '
 				<h2 class="tm-section-header">Troops</h2>
-				<div aria-label="Press an image to sort by squad / garrison." data-balloon-pos="down">'
+				<div aria-label="Press an image to sort by squad / garrison." data-balloon-pos="down" data-balloon-length="fit">'
 				
 				. showSquadButtons() . '
 				</div>
