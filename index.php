@@ -5350,7 +5350,7 @@ if(isset($_GET['event']))
 				{
 					echo '
 					<p>
-						<a href="#/" class="button" id="changeUpload">Change To: Troop Instructional Image Upload</a>
+						<a href="#/" class="button" id="changeUpload" aria-label="Regular Upload: Share photos from troops / Instructional Image: Help troopers with troop information" data-balloon-pos="down">Change To: Troop Instructional Image Upload</a>
 
 						<form action="script/php/upload.php" class="dropzone" id="photoupload">
 							<input type="hidden" name="admin" value="0" />
