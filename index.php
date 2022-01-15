@@ -3981,22 +3981,22 @@ if(isset($_GET['action']) && $_GET['action'] == "editphoto")
 					<p>
 						<b>Uploaded by:</b> <a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.getTKNumber($db->trooperid, true).'</a>
 					</p>';
-				
-					// Check if admin photo
-					if($db->admin == 0)
-					{
-						echo '
-						<p>
-							<a href="#/" photoid="'.$db->id.'" class="button" name="adminphoto">Make Admin Photo</a>
-						</p>';
-					}
-					else
-					{
-						echo '
-						<p>
-							<a href="#/" photoid="'.$db->id.'" class="button" name="adminphoto">Make Regular Photo</a>
-						</p>';
-					}
+				}
+
+				// Check if admin photo
+				if($db->admin == 0)
+				{
+					echo '
+					<p>
+						<a href="#/" photoid="'.$db->id.'" class="button" name="adminphoto">Make Troop Instruction Photo</a>
+					</p>';
+				}
+				else
+				{
+					echo '
+					<p>
+						<a href="#/" photoid="'.$db->id.'" class="button" name="adminphoto">Make Regular Photo</a>
+					</p>';
 				}
 				
 				echo '
@@ -4355,10 +4355,8 @@ if(isset($_GET['event']))
 				
 				// Create button variable
 				$button = '
-				<p style="text-align: center;">
+				<p style="text-align: center;" aria-label="Get updates on sign ups, cancellations, and discussion." data-balloon-pos="up">
 					<a href="#/" class="button" id="subscribeupdates" event="'.cleanInput($_GET['event']).'">'.$subscribeText.'</a>
-					<br />
-					<i>Get updates on sign ups, cancellations, and discussion.</i>
 				</p>';
 
 				// If this event is over, don't show it
@@ -5351,15 +5349,9 @@ if(isset($_GET['event']))
 				if(loggedIn())
 				{
 					echo '
-					<p>';
-						// If logged in and command staff
-						if(loggedIn() && isAdmin())
-						{
-							echo '
-							<a href="#/" class="button" id="changeUpload">Change To: Troop Instructional Image Upload</a>';
-						}
+					<p>
+						<a href="#/" class="button" id="changeUpload">Change To: Troop Instructional Image Upload</a>
 
-						echo '
 						<form action="script/php/upload.php" class="dropzone" id="photoupload">
 							<input type="hidden" name="admin" value="0" />
 							<input type="hidden" name="troopid" value="'.cleanInput($_GET['event']).'" />
@@ -5565,7 +5557,7 @@ if(isset($_GET['event']))
 
 					<br />
 
-					<p>Is this an important message?</p>
+					<p aria-label="This will highlight and notify command staff of your comment." data-balloon-pos="up">Is this an important message?</p>
 					<select name="important" id="important">
 						<option value="0">No</option>
 						<option value="1">Yes</option>
@@ -5714,14 +5706,13 @@ else
 			if(loggedIn())
 			{
 				echo '
-				<h2 class="tm-section-header">Troops</h2>'
+				<h2 class="tm-section-header">Troops</h2>
+				<div aria-label="Press an image to sort by squad / garrison." data-balloon-pos="down">'
 				
 				. showSquadButtons() . '
+				</div>
 				
 				<p style="text-align: center;">
-					<small>Press a squad above to sort by squad.</small>
-					<br />
-					<br />
 					<a href="index.php?squad=mytroops" class="button">My Troops</a>
 				</p>
 

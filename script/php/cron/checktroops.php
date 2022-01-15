@@ -154,8 +154,12 @@ if ($result = mysqli_query($conn, $query))
 				// Add squad information to e-mail
 				$message .= ${"sM" . $i};
 
-				// Increment milestone count
-				$mC++;
+				// Check if message has contents
+				if(${"sM" . $i} != "")
+				{
+					// Increment milestone count
+					$mC++;
+				}
 			}
 
 			// Increment squad count
@@ -171,8 +175,12 @@ if ($result = mysqli_query($conn, $query))
 				// Add club information to e-mail
 				$message .= ${"sM" . $i};
 
-				// Increment milestone count
-				$mC++;
+				// Check if message has contents
+				if(${"sM" . $i} != "")
+				{
+					// Increment milestone count
+					$mC++;
+				}
 			}
 
 			// Increment club count
@@ -200,8 +208,12 @@ if ($result = mysqli_query($conn, $query))
 				// Add squad information to e-mail
 				$message .= ${"sC" . $i};
 
-				// Increment milestone count
-				$cC++;
+				// Check if message has contents
+				if(${"sC" . $i} != "")
+				{
+					// Increment milestone count
+					$cC++;
+				}
 			}
 
 			// Increment squad count

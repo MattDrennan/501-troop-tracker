@@ -453,22 +453,19 @@ if(isset($_GET['do']) && $_GET['do'] == "adminphoto" && loggedIn())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
-			if(isAdmin())
+			if($db->admin == 0)
 			{
-				if($db->admin == 0)
-				{
-					// Query database
-					$conn->query("UPDATE uploads SET admin = '1' WHERE id = '".cleanInput($_POST['photoid'])."'");
-				}
-				else
-				{
-					// Query database
-					$conn->query("UPDATE uploads SET admin = '0' WHERE id = '".cleanInput($_POST['photoid'])."'");
-				}
-				
-				// Increment
-				$i++;
+				// Query database
+				$conn->query("UPDATE uploads SET admin = '1' WHERE id = '".cleanInput($_POST['photoid'])."'");
 			}
+			else
+			{
+				// Query database
+				$conn->query("UPDATE uploads SET admin = '0' WHERE id = '".cleanInput($_POST['photoid'])."'");
+			}
+			
+			// Increment
+			$i++;
 		}
 	}
 	
@@ -1699,7 +1696,20 @@ if(isset($_GET['do']) && $_GET['do'] == "getuser" && loggedIn())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$array = array('name' => $db->name, 'email' => $db->email, 'forum' => $db->forum_id, 'phone' => $db->phone, 'squad' => getSquadName($db->squad), 'tkid' => readTKNumber($db->tkid, $db->squad), 'link' => get501Info($db->tkid, $db->squad)['link']);
+				// Set up link
+				$link = '';
+
+				// Create link
+				if(get501Info($db->tkid, $db->squad)['link'] != "")
+				{
+					$link = get501Info($db->tkid, $db->squad)['link'];
+				}
+				else if($db->squad <= count($squadArray))
+				{
+					$link = 'https://www.501st.com/memberAPI/v3/legionId/' . $db->tkid;
+				}
+				
+				$array = array('name' => $db->name, 'email' => $db->email, 'forum' => $db->forum_id, 'phone' => $db->phone, 'squad' => getSquadName($db->squad), 'tkid' => readTKNumber($db->tkid, $db->squad), 'link' => $link);
 
 				// Loop through clubs
 				foreach($clubArray as $club => $club_value)
