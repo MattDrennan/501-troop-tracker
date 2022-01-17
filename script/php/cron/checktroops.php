@@ -93,6 +93,9 @@ if ($result = mysqli_query($conn, $query))
 			{
 				// Update message
 				${"sC" . $db2->squad} .= getName($db->trooperid) . ': ' . $db->comment . "\nhttps://fl501st.com/troop-tracker/index.php?event=".$db->troopid."\n\n";
+
+				// Update last important comment
+				$conn->query("UPDATE settings SET lastimportantcomment = '".$db->id."'");
 			}
 		}
 	}
