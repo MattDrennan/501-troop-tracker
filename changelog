@@ -1,5 +1,10 @@
 **Changelog**
 
+_01/18/2022_
+
+-Fixed event notifications sending blanks
+-Added costume message below confirm attendance
+
 _01/15/2022_
 
 -Added ballon tips to squad logo sorting, subscribe updates, photo upload, and important comments

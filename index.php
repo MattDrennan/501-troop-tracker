@@ -6229,6 +6229,7 @@ else
 					echo '
 						</select>
 					</form>
+					<p>If your costume is not listed, please notify the garrison web master before confirming.</p>
 					</div>';
 				}
 			}
