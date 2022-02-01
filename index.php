@@ -1907,13 +1907,13 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			if(isset($_GET['squad']))
 			{	
 				// Which club to get
-				if($_GET['squad'] <= count($squadArray))
-				{
-					$queryAdd .= "squad = '".cleanInput($_GET['squad'])."' AND p501 > 0";
-				}
-				else if($_GET['squad'] == "all")
+				if($_GET['squad'] == "all")
 				{
 					$queryAdd .= "p501 > 0";
+				}
+				else if($_GET['squad'] <= count($squadArray))
+				{
+					$queryAdd .= "squad = '".cleanInput($_GET['squad'])."' AND p501 > 0";
 				}
 				else if($_GET['squad'] == 6)
 				{
