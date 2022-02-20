@@ -42,6 +42,12 @@ echo '
 			<link href="css/main1.css" rel="stylesheet" />
 			<link rel="stylesheet" href="css/nav1.css">';
 		}
+		else if(myTheme() == 3)
+		{
+			echo '
+			<link href="css/main3.css" rel="stylesheet" />
+			<link rel="stylesheet" href="css/nav3.css">';
+		}
 	}
 	else
 	{
@@ -269,7 +275,8 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 					echo '
 					<option value="0" '.echoSelect(0, $db->theme).'>Florida Garrison Theme (Default)</option>
 					<option value="1" '.echoSelect(1, $db->theme).'>Everglades Theme</option>
-					<option value="2" '.echoSelect(2, $db->theme).'>Makaze Theme</option>';
+					<option value="2" '.echoSelect(2, $db->theme).'>Makaze Theme</option>
+					<option value="3" '.echoSelect(3, $db->theme).'>Parjai Theme (Dark Theme)</option>';
 				}
 			}
 		echo '

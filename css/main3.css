@@ -1,0 +1,389 @@
+/*
+
+Tooplate 2118 Chilling Cafe
+
+https://www.tooplate.com/view/2118-chilling-cafe
+
+
+    Background color:       #3a4a58
+    Title color:            #996633
+    Text color:             #666666
+    Text Dark color:        #333333
+    Table Heading color:    #C4CDD6
+    Table Alternate color:  #e5e8ed 
+*/
+
+body {
+  background-color: #000000;
+  color: #fff;
+  font-family: "Open Sans", Arial, Helvetica, sans-serif;
+  font-size: 17px;
+  font-weight: 400;
+  padding: 15px;
+  margin: 0;
+}
+
+.tm-container {
+  //max-width: 640px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tm-main-content { background-color: #252f39; }
+
+#tm-intro-img {
+  //background-image: url(../img/chilling-cafe-01.jpg);
+  background-position: center;
+  background-size: cover;
+  min-height: 425px;
+}
+
+.tm-text-white { color: white; }
+
+.tm-page-header-container { text-align: center; }
+
+.tm-page-header {
+  display: inline-block;
+  vertical-align: baseline;
+  margin-top: 20px;
+  margin-bottom: 35px;
+  font-size: 2.1rem;
+  font-weight: 400;
+}
+
+.tm-page-icon {
+  display: inline-block;
+  vertical-align: baseline;
+  padding: 15px;
+}
+
+.tm-section-header {
+  color: #fff;
+  text-align: center;
+  font-weight: 400;
+  font-size: 1.5rem;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+table {
+  width: 100%;
+  border-spacing: 0;
+}
+
+td {
+  text-align: center;
+  padding: 10px 15px;
+}
+
+.tm-text-left { text-align: left; }
+
+th {
+  color: #fff;
+  font-weight: 400;
+  font-size: 1.2rem;
+  padding-left: 15px;
+  padding-right: 15px;
+  background-color: #000000;
+}
+
+tr:nth-child(odd) { background-color: #1c262f; }
+
+tr.tm-tr-header {
+  background-color: #c4cdd6;
+  height: 50px;
+}
+
+.tm-section {
+  padding-top: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 30px;
+}
+
+.tm-section-small {
+  max-width: 490px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 0;
+}
+
+p {
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.tm-mb-0 { margin-bottom: 0; }
+img { max-width: 100%; }
+figure { margin: 0; }
+figcaption { text-align: center; }
+
+figcaption span {
+  display: block;
+  color: #fff;
+  font-size: 18px;
+}
+
+.tm-item-name {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.tm-special-items {
+  display: flex;
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+.tm-special-item {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+hr {
+  width: 60%;
+  border: 0.5px solid #ccc;
+}
+
+.tm-social-icons {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.tm-social-icons i { font-size: 1.2rem; }
+.tm-social-link-container { display: inline-block; }
+
+.tm-social-link {
+  color: white;
+  background-color: #c5ced8;
+  border-radius: 2px;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 3px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.tm-social-link:hover { background-color: #808e9e; }
+
+.tm-contact-link {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+a { transition: all 0.3s ease; }
+.tm-contact-link:hover { color: #fff; }
+
+.tm-footer-text {
+  font-size: 0.9rem;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.tm-footer-link {
+  color: #fff;
+  text-decoration: none;
+}
+
+.tm-footer-link:hover { color: #c5ced8; }
+
+a{
+ text-decoration:none;
+ color:#fff;
+}
+
+a.button,div.container{
+ display: inline-block; 
+}
+
+a.button{
+	background-color:#1c262f;
+	border:1px solid #660000;
+	border-radius:5px;
+	border-color: #323f4e;
+	color:#fff;
+	margin:5px;
+	padding:10px 10px 10px 10px;
+	-webkit-appearance: none;
+}
+
+/* Background for chosen squad */
+.squadlink {
+  background-color: #323f4e;
+  /*border: 1px;
+  border-color: #2869a5;
+  border-style: solid;*/
+}
+
+@media (max-width: 550px) {
+  .tm-special-item {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .tm-special-items {
+    margin-left: -10px;
+    margin-right: -10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tm-special-item {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  .tm-special-items {
+    margin-left: -5px;
+    margin-right: -5px;
+  }
+}
+
+@media (max-width: 430px) {
+  .tm-responsive-table { overflow-x: auto; }
+  table { width: auto; }
+  .tm-special-items { flex-direction: column; }
+  .tm-special-item { margin-bottom: 40px; }
+  figcaption p {
+    margin-bottom: 0;
+    line-height: 1;
+  }
+}
+
+/*************************************/
+
+ /* Style inputs, select elements and textareas */
+input[type=text], select, textarea{
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  resize: vertical;
+  background-color: #252f39;
+  color: #fff;
+}
+
+input[type=password], select, textarea{
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  resize: vertical;
+  background-color: #252f39;
+  color: #fff;
+}
+
+/* Style the label to display next to the inputs */
+label {
+  padding: 12px 12px 12px 0;
+  display: inline-block;
+}
+
+.select2-search
+{
+	background-color: #252f39;
+	color: #fff;
+}
+
+.select2-search input
+{
+	background-color: #252f39;
+	color: #fff;
+}
+
+.select2-results
+{
+	background-color: #252f39;
+	color: #fff;
+}
+
+.select2-selection__rendered
+{
+	background-color: #252f39;
+	color: #fff;
+}
+
+.select2-selection select2-selection--single
+{
+	background-color: #252f39;
+	color: #fff;
+}
+
+span[class*="select2"]
+{
+	background-color: #252f39 !important;
+	color: #fff !important;
+}
+
+#photoupload
+{
+	background-color: #252f39;
+}
+
+
+/* Style the submit button */
+input[type=submit] {
+	display: inline-block;
+	background-color:#1c262f;
+	border:1px solid #660000;
+	border-radius:5px;
+	color:#fff;
+	margin:5px;
+	padding:10px 10px 10px 10px;
+	cursor: pointer;
+	font-size: 15px;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	border-color: #323f4e;
+}
+
+/* Floating column for labels: 25% width */
+.col-25 {
+  float: left;
+  width: 25%;
+  margin-top: 6px;
+}
+
+/* Floating column for inputs: 75% width */
+.col-75 {
+  float: left;
+  width: 75%;
+  margin-top: 6px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+  .col-25, .col-75, input[type=submit] {
+    width: 100%;
+    margin-top: 0;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+  }
+}
+
+/* Hide close button on dialog box */
+.ui-dialog-titlebar-close {
+    visibility: hidden;
+}
+
+/* Prevent zoom */
+input,
+select,
+textarea {
+  font-size: 16px;
+}
