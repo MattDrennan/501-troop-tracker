@@ -1775,29 +1775,32 @@ function myTheme()
 	global $conn;
 	
 	$theme = "florida";
-	
-	$query = "SELECT theme FROM troopers WHERE id='".$_SESSION['id']."'";
-	if ($result = mysqli_query($conn, $query))
+
+	if(loggedIn())
 	{
-		while ($db = mysqli_fetch_object($result))
+		$query = "SELECT theme FROM troopers WHERE id = '".$_SESSION['id']."'";
+		if ($result = mysqli_query($conn, $query))
 		{
-			switch($db->theme)
+			while ($db = mysqli_fetch_object($result))
 			{
-				case 0:
-					$theme = "florida";
-				break;
-				
-				case 1:
-					$theme = "everglades";
-				break;
-				
-				case 2:
-					$theme = "makaze";
-				break;
-				
-				case 3:
-					$theme = "parjai";
-				break;
+				switch($db->theme)
+				{
+					case 0:
+						$theme = "florida";
+					break;
+					
+					case 1:
+						$theme = "everglades";
+					break;
+					
+					case 2:
+						$theme = "makaze";
+					break;
+					
+					case 3:
+						$theme = "parjai";
+					break;
+				}
 			}
 		}
 	}
