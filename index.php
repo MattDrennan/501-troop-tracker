@@ -22,42 +22,9 @@ echo '
 	<!-- Main Style Sheets -->
 	<link href="fontawesome/css/all.min.css" rel="stylesheet" />';
 	
-	if(loggedIn())
-	{
-		if(myTheme() == 0)
-		{
-			echo '
-			<link href="css/main2.css" rel="stylesheet" />
-			<link rel="stylesheet" href="css/nav2.css">';
-		}
-		else if(myTheme() == 1)
-		{
-			echo '
-			<link href="css/main.css" rel="stylesheet" />
-			<link rel="stylesheet" href="css/nav.css">';
-		}
-		else if(myTheme() == 2)
-		{
-			echo '
-			<link href="css/main1.css" rel="stylesheet" />
-			<link rel="stylesheet" href="css/nav1.css">';
-		}
-		else if(myTheme() == 3)
-		{
-			echo '
-			<link href="css/main3.css" rel="stylesheet" />
-			<link rel="stylesheet" href="css/nav3.css">';
-		}
-	}
-	else
-	{
-		echo '
-		<link href="css/main2.css" rel="stylesheet" />
-		<link rel="stylesheet" href="css/nav2.css">';
-	}
-	
 	echo '
 	<!-- Style Sheets -->
+	<link href="css/main.css" rel="stylesheet" />
 	<link rel="stylesheet" href="script/lib/jquery-ui.min.css">
 	<link rel="stylesheet" href="script/lib/jquery-ui-timepicker-addon.css">
 	<link href="css/dropzone.min.css" type="text/css" rel="stylesheet" />
@@ -105,7 +72,7 @@ echo '
 	</script>
 </head>
 
-<body>
+<body class="'.myTheme().'">
 
 <div class="tm-container">
 <div class="tm-text-white tm-page-header-container">

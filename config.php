@@ -1774,14 +1774,35 @@ function myTheme()
 {
 	global $conn;
 	
+	$theme = "florida";
+	
 	$query = "SELECT theme FROM troopers WHERE id='".$_SESSION['id']."'";
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
-			return $db->theme;
+			switch($db->theme)
+			{
+				case 0:
+					$theme = "florida";
+				break;
+				
+				case 1:
+					$theme = "everglades";
+				break;
+				
+				case 2:
+					$theme = "makaze";
+				break;
+				
+				case 3:
+					$theme = "parjai";
+				break;
+			}
 		}
 	}
+	
+	return $theme;
 }
 
 // getEventTitle: gets event title
