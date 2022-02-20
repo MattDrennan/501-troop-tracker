@@ -115,7 +115,8 @@ echo '
 <section class="tm-section">
 
 <div class="topnav" id="myTopnav">
-<a href="index.php" '.isPageActive("home").'>Home</a>';
+<a href="index.php" '.isPageActive("home").'>Home</a>
+<a href="https://fl501st.com/boards/">Forum</a>';
 
 if(!isWebsiteClosed() || isAdmin())
 {
@@ -6239,14 +6240,6 @@ else
 					<p>If your costume is not listed, please notify the garrison web master before confirming.</p>
 					</div>';
 				}
-			}
-
-			// If logged in, show Discord server
-			if(loggedIn())
-			{
-				echo '
-				<h2 class="tm-section-header">Tracker Updates</h2>
-				<iframe src="https://titanembeds.com/embed/911999467908132866?defaultchannel=920863548173873263&fixedsidenav=false" height="600" width="100%" frameborder="0"></iframe>';
 			}
 			
 			echo '

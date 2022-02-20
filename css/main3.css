@@ -193,9 +193,13 @@ a { transition: all 0.3s ease; }
 
 .tm-footer-link:hover { color: #c5ced8; }
 
-a{
+a {
  text-decoration:none;
  color:#fff;
+}
+
+a:hover {
+	color: #01bcfb;
 }
 
 a.button,div.container{
