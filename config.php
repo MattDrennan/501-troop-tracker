@@ -3515,7 +3515,7 @@ if(loggedIn())
 }
 
 // Check for events that need to be closed
-$query = "SELECT * FROM events WHERE dateEnd < NOW() - INTERVAL 1 HOUR AND closed != '2' AND closed != '1'";
+$query = "SELECT * FROM events WHERE dateEnd < ".date('Y-m-d H:i:s')." - INTERVAL 1 HOUR AND closed != '2' AND closed != '1'";
 if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))
