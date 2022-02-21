@@ -712,6 +712,9 @@ function drawSupportGraph()
 			}
 			
 			$return .= '<hr />';
+			
+			// Don't show anything if hit goal
+			if($percent >= 100) { $return = ''; }
 		}
 	}
 	
