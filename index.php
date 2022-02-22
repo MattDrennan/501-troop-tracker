@@ -5449,7 +5449,7 @@ if(isset($_GET['event']))
 						if($i == 0)
 						{
 							echo '
-							<h2 class="tm-section-header">Photos</h2>';
+							<h2 class="tm-section-header" id="photo_section">Photos</h2>';
 						}
 						
 						echo '
@@ -5489,7 +5489,7 @@ if(isset($_GET['event']))
 						else
 						{
 							echo '
-							<a href="index.php?event='.cleanInput($_GET['event']).'&page='.$j.'">'.$j.'</a>';
+							<a href="index.php?event='.cleanInput($_GET['event']).'&page='.$j.'#photo_section">'.$j.'</a>';
 						}
 						
 						// If not that last page, add a comma
