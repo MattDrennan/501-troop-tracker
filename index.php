@@ -2380,7 +2380,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					}
 					
 					// Format Date
-					$dateF = date('m-d-Y H:i:s', strtotime($db->datetime));
+					$dateF = formatTime($db->datetime, "m-d-Y H:i:s");
 
 					// Set JSON value
 					$json = "";
@@ -5801,8 +5801,7 @@ if(isset($_GET['event']))
 						}
 						
 						// Convert date/time
-						$date = strtotime($db->posted);
-						$newdate = date("F j, Y, g:i a", $date);
+						$newdate = formatTime($db->posted, "F j, Y, g:i a");
 
 						echo '
 						<tr>

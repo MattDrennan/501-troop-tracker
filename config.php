@@ -47,6 +47,14 @@ if ($conn->connect_error)
 // Main costume string
 $mainCostumes = "'501st: N/A', '501st: Command Staff', '501st: Handler'";
 
+// formatTime: Changes the time to timezone
+function formatTime($date, $format)
+{
+	$datetime = new DateTime($date, new DateTimeZone('UTC'));
+	$datetime->setTimezone(new DateTimeZone('America/New_York'));
+	return $datetime->format($format);
+}
+
 // randomTip: Returns random tip
 function dailyTip()
 {
