@@ -743,7 +743,7 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 				}
 
 				// Convert date/time
-				$newdate = formatTime($db->posted, "F j, Y, g:i a")
+				$newdate = formatTime($db->posted, "F j, Y, g:i a");
 
 				$data .= '
 				<tr>
