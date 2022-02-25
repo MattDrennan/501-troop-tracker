@@ -12,6 +12,21 @@ $conn->query("DELETE FROM rebel_troopers") or die($conn->error);
 // Purge rebel costumes
 $conn->query("DELETE FROM rebel_costumes") or die($conn->error);
 
+// Check date time for sync
+$query = "SELECT syncdaterebels FROM settings";
+if ($result = mysqli_query($conn, $query) or die($conn->error))
+{
+	while ($db = mysqli_fetch_object($result))
+	{
+		// Compare dates
+		if(strtotime($db->syncdaterebels) >= strtotime("-7 day"))
+		{
+			// Prevent script from continuing
+			die("Already updated recently.");
+		}
+	}
+}
+
 // Costume image array (duplicate check)
 $costumeImagesG = array();
 
@@ -209,34 +224,11 @@ foreach($values as $value)
 	$i++;
 }
 
-// Reset user permissions
-$conn->query("UPDATE troopers SET pRebel = '3' WHERE pRebel = '1'");
+echo '
+COMPLETE!';
 
-// Pull extra data from spreadsheet - this is for checking if a valid member
-$values = getSheet("1yP4mMluJ1eMpcZ25-4DPnG7K8xzrkHyrfvywcihl_qs", "Roster");
-
-// Set up count
-$i = 0;
-
-foreach($values as $value)
-{
-	// If not first
-	if($i != 0)
-	{
-		// Check if we can match with member in Troop Tracker database
-		$doesExist = $conn->query("SELECT id FROM troopers WHERE rebelforum = '".$value[0]."' AND rebelforum != ''");
-		
-		// Check if we got a match
-		if($doesExist !== false && $doesExist->num_rows > 0)
-		{
-			// Match
-			$conn->query("UPDATE troopers SET pRebel = '1' WHERE rebelforum = '".$value[0]."' AND rebelforum != ''");
-		}
-	}
-	
-	// Increment count
-	$i++;
-}
+// Update date time for last sync
+$conn->query("UPDATE settings SET syncdaterebels = NOW()");
 
 // print_r_reverse: Convert a string (print_r) back to a value
 function print_r_reverse($input)

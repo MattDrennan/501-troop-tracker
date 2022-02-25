@@ -47,6 +47,14 @@ if ($conn->connect_error)
 // Main costume string
 $mainCostumes = "'501st: N/A', '501st: Command Staff', '501st: Handler'";
 
+// formatTime: Changes the time to timezone
+function formatTime($date, $format)
+{
+	$datetime = new DateTime($date, new DateTimeZone('UTC'));
+	$datetime->setTimezone(new DateTimeZone('America/New_York'));
+	return $datetime->format($format);
+}
+
 // randomTip: Returns random tip
 function dailyTip()
 {
@@ -687,6 +695,9 @@ function drawSupportGraph()
 			}
 			
 			$return .= '<hr />';
+			
+			// Don't show anything if hit goal
+			if($percent >= 100) { $return = ''; }
 		}
 	}
 	
@@ -2005,14 +2016,38 @@ function myTheme()
 {
 	global $conn;
 	
-	$query = "SELECT theme FROM troopers WHERE id='".$_SESSION['id']."'";
-	if ($result = mysqli_query($conn, $query))
+	$theme = "florida";
+
+	if(loggedIn())
 	{
-		while ($db = mysqli_fetch_object($result))
+		$query = "SELECT theme FROM troopers WHERE id = '".$_SESSION['id']."'";
+		if ($result = mysqli_query($conn, $query))
 		{
-			return $db->theme;
+			while ($db = mysqli_fetch_object($result))
+			{
+				switch($db->theme)
+				{
+					case 0:
+						$theme = "florida";
+					break;
+					
+					case 1:
+						$theme = "everglades";
+					break;
+					
+					case 2:
+						$theme = "makaze";
+					break;
+					
+					case 3:
+						$theme = "parjai";
+					break;
+				}
+			}
 		}
 	}
+	
+	return $theme;
 }
 
 // getEventTitle: gets event title
@@ -3722,7 +3757,7 @@ if(loggedIn())
 }
 
 // Check for events that need to be closed
-$query = "SELECT * FROM events WHERE dateEnd < NOW() - INTERVAL 1 HOUR AND closed != '2' AND closed != '1'";
+$query = "SELECT * FROM events WHERE dateEnd < ".date('Y-m-d H:i:s')." - INTERVAL 1 HOUR AND closed != '2' AND closed != '1'";
 if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))

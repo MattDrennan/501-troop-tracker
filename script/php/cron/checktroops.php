@@ -310,8 +310,12 @@ if($i > 0)
 					// Add squad information to e-mail
 					$emailBody .= ${"s" . $l};
 
-					// Increment something to send
-					$k++;
+					// Make sure not empty
+					if(${"s" . $l} != "")
+					{
+						// Increment something to send
+						$k++;
+					}
 				}
 
 				// Increment squad count

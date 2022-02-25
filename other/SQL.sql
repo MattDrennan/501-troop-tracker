@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: ls-b461765348ab37f7774d47c6788e7713192d710a.c7bgdu4hw8kg.us-east-1.rds.amazonaws.com:3306
--- Generation Time: Jan 12, 2022 at 11:00 PM
+-- Generation Time: Jan 26, 2022 at 07:33 PM
 -- Server version: 8.0.23
 -- PHP Version: 7.4.7
 
@@ -103,7 +103,7 @@ CREATE TABLE `comments` (
 
 CREATE TABLE `costumes` (
   `id` int UNSIGNED NOT NULL,
-  `costume` varchar(50) NOT NULL,
+  `costume` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `era` int NOT NULL,
   `club` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -373,6 +373,10 @@ CREATE TABLE `troopers` (
   `esquad3` tinyint(1) DEFAULT '1',
   `esquad4` tinyint(1) DEFAULT '1',
   `esquad5` tinyint(1) DEFAULT '1',
+  `esquad6` int NOT NULL DEFAULT '1',
+  `esquad7` int NOT NULL DEFAULT '1',
+  `esquad8` int NOT NULL DEFAULT '1',
+  `esquad9` int NOT NULL DEFAULT '1',
   `ecomments` tinyint(1) DEFAULT '1',
   `efast` tinyint(1) DEFAULT '0',
   `ecommandnotify` tinyint(1) DEFAULT '1',

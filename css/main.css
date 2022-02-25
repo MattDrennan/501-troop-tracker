@@ -1,42 +1,89 @@
-/*
+.everglades {
+	--primary-bg-color: #333;
+	--primary-text-color: #8c8c8c;
+	--main-content-color: #fff;
+	--main-theme-color: #4CAF50;
+	--squad-link-color: #4CAF50;
+	--main-theme-bg-color: #4CAF50;
+	--button-text-color: #fff;
+	--button-border-color: #660000;
+	--table-header-color: #333;
+	--table-odd-color: #e5e8ed;
+	--nav-background-color: #333;
+	--nav-link-color: #f2f2f2;
+	--nav-active-link-color: #4CAF50;
+}
 
-Tooplate 2118 Chilling Cafe
+.makaze {
+	--primary-bg-color: #333;
+	--primary-text-color: #8c8c8c;
+	--main-content-color: #fff;
+	--main-theme-color: #be3429;
+	--squad-link-color: #be3429;
+	--main-theme-bg-color: #be3429;
+	--button-text-color: #fff;
+	--button-border-color: #660000;
+	--table-header-color: #333;
+	--table-odd-color: #e5e8ed;
+	--nav-background-color: #333;
+	--nav-link-color: #f2f2f2;
+	--nav-active-link-color: #be3429;
+}
 
-https://www.tooplate.com/view/2118-chilling-cafe
+.florida {
+	--primary-bg-color: #333;
+	--primary-text-color: #8c8c8c;
+	--main-content-color: #fff;
+	--main-theme-color: #2869a5;
+	--squad-link-color: #2869a5;
+	--main-theme-bg-color: #2869a5;
+	--button-text-color: #fff;
+	--button-border-color: #660000;
+	--table-header-color: #333;
+	--table-odd-color: #e5e8ed;
+	--nav-background-color: #333;
+	--nav-link-color: #f2f2f2;
+	--nav-active-link-color: #2869a5;
+}
 
-
-    Background color:       #3a4a58
-    Title color:            #996633
-    Text color:             #666666
-    Text Dark color:        #333333
-    Table Heading color:    #C4CDD6
-    Table Alternate color:  #e5e8ed 
-*/
+.parjai {
+	--primary-bg-color: #000000;
+	--primary-text-color: #fff;
+	--main-content-color: #252f39;
+	--main-theme-color: #fff;
+	--squad-link-color: #323f4e;
+	--main-theme-bg-color: #1c262f;
+	--button-text-color: #fff;
+	--button-border-color: #323f4e;
+	--table-header-color: #fff;
+	--table-odd-color: #1c262f;
+	--nav-background-color: #000000;
+	--nav-link-color: #f2f2f2;
+	--nav-active-link-color: #1c262f;
+}
 
 body {
-  background-color: #333;
-  color: #8c8c8c;
-  font-family: "Open Sans", Arial, Helvetica, sans-serif;
-  font-size: 17px;
-  font-weight: 400;
-  padding: 15px;
-  margin: 0;
+	background-color: var(--primary-bg-color);
+	color: var(--primary-text-color);
+	font-family: "Open Sans", Arial, Helvetica, sans-serif;
+	font-size: 17px;
+	font-weight: 400;
+	padding: 15px;
+	margin: 0;
 }
 
 .tm-container {
-  //max-width: 640px;
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
+	max-width: 900px;
+	margin-left: auto;
+	margin-right: auto;
 }
 
-.tm-main-content { background-color: #ffffff; }
+.tm-main-content { background-color: var(--main-content-color); }
 
 #tm-intro-img {
-  //background-image: url(../img/chilling-cafe-01.jpg);
-  background-position: center;
-  background-size: cover;
-  min-height: 425px;
+	background-position: center;
+	background-size: cover;
+	min-height: 425px;
 }
 
 .tm-text-white { color: white; }
@@ -44,73 +91,73 @@ body {
 .tm-page-header-container { text-align: center; }
 
 .tm-page-header {
-  display: inline-block;
-  vertical-align: baseline;
-  margin-top: 20px;
-  margin-bottom: 35px;
-  font-size: 2.1rem;
-  font-weight: 400;
+	display: inline-block;
+	vertical-align: baseline;
+	margin-top: 20px;
+	margin-bottom: 35px;
+	font-size: 2.1rem;
+	font-weight: 400;
 }
 
 .tm-page-icon {
-  display: inline-block;
-  vertical-align: baseline;
-  padding: 15px;
+	display: inline-block;
+	vertical-align: baseline;
+	padding: 15px;
 }
 
 .tm-section-header {
-  color: #4CAF50;
-  text-align: center;
-  font-weight: 400;
-  font-size: 1.5rem;
-  margin-top: 30px;
-  margin-bottom: 30px;
+	color: var(--main-theme-color);
+	text-align: center;
+	font-weight: 400;
+	font-size: 1.5rem;
+	margin-top: 30px;
+	margin-bottom: 30px;
 }
 
 table {
-  width: 100%;
-  border-spacing: 0;
+	width: 100%;
+	border-spacing: 0;
 }
 
 td {
-  text-align: center;
-  padding: 10px 15px;
+	text-align: center;
+	padding: 10px 15px;
 }
 
 .tm-text-left { text-align: left; }
 
 th {
-  color: #333333;
-  font-weight: 400;
-  font-size: 1.2rem;
-  padding-left: 15px;
-  padding-right: 15px;
+	color: var(--table-header-color);
+	font-weight: 400;
+	font-size: 1.2rem;
+	padding-left: 15px;
+	padding-right: 15px;
 }
 
-tr:nth-child(odd) { background-color: #e5e8ed; }
+tr:nth-child(odd) { background-color: var(--table-odd-color); }
 
 tr.tm-tr-header {
-  background-color: #c4cdd6;
-  height: 50px;
+	background-color: #c4cdd6;
+	height: 50px;
 }
 
 .tm-section {
-  padding-top: 20px;
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-bottom: 30px;
+	padding-top: 20px;
+	padding-left: 20px;
+	padding-right: 20px;
+	padding-bottom: 30px;
 }
 
 .tm-section-small {
-  max-width: 490px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-top: 0;
+	max-width: 490px;
+	margin-left: auto;
+	margin-right: auto;
+	padding-top: 0;
 }
 
 p {
-  font-size: 1rem;
-  line-height: 1.7;
+	font-size: 1rem;
+	line-height: 1.7;
 }
 
 .tm-mb-0 { margin-bottom: 0; }
@@ -119,177 +166,174 @@ figure { margin: 0; }
 figcaption { text-align: center; }
 
 figcaption span {
-  display: block;
-  color: #333333;
-  font-size: 18px;
+	display: block;
+	color: #333333;
+	font-size: 18px;
 }
 
 .tm-item-name {
-  margin-top: 20px;
-  margin-bottom: 10px;
+	margin-top: 20px;
+	margin-bottom: 10px;
 }
 
 .tm-special-items {
-  display: flex;
-  margin-left: -15px;
-  margin-right: -15px;
+	display: flex;
+	margin-left: -15px;
+	margin-right: -15px;
 }
 
 .tm-special-item {
-  padding-left: 15px;
-  padding-right: 15px;
+	padding-left: 15px;
+	padding-right: 15px;
 }
 
 hr {
-  width: 60%;
-  border: 0.5px solid #ccc;
+	width: 60%;
+	border: 0.5px solid #ccc;
 }
 
 .tm-social-icons {
-  text-align: center;
-  margin-top: 30px;
+	text-align: center;
+	margin-top: 30px;
 }
 
 .tm-social-icons i { font-size: 1.2rem; }
 .tm-social-link-container { display: inline-block; }
 
 .tm-social-link {
-  color: white;
-  background-color: #c5ced8;
-  border-radius: 2px;
-  width: 35px;
-  height: 35px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 3px;
-  text-decoration: none;
-  transition: all 0.3s ease;
+	color: white;
+	background-color: #c5ced8;
+	border-radius: 2px;
+	width: 35px;
+	height: 35px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 3px;
+	text-decoration: none;
+	transition: all 0.3s ease;
 }
 
 .tm-social-link:hover { background-color: #808e9e; }
 
 .tm-contact-link {
-  color: #333333;
-  font-weight: 600;
-  text-decoration: none;
+	color: #333333;
+	font-weight: 600;
+	text-decoration: none;
 }
 
 a { transition: all 0.3s ease; }
 .tm-contact-link:hover { color: #808e9e; }
 
 .tm-footer-text {
-  font-size: 0.9rem;
-  margin-top: 30px;
-  margin-bottom: 30px;
-  text-align: center;
+	font-size: 0.9rem;
+	margin-top: 30px;
+	margin-bottom: 30px;
+	text-align: center;
 }
 
 .tm-footer-link {
-  color: #fff;
-  text-decoration: none;
+	color: #fff;
+	text-decoration: none;
 }
 
 .tm-footer-link:hover { color: #c5ced8; }
 
-a{
- text-decoration:none;
- color:#4CAF50;
+a {
+	text-decoration: none;
+	color: var(--main-theme-color);
 }
 
-a.button,div.container{
- display: inline-block; 
+a.button,div.container {
+	display: inline-block; 
 }
 
 a.button{
-	background-color:#4CAF50;
-	border:1px solid #660000;
-	border-radius:5px;
-	color:#fff;
-	margin:5px;
-	padding:10px 10px 10px 10px;
+	background-color: var(--main-theme-bg-color);
+	border: 1px solid var(--button-border-color);
+	border-radius: 5px;
+	color: var(--button-text-color);
+	margin: 5px;
+	padding: 10px 10px 10px 10px;
 	-webkit-appearance: none;
 }
 
 /* Background for chosen squad */
 .squadlink {
-  background-color: #4CAF50;
-  /*border: 1px;
-  border-color: #4CAF50;
-  border-style: solid;*/
+	background-color: var(--squad-link-color);
 }
 
 @media (max-width: 550px) {
-  .tm-special-item {
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-  .tm-special-items {
-    margin-left: -10px;
-    margin-right: -10px;
-  }
+	.tm-special-item {
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+	.tm-special-items {
+		margin-left: -10px;
+		margin-right: -10px;
+	}
 }
 
 @media (max-width: 480px) {
-  .tm-special-item {
-    padding-left: 5px;
-    padding-right: 5px;
-  }
-  .tm-special-items {
-    margin-left: -5px;
-    margin-right: -5px;
-  }
+	.tm-special-item {
+		padding-left: 5px;
+		padding-right: 5px;
+	}
+	.tm-special-items {
+		margin-left: -5px;
+		margin-right: -5px;
+	}
 }
 
 @media (max-width: 430px) {
-  .tm-responsive-table { overflow-x: auto; }
-  table { width: auto; }
-  .tm-special-items { flex-direction: column; }
-  .tm-special-item { margin-bottom: 40px; }
-  figcaption p {
-    margin-bottom: 0;
-    line-height: 1;
-  }
+	.tm-responsive-table { overflow-x: auto; }
+	table { width: auto; }
+	.tm-special-items { flex-direction: column; }
+	.tm-special-item { margin-bottom: 40px; }
+	figcaption p {
+		margin-bottom: 0;
+		line-height: 1;
+	}
 }
 
 /*************************************/
 
- /* Style inputs, select elements and textareas */
+/* Style inputs, select elements and textareas */
 input[type=text], select, textarea{
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  resize: vertical;
+	width: 100%;
+	padding: 12px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-sizing: border-box;
+	resize: vertical;
+	color: var(--primary-text-color) !important;
 }
 
 input[type=password], select, textarea{
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  resize: vertical;
+	width: 100%;
+	padding: 12px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-sizing: border-box;
+	resize: vertical;
+	color: var(--primary-text-color) !important;
 }
 
 /* Style the label to display next to the inputs */
 label {
-  padding: 12px 12px 12px 0;
-  display: inline-block;
+	padding: 12px 12px 12px 0;
+	display: inline-block;
 }
-
-
 
 /* Style the submit button */
 input[type=submit] {
 	display: inline-block;
-	background-color:#4CAF50;
-	border:1px solid #660000;
-	border-radius:5px;
-	color:#fff;
-	margin:5px;
-	padding:10px 10px 10px 10px;
+	background-color: var(--main-theme-bg-color);
+	border: 1px solid var(--button-border-color);
+	border-radius: 5px;
+	color: var(--button-text-color);
+	margin: 5px;
+	padding: 10px 10px 10px 10px;
 	cursor: pointer;
 	font-size: 15px;
 	-webkit-appearance: none;
@@ -299,44 +343,165 @@ input[type=submit] {
 
 /* Floating column for labels: 25% width */
 .col-25 {
-  float: left;
-  width: 25%;
-  margin-top: 6px;
+	float: left;
+	width: 25%;
+	margin-top: 6px;
 }
 
 /* Floating column for inputs: 75% width */
 .col-75 {
-  float: left;
-  width: 75%;
-  margin-top: 6px;
+	float: left;
+	width: 75%;
+	margin-top: 6px;
 }
 
 /* Clear floats after the columns */
 .row:after {
-  content: "";
-  display: table;
-  clear: both;
+	content: "";
+	display: table;
+	clear: both;
 }
 
 /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
 @media screen and (max-width: 600px) {
-  .col-25, .col-75, input[type=submit] {
-    width: 100%;
-    margin-top: 0;
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	appearance: none;
-  }
+	.col-25, .col-75, input[type=submit] {
+		width: 100%;
+		margin-top: 0;
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none;
+	}
 }
 
 /* Hide close button on dialog box */
 .ui-dialog-titlebar-close {
-    visibility: hidden;
+	visibility: hidden;
 }
 
 /* Prevent zoom */
-input,
-select,
-textarea {
-  font-size: 16px;
+input, select, textarea {
+	font-size: 16px;
 }
+
+/************************* PARJAI *******************************/ 
+
+.parjai input[type=text], select, textarea{
+  background-color: var(--main-content-color);
+  color: #fff;
+}
+
+.parjai a:hover {
+	color: #01bcfb;
+}
+
+.parjai input[type=password], select, textarea{
+  background-color: var(--main-content-color);
+  color: #fff;
+}
+
+.parjai #photoupload
+{
+	background-color: var(--main-content-color);
+}
+
+.parjai .select2-search
+{
+	background-color: var(--main-content-color);
+	color: #fff;
+}
+
+.parjai .select2-search input
+{
+	background-color: var(--main-content-color);
+	color: #fff;
+}
+
+.parjai .select2-results
+{
+	background-color: var(--main-content-color);
+	color: #fff;
+}
+
+.parjai .select2-selection__rendered
+{
+	background-color: var(--main-content-color);
+	color: #fff;
+}
+
+.parjai .select2-selection select2-selection--single
+{
+	background-color: var(--main-content-color);
+	color: #fff;
+}
+
+.parjai span[class*="select2"]
+{
+	background-color: var(--main-content-color) !important;
+	color: #fff !important;
+}
+
+.parjai th {
+	background-color: #000;
+}
+
+/************************* END PARJAI *******************************/
+
+/************************ NAV **************************************/
+
+ /* Add a black background color to the top navigation */
+.topnav {
+	background-color: var(--nav-background-color);
+	overflow: hidden;
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+	float: left;
+	display: block;
+	color: var(--nav-link-color);
+	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;
+	font-size: 17px;
+}
+
+/* Change the color of links on hover */
+.topnav a:hover {
+	background-color: #ddd;
+	color: black;
+}
+
+/* Add an active class to highlight the current page */
+.topnav a.active {
+	background-color: var(--nav-active-link-color);
+	color: white;
+}
+
+/* Hide the link that should open and close the topnav on small screens */
+.topnav .icon {
+	display: none;
+}
+
+ /* When the screen is less than 600 pixels wide, hide all links, except for the first one ("Home"). Show the link that contains should open and close the topnav (.icon) */
+@media screen and (max-width: 600px) {
+	.topnav a:not(:first-child) {display: none;}
+	.topnav a.icon {
+		float: right;
+		display: block;
+	}
+}
+
+/* The "responsive" class is added to the topnav with JavaScript when the user clicks on the icon. This class makes the topnav look good on small screens (display the links vertically instead of horizontally) */
+@media screen and (max-width: 600px) {
+	.topnav.responsive {position: relative;}
+	.topnav.responsive a.icon {
+		position: absolute;
+		right: 0;
+		top: 0;
+	}
+	.topnav.responsive a {
+		float: none;
+		display: block;
+		text-align: left;
+	}
+} 

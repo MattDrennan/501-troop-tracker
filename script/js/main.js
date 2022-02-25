@@ -1057,18 +1057,24 @@ $(document).ready(function()
 			{
 				var json = JSON.parse(data);
 
-				if($("#rosterInfo").is(":hidden"))
+				// If roster is visible
+				if($("#rosterInfo").is(":visible"))
 				{
 					// Hide Roster
 					$("#submitRoster").val("Roster");
 					$("#rosterInfo").html("");
 					$("#rosterInfo").hide();
-					
+				}
+				
+				// If charity is visible
+				if($("#charityAmount").is(":visible"))
+				{
 					// Hide Charity
 					$("#charityAmount").hide();
 					$("#submitCharity").val("Set Charity Amount");
 				}
 
+				// If edit event is hidden
 				if($("#editEventInfo").is(":hidden"))
 				{
 					$("#submitEdit").val("Close");
@@ -1143,16 +1149,16 @@ $(document).ready(function()
 	$("#submitCharity").button().click(function(e)
 	{
 		e.preventDefault();
-		
+			
 		// Hide event info
-		if(!$("#editEventInfo").is(":hidden"))
+		if($("#editEventInfo").is(":visible"))
 		{
 			$("#editEventInfo").hide();
 			$("#submitEdit").val("Edit");
 		}
 
 		// Hide roster info
-		if(!$("#rosterInfo").is(":hidden"))
+		if($("#rosterInfo").is(":visible"))
 		{
 			$("#submitRoster").val("Roster");
 			$("#rosterInfo").html("");
@@ -1242,12 +1248,16 @@ $(document).ready(function()
 			data: form.serialize() + "&submitRoster=1",
 			success: function(data)
 			{
-				if($("#editEventInfo").is(":hidden"))
+				if($("#editEventInfo").is(":visible"))
 				{
 					// Hide Edit Form
 					$("#editEventInfo").hide();
 					$("#submitEdit").val("Edit");
-					
+				}
+				
+				// If charity is visible
+				if($("#charityAmount").is(":visible"))
+				{
 					// Hide Charity
 					$("#charityAmount").hide();
 					$("#submitCharity").val("Set Charity Amount");

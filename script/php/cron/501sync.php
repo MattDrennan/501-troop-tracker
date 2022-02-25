@@ -52,7 +52,7 @@ foreach($obj->unit->members as $value)
 }
 
 // Pull extra data from spreadsheet
-$values = getSheet("10_w4Fz41iUCYe3G1bQSqHDY6eK4fXP0Ue3pnfA4LoZg", "Roster");
+/*$values = getSheet("10_w4Fz41iUCYe3G1bQSqHDY6eK4fXP0Ue3pnfA4LoZg", "Roster");
 
 // Set up count
 $i = 0;
@@ -82,7 +82,7 @@ foreach($values as $value)
 	
 	// Increment count
 	$i++;
-}
+}*/
 
 $getNumOfTroopers = $conn->query("SELECT legionid FROM 501st_troopers");
 $getNumOfTroopersFL = $conn->query("SELECT legionid FROM 501st_troopers WHERE squad = '0'");
@@ -106,7 +106,9 @@ Total Members (Parjai): ' . $getNumOfTroopersParjai->num_rows . '
 <br />
 Total Members (Squad 7): ' . $getNumOfTroopersSquad7->num_rows . '
 <br />
-Total Members (Tampa): ' . $getNumOfTroopersTampa->num_rows . '';
+Total Members (Tampa): ' . $getNumOfTroopersTampa->num_rows . '
+<br />
+COMPLETE!';
 
 // Update date time for last sync
 $conn->query("UPDATE settings SET syncdate = NOW()");

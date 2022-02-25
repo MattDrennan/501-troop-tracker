@@ -22,36 +22,9 @@ echo '
 	<!-- Main Style Sheets -->
 	<link href="fontawesome/css/all.min.css" rel="stylesheet" />';
 	
-	if(loggedIn())
-	{
-		if(myTheme() == 0)
-		{
-			echo '
-			<link href="css/main2.css" rel="stylesheet" />
-			<link rel="stylesheet" href="css/nav2.css">';
-		}
-		else if(myTheme() == 1)
-		{
-			echo '
-			<link href="css/main.css" rel="stylesheet" />
-			<link rel="stylesheet" href="css/nav.css">';
-		}
-		else if(myTheme() == 2)
-		{
-			echo '
-			<link href="css/main1.css" rel="stylesheet" />
-			<link rel="stylesheet" href="css/nav1.css">';
-		}
-	}
-	else
-	{
-		echo '
-		<link href="css/main2.css" rel="stylesheet" />
-		<link rel="stylesheet" href="css/nav2.css">';
-	}
-	
 	echo '
 	<!-- Style Sheets -->
+	<link href="css/main.css" rel="stylesheet" />
 	<link rel="stylesheet" href="script/lib/jquery-ui.min.css">
 	<link rel="stylesheet" href="script/lib/jquery-ui-timepicker-addon.css">
 	<link href="css/dropzone.min.css" type="text/css" rel="stylesheet" />
@@ -170,7 +143,7 @@ echo '
 	</script>
 </head>
 
-<body>
+<body class="'.myTheme().'">
 
 <div class="tm-container">
 <div class="tm-text-white tm-page-header-container">
@@ -180,7 +153,8 @@ echo '
 <section class="tm-section">
 
 <div class="topnav" id="myTopnav">
-<a href="index.php" '.isPageActive("home").'>Home</a>';
+<a href="index.php" '.isPageActive("home").'>Home</a>
+<a href="https://fl501st.com/boards/">Forum</a>';
 
 if(!isWebsiteClosed() || isAdmin())
 {
@@ -338,7 +312,8 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 					echo '
 					<option value="0" '.echoSelect(0, $db->theme).'>Florida Garrison Theme (Default)</option>
 					<option value="1" '.echoSelect(1, $db->theme).'>Everglades Theme</option>
-					<option value="2" '.echoSelect(2, $db->theme).'>Makaze Theme</option>';
+					<option value="2" '.echoSelect(2, $db->theme).'>Makaze Theme</option>
+					<option value="3" '.echoSelect(3, $db->theme).'>Parjai Theme (Dark Theme)</option>';
 				}
 			}
 		echo '
@@ -1867,13 +1842,13 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			if(isset($_GET['squad']))
 			{	
 				// Which club to get
-				if($_GET['squad'] <= count($squadArray))
-				{
-					$queryAdd .= "squad = '".cleanInput($_GET['squad'])."' AND p501 > 0";
-				}
 				if($_GET['squad'] == "all")
 				{
 					$queryAdd .= "p501 > 0";
+				}
+				else if($_GET['squad'] <= count($squadArray))
+				{
+					$queryAdd .= "squad = '".cleanInput($_GET['squad'])."' AND p501 > 0";
 				}
 				
 				// Set up count
@@ -2368,7 +2343,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					}
 					
 					// Format Date
-					$dateF = date('m-d-Y H:i:s', strtotime($db->datetime));
+					$dateF = formatTime($db->datetime, "m-d-Y H:i:s");
 
 					// Set JSON value
 					$json = "";
@@ -5292,7 +5267,7 @@ if(isset($_GET['event']))
 						if($i == 0)
 						{
 							echo '
-							<h2 class="tm-section-header">Photos</h2>';
+							<h2 class="tm-section-header" id="photo_section">Photos</h2>';
 						}
 						
 						echo '
@@ -5332,7 +5307,7 @@ if(isset($_GET['event']))
 						else
 						{
 							echo '
-							<a href="index.php?event='.cleanInput($_GET['event']).'&page='.$j.'">'.$j.'</a>';
+							<a href="index.php?event='.cleanInput($_GET['event']).'&page='.$j.'#photo_section">'.$j.'</a>';
 						}
 						
 						// If not that last page, add a comma
@@ -5644,8 +5619,7 @@ if(isset($_GET['event']))
 						}
 						
 						// Convert date/time
-						$date = strtotime($db->posted);
-						$newdate = date("F j, Y, g:i a", $date);
+						$newdate = formatTime($db->posted, "F j, Y, g:i a");
 
 						echo '
 						<tr>
@@ -6077,16 +6051,9 @@ else
 					echo '
 						</select>
 					</form>
+					<p>If your costume is not listed, please notify the garrison web master before confirming.</p>
 					</div>';
 				}
-			}
-
-			// If logged in, show Discord server
-			if(loggedIn())
-			{
-				echo '
-				<h2 class="tm-section-header">Tracker Updates</h2>
-				<iframe src="https://titanembeds.com/embed/911999467908132866?defaultchannel=920863548173873263&fixedsidenav=false" height="600" width="100%" frameborder="0"></iframe>';
 			}
 			
 			echo '

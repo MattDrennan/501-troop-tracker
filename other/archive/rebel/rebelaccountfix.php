@@ -90,6 +90,6 @@ if ($result = mysqli_query($conn, $query))
 $conn->query("DELETE FROM troopers WHERE id = '".$IDRebel[0]."'") or die($conn->error);
 
 // Update new account
-$conn->query("UPDATE troopers SET rebelforum = '".$trooperRebel."' WHERE id = '".$ID501[0]."'") or die($conn->error);
+$conn->query("UPDATE troopers SET rebelforum = '".$trooperRebel."', pRebel = 1 WHERE id = '".$ID501[0]."'") or die($conn->error);
 
 ?>
