@@ -192,6 +192,7 @@ $(function()
                     data: $(form).serialize() + "&submitUserEdit=1",
                     success: function(data)
                     {
+                        console.log(data);
                         var json = JSON.parse(data);
 
                         // Hide interface
