@@ -1414,8 +1414,16 @@ $(document).ready(function()
 		// Get ID of comment
 		var id = $(this).attr("name");
 
+		var changeThis = $($("table[name=comment_" + id + "] td[name=insideComment]").prop("outerHTML"));
+
+		// Replace smileys with code
+		$(changeThis).find("img").each(function() {
+			$(this).replaceWith($(this).attr("code"));
+		});
+
 		// Add comment to comment text area
-		$("#comment").val($("#comment").val() + "[quotec trooperid=" + $(this).attr("trooperid") + " name=" + $(this).attr("troopername") + " tkid=" + $(this).attr("tkid") + " commentid=" + id + "]" + $("table[name=comment_" + id + "] td[name=insideComment]").text() + "[/quotec]\n\n");
+		$("#comment").val($("#comment").val() + "[quotec trooperid=" + $(this).attr("trooperid") + " name=" + $(this).attr("troopername") + " tkid=" + $(this).attr("tkid") + " commentid=" + id + "]" + $(changeThis).text() + "[/quotec]\n\n");
+
 	});
 	
 	// When trooper quotes a comment
@@ -1425,6 +1433,11 @@ $(document).ready(function()
 
 		// Get ID of comment
 		var id = $(this).attr("name");
+
+		// Replace smileys with code
+		$("table[name=comment_" + id + "] td[name=insideComment] img").each(function() {
+			$(this).replaceWith($(this).attr("code"));
+		});
 		
 		// Add comment to comment text area with HTML for display purposes
 		$("table[name=comment_" + id + "] td[name=insideComment]").html('<textarea commentid="' + id + '">' + $("table[name=comment_" + id + "] td[name=insideComment]").text().replace('<br/>', '\n').replace('<br />', '\n') + '</textarea><br /><input type="submit" name="editCommentSubmit" commentid="' + id + '" value="Save" />');
@@ -1441,9 +1454,6 @@ $(document).ready(function()
 		// Get comment
 		var comment = $("table[name=comment_" + id + "] td[name=insideComment] textarea").val().replace(/\n/g, '\n<br />')
 		
-		// Add text area to comment
-		$("table[name=comment_" + id + "] td[name=insideComment]").html(comment);
-		
 		// Save comment
 		$.ajax({
 			type: "POST",
@@ -1451,6 +1461,11 @@ $(document).ready(function()
 			data: "commentid=" + id + "&comment=" + comment,
 			success: function(data)
 			{
+				var json = JSON.parse(data);
+
+				// Add text area to comment
+				$("table[name=comment_" + id + "] td[name=insideComment]").html(json.data);
+
 				// Alert to success
 				alert("Comment updated!");
 			}

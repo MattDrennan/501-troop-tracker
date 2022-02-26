@@ -32,6 +32,9 @@ $calendar = new Calendar();
 // Include credential file
 require 'cred.php';
 
+// Include smileys
+require 'script/php/smiley.php';
+
 // Start session
 session_start();
 
@@ -505,6 +508,8 @@ function costume_restrict_query($addWhere = false)
 // showBBcodes: Converts text to BB Code
 function showBBcodes($text)
 {
+	global $replacements;
+	
 	$text = strip_tags($text);
 
 	// BBcode array
@@ -534,7 +539,9 @@ function showBBcodes($text)
 	);
 
 	// Replacing the BBcodes with corresponding HTML tags
-	return preg_replace($find,$replace,$text);
+	$text = preg_replace($find, $replace, $text);
+
+	return str_replace(array_keys($replacements), $replacements, $text);
 }
 
 // countDonations: Count the number of donations between the two dates - can specify a user

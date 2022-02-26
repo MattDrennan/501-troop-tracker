@@ -5,6 +5,9 @@ include 'config.php';
 
 if(isset($_GET['do']) && isset($_POST['commentid']) && isset($_POST['comment']) && $_GET['do'] == "editcomment")
 {
+	// Data to send back
+	$data = "";
+
 	// Query database for comment
 	$query = "SELECT * FROM comments WHERE id = '".cleanInput($_POST['commentid'])."'";
 	
@@ -20,9 +23,16 @@ if(isset($_GET['do']) && isset($_POST['commentid']) && isset($_POST['comment']) 
 
 				// Edit comment
 				editPost(getCommentPostID(cleanInput($_POST['commentid'])), cleanInput($_POST['comment']));
+
+				// Set up return data
+				$data = nl2br(isImportant($db->important, showBBcodes(cleanInput($_POST['comment']))));
 			}
 		}
 	}
+
+	// Send JSON
+	$array = array('data' => $data);
+	echo json_encode($array);
 }
 
 /******************** ADD MASTER ROSTER *******************************/
