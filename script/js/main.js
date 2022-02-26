@@ -466,6 +466,7 @@ $(document).ready(function()
 		// Reset
 		$("#era").val(4);
 		$("#limit501st").val(500);
+		$("#limitedEvent").val(0);
 
 		// On index.php, clear all fields
 		clearLimit();

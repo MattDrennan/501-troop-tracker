@@ -3296,18 +3296,18 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<option value="7">Virtual Troop</option>
 							<option value="8">Other</option>
 						</select>
-
-						<p>Is this a manual selection event?</p>
-						<select name="limitedEvent" id="limitedEvent">
-							<option value="1">Yes</option>
-							<option value="0">No</option>
-						</select>
 						
 						<p>
 							<a href="#/" class="button" id="limitChange">Change Limits</a>
 						</p>
 						
 						<div id="limitChangeArea" style="display: none;">
+
+						<p>Is this a manual selection event?</p>
+						<select name="limitedEvent" id="limitedEvent">
+							<option value="1">Yes</option>
+							<option value="0">No</option>
+						</select>
 
 						<p>Do you wish to limit the era of the costume?</p>
 						<select name="era" id="era">
@@ -3826,6 +3826,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<option value="7" '.copyEventSelect($eid, $label, 7).'>Virtual Troop</option>
 					<option value="8" '.copyEventSelect($eid, $label, 8).'>Other</option>
 				</select>
+				
+				<p>
+					<a href="#/" class="button" id="limitChange">Change Limits</a>
+				</p>
+
+				<div id="limitChangeArea" style="display: none;">
 
 				<p>Is this a manual selection event?</p>
 				<select name="limitedEvent" id="limitedEvent">
@@ -3833,12 +3839,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<option value="1" '.copyEventSelect($eid, $limitedEvent, 1).'>Yes</option>
 					<option value="0" '.copyEventSelect($eid, $limitedEvent, 0).'>No</option>
 				</select>
-				
-				<p>
-					<a href="#/" class="button" id="limitChange">Change Limits</a>
-				</p>
-
-				<div id="limitChangeArea" style="display: none;">
 
 				<p>Do you wish to limit the era of the costume?</p>
 				<select name="era" id="era">
