@@ -292,6 +292,21 @@ $(document).ready(function()
 	{
 		$.LoadingOverlay("hide");
 	});
+
+	// Image Upload - Change Upload Type
+	$("body").on("click", "#trooperInformationButton", function(e)
+	{
+		if($(this).text() == "Show Trooper Information")
+		{
+			$("[name=trooperInformation]").show();
+			$(this).text("Hide Trooper Information");
+		}
+		else
+		{
+			$("[name=trooperInformation]").hide();
+			$(this).text("Show Trooper Information");
+		}
+	})
 	
 	// Master Roster - Add Trooper
 	$("body").on("click", "#addTrooperMaster", function(e)

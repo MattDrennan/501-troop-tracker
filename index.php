@@ -3421,14 +3421,34 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							'.squadSelectList().'
 						</select>
 
-						<p>Permissions:</p>
+						<p>General Permissions:</p>
 						<select name="permissions" id="permissions">
 							<option value="0">Regular Member</option>
 							<option value="2">Moderator</option>
 							<option value="1">Super Admin</option>
 						</select>
+
+						<p>Special Permissions:</p>
+
+						<p>
+							<input type="checkbox" name="spTrooper" /> Trooper Management
+						</p>
+
+						<p>
+						<input type="checkbox" name="spCostume" /> Costume Management
+						</p>
+
+						<p>
+							<input type="checkbox" name="spAward" /> Award Management
+						</p>
+
+						<p>
+							<a href="#/" class="button" id="trooperInformationButton">Show Trooper Information</a>
+						</p>
+
+						<span name="trooperInformation" style="display: none;">
 						
-						<p>501st Member Permissions:</p>
+						<p>501st Member Status:</p>
 						<select name="p501" id="p501">
 							<option value="0">Not A Member</option>
 							<option value="1">Regular Member</option>
@@ -3444,7 +3464,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						foreach($clubArray as $club => $club_value)
 						{
 							echo '
-							<p>'.$club_value['name'].' Member Permissions:</p>
+							<p>'.$club_value['name'].' Member Status:</p>
 							<select name="'.$club_value['db'].'" id="'.$club_value['db'].'" class="clubs">
 								<option value="0">Not A Member</option>
 								<option value="1">Regular Member</option>
@@ -3477,6 +3497,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						}
 						
 						echo '
+						</span>
+
 						<p>Supporter:</p>
 						<select name="supporter" id="supporter">
 							<option value="0">No</option>
