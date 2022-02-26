@@ -283,7 +283,7 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 			foreach($clubArray as $club => $club_value)
 			{
 				echo '
-				<input type="checkbox" name="esquad'.$i.'" id="esquad'.$i.'" ' . emailSettingStatus("esquad" . $i, true) . ' />' . $club . '<br />';
+				<input type="checkbox" name="esquad'.$i.'" id="esquad'.$i.'" ' . emailSettingStatus("esquad" . $i, true) . ' />' . $club_value['name'] . '<br />';
 				
 				// Increment squad count
 				$i++;

@@ -769,7 +769,7 @@ function createThread($id, $title, $message)
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
-	    "XF-Api-Key: " . xenforoAPI,
+	    "XF-Api-Key: " . xenforoAPI_superuser,
 	  ],
 	]);
 
@@ -795,7 +795,7 @@ function lockThread($id)
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
-	    "XF-Api-Key: " . xenforoAPI,
+	    "XF-Api-Key: " . xenforoAPI_superuser,
 	  ],
 	]);
 
@@ -821,7 +821,7 @@ function createPost($id, $message)
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
-	    "XF-Api-Key: " . xenforoAPI,
+	    "XF-Api-Key: " . xenforoAPI_superuser,
 	  ],
 	]);
 
@@ -847,7 +847,7 @@ function editPost($id, $message)
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
-	    "XF-Api-Key: " . xenforoAPI,
+	    "XF-Api-Key: " . xenforoAPI_superuser,
 	  ],
 	]);
 
@@ -871,7 +871,7 @@ function getUserForum($username)
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
-	    "XF-Api-Key: " . xenforoAPI,
+	    "XF-Api-Key: " . xenforoAPI_superuser,
 	  ],
 	]);
 
@@ -895,7 +895,7 @@ function getUserForumID($id)
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
-	    "XF-Api-Key: " . xenforoAPI,
+	    "XF-Api-Key: " . xenforoAPI_superuser,
 	  ],
 	]);
 
@@ -932,7 +932,7 @@ function updateUserForumGroup($id, $groupid, $group_ids)
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
-	    "XF-Api-Key: " . xenforoAPI,
+	    "XF-Api-Key: " . xenforoAPI_superuser,
 	  ],
 	]);
 
@@ -957,7 +957,7 @@ function deletePost($id, $hard_delete = false)
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
-	    "XF-Api-Key: " . xenforoAPI,
+	    "XF-Api-Key: " . xenforoAPI_superuser,
 	  ],
 	]);
 
@@ -982,7 +982,7 @@ function deleteThread($id, $hard_delete = false)
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
-	    "XF-Api-Key: " . xenforoAPI,
+	    "XF-Api-Key: " . xenforoAPI_superuser,
 	  ],
 	]);
 

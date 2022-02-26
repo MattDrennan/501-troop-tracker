@@ -33,7 +33,6 @@ define('aPath', 'ABSOLUTE_PATH_HERE_TO_MAIN_DIRECTORY');
 define('placeholder', 1196);
 
 // Forum API Key (Xenforo)
-define('xenforoAPI', 'API_KEY_HERE');
 define('xenforoAPI_superuser', 'API_SUPER_USER_KEY_HERE');
 
 // E-mail Creds
