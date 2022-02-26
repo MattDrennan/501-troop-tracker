@@ -31,7 +31,6 @@ echo '
 	<link href="css/lightbox.min.css" rel="stylesheet" />
 	<link href="css/calendar.css" rel="stylesheet" />
 	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-	<link href="css/all.css" rel="stylesheet" />
 	<link rel="stylesheet" href="https://unpkg.com/balloon-css/balloon.min.css">
 	
 	<!-- Icon -->
@@ -41,6 +40,8 @@ echo '
 	<script>
 	var placeholder = '.placeholder.';
 	var clubArray = [';
+
+	/* CHECK IF MEMBER CLUB DB VALUE */
 
 	// Club count
 	$clubCount = count($clubArray);
@@ -64,6 +65,33 @@ echo '
 	}
 
 	echo'];';
+
+	/* DB LIMIT CLUBS */
+
+	// Club step
+	$i = 0;
+
+	echo '
+	var clubDBLimitArray = [';
+
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
+	{
+		echo '"'.$club_value['dbLimit'].'"';
+
+		// Add comma
+		if($i < ($clubCount - 1))
+		{
+			echo ',';
+		}
+
+		// Increment
+		$i++;
+	}
+
+	echo'];';
+
+	/* CLUB SPECIAL FORUM VALUE */
 
 	// Club count with value
 	$clubCount = array_filter($clubArray, function($x) { return !empty($x['db3Name']); });
@@ -3330,6 +3358,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						}
 
 						echo '
+						<p>Limit of Total Troopers:</p>
+						<input type="number" name="limitTotalTroopers" value="500" id="limitTotalTroopers" class="limitClass" />
+
 						<p>
 							<a href="#/" class="button" id="resetDefaultCount">Reset Default</a>
 						</p>
@@ -3672,6 +3703,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						$limitedEvent = $db->limitedEvent;
 						$limitTo = $db->limitTo;
 						$limit501st = $db->limit501st;
+						$limitTotalTroopers = $db->limitTotalTroopers;
 
 						// Loop through clubs
 						foreach($clubArray as $club => $club_value)
@@ -3861,6 +3893,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				}
 
 				echo '
+				<p>Limit of Total Troopers:</p>
+				<input type="number" name="limitTotalTroopers" id="limitTotalTroopers" class="limitClass" value="'.copyEvent($eid, $limitTotalTroopers, 500).'" />
+
 				<p>
 					<a href="#/" class="button" id="resetDefaultCount">Reset Default</a>
 				</p>
@@ -4395,6 +4430,12 @@ if(isset($_GET['event']))
 				// Add
 				$limitTotal += $db->{$club_value['dbLimit']};
 			}
+
+			// Check for total limit set, if it is, replace limit with it
+			if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+			{
+				$limitTotal = $db->limitTotalTroopers;
+			}
 			
 			// Set event exist
 			$eventExist = true;
@@ -4662,6 +4703,12 @@ if(isset($_GET['event']))
 							$isLimited = true;
 						}
 					}
+
+					// Check for total limit set, if it is, set event as limited
+					if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+					{
+						$isLimited = true;
+					}
 				
 					// If this event is limited in troopers
 					if($db->limit501st < 500 || $isLimited)
@@ -4673,20 +4720,33 @@ if(isset($_GET['event']))
 						
 						<div style="color: red;" name="troopersRemainingDisplay">
 							<ul>
-								<li>This event is limited to '.$limitTotal.' troopers.</li>
-								<li>This event is limited to '.$db->limit501st.' 501st troopers. '.troopersRemaining($db->limit501st, eventClubCount($db->id, 0)).' </li>';
+								<li>This event is limited to '.$limitTotal.' troopers. ';
 
-								// Set up club count
-								$clubCount = 1;
-
-								// Loop through clubs
-								foreach($clubArray as $club => $club_value)
+								// Check for total limit set, if it is, add remaining troopers
+								if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
 								{
 									echo '
-									<li>This event is limited to '.$db->{$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining($db->{$club_value['dbLimit']}, eventClubCount($db->id, $clubCount)).'</li>';
+									' . troopersRemaining($limitTotal, eventClubCount($db->id, "all")) . '</li>';
+								}
+								else
+								{
+									echo '
+									</li>
 
-									// Increment club count
-									$clubCount++;
+									<li>This event is limited to '.$db->limit501st.' 501st troopers. '.troopersRemaining($db->limit501st, eventClubCount($db->id, 0)).' </li>';
+
+									// Set up club count
+									$clubCount = 1;
+
+									// Loop through clubs
+									foreach($clubArray as $club => $club_value)
+									{
+										echo '
+										<li>This event is limited to '.$db->{$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining($db->{$club_value['dbLimit']}, eventClubCount($db->id, $clubCount)).'</li>';
+
+										// Increment club count
+										$clubCount++;
+									}
 								}
 						echo '
 							</ul>
@@ -5930,6 +5990,12 @@ else
 							{
 								// Add
 								$limitTotal += $db->{$club_value['dbLimit']};
+							}
+
+							// Check for total limit set, if it is, replace limit with it
+							if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+							{
+								$limitTotal = $db->limitTotalTroopers;
 							}
 
 							// If not enough troopers

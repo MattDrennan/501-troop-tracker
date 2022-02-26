@@ -306,10 +306,6 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 		$addToQuery .= " + SUM(".$club_value['dbLimit'].")";
 	}
 	
-	// Get limit total
-	$limitTotalGet = $conn->query("SELECT SUM(limit501st) ".$addToQuery." FROM events WHERE id = '".cleanInput($_POST['troopid'])."'") or die($conn->error);
-	$limitTotalGetVal = $limitTotalGet->fetch_row();
-	
 	// Hack Check
 	$query = "SELECT * FROM event_sign_up WHERE (trooperid = '".cleanInput($_SESSION['id'])."' OR addedby = '".cleanInput($_SESSION['id'])."') AND troopid = '".cleanInput($_POST['troopid'])."'";
 	
@@ -360,6 +356,9 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	// Set total
 	$limitTotal = 0;
 
+	// Is this a total trooper event?
+	$totalTrooperEvent = false;
+
 	// Query to get limits
 	$query = "SELECT * FROM events WHERE id = '".cleanInput($_POST['troopid'])."'";
 
@@ -383,14 +382,14 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 				// Add variables
 				$limitTotal += $db->{$club_value['dbLimit']};
 			}
-		}
-	}
 
-	// Loop through clubs
-	foreach($clubArray as $club => $club_value)
-	{
-		// Add to limit total
-		$limitTotal += ${$club_value['dbLimit']};
+			// Check for total limit set, if it is, replace limit with it
+			if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+			{
+				$limitTotal = $db->limitTotalTroopers;
+				$totalTrooperEvent = true;
+			}
+		}
 	}
 	
 	// Kill hack
@@ -405,33 +404,52 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	// Set troop full - not used at the moment, but will keep it here for now
 	$troopFull = false;
 
-	// 501
-	if((getCostumeClub(cleanInput($_POST['costume'])) == 0 && ($limit501st - eventClubCount(cleanInput($_POST['troopid']), 0)) <= 0) && $status != 4 && inEvent(cleanInput($_POST['trooperid']), cleanInput($_POST['troopid']))['inTroop'] != 1)
+	// Check for total limit set, if it is, check if troop is full based on total
+	if($totalTrooperEvent)
 	{
-		// Troop is full, set to stand by
-		$status = 1;
+		/* TOTAL TROOPERS */
 
-		// Set troop full
-		$troopFull = true;
-	}
-
-	// Loop through clubs
-	foreach($clubArray as $club => $club_value)
-	{
-		// Loop through costumes
-		foreach($club_value['costumes'] as $costume)
+		if($limitTotal - eventClubCount(cleanInput($_POST['troopid']), "all") <= 0 && $status != 4 && inEvent(cleanInput($_POST['trooperid']), cleanInput($_POST['troopid']))['inTroop'] != 1)
 		{
-			// Make sure not a dual costume
-			if($costume != $dualCostume)
-			{
-				// Check club
-				if((getCostumeClub(cleanInput($_POST['costume'])) == $costume && (${$club_value['dbLimit']} - eventClubCount(cleanInput($_POST['troopid']), $costume)) <= 0) && $status != 4 && inEvent(cleanInput($_POST['trooperid']), cleanInput($_POST['troopid']))['inTroop'] != 1)
-				{
-					// Troop is full, set to stand by
-					$status = 1;
+			// Troop is full, set to stand by
+			$status = 1;
 
-					// Set troop full
-					$troopFull = true;
+			// Set troop full
+			$troopFull = true;
+		}
+	}
+	else
+	{
+		/* CHECK IF SQUADS / CLUB ARE FULL */
+
+		// 501
+		if((getCostumeClub(cleanInput($_POST['costume'])) == 0 && ($limit501st - eventClubCount(cleanInput($_POST['troopid']), 0)) <= 0) && $status != 4 && inEvent(cleanInput($_POST['trooperid']), cleanInput($_POST['troopid']))['inTroop'] != 1)
+		{
+			// Troop is full, set to stand by
+			$status = 1;
+
+			// Set troop full
+			$troopFull = true;
+		}
+
+		// Loop through clubs
+		foreach($clubArray as $club => $club_value)
+		{
+			// Loop through costumes
+			foreach($club_value['costumes'] as $costume)
+			{
+				// Make sure not a dual costume
+				if($costume != $dualCostume)
+				{
+					// Check club
+					if((getCostumeClub(cleanInput($_POST['costume'])) == $costume && (${$club_value['dbLimit']} - eventClubCount(cleanInput($_POST['troopid']), $costume)) <= 0) && $status != 4 && inEvent(cleanInput($_POST['trooperid']), cleanInput($_POST['troopid']))['inTroop'] != 1)
+					{
+						// Troop is full, set to stand by
+						$status = 1;
+
+						// Set troop full
+						$troopFull = true;
+					}
 				}
 			}
 		}
@@ -464,21 +482,34 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	// Update troopers remaining
 	$data = '
 	<ul>
-		<li>This event is limited to '.$limitTotal.' troopers.</li>
-		<li>This event is limited to '.$limit501st.' 501st troopers. '.troopersRemaining($limit501st, eventClubCount(cleanInput($_POST['troopid']), 0)).' </li>';
+		<li>This event is limited to '.$limitTotal.' troopers. ';
 
-
-		// Set up club count
-		$clubCount = 1;
-
-		// Loop through clubs
-		foreach($clubArray as $club => $club_value)
+		// Check for total limit set, if it is, add remaining troopers
+		if($totalTrooperEvent)
 		{
 			$data .= '
-			<li>This event is limited to '.${$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining(${$club_value['dbLimit']}, eventClubCount(cleanInput($_POST['troopid']), $clubCount)).'</li>';
+			' . troopersRemaining($limitTotal, eventClubCount($db->id, "all")) . '</li>';
+		}
+		else
+		{
+			$data .= '
+			</li>
 
-			// Increment club count
-			$clubCount++;
+			<li>This event is limited to '.$limit501st.' 501st troopers. '.troopersRemaining($limit501st, eventClubCount(cleanInput($_POST['troopid']), 0)).' </li>';
+
+
+			// Set up club count
+			$clubCount = 1;
+
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
+			{
+				$data .= '
+				<li>This event is limited to '.${$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining(${$club_value['dbLimit']}, eventClubCount(cleanInput($_POST['troopid']), $clubCount)).'</li>';
+
+				// Increment club count
+				$clubCount++;
+			}
 		}
 
 	$data .= '
@@ -2164,7 +2195,7 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 			}
 			
 			// Query the database
-			$conn->query("INSERT INTO events (name, venue, dateStart, dateEnd, website, numberOfAttend, requestedNumber, requestedCharacter, secureChanging, blasters, lightsabers, parking, mobility, amenities, referred, comments, location, label, limitedEvent, limitTo, limit501st, ".$addToQuery1."squad) VALUES ('".cleanInput($_POST['eventName'])."', '".cleanInput($_POST['eventVenue'])."', '".cleanInput($date1)."', '".cleanInput($date2)."', '".cleanInput($_POST['website'])."', '".cleanInput($_POST['numberOfAttend'])."', '".cleanInput($_POST['requestedNumber'])."', '".cleanInput($_POST['requestedCharacter'])."', '".cleanInput($_POST['secure'])."', '".cleanInput($_POST['blasters'])."', '".cleanInput($_POST['lightsabers'])."', '".cleanInput($_POST['parking'])."', '".cleanInput($_POST['mobility'])."', '".cleanInput($_POST['amenities'])."', '".cleanInput($_POST['referred'])."', '".cleanInput($_POST['comments'])."', '".cleanInput($_POST['location'])."', '".cleanInput($_POST['label'])."', '".cleanInput($_POST['limitedEvent'])."', '".cleanInput($_POST['era'])."', '".cleanInput($_POST['limit501st'])."', ".$addToQuery2."'".cleanInput($_POST['squadm'])."')") or die($conn->error);
+			$conn->query("INSERT INTO events (name, venue, dateStart, dateEnd, website, numberOfAttend, requestedNumber, requestedCharacter, secureChanging, blasters, lightsabers, parking, mobility, amenities, referred, comments, location, label, limitedEvent, limitTo, limit501st, limitTotalTroopers, ".$addToQuery1."squad) VALUES ('".cleanInput($_POST['eventName'])."', '".cleanInput($_POST['eventVenue'])."', '".cleanInput($date1)."', '".cleanInput($date2)."', '".cleanInput($_POST['website'])."', '".cleanInput($_POST['numberOfAttend'])."', '".cleanInput($_POST['requestedNumber'])."', '".cleanInput($_POST['requestedCharacter'])."', '".cleanInput($_POST['secure'])."', '".cleanInput($_POST['blasters'])."', '".cleanInput($_POST['lightsabers'])."', '".cleanInput($_POST['parking'])."', '".cleanInput($_POST['mobility'])."', '".cleanInput($_POST['amenities'])."', '".cleanInput($_POST['referred'])."', '".cleanInput($_POST['comments'])."', '".cleanInput($_POST['location'])."', '".cleanInput($_POST['label'])."', '".cleanInput($_POST['limitedEvent'])."', '".cleanInput($_POST['era'])."', '".cleanInput($_POST['limit501st'])."', '".cleanInput($_POST['limitTotalTroopers'])."', ".$addToQuery2."'".cleanInput($_POST['squadm'])."')") or die($conn->error);
 			
 			// Event ID - Last insert from database
 			$eventId = $conn->insert_id;
@@ -2239,7 +2270,7 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 						}
 					
 						// Query the database
-						$conn->query("INSERT INTO events (name, venue, dateStart, dateEnd, website, numberOfAttend, requestedNumber, requestedCharacter, secureChanging, blasters, lightsabers, parking, mobility, amenities, referred, comments, location, label, limitedEvent, limitTo, limit501st, ".$addToQuery1."squad, link) VALUES ('".cleanInput($_POST['eventName'])."', '".cleanInput($_POST['eventVenue'])."', '".$date1."', '".$date2."', '".cleanInput($_POST['website'])."', '".cleanInput($_POST['numberOfAttend'])."', '".cleanInput($_POST['requestedNumber'])."', '".cleanInput($_POST['requestedCharacter'])."', '".cleanInput($_POST['secure'])."', '".cleanInput($_POST['blasters'])."', '".cleanInput($_POST['lightsabers'])."', '".cleanInput($_POST['parking'])."', '".cleanInput($_POST['mobility'])."', '".cleanInput($_POST['amenities'])."', '".cleanInput($_POST['referred'])."', '".cleanInput($_POST['comments'])."', '".cleanInput($_POST['location'])."', '".cleanInput($_POST['label'])."', '".cleanInput($_POST['limitedEvent'])."', '".cleanInput($_POST['era'])."', '".cleanInput($_POST['limit501st'])."', ".$addToQuery2."'".cleanInput($_POST['squadm'])."', '".$eventId."')") or die($conn->error);
+						$conn->query("INSERT INTO events (name, venue, dateStart, dateEnd, website, numberOfAttend, requestedNumber, requestedCharacter, secureChanging, blasters, lightsabers, parking, mobility, amenities, referred, comments, location, label, limitedEvent, limitTo, limit501st, limitTotalTroopers, ".$addToQuery1."squad, link) VALUES ('".cleanInput($_POST['eventName'])."', '".cleanInput($_POST['eventVenue'])."', '".$date1."', '".$date2."', '".cleanInput($_POST['website'])."', '".cleanInput($_POST['numberOfAttend'])."', '".cleanInput($_POST['requestedNumber'])."', '".cleanInput($_POST['requestedCharacter'])."', '".cleanInput($_POST['secure'])."', '".cleanInput($_POST['blasters'])."', '".cleanInput($_POST['lightsabers'])."', '".cleanInput($_POST['parking'])."', '".cleanInput($_POST['mobility'])."', '".cleanInput($_POST['amenities'])."', '".cleanInput($_POST['referred'])."', '".cleanInput($_POST['comments'])."', '".cleanInput($_POST['location'])."', '".cleanInput($_POST['label'])."', '".cleanInput($_POST['limitedEvent'])."', '".cleanInput($_POST['era'])."', '".cleanInput($_POST['limit501st'])."', '".cleanInput($_POST['limitTotalTroopers'])."', ".$addToQuery2."'".cleanInput($_POST['squadm'])."', '".$eventId."')") or die($conn->error);
 
 						// Last ID
 						$last_id = $conn->insert_id;
@@ -2783,7 +2814,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$array = array('id' => $db->id, 'name' => $db->name, 'venue' => $db->venue, 'dateStart' => $db->dateStart, 'dateEnd' => $db->dateEnd, 'website' => $db->website, 'numberOfAttend' => $db->numberOfAttend, 'requestedNumber' => $db->requestedNumber, 'requestedCharacter' => $db->requestedCharacter, 'secureChanging' => $db->secureChanging, 'blasters' => $db->blasters, 'lightsabers' => $db->lightsabers, 'parking' => $db->parking, 'mobility' => $db->mobility, 'amenities' => $db->amenities, 'referred' => $db->referred, 'comments' => $db->comments, 'location' => $db->location, 'squad' => $db->squad, 'label' => $db->label, 'postComment' => $db->postComment, 'notes' => $db->notes, 'limitedEvent' => $db->limitedEvent, 'limitTo' => $db->limitTo, 'limit501st' => $db->limit501st, 'closed' => $db->closed, 'moneyRaised' => $db->moneyRaised, 'eventLink' => $db->link);
+				$array = array('id' => $db->id, 'name' => $db->name, 'venue' => $db->venue, 'dateStart' => $db->dateStart, 'dateEnd' => $db->dateEnd, 'website' => $db->website, 'numberOfAttend' => $db->numberOfAttend, 'requestedNumber' => $db->requestedNumber, 'requestedCharacter' => $db->requestedCharacter, 'secureChanging' => $db->secureChanging, 'blasters' => $db->blasters, 'lightsabers' => $db->lightsabers, 'parking' => $db->parking, 'mobility' => $db->mobility, 'amenities' => $db->amenities, 'referred' => $db->referred, 'comments' => $db->comments, 'location' => $db->location, 'squad' => $db->squad, 'label' => $db->label, 'postComment' => $db->postComment, 'notes' => $db->notes, 'limitedEvent' => $db->limitedEvent, 'limitTo' => $db->limitTo, 'limit501st' => $db->limit501st, 'limitTotalTroopers' => $db->limitTotalTroopers, 'closed' => $db->closed, 'moneyRaised' => $db->moneyRaised, 'eventLink' => $db->link);
 
 				// Loop through clubs
 				foreach($clubArray as $club => $club_value)
@@ -2846,7 +2877,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			if($_POST['eventLink'] > 0)
 			{
 				// Query the database - linked
-				$conn->query("UPDATE events SET name = '".cleanInput($_POST['eventName'])."', venue =  '".cleanInput($_POST['eventVenue'])."', website = '".cleanInput($_POST['website'])."', numberOfAttend = '".cleanInput($_POST['numberOfAttend'])."', requestedNumber = '".cleanInput($_POST['requestedNumber'])."', requestedCharacter = '".cleanInput($_POST['requestedCharacter'])."', secureChanging = '".cleanInput($_POST['secure'])."', blasters = '".cleanInput($_POST['blasters'])."', lightsabers = '".cleanInput($_POST['lightsabers'])."', parking = '".cleanInput($_POST['parking'])."', mobility = '".cleanInput($_POST['mobility'])."', amenities = '".cleanInput($_POST['amenities'])."', referred = '".cleanInput($_POST['referred'])."', comments = '".cleanInput($_POST['comments'])."', location = '".cleanInput($_POST['location'])."', squad = '".cleanInput($_POST['squadm'])."', label = '".cleanInput($_POST['label'])."', limitedEvent = '".cleanInput($_POST['limitedEvent'])."', limitTo = '".cleanInput($_POST['era'])."', ".$addToQuery." limit501st = '".cleanInput($_POST['limit501st'])."' WHERE id = '".cleanInput($_POST['eventIdE'])."' OR link = '".cleanInput($_POST['eventLink'])."' OR id = '".cleanInput($_POST['eventLink'])."'") or die($conn->error);
+				$conn->query("UPDATE events SET name = '".cleanInput($_POST['eventName'])."', venue =  '".cleanInput($_POST['eventVenue'])."', website = '".cleanInput($_POST['website'])."', numberOfAttend = '".cleanInput($_POST['numberOfAttend'])."', requestedNumber = '".cleanInput($_POST['requestedNumber'])."', requestedCharacter = '".cleanInput($_POST['requestedCharacter'])."', secureChanging = '".cleanInput($_POST['secure'])."', blasters = '".cleanInput($_POST['blasters'])."', lightsabers = '".cleanInput($_POST['lightsabers'])."', parking = '".cleanInput($_POST['parking'])."', mobility = '".cleanInput($_POST['mobility'])."', amenities = '".cleanInput($_POST['amenities'])."', referred = '".cleanInput($_POST['referred'])."', comments = '".cleanInput($_POST['comments'])."', location = '".cleanInput($_POST['location'])."', squad = '".cleanInput($_POST['squadm'])."', label = '".cleanInput($_POST['label'])."', limitedEvent = '".cleanInput($_POST['limitedEvent'])."', limitTo = '".cleanInput($_POST['era'])."', ".$addToQuery." limit501st = '".cleanInput($_POST['limit501st'])."', limitTotalTroopers = '".cleanInput($_POST['limitTotalTroopers'])."' WHERE id = '".cleanInput($_POST['eventIdE'])."' OR link = '".cleanInput($_POST['eventLink'])."' OR id = '".cleanInput($_POST['eventLink'])."'") or die($conn->error);
 				
 				// Update date
 				$conn->query("UPDATE events SET dateStart = '".cleanInput($date1)."', dateEnd = '".cleanInput($date2)."' WHERE id = '".cleanInput($_POST['eventIdE'])."'") or die($conn->error);
@@ -2870,7 +2901,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			else if($getNumOfLinks->num_rows > 0)
 			{
 				// Query the database - linked
-				$conn->query("UPDATE events SET name = '".cleanInput($_POST['eventName'])."', venue =  '".cleanInput($_POST['eventVenue'])."', website = '".cleanInput($_POST['website'])."', numberOfAttend = '".cleanInput($_POST['numberOfAttend'])."', requestedNumber = '".cleanInput($_POST['requestedNumber'])."', requestedCharacter = '".cleanInput($_POST['requestedCharacter'])."', secureChanging = '".cleanInput($_POST['secure'])."', blasters = '".cleanInput($_POST['blasters'])."', lightsabers = '".cleanInput($_POST['lightsabers'])."', parking = '".cleanInput($_POST['parking'])."', mobility = '".cleanInput($_POST['mobility'])."', amenities = '".cleanInput($_POST['amenities'])."', referred = '".cleanInput($_POST['referred'])."', comments = '".cleanInput($_POST['comments'])."', location = '".cleanInput($_POST['location'])."', squad = '".cleanInput($_POST['squadm'])."', label = '".cleanInput($_POST['label'])."', limitedEvent = '".cleanInput($_POST['limitedEvent'])."', limitTo = '".cleanInput($_POST['era'])."', ".$addToQuery."limit501st = '".cleanInput($_POST['limit501st'])."' WHERE id = '".cleanInput($_POST['eventIdE'])."' OR link = '".cleanInput($_POST['eventIdE'])."'") or die($conn->error);
+				$conn->query("UPDATE events SET name = '".cleanInput($_POST['eventName'])."', venue =  '".cleanInput($_POST['eventVenue'])."', website = '".cleanInput($_POST['website'])."', numberOfAttend = '".cleanInput($_POST['numberOfAttend'])."', requestedNumber = '".cleanInput($_POST['requestedNumber'])."', requestedCharacter = '".cleanInput($_POST['requestedCharacter'])."', secureChanging = '".cleanInput($_POST['secure'])."', blasters = '".cleanInput($_POST['blasters'])."', lightsabers = '".cleanInput($_POST['lightsabers'])."', parking = '".cleanInput($_POST['parking'])."', mobility = '".cleanInput($_POST['mobility'])."', amenities = '".cleanInput($_POST['amenities'])."', referred = '".cleanInput($_POST['referred'])."', comments = '".cleanInput($_POST['comments'])."', location = '".cleanInput($_POST['location'])."', squad = '".cleanInput($_POST['squadm'])."', label = '".cleanInput($_POST['label'])."', limitedEvent = '".cleanInput($_POST['limitedEvent'])."', limitTo = '".cleanInput($_POST['era'])."', ".$addToQuery."limit501st = '".cleanInput($_POST['limit501st'])."', limitTotalTroopers = '".cleanInput($_POST['limitTotalTroopers'])."' WHERE id = '".cleanInput($_POST['eventIdE'])."' OR link = '".cleanInput($_POST['eventIdE'])."'") or die($conn->error);
 				
 				// Update date
 				$conn->query("UPDATE events SET dateStart = '".cleanInput($date1)."', dateEnd = '".cleanInput($date2)."' WHERE id = '".cleanInput($_POST['eventIdE'])."'") or die($conn->error);
@@ -2902,7 +2933,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				editPost(getEventPostID(cleanInput($_POST['eventIdE'])), $thread_body);
 				
 				// Query the database - if not linked
-				$conn->query("UPDATE events SET name = '".cleanInput($_POST['eventName'])."', venue =  '".cleanInput($_POST['eventVenue'])."', dateStart = '".cleanInput($date1)."', dateEnd = '".cleanInput($date2)."', website = '".cleanInput($_POST['website'])."', numberOfAttend = '".cleanInput($_POST['numberOfAttend'])."', requestedNumber = '".cleanInput($_POST['requestedNumber'])."', requestedCharacter = '".cleanInput($_POST['requestedCharacter'])."', secureChanging = '".cleanInput($_POST['secure'])."', blasters = '".cleanInput($_POST['blasters'])."', lightsabers = '".cleanInput($_POST['lightsabers'])."', parking = '".cleanInput($_POST['parking'])."', mobility = '".cleanInput($_POST['mobility'])."', amenities = '".cleanInput($_POST['amenities'])."', referred = '".cleanInput($_POST['referred'])."', comments = '".cleanInput($_POST['comments'])."', location = '".cleanInput($_POST['location'])."', squad = '".cleanInput($_POST['squadm'])."', label = '".cleanInput($_POST['label'])."', limitedEvent = '".cleanInput($_POST['limitedEvent'])."', limitTo = '".cleanInput($_POST['era'])."', ".$addToQuery."limit501st = '".cleanInput($_POST['limit501st'])."' WHERE id = '".cleanInput($_POST['eventIdE'])."'") or die($conn->error);
+				$conn->query("UPDATE events SET name = '".cleanInput($_POST['eventName'])."', venue =  '".cleanInput($_POST['eventVenue'])."', dateStart = '".cleanInput($date1)."', dateEnd = '".cleanInput($date2)."', website = '".cleanInput($_POST['website'])."', numberOfAttend = '".cleanInput($_POST['numberOfAttend'])."', requestedNumber = '".cleanInput($_POST['requestedNumber'])."', requestedCharacter = '".cleanInput($_POST['requestedCharacter'])."', secureChanging = '".cleanInput($_POST['secure'])."', blasters = '".cleanInput($_POST['blasters'])."', lightsabers = '".cleanInput($_POST['lightsabers'])."', parking = '".cleanInput($_POST['parking'])."', mobility = '".cleanInput($_POST['mobility'])."', amenities = '".cleanInput($_POST['amenities'])."', referred = '".cleanInput($_POST['referred'])."', comments = '".cleanInput($_POST['comments'])."', location = '".cleanInput($_POST['location'])."', squad = '".cleanInput($_POST['squadm'])."', label = '".cleanInput($_POST['label'])."', limitedEvent = '".cleanInput($_POST['limitedEvent'])."', limitTo = '".cleanInput($_POST['era'])."', ".$addToQuery."limit501st = '".cleanInput($_POST['limit501st'])."', limitTotalTroopers = '".cleanInput($_POST['limitTotalTroopers'])."' WHERE id = '".cleanInput($_POST['eventIdE'])."'") or die($conn->error);
 			}
 			
 			// Set up if we should send notification
@@ -2950,7 +2981,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 						}
 					
 						// Query the database
-						$conn->query("INSERT INTO events (name, venue, dateStart, dateEnd, website, numberOfAttend, requestedNumber, requestedCharacter, secureChanging, blasters, lightsabers, parking, mobility, amenities, referred, comments, location, label, limitedEvent, limitTo, limit501st, ".$addToQuery2." squad, link) VALUES ('".cleanInput($_POST['eventName'])."', '".cleanInput($_POST['eventVenue'])."', '".$date1."', '".$date2."', '".cleanInput($_POST['website'])."', '".cleanInput($_POST['numberOfAttend'])."', '".cleanInput($_POST['requestedNumber'])."', '".cleanInput($_POST['requestedCharacter'])."', '".cleanInput($_POST['secure'])."', '".cleanInput($_POST['blasters'])."', '".cleanInput($_POST['lightsabers'])."', '".cleanInput($_POST['parking'])."', '".cleanInput($_POST['mobility'])."', '".cleanInput($_POST['amenities'])."', '".cleanInput($_POST['referred'])."', '".cleanInput($_POST['comments'])."', '".cleanInput($_POST['location'])."', '".cleanInput($_POST['label'])."', '".cleanInput($_POST['limitedEvent'])."', '".cleanInput($_POST['era'])."', '".cleanInput($_POST['limit501st'])."', ".$addToQuery1."'".cleanInput($_POST['squadm'])."', '".$link."')") or die($conn->error);
+						$conn->query("INSERT INTO events (name, venue, dateStart, dateEnd, website, numberOfAttend, requestedNumber, requestedCharacter, secureChanging, blasters, lightsabers, parking, mobility, amenities, referred, comments, location, label, limitedEvent, limitTo, limit501st, limitTotalTroopers, ".$addToQuery2." squad, link) VALUES ('".cleanInput($_POST['eventName'])."', '".cleanInput($_POST['eventVenue'])."', '".$date1."', '".$date2."', '".cleanInput($_POST['website'])."', '".cleanInput($_POST['numberOfAttend'])."', '".cleanInput($_POST['requestedNumber'])."', '".cleanInput($_POST['requestedCharacter'])."', '".cleanInput($_POST['secure'])."', '".cleanInput($_POST['blasters'])."', '".cleanInput($_POST['lightsabers'])."', '".cleanInput($_POST['parking'])."', '".cleanInput($_POST['mobility'])."', '".cleanInput($_POST['amenities'])."', '".cleanInput($_POST['referred'])."', '".cleanInput($_POST['comments'])."', '".cleanInput($_POST['location'])."', '".cleanInput($_POST['label'])."', '".cleanInput($_POST['limitedEvent'])."', '".cleanInput($_POST['era'])."', '".cleanInput($_POST['limit501st'])."', '".cleanInput($_POST['limitTotalTroopers'])."', ".$addToQuery1."'".cleanInput($_POST['squadm'])."', '".$link."')") or die($conn->error);
 
 						$last_id = $conn->insert_id;
 						
@@ -3064,6 +3095,9 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 		// Set limit total
 		$limitTotal = 0;
 
+		// Is this a total trooper event?
+		$totalTrooperEvent = false;
+
 		// Output
 		if ($result = mysqli_query($conn, $query))
 		{
@@ -3085,52 +3119,67 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 					// Add
 					$limitTotal += $db->{$club_value['dbLimit']};
 				}
+
+				// Check for total limit set, if it is, replace limit with it
+				if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+				{
+					$limitTotal = $db->limitTotalTroopers;
+					$totalTrooperEvent = true;
+				}
 			}
 		}
 
 		// Set troop full - not used at the moment, but will keep it here for now
 		$troopFull = false;
 
-		// 501
-		if((getCostumeClub(cleanInput($_POST['costume'])) == 0 && ($limit501st - eventClubCount(cleanInput($_POST['event']), 0)) <= 0) && $status != 4)
+		if($totalTrooperEvent)
 		{
-			// Troop is full, set to stand by
-			$status = 1;
-
-			// Set troop full
-			$troopFull = true;
-		}
-
-		// Loop through clubs
-		foreach($clubArray as $club => $club_value)
-		{
-			// Loop through costumes
-			foreach($club_value['costumes'] as $costume)
+			/* TOTAL TROOPERS */
+			
+			if($limitTotal - eventClubCount(cleanInput($_POST['event']), "all") <= 0 && $status != 4)
 			{
-				// Make sure not a dual costume
-				if($costume != $dualCostume)
-				{
-					// Check club
-					if((getCostumeClub(cleanInput($_POST['costume'])) == $costume && (${$club_value['dbLimit']} - eventClubCount(cleanInput($_POST['event']), $costume)) <= 0) && $status != 4)
-					{
-						// Troop is full, set to stand by
-						$status = 1;
+				// Troop is full, set to stand by
+				$status = 1;
 
-						// Set troop full
-						$troopFull = true;
+				// Set troop full
+				$troopFull = true;
+			}
+		}
+		else
+		{
+			/* CHECK IF SQUADS / CLUB ARE FULL */
+
+			// 501
+			if((getCostumeClub(cleanInput($_POST['costume'])) == 0 && ($limit501st - eventClubCount(cleanInput($_POST['event']), 0)) <= 0) && $status != 4)
+			{
+				// Troop is full, set to stand by
+				$status = 1;
+
+				// Set troop full
+				$troopFull = true;
+			}
+
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
+			{
+				// Loop through costumes
+				foreach($club_value['costumes'] as $costume)
+				{
+					// Make sure not a dual costume
+					if($costume != $dualCostume)
+					{
+						// Check club
+						if((getCostumeClub(cleanInput($_POST['costume'])) == $costume && (${$club_value['dbLimit']} - eventClubCount(cleanInput($_POST['event']), $costume)) <= 0) && $status != 4)
+						{
+							// Troop is full, set to stand by
+							$status = 1;
+
+							// Set troop full
+							$troopFull = true;
+						}
 					}
 				}
 			}
-		}
-
-		// If troop not full
-		if(!$troopFull)
-		{
-			// If status is not updated, let's update it to prevent blank data
-			/*if($status != 0 && $status != 1 && $status != 2 && $status != 4 && $status != 5)
-			{
-				$status = 0;
-			}*/
 		}
 
 		// End of check to see if this event is full
@@ -3520,21 +3569,32 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 				// Update troopers remaining
 				$data2 = '
 				<ul>
-					<li>This event is limited to '.$limitTotal.' troopers.</li>
-					<li>This event is limited to '.$db->limit501st.' 501st troopers. '.troopersRemaining($db->limit501st, eventClubCount($db->id, 0)).' </li>';
+					<li>This event is limited to '.$limitTotal.' troopers. ';
 
-				// Set up club count
-				$clubCount = 1;
+					// Check for total limit set, if it is, add remaining troopers
+					if($totalTrooperEvent)
+					{
+						$data2 .= '
+						' . troopersRemaining($limitTotal, eventClubCount($db->id, "all")) . '</li>';
+					}
+					else
+					{
+						$data2 .= '
+						<li>This event is limited to '.$db->limit501st.' 501st troopers. '.troopersRemaining($db->limit501st, eventClubCount($db->id, 0)).' </li>';
 
-				// Loop through clubs
-				foreach($clubArray as $club => $club_value)
-				{
-					$data2 .= '
-					<li>This event is limited to '.$db->{$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining($db->{$club_value['dbLimit']}, eventClubCount($db->id, $clubCount)).'</li>';
+						// Set up club count
+						$clubCount = 1;
 
-					// Increment club count
-					$clubCount++;
-				}
+						// Loop through clubs
+						foreach($clubArray as $club => $club_value)
+						{
+							$data2 .= '
+							<li>This event is limited to '.$db->{$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining($db->{$club_value['dbLimit']}, eventClubCount($db->id, $clubCount)).'</li>';
+
+							// Increment club count
+							$clubCount++;
+						}
+					}
 
 				$data2 .= '
 				</ul>';

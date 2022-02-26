@@ -307,6 +307,8 @@ $(function()
                         $("#submitEdit").val("Edit");
                         $("#options").show();
                         $("#editEventInfo").hide();
+                        $("#limitChangeArea").hide();
+                        $("#limitChange").text("Change Limits");
 
                         // Is linked event
                         if($("#eventId option:selected").attr("link") != 0)

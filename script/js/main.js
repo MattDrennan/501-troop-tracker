@@ -467,6 +467,7 @@ $(document).ready(function()
 		$("#era").val(4);
 		$("#limit501st").val(500);
 		$("#limitedEvent").val(0);
+		$("#limitTotalTroopers").val(500);
 
 		// On index.php, clear all fields
 		clearLimit();
@@ -1144,11 +1145,12 @@ $(document).ready(function()
 					$("#era").val(json.limitTo);
 					$("#limitRebels").val(json.limitRebels);
 					$("#limit501st").val(json.limit501st);
+					$("#limitTotalTroopers").val(json.limitTotalTroopers);
 
 					// Loop through clubs
 					for(var i = 0; i <= (clubArray.length - 1); i++)
 					{
-						$("#" + clubArray[i]).val(json[clubArray[i]]);
+						$("#" + clubDBLimitArray[i]).val(json[clubDBLimitArray[i]]);
 					}
 
 					$("#referred").val(json.referred);

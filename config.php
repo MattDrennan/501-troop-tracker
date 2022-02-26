@@ -3308,6 +3308,9 @@ function eventClubCount($eventID, $clubID)
 	
 	// Total count
 	$total = 0;
+
+	// Total all together
+	$totalAll = 0;
 	
 	// Set up return number
 	$returnVal = 0;
@@ -3329,6 +3332,9 @@ function eventClubCount($eventID, $clubID)
 					if($db2->club == 0)
 					{
 						$c501++;
+
+						// Increment total count
+						$totalAll++;
 					}
 					
 					// Loop through clubs
@@ -3342,6 +3348,9 @@ function eventClubCount($eventID, $clubID)
 							{
 								// Increment to club
 								${"c" . $club_value['dbLimit']}++;
+
+								// Increment total count
+								$totalAll++;
 							}
 						}
 					}
@@ -3388,6 +3397,12 @@ function eventClubCount($eventID, $clubID)
 	if($clubID == $dualCostume)
 	{
 		$returnVal = $total;
+	}
+
+	// If want total
+	if($clubID == "all")
+	{
+		$returnVal = $totalAll;
 	}
 
 	// Return
