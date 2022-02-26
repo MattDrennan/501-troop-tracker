@@ -1830,13 +1830,21 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			
 			foreach($squadArray as $squad => $squad_value)
 			{
-				echo '<a href="index.php?action=commandstaff&do=roster&squad='.$i.'" class="button">' . $squad_value['name'] . '</a> ';
+				if(getSquadID($_SESSION['id']) == $i || hasPermission(1))
+				{
+					echo '<a href="index.php?action=commandstaff&do=roster&squad='.$i.'" class="button">' . $squad_value['name'] . '</a> ';
+				}
+
 				$i++;
 			}
 			
 			foreach($clubArray as $club => $club_value)
 			{
-				echo '<a href="index.php?action=commandstaff&do=roster&squad='.$i.'" class="button">' . $club_value['name'] . '</a> ';
+				if(isClubMember($club_value['db']) > 0 || hasPermission(1))
+				{
+					echo '<a href="index.php?action=commandstaff&do=roster&squad='.$i.'" class="button">' . $club_value['name'] . '</a> ';
+				}
+
 				$i++;
 			}
 			
@@ -1867,6 +1875,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				else if($_GET['squad'] <= count($squadArray))
 				{
 					$queryAdd .= "squad = '".cleanInput($_GET['squad'])."' AND p501 > 0";
+
+					// Check if a member of club
+					if(getSquadID($_SESSION['id']) != cleanInput($_GET['squad']) && hasPermission(2))
+					{
+						die("<p>Not a member of this squad / club.</p>");
+					}
 				}
 				
 				// Set up count
@@ -1880,6 +1894,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					{
 						// Add to query
 						$queryAdd .= " ".$club_value['db']." > 0";
+
+						// Check if a member of club
+						if(isClubMember($club_value['db']) == 0 && hasPermission(2))
+						{
+							die("<p>Not a member of this squad / club.</p>");
+						}
 					}
 					
 					// Increment
@@ -2098,16 +2118,24 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			
 			echo '
 			<a href="index.php?action=commandstaff&do=troopercheck" class="button">All</a>';
-			
+
 			foreach($squadArray as $squad => $squad_value)
 			{
-				echo '<a href="index.php?action=commandstaff&do=troopercheck&squad='.$i.'" class="button">' . $squad_value['name'] . '</a> ';
+				if(getSquadID($_SESSION['id']) == $i || hasPermission(1))
+				{
+					echo '<a href="index.php?action=commandstaff&do=troopercheck&squad='.$i.'" class="button">' . $squad_value['name'] . '</a> ';
+				}
+
 				$i++;
 			}
 			
 			foreach($clubArray as $club => $club_value)
 			{
-				echo '<a href="index.php?action=commandstaff&do=troopercheck&squad='.$i.'" class="button">' . $club_value['name'] . '</a> ';
+				if(isClubMember($club_value['db']) > 0 || hasPermission(1))
+				{
+					echo '<a href="index.php?action=commandstaff&do=troopercheck&squad='.$i.'" class="button">' . $club_value['name'] . '</a> ';
+				}
+
 				$i++;
 			}
 			
@@ -2123,6 +2151,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				if($_GET['squad'] <= count($squadArray))
 				{
 					$queryAdd .= "troopers.squad = '".cleanInput($_GET['squad'])."' AND (p501 = 1 OR p501 = 2) AND";
+
+					// Check if a member of club
+					if(getSquadID($_SESSION['id']) != cleanInput($_GET['squad']) && hasPermission(2))
+					{
+						die("<p>Not a member of this squad / club.</p>");
+					}
 				}
 				
 				// Set up count
@@ -2135,6 +2169,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					if($_GET['squad'] == $clubCount)
 					{
 						$queryAdd .= "(troopers.".$club_value['db']." = 1 OR troopers.".$club_value['db']." = 2) AND";
+
+						// Check if a member of club
+						if(isClubMember($club_value['db']) == 0 && hasPermission(2))
+						{
+							die("<p>Not a member of this squad / club.</p>");
+						}
 					}
 					
 					// Increment

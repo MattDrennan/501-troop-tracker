@@ -2989,6 +2989,27 @@ function hasSpecialPermission($permission)
 	return $hasPermission;
 }
 
+// isClubMember: Get's the squad / club status for a trooper
+function isClubMember($dbclub)
+{
+	global $conn;
+	
+	$returnValue = 0;
+	
+	// Check if the trooper is a moderator
+	$query = "SELECT * FROM troopers WHERE id = '".$_SESSION['id']."'";
+
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			$returnValue = $db->{$dbclub};
+		}
+	}
+	
+	return $returnValue;
+}
+
 // isWebsiteClosed: Is the website closed?
 function isWebsiteClosed()
 {
