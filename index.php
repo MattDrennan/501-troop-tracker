@@ -5689,6 +5689,9 @@ if(isset($_GET['event']))
 
 					<h2 class="tm-section-header">Discussion</h2>
 					<div style="text-align: center;">
+
+					<a href="#/" class="button" name="addSmiley">Add Smiley</a>
+
 					<textarea cols="30" rows="10" name="comment" id="comment"></textarea>
 
 					<br />
@@ -5700,6 +5703,9 @@ if(isset($_GET['event']))
 					</select>
 
 					<br /><br />
+
+					<span name="smileyarea" style="display: block;">
+					</span>
 
 					<input type="submit" name="submitComment" value="Post!" />
 					</div>

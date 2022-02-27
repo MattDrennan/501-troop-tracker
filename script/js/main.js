@@ -1406,6 +1406,38 @@ $(document).ready(function()
 		}
 	});
 
+	// When trooper clicks button to add smiley
+	$("body").on("click", "[name=addSmiley]", function(e)
+	{
+		var thisE = $(this);
+
+		$.ajax({
+			type: "POST",
+			url: "process.php?do=smileyeditor",
+			data: "",
+			success: function(data)
+			{
+				var json = JSON.parse(data);
+
+				thisE.parent().find("[name=smileyarea]").html(json.data);
+			}
+		});
+	});
+
+	// When trooper clicks a smiley
+	$("body").on("click", "[name=smileyarea] img", function(e)
+	{
+		e.preventDefault();
+
+		var textarea = $(this).parent().parent().find("textarea")[0];
+		console.log(textarea);
+		var value = textarea.value;
+		var startPos = textarea.selectionStart;
+		var endPos = textarea.selectionEnd;
+
+		textarea.value = value.replaceBetween(startPos, endPos, $(this).attr("code"));
+	});
+
 	// When trooper quotes a comment
 	$("body").on("click", "[id^=quoteComment]", function(e)
 	{
@@ -1440,7 +1472,7 @@ $(document).ready(function()
 		});
 		
 		// Add comment to comment text area with HTML for display purposes
-		$("table[name=comment_" + id + "] td[name=insideComment]").html('<textarea commentid="' + id + '">' + $("table[name=comment_" + id + "] td[name=insideComment]").text().replace('<br/>', '\n').replace('<br />', '\n') + '</textarea><br /><input type="submit" name="editCommentSubmit" commentid="' + id + '" value="Save" />');
+		$("table[name=comment_" + id + "] td[name=insideComment]").html('<a href="#/" name="addSmiley" class="button">Add Smiley</a><textarea commentid="' + id + '">' + $("table[name=comment_" + id + "] td[name=insideComment]").text().replace('<br/>', '\n').replace('<br />', '\n') + '</textarea><span name="smileyarea"></span><br /><input type="submit" name="editCommentSubmit" commentid="' + id + '" value="Save" />');
 	});
 	
 	// When trooper quotes a comment

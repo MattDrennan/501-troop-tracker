@@ -505,11 +505,30 @@ function costume_restrict_query($addWhere = false)
 	return $returnQuery;
 }
 
+// smileyEditor: Show all the smileys
+function smileyEditor()
+{
+	global $replacements;
+
+	// Set up return variable
+	$returnVar = "";
+
+	// Set up loop variable
+	$i = 0;
+
+	foreach($replacements as $smiley => $smiley_value)
+	{
+		$returnVar .= $smiley_value . ' ';
+	}
+
+	return $returnVar;
+}
+
 // showBBcodes: Converts text to BB Code
 function showBBcodes($text)
 {
 	global $replacements;
-	
+
 	$text = strip_tags($text);
 
 	// BBcode array

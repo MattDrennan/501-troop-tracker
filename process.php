@@ -1,6 +1,15 @@
 <?php
 include 'config.php';
 
+/******************** SMILEY EDITOR *******************************/
+
+if(isset($_GET['do']) && $_GET['do'] == "smileyeditor")
+{
+	// Send JSON
+	$array = array('data' => smileyEditor());
+	echo json_encode($array);
+}
+
 /******************** EDIT COMMENT *******************************/
 
 if(isset($_GET['do']) && isset($_POST['commentid']) && isset($_POST['comment']) && $_GET['do'] == "editcomment")
