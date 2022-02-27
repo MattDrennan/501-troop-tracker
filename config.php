@@ -2317,13 +2317,15 @@ function getTKNumber($id, $read = false)
 function getIDFromTKNumber($tkid)
 {
 	global $conn, $squadArray;
+
+	$returnVal = 0;
 	
 	$query = "SELECT * FROM troopers WHERE tkid='".$tkid."' AND squad <= ".count($squadArray)."";
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
-			return $db->id;
+			$returnVal = $db->id;
 		}
 	}
 }

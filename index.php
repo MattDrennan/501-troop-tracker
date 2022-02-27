@@ -5827,7 +5827,7 @@ if(isset($_GET['event']))
 else
 {
 	// Only show home page when it is loaded
-	if(!isset($_GET['action']) && !isset($_GET['profile']) && !isset($_GET['event']))
+	if(!isset($_GET['action']) && !isset($_GET['profile']) && !isset($_GET['tkid']) && !isset($_GET['event']))
 	{
 		if(!isWebsiteClosed())
 		{
