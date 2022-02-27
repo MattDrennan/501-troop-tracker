@@ -72,15 +72,21 @@ define('garrisonImage', 'garrison_emblem.png');
 // Dual costume
 $dualCostume = 5;
 
-// Squads
-// name: Name of squad
-// logo: Image logo of squad
-// db: Membership database (EX: p501)
-// db2: Custom DB code (not required)
-// rankRegular: Title image of regular members
-// rankReserve: Title image of reserve members
-// rankRetired: Title image of retired members
+/**
+ * squadArray
+ * name: Name of the squad
+ * logo: Image of the squad logo located in images folder
+ * costumes: An array of costumes that this squad accepts as troop credit
+ * db: The field in the troopers table that determines if a trooper is a member of the club
+ * db2: A blank variable with no use as of now
+ * rankRegular: An image file that will show on troopers profiles of this squad (Active Regular Members)
+ * rankReserve: An image file that will show on troopers profiles of this squad (Reserve Members)
+ * rankRetired: An image file that will show on troopers profiles of this squad (Inactive Retired Members)
+ * eventForum: The forum ID in Xenforo that corresponds to the event forum for this squad
+ */
 
+
+// Squads
 $squadArray = array(
 	array(
 		"name" => "Everglades Squad",
@@ -90,7 +96,8 @@ $squadArray = array(
 		"db2" => "",
 		"rankRegular" => "everglades_sm.png",
 		"rankReserve" => "",
-		"rankRetired" => ""),
+		"rankRetired" => "",
+		"eventForum" => 9),
 	array(
 		"name" => "Makaze Squad",
 		"logo" => "makaze_emblem.png",
@@ -99,15 +106,18 @@ $squadArray = array(
 		"db2" => "",
 		"rankRegular" => "makaze_sm.png",
 		"rankReserve" => "",
-		"rankRetired" => ""),
+		"rankRetired" => "",
+		"eventForum" => 8),
 	array(
 		"name" => "Parjai Squad",
 		"logo" => "parjai_emblem.png",
 		"costumes" => array(0, 5),
-		"db" => "p501", "db2" => "",
+		"db" => "p501",
+		"db2" => "",
 		"rankRegular" => "parjai_sm.png",
 		"rankReserve" => "",
-		"rankRetired" => ""),
+		"rankRetired" => "",
+		"eventForum" => 186),
 	array(
 		"name" => "Squad 7",
 		"logo" => "squad7_emblem.png",
@@ -116,7 +126,8 @@ $squadArray = array(
 		"db2" => "",
 		"rankRegular" => "s7_sm.png",
 		"rankReserve" => "",
-		"rankRetired" => ""),
+		"rankRetired" => "",
+		"eventForum" => 7),
 	array(
 		"name" => "Tampa Bay Squad",
 		"logo" => "tampabay_emblem.png",
@@ -125,22 +136,25 @@ $squadArray = array(
 		"db2" => "",
 		"rankRegular" => "tampa_sm.png",
 		"rankReserve" => "",
-		"rankRetired" => "")
+		"rankRetired" => "",
+		"eventForum" => 73)
 );
 
-// Clubs
-// name: Name of club
-// logo: Image logo of club
-// costumes: Array of costume ID's assigned to this club
-// db: Membership database (EX: p501)
-// db2: Custom DB code (not required)
-// db3: ID / Username of club DB table
-// db3Name: Name of db3 (EX: ID / Username)
-// db3Require: Instructions for how to handle sign up requirements
-// dbLimit: DB table in events where this club will have a set limit
-// rankRegular: Title image of regular members
-// rankReserve: Title image of reserve members
-// rankRetired: Title image of retired members
+/**
+ * clubArray
+ * name: Name of the club
+ * logo: Image of the squad logo located in images folder
+ * costumes: An array of costumes that this club accepts as troop credit
+ * db: The field in the troopers table that determines if a trooper is a member of the club
+ * db2: A blank variable with no use as of now
+ * db3: A field that stores a corresponding identifer for this club, for example a forum username or ID number
+ * db3Name: A field that stores a corresponding name for the identifer used in db3
+ * db3Require: Special code used to determine if form validation needs to ensure db3 has a value
+ * dbLimit: The field in events table that holds the amount of allowed members from this club
+ * rankRegular: An image file that will show on troopers profiles of this club (Active Regular Members)
+ * rankReserve: An image file that will show on troopers profiles of this club (Reserve Members)
+ * rankRetired: An image file that will show on troopers profiles of this club (Inactive Retired Members)
+ */
 
 $clubArray = array(
 	array(
