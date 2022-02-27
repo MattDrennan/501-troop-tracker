@@ -293,6 +293,22 @@ $(document).ready(function()
 		$.LoadingOverlay("hide");
 	});
 
+	// Limit Change - Total Troopers (Prevent admin from adding a total limit for a club and a total limit)
+	$("body").on("input", "#limitTotalTroopers", function(e)
+	{
+		// If not default value, change others
+		if($(this).val() != 500)
+		{
+			$("#limit501st").val(500);
+
+			// Loop through clubs
+			for(var i = 0; i <= (clubArray.length - 1); i++)
+			{
+				$("#" + clubDBLimitArray[i]).val(500);
+			}
+		}
+	})
+
 	// Image Upload - Change Upload Type
 	$("body").on("click", "#trooperInformationButton", function(e)
 	{
