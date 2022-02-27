@@ -119,6 +119,7 @@ $(function()
                             $("#limitedEvent").val("null");
                             $("#era").val("4");
                             $("#limit501st").val("500");
+                            $("[name=smileyarea]").html("");
 
                             // Loop through clubs
                             for(var i = 0; i <= (clubArray.length - 1); i++)
@@ -309,6 +310,7 @@ $(function()
                         $("#editEventInfo").hide();
                         $("#limitChangeArea").hide();
                         $("#limitChange").text("Change Limits");
+                        $("[name=smileyarea]").html("");
 
                         // Is linked event
                         if($("#eventId option:selected").attr("link") != 0)
@@ -663,6 +665,7 @@ $(function()
                     // Return vars to default
                     $("#comment").val("");
                     $("#important").val("0");
+                    $("[name=smileyarea]").html("");
 					
 					// Re-enable button
 					$("input[name=submitComment]").prop("disabled", false);

@@ -3308,7 +3308,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\', \'comments\')" class="button">Color</a>
 						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\', \'comments\')" class="button">Size</a>
 						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\', \'comments\')" class="button">URL</a>
+						<a href="#/" class="button" name="addSmiley">Add Smiley</a>
 						<textarea rows="10" cols="50" name="comments" id="comments"></textarea>
+
+						<span name="smileyarea" style="display: block;">
+						</span>
 
 						<p>Label:</p>
 						<select name="label" id="label">
@@ -3841,7 +3845,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\', \'comments\')" class="button">Color</a>
 				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\', \'comments\')" class="button">Size</a>
 				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\', \'comments\')" class="button">URL</a>
+				<a href="#/" class="button" name="addSmiley">Add Smiley</a>
 				<textarea rows="10" cols="50" name="comments" id="comments">'.copyEvent($eid, $comments).'</textarea>
+
+				<span name="smileyarea" style="display: block;">
+				</span>
 
 				<p>Label:</p>
 				<select name="label" id="label">
