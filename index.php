@@ -3337,8 +3337,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						<p>Is this a manual selection event?</p>
 						<select name="limitedEvent" id="limitedEvent">
-							<option value="1">Yes</option>
 							<option value="0">No</option>
+							<option value="1">Yes</option>
 						</select>
 
 						<p>Do you wish to limit the era of the costume?</p>
@@ -3657,6 +3657,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			$limitedEvent = "";
 			$limitTo = "";
 			$limit501st = "";
+			$limitTotalTroopers = "";
 
 			// Loop through clubs
 			foreach($clubArray as $club => $club_value)
@@ -3875,9 +3876,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<p>Is this a manual selection event?</p>
 				<select name="limitedEvent" id="limitedEvent">
-					<option value="null" '.copyEventSelect($eid, $limitedEvent, "null").'>Please choose an option...</option>
-					<option value="1" '.copyEventSelect($eid, $limitedEvent, 1).'>Yes</option>
 					<option value="0" '.copyEventSelect($eid, $limitedEvent, 0).'>No</option>
+					<option value="1" '.copyEventSelect($eid, $limitedEvent, 1).'>Yes</option>
 				</select>
 
 				<p>Do you wish to limit the era of the costume?</p>

@@ -2248,10 +2248,10 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 
 				[b][u]Sign Up / Event Roster:[/u][/b]
 
-				[url]https://fl501st.com/troop-tracker/index.php?event=' . $last_id . '[/url]';
+				[url]https://fl501st.com/troop-tracker/index.php?event=' . $eventId . '[/url]';
 
 				// Create thread on forum
-				$thread = createThread(8, date("m/d/y", strtotime(cleanInput($date1))) . " " . cleanInput($_POST['eventName']), $thread_body);
+				$thread = createThread($squadArray[intval(cleanInput($_POST['squadm']) - 1)]['eventForum'], date("m/d/y", strtotime(cleanInput($date1))) . " " . cleanInput($_POST['eventName']), $thread_body);
 
 				// Lock the thread
 				lockThread($thread['thread']['thread_id']);
@@ -2319,7 +2319,7 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 						[url]https://fl501st.com/troop-tracker/index.php?event=' . $last_id . '[/url]';
 
 						// Create thread on forum
-						$thread = createThread(8, date("m/d/y", strtotime(cleanInput($date1))) . " " . cleanInput($_POST['eventName']), $thread_body);
+						$thread = createThread($squadArray[intval(cleanInput($_POST['squadm']) - 1)]['eventForum'], date("m/d/y", strtotime(cleanInput($date1))) . " " . cleanInput($_POST['eventName']), $thread_body);
 
 						// Update event
 						$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."', post_id = '".$thread['thread']['last_post_id']."' WHERE id = '".$last_id."'");

@@ -34,6 +34,7 @@ define('placeholder', 1196);
 
 // Forum API Key (Xenforo)
 define('xenforoAPI_superuser', 'API_SUPER_USER_KEY_HERE');
+define('xenforoAPI_userID', 'API_USER_SUPER_ID_HERE');
 
 // E-mail Creds
 // This is the email server and account you are going to send e-mails from

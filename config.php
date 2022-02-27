@@ -745,6 +745,7 @@ function getAuthForum($user_id)
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
 	  ],
 	]);
 
@@ -770,6 +771,7 @@ function loginWithForum($username, $password)
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
 	  ],
 	]);
 
@@ -796,6 +798,7 @@ function createThread($id, $title, $message)
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
 	  ],
 	]);
 
@@ -822,6 +825,7 @@ function lockThread($id)
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
 	  ],
 	]);
 
@@ -848,6 +852,7 @@ function createPost($id, $message)
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
 	  ],
 	]);
 
@@ -874,6 +879,7 @@ function editPost($id, $message)
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
 	  ],
 	]);
 
@@ -898,6 +904,7 @@ function getUserForum($username)
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
 	  ],
 	]);
 
@@ -922,6 +929,7 @@ function getUserForumID($id)
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
 	  ],
 	]);
 
@@ -959,6 +967,7 @@ function updateUserForumGroup($id, $groupid, $group_ids)
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
 	  ],
 	]);
 
@@ -984,6 +993,7 @@ function deletePost($id, $hard_delete = false)
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
 	  ],
 	]);
 
@@ -1009,6 +1019,7 @@ function deleteThread($id, $hard_delete = false)
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
 	  ],
 	]);
 
