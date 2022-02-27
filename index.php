@@ -3301,13 +3301,13 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<input type="text" name="amenities" id="amenities" />
 
 						<p>Additional Comments:</p>
-						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\')" class="button">Bold</a>
-						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\')" class="button">Italic</a>
-						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\')" class="button">Underline</a>
-						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'Q\')" class="button">Quote</a>
-						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\')" class="button">Color</a>
-						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\')" class="button">Size</a>
-						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\')" class="button">URL</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\', \'comments\')" class="button">Bold</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\', \'comments\')" class="button">Italic</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\', \'comments\')" class="button">Underline</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'Q\', \'comments\')" class="button">Quote</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\', \'comments\')" class="button">Color</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\', \'comments\')" class="button">Size</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\', \'comments\')" class="button">URL</a>
 						<textarea rows="10" cols="50" name="comments" id="comments"></textarea>
 
 						<p>Label:</p>
@@ -3834,13 +3834,13 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<input type="text" name="amenities" id="amenities" value="'.copyEvent($eid, $amenities).'" />
 
 				<p>Additional Comments:</p>
-				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\')" class="button">Bold</a>
-				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\')" class="button">Italic</a>
-				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\')" class="button">Underline</a>
-				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'Q\')" class="button">Quote</a>
-				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\')" class="button">Color</a>
-				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\')" class="button">Size</a>
-				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\')" class="button">URL</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\', \'comments\')" class="button">Bold</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\', \'comments\')" class="button">Italic</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\', \'comments\')" class="button">Underline</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'Q\', \'comments\')" class="button">Quote</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\', \'comments\')" class="button">Color</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\', \'comments\')" class="button">Size</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\', \'comments\')" class="button">URL</a>
 				<textarea rows="10" cols="50" name="comments" id="comments">'.copyEvent($eid, $comments).'</textarea>
 
 				<p>Label:</p>
@@ -5690,13 +5690,20 @@ if(isset($_GET['event']))
 					<h2 class="tm-section-header">Discussion</h2>
 					<div style="text-align: center;">
 
+					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\', \'comment\')" class="button">Bold</a>
+					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\', \'comment\')" class="button">Italic</a>
+					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\', \'comment\')" class="button">Underline</a>
+					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'Q\', \'comment\')" class="button">Quote</a>
+					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\', \'comment\')" class="button">Color</a>
+					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\', \'comment\')" class="button">Size</a>
+					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\', \'comment\')" class="button">URL</a>
 					<a href="#/" class="button" name="addSmiley">Add Smiley</a>
 
 					<textarea cols="30" rows="10" name="comment" id="comment"></textarea>
 
 					<br />
 
-					<p aria-label="This will highlight and notify command staff of your comment." data-balloon-pos="up" data-balloon-length="fit">Is this an important message?</p>
+					<p aria-label="This will highlight and notify command staff of your comment." data-balloon-pos="up" data-balloon-length="fit">Notify command staff?</p>
 					<select name="important" id="important">
 						<option value="0">No</option>
 						<option value="1">Yes</option>

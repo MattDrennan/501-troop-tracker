@@ -526,6 +526,12 @@ span.select2-selection__rendered
 	color:  gray;
 }
 
+/************************ COMMENT TEXTAREA **************************************/
+
+table[name*="comment_"] textarea {
+	height:  200px;
+}
+
 /************************ NAV **************************************/
 
  /* Add a black background color to the top navigation */

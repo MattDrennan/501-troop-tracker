@@ -5,12 +5,13 @@ jQuery.validator.addMethod("noSpace", function(value, element)
 }, "Please enter a comment.");
 
 // bbcoder: Converts textbox content to BB Code
-function bbcoder(code)
+function bbcoder(code, textarea)
 {
+	console.log($("#" + textarea)[0]);
 	try
 	{
 		var old = "";
-		var textarea = document.getElementsByName("comments")[0];
+		textarea = $("#" + textarea)[0];
 		var value = textarea.value;
 		var startPos = textarea.selectionStart;
 		var endPos = textarea.selectionEnd;
@@ -1430,7 +1431,6 @@ $(document).ready(function()
 		e.preventDefault();
 
 		var textarea = $(this).parent().parent().find("textarea")[0];
-		console.log(textarea);
 		var value = textarea.value;
 		var startPos = textarea.selectionStart;
 		var endPos = textarea.selectionEnd;
@@ -1472,7 +1472,7 @@ $(document).ready(function()
 		});
 		
 		// Add comment to comment text area with HTML for display purposes
-		$("table[name=comment_" + id + "] td[name=insideComment]").html('<a href="#/" name="addSmiley" class="button">Add Smiley</a><textarea commentid="' + id + '">' + $("table[name=comment_" + id + "] td[name=insideComment]").text().replace('<br/>', '\n').replace('<br />', '\n') + '</textarea><span name="smileyarea"></span><br /><input type="submit" name="editCommentSubmit" commentid="' + id + '" value="Save" />');
+		$("table[name=comment_" + id + "] td[name=insideComment]").html('<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\', \'textcomment_' + id + '\')" class="button">Bold</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\', \'textcomment_' + id + '\')" class="button">Italic</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\', \'textcomment_' + id + '\')" class="button">Underline</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'Q\', \'textcomment_' + id + '\')" class="button">Quote</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\', \'textcomment_' + id + '\')" class="button">Color</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\', \'textcomment_' + id + '\')" class="button">Size</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\', \'textcomment_' + id + '\')" class="button">URL</a> <a href="#/" name="addSmiley" class="button">Add Smiley</a><textarea id="textcomment_' + id + '" commentid="' + id + '">' + $("table[name=comment_" + id + "] td[name=insideComment]").text().replace('<br/>', '\n').replace('<br />', '\n') + '</textarea><span name="smileyarea"></span><br /><input type="submit" name="editCommentSubmit" commentid="' + id + '" value="Save" />');
 	});
 	
 	// When trooper quotes a comment
