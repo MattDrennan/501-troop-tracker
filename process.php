@@ -2228,30 +2228,30 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 
 				// Make thread body
 				$thread_body = '
-				[b]Event Name:[/b] '.cleanInput($_POST['eventName']).'
-				[b]Venue:[/b] '.cleanInput($_POST['eventVenue']).'
-				[b]Venue address:[/b] '.cleanInput($_POST['location']).'
-				[b]Event Start:[/b] '.date("m/d/y h:i A", strtotime(cleanInput($date1))).'
-				[b]Event End:[/b] '.date("m/d/y h:i A", strtotime(cleanInput($date2))).'
-				[b]Event Website:[/b] '.cleanInput($_POST['website']).'
-				[b]Expected number of attendees:[/b] '.cleanInput($_POST['numberOfAttend']).'
-				[b]Requested number of characters:[/b] '.cleanInput($_POST['requestedNumber']).'
-				[b]Requested character types:[/b] '.cleanInput($_POST['requestedCharacter']).'
-				[b]Secure changing/staging area:[/b] '.yesNo(cleanInput($_POST['secure'])).'
-				[b]Can troopers carry blasters:[/b] '.yesNo(cleanInput($_POST['blasters'])).'
-				[b]Can troopers carry/bring props like lightsabers and staffs:[/b] '.yesNo(cleanInput($_POST['lightsabers'])).'
-				[b]Is parking available:[/b] '.yesNo(cleanInput($_POST['parking'])).'
-				[b]Is venue accessible to those with limited mobility:[/b] '.yesNo(cleanInput($_POST['mobility'])).'
-				[b]Amenities available at venue:[/b] '.ifEmpty(cleanInput($_POST['amenities']), "No amenities for this event.").'
-				[b]Comments:[/b] '.ifEmpty(cleanInput($_POST['comments']), "No comments for this event.").'
-				[b]Referred by:[/b] '.ifEmpty(cleanInput($_POST['referred'], "Not available")).'
+				[b]Event Name:[/b] '.$_POST['eventName'].'
+				[b]Venue:[/b] '.$_POST['eventVenue'].'
+				[b]Venue address:[/b] '.$_POST['location'].'
+				[b]Event Start:[/b] '.date("m/d/y h:i A", strtotime($date1)).'
+				[b]Event End:[/b] '.date("m/d/y h:i A", strtotime($date2)).'
+				[b]Event Website:[/b] '.$_POST['website'].'
+				[b]Expected number of attendees:[/b] '.$_POST['numberOfAttend'].'
+				[b]Requested number of characters:[/b] '.$_POST['requestedNumber'].'
+				[b]Requested character types:[/b] '.$_POST['requestedCharacter'].'
+				[b]Secure changing/staging area:[/b] '.yesNo($_POST['secure']).'
+				[b]Can troopers carry blasters:[/b] '.yesNo($_POST['blasters']).'
+				[b]Can troopers carry/bring props like lightsabers and staffs:[/b] '.yesNo($_POST['lightsabers']).'
+				[b]Is parking available:[/b] '.yesNo($_POST['parking']).'
+				[b]Is venue accessible to those with limited mobility:[/b] '.yesNo($_POST['mobility']).'
+				[b]Amenities available at venue:[/b] '.ifEmpty($_POST['amenities'], "No amenities for this event.").'
+				[b]Comments:[/b] '.ifEmpty($_POST['comments'], "No comments for this event.").'
+				[b]Referred by:[/b] '.ifEmpty($_POST['referred'], "Not available").'
 
 				[b][u]Sign Up / Event Roster:[/u][/b]
 
 				[url]https://fl501st.com/troop-tracker/index.php?event=' . $eventId . '[/url]';
 
 				// Create thread on forum
-				$thread = createThread($squadArray[intval(cleanInput($_POST['squadm']) - 1)]['eventForum'], date("m/d/y", strtotime(cleanInput($date1))) . " " . cleanInput($_POST['eventName']), $thread_body);
+				$thread = createThread($squadArray[intval($_POST['squadm'] - 1)]['eventForum'], date("m/d/y", strtotime($date1)) . " " . $_POST['eventName'], $thread_body);
 
 				// Lock the thread
 				lockThread($thread['thread']['thread_id']);
@@ -2296,30 +2296,30 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 
 						// Make thread body
 						$thread_body = '
-						[b]Event Name:[/b] '.cleanInput($_POST['eventName']).'
-						[b]Venue:[/b] '.cleanInput($_POST['eventVenue']).'
-						[b]Venue address:[/b] '.cleanInput($_POST['location']).'
-						[b]Event Start:[/b] '.date("m/d/y h:i A", strtotime(cleanInput($date1))).'
-						[b]Event End:[/b] '.date("m/d/y h:i A", strtotime(cleanInput($date2))).'
-						[b]Event Website:[/b] '.cleanInput($_POST['website']).'
-						[b]Expected number of attendees:[/b] '.cleanInput($_POST['numberOfAttend']).'
-						[b]Requested number of characters:[/b] '.cleanInput($_POST['requestedNumber']).'
-						[b]Requested character types:[/b] '.cleanInput($_POST['requestedCharacter']).'
-						[b]Secure changing/staging area:[/b] '.yesNo(cleanInput($_POST['secure'])).'
-						[b]Can troopers carry blasters:[/b] '.yesNo(cleanInput($_POST['blasters'])).'
-						[b]Can troopers carry/bring props like lightsabers and staffs:[/b] '.yesNo(cleanInput($_POST['lightsabers'])).'
-						[b]Is parking available:[/b] '.yesNo(cleanInput($_POST['parking'])).'
-						[b]Is venue accessible to those with limited mobility:[/b] '.yesNo(cleanInput($_POST['mobility'])).'
-						[b]Amenities available at venue:[/b] '.ifEmpty(cleanInput($_POST['amenities']), "No amenities for this event.").'
-						[b]Comments:[/b] '.ifEmpty(cleanInput($_POST['comments']), "No comments for this event.").'
-						[b]Referred by:[/b] '.ifEmpty(cleanInput($_POST['referred'], "Not available")).'
+						[b]Event Name:[/b] '.$_POST['eventName'].'
+						[b]Venue:[/b] '.$_POST['eventVenue'].'
+						[b]Venue address:[/b] '.$_POST['location'].'
+						[b]Event Start:[/b] '.date("m/d/y h:i A", strtotime($date1)).'
+						[b]Event End:[/b] '.date("m/d/y h:i A", strtotime($date2)).'
+						[b]Event Website:[/b] '.$_POST['website'].'
+						[b]Expected number of attendees:[/b] '.$_POST['numberOfAttend'].'
+						[b]Requested number of characters:[/b] '.$_POST['requestedNumber'].'
+						[b]Requested character types:[/b] '.$_POST['requestedCharacter'].'
+						[b]Secure changing/staging area:[/b] '.yesNo($_POST['secure']).'
+						[b]Can troopers carry blasters:[/b] '.yesNo($_POST['blasters']).'
+						[b]Can troopers carry/bring props like lightsabers and staffs:[/b] '.yesNo($_POST['lightsabers']).'
+						[b]Is parking available:[/b] '.yesNo($_POST['parking']).'
+						[b]Is venue accessible to those with limited mobility:[/b] '.yesNo($_POST['mobility']).'
+						[b]Amenities available at venue:[/b] '.ifEmpty($_POST['amenities'], "No amenities for this event.").'
+						[b]Comments:[/b] '.ifEmpty($_POST['comments'], "No comments for this event.").'
+						[b]Referred by:[/b] '.ifEmpty($_POST['referred'], "Not available").'
 
 						[b][u]Sign Up / Event Roster:[/u][/b]
 
-						[url]https://fl501st.com/troop-tracker/index.php?event=' . $last_id . '[/url]';
+						[url]https://fl501st.com/troop-tracker/index.php?event=' . $eventId . '[/url]';
 
 						// Create thread on forum
-						$thread = createThread($squadArray[intval(cleanInput($_POST['squadm']) - 1)]['eventForum'], date("m/d/y", strtotime(cleanInput($date1))) . " " . cleanInput($_POST['eventName']), $thread_body);
+						$thread = createThread($squadArray[intval($_POST['squadm'] - 1)]['eventForum'], date("m/d/y", strtotime($date1)) . " " . $_POST['eventName'], $thread_body);
 
 						// Update event
 						$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."', post_id = '".$thread['thread']['last_post_id']."' WHERE id = '".$last_id."'");

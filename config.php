@@ -730,6 +730,8 @@ function drawSupportGraph()
 	return $return;
 }
 
+/*********************** XENFORO ***********************/
+
 // getAuthForum: Get's auth data from Xenforo
 function getAuthForum($user_id)
 {
@@ -791,7 +793,7 @@ function createThread($id, $title, $message)
 	curl_setopt_array($curl, [
 	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/threads",
 	  CURLOPT_POST => 1,
-	  CURLOPT_POSTFIELDS => "node_id=" . $id . "&title=" . $title . "&message=" . $message,
+	  CURLOPT_POSTFIELDS => "node_id=" . $id . "&title=" . urlencode($title) . "&message=" . urlencode($message),
 	  CURLOPT_CUSTOMREQUEST => "POST",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
@@ -845,7 +847,7 @@ function createPost($id, $message)
 	curl_setopt_array($curl, [
 	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/posts",
 	  CURLOPT_POST => 1,
-	  CURLOPT_POSTFIELDS => "thread_id=" . $id . "&message=" . $message,
+	  CURLOPT_POSTFIELDS => "thread_id=" . $id . "&message=" . urlencode($message),
 	  CURLOPT_CUSTOMREQUEST => "POST",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
@@ -872,7 +874,7 @@ function editPost($id, $message)
 	curl_setopt_array($curl, [
 	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/posts/" . $id,
 	  CURLOPT_POST => 1,
-	  CURLOPT_POSTFIELDS => "message=" . $message,
+	  CURLOPT_POSTFIELDS => "message=" . urlencode($message),
 	  CURLOPT_CUSTOMREQUEST => "POST",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
@@ -1029,6 +1031,8 @@ function deleteThread($id, $hard_delete = false)
 
 	return json_decode($response, true);
 }
+
+/*********************** END XENFORO ***********************/
 
 // isSupporter: A function to determine if a trooper is a supporter
 function isSupporter($id)
