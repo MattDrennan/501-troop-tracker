@@ -116,7 +116,7 @@ $(function()
                             $("#amenities").val("");
                             $("#comments").val("");
                             $("#label").val("null");
-                            $("#limitedEvent").val("null");
+                            $("#limitedEvent").val("0");
                             $("#era").val("4");
                             $("#limit501st").val("500");
                             $("[name=smileyarea]").html("");
