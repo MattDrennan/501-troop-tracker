@@ -7,7 +7,6 @@ jQuery.validator.addMethod("noSpace", function(value, element)
 // bbcoder: Converts textbox content to BB Code
 function bbcoder(code, textarea)
 {
-	console.log($("#" + textarea)[0]);
 	try
 	{
 		var old = "";
