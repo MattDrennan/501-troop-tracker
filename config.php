@@ -1230,6 +1230,7 @@ function get501Info($id, $squad)
 			while ($db = mysqli_fetch_object($result))
 			{
 				$array['link'] = $db->link;
+				$array['joindate'] = $db->joindate;
 			}
 		}
 	}
@@ -2460,6 +2461,9 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	{
 		while ($db2 = mysqli_fetch_object($result2))
 		{
+			// Is a 501 member?
+			$is501Member = false;
+
 			echo '
 			<div style="text-align: center;">';
 			
@@ -2471,6 +2475,8 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 				<p>
 					<img src="images/ranks/legion_member.png" />
 				</p>';
+
+				$is501Member = true;
 			}
 			// Reserve
 			else if($db2->p501 == 2)
@@ -2479,6 +2485,8 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 				<p>
 					<img src="images/ranks/legion_reserve.png" />
 				</p>';
+
+				$is501Member = true;
 			}
 			// Retired
 			else if($db2->p501 == 3)
@@ -2487,6 +2495,8 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 				<p>
 					<img src="images/ranks/legion_retired.png" />
 				</p>';
+
+				$is501Member = true;
 			}
 
 			// Set up squad count
@@ -2541,7 +2551,17 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	}
 	
 	echo '
-	<p style="text-align: center;"><a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un='.urlencode($forum).'" target="_blank">View Boards Profile</a></p>';
+	<p style="text-align: center;"><a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un='.urlencode($forum).'" target="_blank" class="button">View Boards Profile</a></p>';
+
+	if($is501Member && !is_null(get501Info($tkid, $squad)['joindate']))
+	{
+		echo '
+		<p style="text-align: center;">
+			<b>501st Member Since:</b>
+			<br />
+			'.date("F, d, Y", strtotime(get501Info($tkid, $squad)['joindate'])).'
+		</p>';
+	}
 	
 	if(isAdmin() && $phone != "")
 	{
