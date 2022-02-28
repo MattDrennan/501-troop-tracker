@@ -1989,6 +1989,7 @@ function sendNotification($message, $trooperid, $type = 0, $json = "")
 	// 23 - Edit Title
 	// 24 - Remove Title
 	// 25 - Remove Award
+	// 26 - Update Advanced Options
 	
 	$conn->query("INSERT INTO notifications (message, trooperid, type, json) VALUES ('".$message."', '".$trooperid."', '".$type."', '".$json."')");
 }

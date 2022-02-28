@@ -1129,6 +1129,14 @@ $(document).ready(function()
 					$("#submitCharity").val("Set Charity Amount");
 				}
 
+				// If advanced options visible
+				if($("#advancedOptions").is(":visible"))
+				{
+					// Hide Charity
+					$("#advancedOptions").hide();
+					$("#submitCharity").val("Advanced Options");
+				}
+
 				// If edit event is hidden
 				if($("#editEventInfo").is(":hidden"))
 				{
@@ -1198,6 +1206,107 @@ $(document).ready(function()
 			}
 		});
 	})
+
+	/************************* ADVANCED OPTIONS *******************************/
+	
+	// Advanced options button
+	$("#submitAdvanced").button().click(function(e)
+	{
+		e.preventDefault();
+			
+		// Hide event info
+		if($("#editEventInfo").is(":visible"))
+		{
+			$("#editEventInfo").hide();
+			$("#submitEdit").val("Edit");
+		}
+
+		// Hide roster info
+		if($("#rosterInfo").is(":visible"))
+		{
+			$("#submitRoster").val("Roster");
+			$("#rosterInfo").html("");
+			$("#rosterInfo").hide();
+		}
+
+		// Hide charity info
+		if($("#charityAmount").is(":visible"))
+		{
+			$("#submitCharity").val("Set Charity Amount");
+			$("#charityAmount").hide();
+		}
+		
+		// Show advanced options button, when pressed
+		if($("#advancedOptions").is(":hidden"))
+		{
+			// Show advanced options
+			$("#advancedOptions").show();
+			
+			// Change button to close
+			$("#submitAdvanced").val("Close");
+			
+			// Get form info
+			var form = $("#editEvents");
+			var url = form.attr("action");
+
+			// Request event data
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitEdit=1",
+				success: function(data)
+				{
+					var json = JSON.parse(data);
+					
+					// Set advanced fields
+					$("#threadIDA").val(json.thread_id);
+					$("#postIDA").val(json.post_id);
+				}
+			});
+		}
+		else
+		{
+			// Hide charity form
+			$("#advancedOptions").hide();
+			$("#submitAdvanced").val("Advanced Options");
+		}
+	})
+	
+	// Set advanced button
+	$("#advancedOptionsSave").button().click(function(e)
+	{
+		e.preventDefault();
+		
+		// Get form info
+		var form = $("#editEvents");
+		var url = form.attr("action");
+
+		if(parseInt($("#threadIDA").val()) || parseInt($("#threadIDA").val()) === 0 && parseInt($("#postIDA").val()) || parseInt($("#postIDA").val()) === 0)
+		{
+			// Save
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitAdvanced=1&threadIDA=" + $("#threadIDA").val() + "&postIDA=" + $("#postIDA").val(),
+				success: function(data)
+				{
+					console.log(data);
+					// Hide advanced form
+					$("#advancedOptions").hide();
+					$("#submitAdvanced").val("Advanced Options");
+			
+					// Send success message
+					alert("Success!");
+				}
+			});
+		}
+		else
+		{
+			alert("Enter a valid number.");
+		}
+	})
+	
+	/************************* END ADVANCED OPTIONS *******************************/
 	
 	/************************* CHARITY *******************************/
 	
@@ -1219,6 +1328,13 @@ $(document).ready(function()
 			$("#submitRoster").val("Roster");
 			$("#rosterInfo").html("");
 			$("#rosterInfo").hide();
+		}
+
+		// Hide advanced info
+		if($("#advancedOptions").is(":visible"))
+		{
+			$("#submitAdvanced").val("Advanced Options");
+			$("#advancedOptions").hide();
 		}
 		
 		// Show charity button, when pressed
@@ -1317,6 +1433,13 @@ $(document).ready(function()
 					// Hide Charity
 					$("#charityAmount").hide();
 					$("#submitCharity").val("Set Charity Amount");
+				}
+
+				// Hide advanced info
+				if($("#advancedOptions").is(":visible"))
+				{
+					$("#submitAdvanced").val("Advanced Options");
+					$("#advancedOptions").hide();
 				}
 
 				if($("#rosterInfo").is(":hidden"))
@@ -2050,6 +2173,13 @@ $(document).ready(function()
 		{
 			$("#charityAmount").hide();
 			$("#submitCharity").val("Set Charity Amount");
+		}
+
+		// Hide advanced info
+		if(!$("#advancedOptions").is(":hidden"))
+		{
+			$("#submitAdvanced").val("Advanced Options");
+			$("#advancedOptions").hide();
 		}
 
 		// Show options to prevent not showing when changing

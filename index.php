@@ -3203,9 +3203,20 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				}
 				
 				echo '
-				<input type="submit" name="submitCancel" id="submitCancel" value="Mark Canceled" /> <input type="submit" name="submitFinish" id="submitFinish" value="Mark Finished" /> <input type="submit" name="submitOpen" id="submitOpen" value="Mark Open" /> <input type="submit" name="submitLock" id="submitLock" value="Mark Locked" /> <input type="submit" name="submitEdit" id="submitEdit" value="Edit" /> <input type="submit" name="submitRoster" id="submitRoster" value="Roster" /> <input type="submit" name="submitCharity" id="submitCharity" value="Set Charity Amount" /> <input type="submit" name="viewEvent" id="viewEvent" value="View Event" />
+				<input type="submit" name="submitCancel" id="submitCancel" value="Mark Canceled" /> <input type="submit" name="submitFinish" id="submitFinish" value="Mark Finished" /> <input type="submit" name="submitOpen" id="submitOpen" value="Mark Open" /> <input type="submit" name="submitLock" id="submitLock" value="Mark Locked" /> <input type="submit" name="submitEdit" id="submitEdit" value="Edit" /> <input type="submit" name="submitRoster" id="submitRoster" value="Roster" /> <input type="submit" name="submitCharity" id="submitCharity" value="Set Charity Amount" /> <input type="submit" name="submitAdvanced" id="submitAdvanced" value="Advanved Options" /> <input type="submit" name="viewEvent" id="viewEvent" value="View Event" />
 
 				</form>
+
+				<div name="advancedOptions" id="advancedOptions" style="display:none;">
+					<br />
+					<form action="process.php?do=editadvanced" method="POST">
+						Thread ID: <input type="number" id="threadIDA" name="threadIDA" />
+						<br /><br />
+						Post ID: <input type="number" id="postIDA" name="postIDA" />
+						<br />
+						<input type="submit" id="advancedOptionsSave" value="Set" />
+					</form>
+				</div>
 				
 				<div name="charityAmount" id="charityAmount" style="display:none;">
 					<br />
