@@ -969,6 +969,33 @@ function getUserForumID($id)
 	return json_decode($response, true);
 }
 
+// updateUserCustom: Update's user's custom variable
+function updateUserCustom($id, $custom, $value)
+{
+	// Update user by forum groups by ID
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/users/" . $id,
+	  CURLOPT_POST => 1,
+	  CURLOPT_POSTFIELDS => "custom_fields[".$custom."]=" . $value,
+	  CURLOPT_CUSTOMREQUEST => "POST",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
 // updateUserForumGroup: Update's user forum groups by ID
 function updateUserForumGroup($id, $groupid, $group_ids)
 {
