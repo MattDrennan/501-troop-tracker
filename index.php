@@ -423,6 +423,7 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 			<p>Squad/Club:</p>
 			<select name="squad" id="squad">
 				'.squadSelectList().'
+				<option value="0">'.garrison.' / 501st Visitor</option>
 			</select>
 			<br /><br />
 			<input type="submit" name="submitRequest" value="Request" />
