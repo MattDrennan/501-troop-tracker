@@ -3867,7 +3867,7 @@ if(!loggedIn() && !isset($_POST['loginWithTK']))
 				if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
 				{
 					// Update password, e-mail, and user ID
-					$conn->query("UPDATE troopers SET password = '".password_hash(cleanInput($_COOKIE['TroopTrackerPassword']), PASSWORD_DEFAULT)."', email = '".$forumLogin['user']['email']."', user_id = '".$forumLogin['user']['user_id']."', forum_id = '".$forumLogin['user']['username']."' WHERE id = '".$db->id."'");
+					$conn->query("UPDATE troopers SET password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', email = '".$forumLogin['user']['email']."', user_id = '".$forumLogin['user']['user_id']."', forum_id = '".$forumLogin['user']['username']."' WHERE id = '".$db->id."'");
 				}
 
 				// Check credentials and make sure trooper still has access
