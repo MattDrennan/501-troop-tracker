@@ -953,6 +953,9 @@ if(isset($_GET['do']) && $_GET['do'] == "assigntitles" && loggedIn() && isAdmin(
 	{
 		$message = "Title added!";
 
+		// Set up in advance to prevent error
+		$last_id = 0;
+
 		// Check if has value
 		if(cleanInput($_POST['titleName']) == "")
 		{
@@ -961,7 +964,8 @@ if(isset($_GET['do']) && $_GET['do'] == "assigntitles" && loggedIn() && isAdmin(
 		else
 		{
 			// Query the database
-			$conn->query("INSERT INTO titles (title, icon) VALUES ('".cleanInput($_POST['titleName'])."', '".cleanInput($_POST['titleImage'])."')");
+			$conn->query("INSERT INTO titles (title, icon, forum_id) VALUES ('".cleanInput($_POST['titleName'])."', '".cleanInput($_POST['titleImage'])."', '".cleanInput($_POST['titleForumID'])."')");
+
 			$last_id = $conn->insert_id;
 			
 			// Send notification to command staff
@@ -1007,13 +1011,15 @@ if(isset($_GET['do']) && $_GET['do'] == "assigntitles" && loggedIn() && isAdmin(
 
 			<div id="editTitleList" name="editTitleList" style="display: none;">
 
-			<b>Title:</b><br />
-			<input type="text" name="editTitle" id="editTitle" />
+			<p>
+				<b>Title:</b>
+				<input type="text" name="editTitle" id="editTitle" />
+			</p>
 
-			<br /><b>Title Image:</b><br />
-			<input type="text" name="editTitleImage" id="editTitleImage" />
-
-			<br />
+			<p>
+				<b>Title Image:</b>
+				<input type="text" name="editTitleImage" id="editTitleImage" />
+			</p>
 
 			<input type="submit" name="submitEditTitle" id="submitEditTitle" value="Edit Title" />
 
@@ -1216,7 +1222,7 @@ if(isset($_GET['do']) && $_GET['do'] == "assigntitles" && loggedIn() && isAdmin(
 	if(isset($_POST['submitEditTitle']))
 	{
 		// Query the database
-		$conn->query("UPDATE titles SET title = '".cleanInput($_POST['editTitleTitle'])."', icon = '".cleanInput($_POST['editTitleImage'])."' WHERE id = '".cleanInput($_POST['titleIDEdit'])."'");
+		$conn->query("UPDATE titles SET title = '".cleanInput($_POST['editTitleTitle'])."', icon = '".cleanInput($_POST['editTitleImage'])."', forum_id = '".cleanInput($_POST['editTitleForumID'])."' WHERE id = '".cleanInput($_POST['titleIDEdit'])."'");
 
 		// Send notification to command staff
 		sendNotification(getName($_SESSION['id']) . " has edited title ID [" . cleanInput($_POST['titleIDEdit']) . "] to " . cleanInput($_POST['editTitle']), cleanInput($_SESSION['id']), 23, convertDataToJSON("SELECT * FROM titles WHERE id = '".cleanInput($_POST['titleIDEdit'])."'"));
@@ -1267,6 +1273,9 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 	if(isset($_POST['submitAddAward']))
 	{
 		$message = "Award added";
+
+		// Set up in advance to prevent error
+		$last_id = 0;
 
 		// Check if has value
 		if(cleanInput($_POST['awardName']) == "")

@@ -303,7 +303,7 @@ a.button{
 /*************************************/
 
 /* Style inputs, select elements and textareas */
-input[type=text], select, textarea{
+input[type=text], input[type=number], select, textarea{
 	width: 100%;
 	padding: 12px;
 	border: 1px solid #ccc;
@@ -313,7 +313,7 @@ input[type=text], select, textarea{
 	color: var(--select-text-color) !important;
 }
 
-input[type=password], select, textarea{
+input[type=password], input[type=text], select, textarea{
 	width: 100%;
 	padding: 12px;
 	border: 1px solid #ccc;
@@ -389,7 +389,7 @@ input, select, textarea {
 
 /************************* PARJAI *******************************/ 
 
-.parjai input[type=text], select, textarea{
+.parjai input[type=text], input[type=number], select, textarea{
   background-color: var(--main-content-color);
   color: #fff;
 }
@@ -398,7 +398,7 @@ input, select, textarea {
 	color: #01bcfb;
 }
 
-.parjai input[type=password], select, textarea{
+.parjai input[type=password], input[type=number], select, textarea{
   background-color: var(--main-content-color);
   color: #fff;
 }

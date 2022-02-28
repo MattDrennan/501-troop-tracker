@@ -2814,10 +2814,20 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			echo '<br /><hr /><br /><h3>Create Title</h3>
 
 			<form action="process.php?do=assigntitles" method="POST" name="addTitle" id="addTitle">
-				<b>Title Name:</b></br />
-				<input type="text" name="titleName" id="titleName" />
-				<b>Title Image (example.png):</b></br />
-				<input type="text" name="titleImage" id="titleImage" />
+				<p>
+					<b>Title Name:</b>
+					<input type="text" name="titleName" id="titleName" />
+				</p>
+
+				<p>
+					<b>Title Image (example.png):</b></br />
+					<input type="text" name="titleImage" id="titleImage" />
+				</p>
+
+				<p>
+					<b>Corresponding Forum Title ID:</b></br />
+					<input type="number" name="titleForumID" id="titleForumID" value="0" />
+				</p>
 				<input type="submit" name="submitTitleAdd" id="submitTitleAdd" value="Add Title" />
 			</form>';
 
@@ -2845,7 +2855,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<option value="0" SELECTED>Please select a title...</option>';
 					}
 
-					echo '<option value="'.$db->id.'" title="'.$db->title.'" titleID="'.$db->id.'" titleImage="'.$db->icon.'">'.$db->title.'</option>';
+					echo '<option value="'.$db->id.'" title="'.$db->title.'" titleID="'.$db->id.'" titleImage="'.$db->icon.'" titleForumID="'.$db->forum_id.'">'.$db->title.'</option>';
 
 					// Increment
 					$i++;
@@ -2865,13 +2875,20 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<div id="editTitleList" name="editTitleList" style="display: none;">
 
-				<b>Title:</b><br />
-				<input type="text" name="editTitleTitle" id="editTitle" />
+				<p>
+					<b>Title:</b><br />
+					<input type="text" name="editTitleTitle" id="editTitle" />
+				</p>
 
-				<br /><b>Image:</b><br />
-				<input type="text" name="editTitleImage" id="editTitleImage" />
+				<p>
+					<b>Image:</b><br />
+					<input type="text" name="editTitleImage" id="editTitleImage" />
+				</p>
 
-				<br />
+				<p>
+					<b>Corresponding Forum ID:</b><br />
+					<input type="number" name="editTitleForumID" id="editTitleForumID" />
+				</p>
 
 				<input type="submit" name="submitEditTitle" id="submitEditTitle" value="Edit Title" />
 
@@ -3015,10 +3032,15 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			echo '<br /><hr /><br /><h3>Create Award</h3>
 
 			<form action="process.php?do=assignawards" method="POST" name="addAward" id="addAward">
-				<b>Award Name:</b></br />
-				<input type="text" name="awardName" id="awardName" />
-				<b>Award Image (example.png):</b></br />
-				<input type="text" name="awardImage" id="awardImage" />
+				<p>
+					<b>Award Name:</b></br />
+					<input type="text" name="awardName" id="awardName" />
+				</p>
+
+				<p>
+					<b>Award Image (example.png):</b></br />
+					<input type="text" name="awardImage" id="awardImage" />
+				</p>
 				<input type="submit" name="submitAwardAdd" id="submitAwardAdd" value="Add Award" />
 			</form>';
 
@@ -3066,13 +3088,15 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<div id="editAwardList" name="editAwardList" style="display: none;">
 
-				<b>Award Title:</b><br />
-				<input type="text" name="editAwardTitle" id="editAwardTitle" />
+				<p>
+					<b>Award Title:</b><br />
+					<input type="text" name="editAwardTitle" id="editAwardTitle" />
+				</p>
 
-				<br /><b>Award Image:</b><br />
-				<input type="text" name="editAwardImage" id="editAwardImage" />
-
-				<br />
+				<p>
+					<b>Award Image:</b><br />
+					<input type="text" name="editAwardImage" id="editAwardImage" />
+				</p>
 
 				<input type="submit" name="submitEditAward" id="submitEditAward" value="Edit Award" />
 

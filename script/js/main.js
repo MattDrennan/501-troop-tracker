@@ -1290,7 +1290,6 @@ $(document).ready(function()
 				data: form.serialize() + "&submitAdvanced=1&threadIDA=" + $("#threadIDA").val() + "&postIDA=" + $("#postIDA").val(),
 				success: function(data)
 				{
-					console.log(data);
 					// Hide advanced form
 					$("#advancedOptions").hide();
 					$("#submitAdvanced").val("Advanced Options");
@@ -2510,6 +2509,7 @@ $(document).ready(function()
 
 		$("#editTitle").val($("#titleIDEdit :selected").attr("title"));
 		$("#editTitleImage").val($("#titleIDEdit :selected").attr("titleImage"));
+		$("#editTitleForumID").val($("#titleIDEdit :selected").attr("titleForumID"));
 	});
 
 	// Titles - Finsih Edit
@@ -2541,6 +2541,7 @@ $(document).ready(function()
 					$("#titleIDEdit :selected").text($("#editTitle").val());
 					$("#titleIDEdit :selected").attr("title", $("#editTitle").val());
 					$("#titleIDEdit :selected").attr("titleImage", $("#editTitleImage").val());
+					$("#titleIDEdit :selected").attr("titleForumID", $("#editTitleForumID").val());
 					$("#titleIDEdit").select2();
 
 					$("#editTitleList").hide();
@@ -2577,6 +2578,7 @@ $(document).ready(function()
 					// Clear form
 					$("#titleName").val("");
 					$("#titleImage").val("");
+					$("#titleForumID").val(0);
 
 					// Alert to success
 			  		alert(json[0].message);
