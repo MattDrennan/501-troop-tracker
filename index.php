@@ -3876,6 +3876,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<div id="limitChangeArea" style="display: none;">
 
+				<p>Post to boards?</p>
+				<select name="postToBoards" id="postToBoards">
+					<option value="1">Yes</option>
+					<option value="0">No</option>
+				</select>
+
 				<p>Is this a manual selection event?</p>
 				<select name="limitedEvent" id="limitedEvent">
 					<option value="0" '.copyEventSelect($eid, $limitedEvent, 0).'>No</option>

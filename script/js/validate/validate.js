@@ -120,6 +120,7 @@ $(function()
                             $("#era").val("4");
                             $("#limit501st").val("500");
                             $("[name=smileyarea]").html("");
+                            $("#postToBoards").val(1);
 
                             // Loop through clubs
                             for(var i = 0; i <= (clubArray.length - 1); i++)

@@ -2250,14 +2250,18 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 
 				[url]https://fl501st.com/troop-tracker/index.php?event=' . $eventId . '[/url]';
 
-				// Create thread on forum
-				$thread = createThread($squadArray[intval($_POST['squadm'] - 1)]['eventForum'], date("m/d/y", strtotime($date1)) . " " . $_POST['eventName'], $thread_body);
+				// Only create thread if we can and admin allows
+				if($_POST['postToBoards'] == 1 && $_POST['squadm'] != 0)
+				{
+					// Create thread on forum
+					$thread = createThread($squadArray[intval($_POST['squadm'] - 1)]['eventForum'], date("m/d/y", strtotime($date1)) . " " . $_POST['eventName'], $thread_body);
 
-				// Lock the thread
-				lockThread($thread['thread']['thread_id']);
+					// Lock the thread
+					lockThread($thread['thread']['thread_id']);
 
-				// Update event
-				$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."', post_id = '".$thread['thread']['last_post_id']."' WHERE id = '".$eventId."'");
+					// Update event with thread and post IDs
+					$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."', post_id = '".$thread['thread']['last_post_id']."' WHERE id = '".$eventId."'");
+				}
 			}
 			
 			// Loop through shifts
@@ -2318,11 +2322,18 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 
 						[url]https://fl501st.com/troop-tracker/index.php?event=' . $eventId . '[/url]';
 
-						// Create thread on forum
-						$thread = createThread($squadArray[intval($_POST['squadm'] - 1)]['eventForum'], date("m/d/y", strtotime($date1)) . " " . $_POST['eventName'], $thread_body);
+						// Only create thread if we can and admin allows
+						if($_POST['postToBoards'] == 1 && $_POST['squadm'] != 0)
+						{
+							// Create thread on forum
+							$thread = createThread($squadArray[intval($_POST['squadm'] - 1)]['eventForum'], date("m/d/y", strtotime($date1)) . " " . $_POST['eventName'], $thread_body);
 
-						// Update event
-						$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."', post_id = '".$thread['thread']['last_post_id']."' WHERE id = '".$last_id."'");
+							// Lock the thread
+							lockThread($thread['thread']['thread_id']);
+
+							// Update event
+							$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."', post_id = '".$thread['thread']['last_post_id']."' WHERE id = '".$last_id."'");
+						}
 
 						// Send notification to command staff
 						sendNotification(getName($_SESSION['id']) . " has added an event: [" . $last_id . "][" . cleanInput($_POST['eventName']) . "]", cleanInput($_SESSION['id']), 13, convertDataToJSON("SELECT * FROM events WHERE id = '".$last_id."'"));

@@ -480,6 +480,7 @@ $(document).ready(function()
 		e.preventDefault();
 
 		// Reset
+		$("#postToBoards").val(1);
 		$("#era").val(4);
 		$("#limit501st").val(500);
 		$("#limitedEvent").val(0);
