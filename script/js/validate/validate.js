@@ -154,7 +154,7 @@ $(function()
             squad:
             {
                 required: true,
-                range: [1, 9]
+                range: [0, 9]
             },
             permissions:
             {

@@ -3511,6 +3511,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						<p>Squad/Club:</p>
 						<select name="squad" id="squad">
+							<option value="0">'.garrison.'</option>
 							'.squadSelectList().'
 						</select>';
 
