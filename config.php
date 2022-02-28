@@ -892,6 +892,33 @@ function editPost($id, $message)
 	return json_decode($response, true);
 }
 
+// moveThread: Moves a thread to specified forum
+function moveThread($id, $forum)
+{
+	// Edit Post
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/threads/" . $id . "/move",
+	  CURLOPT_POST => 1,
+	  CURLOPT_POSTFIELDS => "target_node_id=" . $forum,
+	  CURLOPT_CUSTOMREQUEST => "POST",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
 // getUserForum: Get's Xenforo forum user by username
 function getUserForum($username)
 {
