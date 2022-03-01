@@ -21,6 +21,9 @@ if ($result = mysqli_query($conn, $query))
 	}
 }
 
+// Florida Garrison
+$sM0 = "";
+
 // Set up squad count - milestones
 $y = 1;
 
@@ -43,6 +46,9 @@ foreach($clubArray as $club => $club_value)
 	// Increment
 	$y++;
 }
+
+// Florida Garrison
+$sC0 = "";
 
 // Set up squad count - comments
 $l = 1;
@@ -105,7 +111,7 @@ if ($result = mysqli_query($conn, $query))
 $i = 1;
 
 // Set up add to query
-$addToQuery = "";
+$addToQuery = ", troopers.esquad0";
 
 // Loop through squads
 foreach($squadArray as $squad => $squad_value)
@@ -144,6 +150,20 @@ if ($result = mysqli_query($conn, $query))
 		
 		// Trooper Milestones
 		$message .= "Trooper Milestones:\n\n";
+
+		// Florida Garrison
+		if($db->esquad0 == 1)
+		{
+			// Add squad information to e-mail
+			$message .= $sM0;
+
+			// Check if message has contents
+			if($sM0 != "")
+			{
+				// Increment milestone count
+				$mC++;
+			}
+		}
 		
 		// Set up squad count
 		$i = 1;
@@ -198,6 +218,20 @@ if ($result = mysqli_query($conn, $query))
 		
 		// Trooper Comments
 		$message .= "Important Comments:\n\n";
+
+		// Florida Garrison
+		if($db->esquad0 == 1)
+		{
+			// Add squad information to e-mail
+			$message .= $sC0;
+
+			// Check if message has contents
+			if($sC0 != "")
+			{
+				// Increment milestone count
+				$cC++;
+			}
+		}
 		
 		// Set up squad count
 		$i = 1;
@@ -239,6 +273,9 @@ if ($result = mysqli_query($conn, $query))
 		}
 	}
 }
+
+// Florida Garrison
+$s0 = "";
 
 // Set up squad count
 $i = 1;
@@ -300,6 +337,20 @@ if($i > 0)
 
 			// Set up e-mail
 			$emailBody = "New events posted:\n\n";
+
+			// Florida Garrison - Check allow e-mails for squad
+			if($db->esquad0 == 1)
+			{
+				// Add squad information to e-mail
+				$emailBody .= $s0;
+
+				// Make sure not empty
+				if($s0 != "")
+				{
+					// Increment something to send
+					$k++;
+				}
+			}
 
 			// Loop through squads
 			foreach($squadArray as $squad => $squad_value)

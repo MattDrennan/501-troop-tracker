@@ -1612,7 +1612,11 @@ function postTweet($message)
 // squadToDiscord: Converts squad ID to Discord
 function squadToDiscord($squad)
 {
-	if($squad == 1)
+	if($squad == 0)
+	{
+		return '<@948046239956627506>';
+	}
+	else if($squad == 1)
 	{
 		return '<@&914344158678900766>';
 	}
@@ -1759,7 +1763,7 @@ function getSquadName($value)
 	global $squadArray, $clubArray;
 	
 	// Set return value
-	$returnValue = "";
+	$returnValue = garrison;
 	
 	// Set squad ID
 	$squadID = 1;
