@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdocumentor>
+    <title>App Plugins Documentations</title>
+    <parser>
+        <target>reference/docs</target>
+    </parser>
+    <transformer>
+        <target>reference/docs</target>
+    </transformer>
+    <files>
+        <directory>.</directory> <!-- Scan and parse all the php files except those found in the paths below -->
+        <ignore>vendor/*</ignore>
+    </files>
+</phpdocumentor>
