@@ -47,7 +47,11 @@ if ($conn->connect_error)
 	trigger_error('Database connection failed: ' . $conn->connect_error, E_USER_ERROR);
 }
 
-// Main costume string
+/**
+ * This variable is used to put these costumes first in a query
+ * 
+ * @var string
+*/
 $mainCostumes = "'501st: N/A', '501st: Command Staff', '501st: Handler'";
 
 /**
