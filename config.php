@@ -730,6 +730,61 @@ function drawSupportGraph()
 	return $return;
 }
 
+// resetTrooperStatus: Resets the troopers status based on trooper counts
+function resetTrooperStatus($eventID, $link = 0)
+{
+	global $conn;
+
+	// Get data
+	$query = "SELECT * FROM events WHERE id = '".$eventID."'";
+
+	// If link added, query link event as well
+	if($link > 0)
+	{
+		$query .= " OR link = '".$link."'";
+	}
+	
+	// Run query...
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Check each club to see if it's limited
+			if($db->limit501st > 500 || $db->limit501st < 500)
+			{
+				// Reset event sign up
+				$conn->query("UPDATE event_sign_up SET status = '1' WHERE troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume)");
+
+				// Update statuses to going if room
+				$conn->query("UPDATE event_sign_up SET status = '0' WHERE troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ORDER BY signuptime ASC LIMIT " . $db->{$club_value['dbLimit']});
+			}
+
+			// Loop through clubs to check limits
+			foreach($clubArray as $club => $club_value)
+			{
+				if($db->{$club_value['dbLimit']} > 500 || $db->{$club_value['dbLimit']} < 500)
+				{
+					// Reset event sign up
+					$conn->query("UPDATE event_sign_up SET status = '1' WHERE troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume)");
+
+					// Update statuses to going if room
+					$conn->query("UPDATE event_sign_up SET status = '0' WHERE troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ORDER BY signuptime ASC LIMIT " . $db->{$club_value['dbLimit']});
+				}
+			}
+
+			// Check total limit
+			if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+			{
+				// Reset event sign up
+				$conn->query("UPDATE event_sign_up SET status = '1' WHERE troopid = '".$db->id."'");
+
+				// Update statuses to going if room
+				$conn->query("UPDATE event_sign_up SET status = '0' WHERE troopid = '".$db->id."' ORDER BY signuptime ASC LIMIT " . $db->limitTotalTroopers);
+			}
+		}
+	}
+}
+
 /*********************** XENFORO ***********************/
 
 // getAuthForum: Get's auth data from Xenforo
