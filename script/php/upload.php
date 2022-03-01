@@ -12,6 +12,14 @@ $storeFolder = '../../images/uploads/';
 // If file exists
 if (!empty($_FILES))
 {
+
+	// Verify this is an allowed image
+	$filesAllowed = array(IMAGETYPE_PNG, IMAGETYPE_JPEG, IMAGETYPE_GIF);
+	$uploadedType = exit_imagetype($_FILES['file']['name'])
+	$error = !in_array($uploadedType, $filesAllowed)
+	if($error){
+	die("Uploaded File is not allowed!");
+	}
 	// Set up file and move to folder
 	$fileName = date("Y-m-d-H-i-s-") . $_FILES['file']['name'];
 	$tempFile = $_FILES['file']['tmp_name'];         
