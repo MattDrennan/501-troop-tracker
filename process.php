@@ -1,4 +1,12 @@
 <?php
+
+/**
+ * This file is used for processing AJAX requests.
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 include 'config.php';
 
 /******************** SMILEY EDITOR *******************************/

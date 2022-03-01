@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file was used for converting PHPBB smilies.pak to something the Troop Tracker can interpret.
+ * 
+ * This file is stored for historical purposes.
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 $handle = fopen("smilies.pak", "r");
 
 if ($handle)

@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is used for updating forum data such as custom variables and user groups from Troop Tracker data.
+ * 
+ * This should be run every two minutes by a cronjob.
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 // Include config
 include(dirname(__DIR__) . '/../../config.php');
 

@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is used for displaying the website.
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 // Include config file
 include 'config.php';
 

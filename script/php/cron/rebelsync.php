@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is used for scraping Rebel Legion data.
+ * 
+ * This should be run weekly by a cronjob.
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 // Include config
 include(dirname(__DIR__) . '/../../config.php');
 

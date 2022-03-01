@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is used for storing smiley array data.
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 $replacements = array(
 'templeguard' => '<img src="https://www.fl501st.com/boards/images/smilies/templeguard.png" code="templeguard" />',
 'din' => '<img src="https://www.fl501st.com/boards/images/smilies/din.png" code="din" />',

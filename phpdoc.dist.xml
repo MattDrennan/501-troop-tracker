@@ -12,8 +12,18 @@
     <version number="1.0.0">
         <api>
             <source dsn=".">
-                <path>config.php</path>
             </source>
+
+            <ignore>
+                <path>docs/</path>
+                <path>images/</path>
+                <path>css/</path>
+                <path>fontawesome/</path>
+                <path>manual/</path>
+                <path>vendor/</path>
+                <path>tool/</path>
+                <path>cred.php</path>
+            </ignore>
         </api>
     </version>
 </phpdocumentor>

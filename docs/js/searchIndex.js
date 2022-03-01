@@ -358,7 +358,7 @@ Search.appendIndex(
         },                {
             "fqsen": "\\getCostumeClub\u0028\u0029",
             "name": "getCostumeClub",
-            "summary": "Returns\u0020the\u0020ID\u0020of\u0020the\u0020club\u0020assigned\u0020to\u0020a\u0020costume",
+            "summary": "Returns\u0020the\u0020club\u0020ID\u0020based\u0020on\u0020the\u0020costume\u0020ID",
             "url": "namespaces/default.html#function_getCostumeClub"
         },                {
             "fqsen": "\\profileTop\u0028\u0029",
@@ -398,7 +398,7 @@ Search.appendIndex(
         },                {
             "fqsen": "\\getSquadID\u0028\u0029",
             "name": "getSquadID",
-            "summary": "Return\u0027s\u0020the\u0020troopers\u0027s\u0020squad\u0020ID",
+            "summary": "Converts\u0020the\u0020string\u0020value\u0020to\u0020squad\u0020ID",
             "url": "namespaces/default.html#function_getSquadID"
         },                {
             "fqsen": "\\copyEvent\u0028\u0029",
@@ -580,6 +580,36 @@ Search.appendIndex(
             "name": "get_numerics",
             "summary": "Returns\u0020numbers\u0020from\u0020string",
             "url": "namespaces/default.html#function_get_numerics"
+        },                {
+            "fqsen": "\\convertMemberApproved\u0028\u0029",
+            "name": "convertMemberApproved",
+            "summary": "",
+            "url": "namespaces/default.html#function_convertMemberApproved"
+        },                {
+            "fqsen": "\\convertMemberStatus\u0028\u0029",
+            "name": "convertMemberStatus",
+            "summary": "",
+            "url": "namespaces/default.html#function_convertMemberStatus"
+        },                {
+            "fqsen": "\\convertMemberStanding\u0028\u0029",
+            "name": "convertMemberStanding",
+            "summary": "",
+            "url": "namespaces/default.html#function_convertMemberStanding"
+        },                {
+            "fqsen": "\\convertSquadId\u0028\u0029",
+            "name": "convertSquadId",
+            "summary": "",
+            "url": "namespaces/default.html#function_convertSquadId"
+        },                {
+            "fqsen": "\\print_r_reverse\u0028\u0029",
+            "name": "print_r_reverse",
+            "summary": "",
+            "url": "namespaces/default.html#function_print_r_reverse"
+        },                {
+            "fqsen": "\\contains\u0028\u0029",
+            "name": "contains",
+            "summary": "",
+            "url": "namespaces/default.html#function_contains"
         },                {
             "fqsen": "\\",
             "name": "\\",

@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is used to send daily notifications of new troops and other information.
+ * 
+ * This should be run daily by a cronjob.
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 // Include config
 include(dirname(__DIR__) . '/../../config.php');
 
