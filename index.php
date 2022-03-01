@@ -283,7 +283,7 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 			foreach($clubArray as $club => $club_value)
 			{
 				echo '
-				<input type="checkbox" name="esquad'.$i.'" id="esquad'.$i.'" ' . emailSettingStatus("esquad" . $i, true) . ' />' . $club . '<br />';
+				<input type="checkbox" name="esquad'.$i.'" id="esquad'.$i.'" ' . emailSettingStatus("esquad" . $i, true) . ' />' . $club_value['name'] . '<br />';
 				
 				// Increment squad count
 				$i++;
@@ -1463,6 +1463,24 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<a href="index.php?action=commandstaff&do=stats" class="button">Statistics</a>
 				<a href="index.php?action=commandstaff&do=sitesettings" class="button">Site Settings</a>';
 			}
+
+			// If have special permission for trooper management
+			if(hasSpecialPermission("spTrooper"))
+			{
+				echo '<a href="index.php?action=commandstaff&do=managetroopers" class="button">Trooper Management</a> ';
+			}
+
+			// If have special permission for costume management
+			if(hasSpecialPermission("spCostume"))
+			{
+				echo '<a href="index.php?action=commandstaff&do=managecostumes" class="button">Costume Management</a> ';
+			}
+
+			// If have special permission for award management
+			if(hasSpecialPermission("spAward"))
+			{
+				echo '<a href="index.php?action=commandstaff&do=assignawards" class="button">Award Management</a> ';
+			}
 			
 		echo '
 		</p>';
@@ -2458,7 +2476,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		/**************************** COSTUMES *********************************/
 
 		// Manage costumes - allow command staff to add, edit, and delete costumes
-		if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && hasPermission(1))
+		if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && (hasPermission(1) || hasSpecialPermission("spCostume")))
 		{
 			echo '
 			<h3>Add Costume</h3>
@@ -2837,7 +2855,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		/**************************** AWARDS *********************************/
 
 		// Assign an award to users
-		if(isset($_GET['do']) && $_GET['do'] == "assignawards")
+		if(isset($_GET['do']) && $_GET['do'] == "assignawards" && (hasPermission(1) || hasSpecialPermission("spTrooper")))
 		{
 			echo '<h3>Assign Awards</h3>
 			
@@ -3349,7 +3367,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		}
 
 		// Manage users
-		if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && hasPermission(1))
+		if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && (hasPermission(1) || hasSpecialPermission("spTrooper")))
 		{
 			// If admin is visting this page from the event page
 			
@@ -3414,21 +3432,59 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<input type="text" name="user" id="user" />
 
 						<p>Phone (Optional):</p>
-						<input type="text" name="phone" id="phone" />
+						<input type="text" name="phone" id="phone" maxlength="10" />
 
 						<p>Squad/Club:</p>
 						<select name="squad" id="squad">
 							'.squadSelectList().'
-						</select>
+						</select>';
 
-						<p>Permissions:</p>
-						<select name="permissions" id="permissions">
-							<option value="0">Regular Member</option>
-							<option value="2">Moderator</option>
-							<option value="1">Super Admin</option>
-						</select>
+						if(hasPermission(1))
+						{
+							echo '
+							<p>General Permissions:</p>
+							<select name="permissions" id="permissions">
+								<option value="0">Regular Member</option>
+								<option value="2">Moderator</option>
+								<option value="1">Super Admin</option>
+							</select>';
+						}
+
+						echo '
+						<span name="specialPermissions" style="display: none;">';
+
+						if(hasPermission(1))
+						{
+							echo '
+							<p>Special Permissions:</p>
+
+							<p>
+								<input type="checkbox" name="spTrooper" /> Trooper Management
+							</p>
+
+							<p>
+								<input type="checkbox" name="spCostume" /> Costume Management
+							</p>
+
+							<p>
+								<input type="checkbox" name="spAward" /> Award Management
+							</p>';
+						}
+
+						echo '
+						</span>
+
+						<p>
+							<a href="#/" class="button" id="trooperInformationButton">Show Trooper Information</a>
+						</p>
+
+						<span name="trooperInformation" style="display: none;">
+
+						<p>
+							<hr />
+						</p>
 						
-						<p>501st Member Permissions:</p>
+						<p>501st Member Status:</p>
 						<select name="p501" id="p501">
 							<option value="0">Not A Member</option>
 							<option value="1">Regular Member</option>
@@ -3444,7 +3500,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						foreach($clubArray as $club => $club_value)
 						{
 							echo '
-							<p>'.$club_value['name'].' Member Permissions:</p>
+							<p>'.$club_value['name'].' Member Status:</p>
 							<select name="'.$club_value['db'].'" id="'.$club_value['db'].'" class="clubs">
 								<option value="0">Not A Member</option>
 								<option value="1">Regular Member</option>
@@ -3477,6 +3533,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						}
 						
 						echo '
+						<p>
+							<hr />
+						</p>
+						</span>
+
 						<p>Supporter:</p>
 						<select name="supporter" id="supporter">
 							<option value="0">No</option>

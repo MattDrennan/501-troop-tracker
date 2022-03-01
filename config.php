@@ -769,7 +769,7 @@ function createThread($id, $title, $message)
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
-	    "XF-Api-Key: " . xenforoAPI,
+	    "XF-Api-Key: " . xenforoAPI_superuser,
 	  ],
 	]);
 
@@ -795,7 +795,7 @@ function lockThread($id)
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
-	    "XF-Api-Key: " . xenforoAPI,
+	    "XF-Api-Key: " . xenforoAPI_superuser,
 	  ],
 	]);
 
@@ -821,7 +821,7 @@ function createPost($id, $message)
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
-	    "XF-Api-Key: " . xenforoAPI,
+	    "XF-Api-Key: " . xenforoAPI_superuser,
 	  ],
 	]);
 
@@ -847,7 +847,7 @@ function editPost($id, $message)
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
-	    "XF-Api-Key: " . xenforoAPI,
+	    "XF-Api-Key: " . xenforoAPI_superuser,
 	  ],
 	]);
 
@@ -871,7 +871,7 @@ function getUserForum($username)
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
-	    "XF-Api-Key: " . xenforoAPI,
+	    "XF-Api-Key: " . xenforoAPI_superuser,
 	  ],
 	]);
 
@@ -895,7 +895,7 @@ function getUserForumID($id)
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
-	    "XF-Api-Key: " . xenforoAPI,
+	    "XF-Api-Key: " . xenforoAPI_superuser,
 	  ],
 	]);
 
@@ -932,7 +932,7 @@ function updateUserForumGroup($id, $groupid, $group_ids)
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
-	    "XF-Api-Key: " . xenforoAPI,
+	    "XF-Api-Key: " . xenforoAPI_superuser,
 	  ],
 	]);
 
@@ -957,7 +957,7 @@ function deletePost($id, $hard_delete = false)
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
-	    "XF-Api-Key: " . xenforoAPI,
+	    "XF-Api-Key: " . xenforoAPI_superuser,
 	  ],
 	]);
 
@@ -982,7 +982,7 @@ function deleteThread($id, $hard_delete = false)
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
-	    "XF-Api-Key: " . xenforoAPI,
+	    "XF-Api-Key: " . xenforoAPI_superuser,
 	  ],
 	]);
 
@@ -2929,8 +2929,8 @@ function isAdmin()
 }
 
 // hasPermission: Does the user have permission to access the data?
-// 0 = 501st Member, 1 = Super Admin, 2 = Squad Leader, 3 = Reserve Member, 4 = Retired Member
-function hasPermission($permissionLevel1, $permissionLevel2 = -1, $permissionLevel3 = -1, $permissionLevel4 = -1)
+// 0 = Regular Member, 1 = Super Admin, 2 = Moderator
+function hasPermission($permissionLevel1, $permissionLevel2 = -1, $permissionLevel3 = -1)
 {
 	global $conn;
 	
@@ -2939,6 +2939,7 @@ function hasPermission($permissionLevel1, $permissionLevel2 = -1, $permissionLev
 	if(isset($_SESSION['id']))
 	{
 		$query = "SELECT * FROM troopers WHERE id='".$_SESSION['id']."'";
+
 		if ($result = mysqli_query($conn, $query))
 		{
 			while ($db = mysqli_fetch_object($result))
@@ -2957,16 +2958,35 @@ function hasPermission($permissionLevel1, $permissionLevel2 = -1, $permissionLev
 				{
 					$isAllowed = true;
 				}
-				
-				if($db->permissions == $permissionLevel4)
-				{
-					$isAllowed = true;
-				}
 			}
 		}
 	}
 	
 	return $isAllowed;
+}
+
+// hasSpecialPermission: Check to see if the trooper has a special permission to perform certain functions
+function hasSpecialPermission($permission)
+{
+	global $conn;
+	
+	$hasPermission = false;
+	
+	// Check if the trooper is a moderator
+	$query = "SELECT * FROM troopers WHERE id = '".$_SESSION['id']."' AND permissions = 2";
+
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			if($db->{$permission} == 1)
+			{
+				$hasPermission = true;
+			}
+		}
+	}
+	
+	return $hasPermission;
 }
 
 // isWebsiteClosed: Is the website closed?

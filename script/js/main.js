@@ -292,6 +292,21 @@ $(document).ready(function()
 	{
 		$.LoadingOverlay("hide");
 	});
+
+	// Image Upload - Change Upload Type
+	$("body").on("click", "#trooperInformationButton", function(e)
+	{
+		if($(this).text() == "Show Trooper Information")
+		{
+			$("[name=trooperInformation]").show();
+			$(this).text("Hide Trooper Information");
+		}
+		else
+		{
+			$("[name=trooperInformation]").hide();
+			$(this).text("Show Trooper Information");
+		}
+	})
 	
 	// Master Roster - Add Trooper
 	$("body").on("click", "#addTrooperMaster", function(e)
@@ -1015,6 +1030,21 @@ $(document).ready(function()
 					$("#squad").val(json.squad);
 					$("#permissions").val(json.permissions);
 
+					// Special permissions
+
+					// Reset
+					$("[name=spTrooper]").prop("checked", false);
+					$("[name=spCostume]").prop("checked", false);
+					$("[name=spAward]").prop("checked", false);
+					$("[name=spTrooper]").val(0);
+					$("[name=spCostume]").val(0);
+					$("[name=spAward]").val(0);
+
+					// Set checkboxes
+					if(json.spTrooper == 1) { $("[name=spTrooper]").prop("checked", true); $("[name=spTrooper]").val(1); }
+					if(json.spCostume == 1) { $("[name=spCostume]").prop("checked", true); $("[name=spCostume]").val(1); }
+					if(json.spAward == 1) { $("[name=spAward]").prop("checked", true); $("[name=spAward]").val(1); }
+
 					// Loop through clubs
 					for(var i = 0; i <= (clubArray.length - 1); i++)
 					{
@@ -1031,6 +1061,12 @@ $(document).ready(function()
 					}
 
 					$("#supporter").val(json.supporter);
+
+					// If a moderator, show special permissions
+					if(json.permissions == 2)
+					{
+						$("[name=specialPermissions]").show();
+					}
 				}
 				else
 				{

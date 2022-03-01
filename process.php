@@ -1708,6 +1708,7 @@ if(isset($_GET['do']) && $_GET['do'] == "getuser" && loggedIn())
 					$link = 'https://www.501st.com/memberAPI/v3/legionId/' . $db->tkid;
 				}
 				
+				// Array variables
 				$array = array('name' => $db->name, 'email' => $db->email, 'forum' => $db->forum_id, 'phone' => $db->phone, 'squad' => getSquadName($db->squad), 'tkid' => readTKNumber($db->tkid, $db->squad), 'link' => $link);
 
 				// Loop through clubs
@@ -1817,7 +1818,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$array = array('id' => $db->id, 'name' => $db->name, 'phone' => $db->phone, 'squad' => $db->squad, 'permissions' => $db->permissions, 'p501' => $db->p501, 'tkid' => $db->tkid, 'forumid' => $db->forum_id, 'supporter' => $db->supporter);
+				$array = array('id' => $db->id, 'name' => $db->name, 'phone' => $db->phone, 'squad' => $db->squad, 'permissions' => $db->permissions, 'p501' => $db->p501, 'tkid' => $db->tkid, 'forumid' => $db->forum_id, 'supporter' => $db->supporter, 'spTrooper' => $db->spTrooper, 'spCostume' => $db->spCostume, 'spAward' => $db->spAward);
 
 				// Loop through clubs
 				foreach($clubArray as $club => $club_value)
@@ -1841,7 +1842,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 	if(isset($_POST['submitUserEdit']))
 	{
 		// Check we have all the data we need server side. JQuery should do this, but this is a backup
-		if(cleanInput($_POST['user']) != "" && cleanInput($_POST['squad']) != "" && cleanInput($_POST['permissions']) != "" && cleanInput($_POST['tkid']) != "" && cleanInput($_POST['forumid']) != "")
+		if(cleanInput($_POST['user']) != "" && cleanInput($_POST['squad']) != "" && cleanInput($_POST['tkid']) != "" && cleanInput($_POST['forumid']) != "")
 		{
 			// Set up message
 			$message = "Trooper has been updated!";
@@ -1880,7 +1881,19 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 			}
 			
 			// Query the database
-			$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['user'])."', phone = '".cleanInput(cleanInput($_POST['phone']))."', squad = '".cleanInput($_POST['squad'])."', permissions = '".cleanInput($_POST['permissions'])."', p501 = '".cleanInput($_POST['p501'])."', ".$addToQuery." tkid = '".$tkid."', forum_id = '".cleanInput($_POST['forumid'])."', supporter = '".cleanInput($_POST['supporter'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'") or die($conn->error);
+			$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['user'])."', phone = '".cleanInput(cleanInput($_POST['phone']))."', squad = '".cleanInput($_POST['squad'])."', p501 = '".cleanInput($_POST['p501'])."', ".$addToQuery." tkid = '".$tkid."', forum_id = '".cleanInput($_POST['forumid'])."', supporter = '".cleanInput($_POST['supporter'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'") or die($conn->error);
+
+			// If super user, update special permissions
+			if(hasPermission(1))
+			{
+				// Give default value if null
+				if(!isset($_POST['spTrooper'])) { $_POST['spTrooper'] = 0; } else { $_POST['spTrooper'] = 1; }
+				if(!isset($_POST['spCostume'])) { $_POST['spCostume'] = 0; } else { $_POST['spCostume'] = 1; }
+				if(!isset($_POST['spAward'])) { $_POST['spAward'] = 0; } else { $_POST['spAward'] = 1; }
+
+				// Query the database
+				$conn->query("UPDATE troopers SET spTrooper = '".cleanInput($_POST['spTrooper'])."', spCostume = '".cleanInput($_POST['spCostume'])."', spAward = '".cleanInput($_POST['spAward'])."', permissions = '".cleanInput($_POST['permissions'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'") or die($conn->error);
+			}
 			
 			// **CUSTOM**
 			// Check if Rebel is on spreadsheet
