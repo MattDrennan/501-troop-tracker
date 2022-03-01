@@ -12,65 +12,117 @@ You are free to download, modify, and use freely for non-commerical purposes.
 ```
 <?php
 
-// DB Info
-// Main database
+/**
+ * 
+ * This is the main MySQL database information.
+ * 
+ * dbServer: The MySQL server address
+ * dbUser: The user for MySQL server
+ * dbPassword: The password for MySQL server
+ * dbName: The database for MySQL server
+*/
+
 define('dbServer', 'MY_SERVER_HERE');
 define('dbUser', 'DB_USER_HERE');
 define('dbPassword', 'DB_PASSWORD_HERE');
 define('dbName', 'DB_NAME_HERE');
 
-// DB Info Merge
-// This may not be necessary, this is for merging the old troop tracker data to the new troop tracker, see auto.php for more info
+/**
+ * 
+ * This is used for merging old troop tracker data with the new tracker. This is not needed to run Troop Tracker.
+ * See auto.php in the archive folder for more information.
+ *
+ * dbServer2: The MySQL server address
+ * dbUser2: The user for MySQL server
+ * dbPassword2: The password for MySQL server
+ * dbName2: The database for MySQL server
+*/
+
 define('dbServer2', 'MY_SERVER_HERE');
 define('dbUser2', 'DB_USER_HERE');
 define('dbPassword2', 'DB_PASSWORD_HERE');
 define('dbName2', 'DB_NAME_HERE');
 
-// Path - Absolute path to directory
-define('aPath', 'ABSOLUTE_PATH_HERE_TO_MAIN_DIRECTORY');
+/**
+ * placeholder: This variable is used for assigning a user account to be a placeholder account. A placeholder account can be signed up multiple times for the same event, and is used to sign up non-members.
+*/
 
-// Placeholder Account ID (Used for signing up non-members)
 define('placeholder', 1196);
 
-// Forum API Key (Xenforo)
+/**
+ * xenforoAPI_superuser: This variable is the API key for Xenforo. Ensure it is a super key.
+ * xenforoAPI_userID: This variable is the user ID of a super user. This is the account that will publish information to the forum.
+ * https://xenforo.com/docs/dev/rest-api/
+*/
+
 define('xenforoAPI_superuser', 'API_SUPER_USER_KEY_HERE');
 define('xenforoAPI_userID', 'API_USER_SUPER_ID_HERE');
 
-// E-mail Creds
-// This is the email server and account you are going to send e-mails from
+/**
+ * emailFrom: This is the e-mail address that users will see when they receive e-mail from Troop Tracker
+ * emailUser: This is the username to access the e-mail server
+ * emailPassword: This is the password to access the e-mail server
+ * emailServer: This is the address of the e-mail server
+ * emailPort: This is the port of the e-mail server
+*/
+
 define('emailFrom', 'EMAIL_ADDRESS');
 define('emailUser', 'SMTP_USER');
 define('emailPassword', 'SMTP_PASSWORD');
 define('emailServer', 'SMTP_SERVER');
 define('emailPort', SMTP_PORT);
 
-// Twitter
+/**
+ * consumerKey: This is the consumer key for Twitter API
+ * consumerSecret: This is the consumer secret for Twitter API
+ * bearerToken: This is the bearer token for Twitter API
+ * accessToken: This is the access token for Twitter API
+ * accessTokenSecret: This is the access token secret for Twitter API
+ * https://developer.twitter.com/en/docs/twitter-api
+*/
+
 define('consumerKey', 'consumer_key_here');
 define('consumerSecret', 'consumer_secret_here');
 define('bearerToken', 'bearer_token_here');
 define('accessToken', 'access_token_here');
 define('accessTokenSecret', 'access_secret_here');
 
-// Google Maps
-// Make sure you get a Google Maps API key to use the Google API. The Google Maps API is used to automatically detect where an event is located
+/**
+ * googleKey: This is a Google API key which is used to access Google services. This is used for automatically detecting where an event is located, and it will automatically assign a squad based on the location.
+ * https://developers.google.com/maps/documentation/javascript/get-api-key
+*/
+
 define('googleKey', 'GOOGLE_MAP_API_KEY_HERE');
 
-// PayPal Info
-// See PayPal IPN documentation for more information. This file is used to store donations into the database for tracking.
+/**
+ * ipn: This variable is where all the PayPal payment webhooks are sent. This is how the Troop Tracker knows which trooper has donated.
+ * https://developer.paypal.com/api/nvp-soap/ipn/IPNIntro/
+*/
+
 define('ipn', 'script/php/paypal.php');
 
-// Discord Web Hook
+/**
+ * discordWeb1: This variable is the webhook URL from the Discord server.
+ * https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks
+*/
+
 define('discordWeb1', 'WEBHOOK_HERE');
 
-// Garrison
-// Your garrison and the logo image file name in the images folders
+/**
+ * garrison: This variable is used to display the garrison name, and to make it easier to replace all mentions of the garrison
+ * garrisonImage: This variable is used to display the garrison logo. The logom should be located in the images folder.
+*/
+
 define('garrison', 'Florida Garrison');
 define('garrisonImage', 'garrison_emblem.png');
 
 // Please note: Do not change the order of squads and clubs after your set up your troop tracker, otherwise you will mess up the squad IDs
 // Make sure you run queries on your database if you need to change the order after installation.
 
-// Dual costume
+/**
+ * dualCostume: This variable is used to determine which costume club ID should be counted as a dual costume.
+*/
+
 $dualCostume = 5;
 
 /**
@@ -163,7 +215,7 @@ $clubArray = array(
 		"logo" => "test",
 		"costumes" => array(1, 5),
 		"db" => "pRebel",
-		"db2" => "rebelforum != \"\" AND ",
+		"db2" => "",
 		"db3" => "rebelforum",
 		"db3Name" => "Rebel Legion Forum Username",
 		"db3Require" => "0,0,squad:6",

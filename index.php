@@ -2080,7 +2080,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					// Match
 					if($_GET['squad'] == $clubCount)
 					{
-						$queryAdd = "".$club_value['db2']."".$club_value['db']."";
+						$queryAdd = "".$club_value['db']."";
 					}
 					
 					// Increment
