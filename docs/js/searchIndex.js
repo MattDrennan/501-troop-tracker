@@ -583,32 +583,32 @@ Search.appendIndex(
         },                {
             "fqsen": "\\convertMemberApproved\u0028\u0029",
             "name": "convertMemberApproved",
-            "summary": "",
+            "summary": "Converts\u0020the\u0020member\u0020approval\u0020string\u0020value\u0020to\u0020an\u0020interger",
             "url": "namespaces/default.html#function_convertMemberApproved"
         },                {
             "fqsen": "\\convertMemberStatus\u0028\u0029",
             "name": "convertMemberStatus",
-            "summary": "",
+            "summary": "Returns\u0020an\u0020interger\u0020based\u0020on\u0020the\u0020member\u0020status",
             "url": "namespaces/default.html#function_convertMemberStatus"
         },                {
             "fqsen": "\\convertMemberStanding\u0028\u0029",
             "name": "convertMemberStanding",
-            "summary": "",
+            "summary": "Returns\u0020an\u0020interger\u0020based\u0020on\u0020the\u0020member\u0020standing",
             "url": "namespaces/default.html#function_convertMemberStanding"
         },                {
             "fqsen": "\\convertSquadId\u0028\u0029",
             "name": "convertSquadId",
-            "summary": "",
+            "summary": "Returns\u0020the\u0020squad\u0027s\u0020ID\u0020for\u0020troop\u0020tracker",
             "url": "namespaces/default.html#function_convertSquadId"
         },                {
             "fqsen": "\\print_r_reverse\u0028\u0029",
             "name": "print_r_reverse",
-            "summary": "",
+            "summary": "Convert\u0020a\u0020string\u0020\u0028print_r\u0029\u0020back\u0020to\u0020an\u0020array\u0020value",
             "url": "namespaces/default.html#function_print_r_reverse"
         },                {
             "fqsen": "\\contains\u0028\u0029",
             "name": "contains",
-            "summary": "",
+            "summary": "Checks\u0020if\u0020string\u0020is\u0020inside\u0020another\u0020string",
             "url": "namespaces/default.html#function_contains"
         },                {
             "fqsen": "\\",

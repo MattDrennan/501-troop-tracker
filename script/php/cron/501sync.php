@@ -122,7 +122,12 @@ COMPLETE!';
 // Update date time for last sync
 $conn->query("UPDATE settings SET syncdate = NOW()");
 
-// convertMemberApproved: Returns an int based on the member approved
+/**
+ * Converts the member approval string value to an interger
+ *
+ * @param string $value The string value to be formatted
+ * @return int Returns 1 for yes and 0 for all else
+ */
 function convertMemberApproved($value)
 {
 	$returnValue = 0;
@@ -136,7 +141,12 @@ function convertMemberApproved($value)
 	return $returnValue;
 }
 
-// convertMemberStatus: Returns an int based on the member status
+/**
+ * Returns an interger based on the member status
+ *
+ * @param string $value The string value to be formatted
+ * @return int Returns 1 for active, 2 for reserve, and 0 for all else
+ */
 function convertMemberStatus($value)
 {
 	$returnValue = 0;
@@ -154,7 +164,12 @@ function convertMemberStatus($value)
 	return $returnValue;
 }
 
-// convertMemberStanding: Returns an int based on the member standing
+/**
+ * Returns an interger based on the member standing
+ *
+ * @param string $value The string value to be formatted
+ * @return int Returns 1 for good, and 0 for all else
+ */
 function convertMemberStanding($value)
 {
 	$returnValue = 0;
@@ -168,7 +183,12 @@ function convertMemberStanding($value)
 	return $returnValue;
 }
 
-// convertSquadId: Returns the squad's ID for troop tracker
+/**
+ * Returns the squad's ID for troop tracker
+ *
+ * @param int $value The string value to be formatted
+ * @return int Returns squad ID based on value
+ */
 function convertSquadId($value)
 {
 	$returnValue = 0;
