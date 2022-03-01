@@ -293,6 +293,10 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 		<div id="emailSettingsOptions" '.$subscribe.'>
 			<h3>Squads / Clubs</h3>
 			<form action="process.php?do=emailsettings" method="POST" id="emailsettingsForm" name="emailsettingsForm">';
+
+			// Florida Garrison
+			echo '
+			<input type="checkbox" name="esquad0" id="esquad0" ' . emailSettingStatus("esquad0", true) . ' />501st / Florida Garrison<br />';
 			
 			// Squad count
 			$i = 1;

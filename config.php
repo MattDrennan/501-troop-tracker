@@ -2351,6 +2351,35 @@ function hasTitle($trooperid, $awardid, $echo = false, $remove = false)
 /**
  * Sends a notification to the log
  * 
+ * 0 = N/A
+ * 0 - N/A
+ * 1 - Add Costume
+ * 2 - Delete Costume
+ * 3 - Edit Costume
+ * 4 - Delete Award
+ * 5 - Add Award
+ * 6 - Give Award Trooper
+ * 7 - Edit Award
+ * 8 - Deny Trooper
+ * 9 - Approve Trooper
+ * 10 - Delete Trooper
+ * 11 - Update Trooper
+ * 12 - Add Trooper
+ * 13 - Add Event
+ * 14 - Edit Event
+ * 15 - Add Trooper To Event
+ * 16 - Delete Event
+ * 17 - Set Charity
+ * 18 - Remove Trooper From Event
+ * 19 - Add Shift From Edit
+ * 20 - Add Title
+ * 21 - Delete Title
+ * 22 - Give Title
+ * 23 - Edit Title
+ * 24 - Remove Title
+ * 25 - Remove Award
+ * 26 - Update Advanced Options
+ * 
  * @param string $message Body of the message for the log
  * @param int $trooperid The ID of the trooper
  * @param int $type Optional. The ID of the action
@@ -2360,34 +2389,6 @@ function hasTitle($trooperid, $awardid, $echo = false, $remove = false)
 function sendNotification($message, $trooperid, $type = 0, $json = "")
 {
 	global $conn;
-
-	// 0 - N/A
-	// 1 - Add Costume
-	// 2 - Delete Costume
-	// 3 - Edit Costume
-	// 4 - Delete Award
-	// 5 - Add Award
-	// 6 - Give Award Trooper
-	// 7 - Edit Award
-	// 8 - Deny Trooper
-	// 9 - Approve Trooper
-	// 10 - Delete Trooper
-	// 11 - Update Trooper
-	// 12 - Add Trooper
-	// 13 - Add Event
-	// 14 - Edit Event
-	// 15 - Add Trooper To Event
-	// 16 - Delete Event
-	// 17 - Set Charity
-	// 18 - Remove Trooper From Event
-	// 19 - Add Shift From Edit
-	// 20 - Add Title
-	// 21 - Delete Title
-	// 22 - Give Title
-	// 23 - Edit Title
-	// 24 - Remove Title
-	// 25 - Remove Award
-	// 26 - Update Advanced Options
 	
 	$conn->query("INSERT INTO notifications (message, trooperid, type, json) VALUES ('".$message."', '".$trooperid."', '".$type."', '".$json."')");
 }
