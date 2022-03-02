@@ -850,10 +850,10 @@ function resetTrooperStatus($eventID, $link = 0)
 			if($db->limit501st > 500 || $db->limit501st < 500)
 			{
 				// Reset event sign up
-				$conn->query("UPDATE event_sign_up SET status = '1' WHERE troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume)");
+				$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume)");
 
 				// Update statuses to going if room
-				$conn->query("UPDATE event_sign_up SET status = '0' WHERE troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ORDER BY signuptime ASC LIMIT " . $db->{$club_value['dbLimit']});
+				$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ORDER BY signuptime ASC LIMIT " . $db->limit501st);
 			}
 
 			// Loop through clubs to check limits
@@ -862,10 +862,10 @@ function resetTrooperStatus($eventID, $link = 0)
 				if($db->{$club_value['dbLimit']} > 500 || $db->{$club_value['dbLimit']} < 500)
 				{
 					// Reset event sign up
-					$conn->query("UPDATE event_sign_up SET status = '1' WHERE troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume)");
+					$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume)");
 
 					// Update statuses to going if room
-					$conn->query("UPDATE event_sign_up SET status = '0' WHERE troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ORDER BY signuptime ASC LIMIT " . $db->{$club_value['dbLimit']});
+					$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ORDER BY signuptime ASC LIMIT " . $db->{$club_value['dbLimit']});
 				}
 			}
 
@@ -873,10 +873,10 @@ function resetTrooperStatus($eventID, $link = 0)
 			if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
 			{
 				// Reset event sign up
-				$conn->query("UPDATE event_sign_up SET status = '1' WHERE troopid = '".$db->id."'");
+				$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."'");
 
 				// Update statuses to going if room
-				$conn->query("UPDATE event_sign_up SET status = '0' WHERE troopid = '".$db->id."' ORDER BY signuptime ASC LIMIT " . $db->limitTotalTroopers);
+				$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' ORDER BY signuptime ASC LIMIT " . $db->limitTotalTroopers);
 			}
 		}
 	}

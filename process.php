@@ -515,7 +515,7 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 		if($totalTrooperEvent)
 		{
 			$data .= '
-			' . troopersRemaining($limitTotal, eventClubCount($db->id, "all")) . '</li>';
+			' . troopersRemaining($limitTotal, eventClubCount($limitTotal, "all")) . '</li>';
 		}
 		else
 		{
@@ -2924,7 +2924,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			else
 			{
 				// Make thread body
-				$thread_body = threadTemplate($_POST['eventName'], $_POST['eventVenue'], $_POST['location'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['comments'], $_POST['referred'], $cleanInput($_POST['eventIdE']));
+				$thread_body = threadTemplate($_POST['eventName'], $_POST['eventVenue'], $_POST['location'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['comments'], $_POST['referred'], $_POST['eventIdE']);
 
 				// Update thread
 				editPost(getEventPostID(cleanInput($_POST['eventIdE'])), $thread_body);
