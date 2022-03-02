@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is used for providing an API to be used by other developers.
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 // Include config
 include "config.php";
 

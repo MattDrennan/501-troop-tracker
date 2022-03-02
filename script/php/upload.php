@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is used for processing file uploads and storing the information in the database.
+ * 
+ * This should be every two minutes by a cronjob.
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 // Include config file
 include "../../config.php";
 

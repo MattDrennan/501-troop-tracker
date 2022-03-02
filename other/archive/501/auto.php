@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is used for converting old troop tracker data to the new troop tracker.
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -161,7 +168,12 @@ Event Records Added: '.$eventRecords.'
 Link Records Added: '.$linkRecords.'
 <br />';
 
-// getSquadID: Gets the ID of the squad from the string value
+/**
+ * Converts the string value to squad ID
+ *
+ * @param string $value The string value to be formatted
+ * @return int Returns the squad ID
+ */
 function getSquadID($value)
 {
 	// Get squad value, convert to number_format

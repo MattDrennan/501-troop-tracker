@@ -8,3 +8,5 @@ other/newcron.txt
 sheets_api_secret.json
 vendor/
 vendor/*
+docs/cache/
+test.php

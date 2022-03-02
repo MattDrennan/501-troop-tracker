@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file was used for scraping costume data for the troop tracker. This file is stored for historical purposes.
+ * 
+ * The HTML file was downloaded locally, and this PHP script was run.
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 include "../../config.php";
 
 include_once('simple_html_dom.php');
