@@ -2904,7 +2904,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	$haveAvatar = false;
 
 	// Xenforo
-	$xenforo = getUserForumID(getUserID($id))['user']['avatar_urls']['m'];
+	$xenforo = @getUserForumID(getUserID($id))['user']['avatar_urls']['m'];
 
 	if($xenforo != "")
 	{
