@@ -2,8 +2,7 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Host: ls-b461765348ab37f7774d47c6788e7713192d710a.c7bgdu4hw8kg.us-east-1.rds.amazonaws.com:3306
--- Generation Time: Jan 26, 2022 at 07:33 PM
+-- Generation Time: Mar 01, 2022 at 07:42 PM
 -- Server version: 8.0.23
 -- PHP Version: 7.4.7
 
@@ -90,6 +89,7 @@ CREATE TABLE `comments` (
   `id` int UNSIGNED NOT NULL,
   `troopid` int NOT NULL,
   `trooperid` int NOT NULL,
+  `post_id` int NOT NULL DEFAULT '0',
   `comment` text NOT NULL,
   `important` int NOT NULL,
   `posted` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -142,6 +142,8 @@ CREATE TABLE `droid_troopers` (
 CREATE TABLE `events` (
   `id` int UNSIGNED NOT NULL,
   `oldid` int NOT NULL DEFAULT '0',
+  `thread_id` int NOT NULL DEFAULT '0',
+  `post_id` int NOT NULL DEFAULT '0',
   `name` varchar(255) NOT NULL,
   `venue` varchar(255) DEFAULT NULL,
   `dateStart` datetime DEFAULT NULL,
@@ -169,6 +171,7 @@ CREATE TABLE `events` (
   `limitMando` int NOT NULL DEFAULT '500',
   `limitDroid` int NOT NULL DEFAULT '500',
   `limitOther` int NOT NULL DEFAULT '500',
+  `limitTotalTroopers` int NOT NULL DEFAULT '500',
   `closed` tinyint(1) NOT NULL DEFAULT '0',
   `moneyRaised` int NOT NULL DEFAULT '0',
   `squad` int NOT NULL,
@@ -295,7 +298,8 @@ CREATE TABLE `settings` (
   `supportgoal` int NOT NULL DEFAULT '0',
   `notifyevent` int NOT NULL DEFAULT '0',
   `lastimportantcomment` int NOT NULL DEFAULT '0',
-  `syncdate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `syncdate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `syncdaterebels` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -322,7 +326,8 @@ CREATE TABLE `sg_troopers` (
 CREATE TABLE `titles` (
   `id` int NOT NULL,
   `title` varchar(255) NOT NULL,
-  `icon` varchar(255) NOT NULL
+  `icon` varchar(255) NOT NULL,
+  `forum_id` int NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -347,11 +352,15 @@ CREATE TABLE `title_troopers` (
 CREATE TABLE `troopers` (
   `id` int UNSIGNED NOT NULL,
   `oldid` int NOT NULL,
+  `user_id` int NOT NULL DEFAULT '0',
   `name` varchar(255) NOT NULL,
   `email` varchar(240) DEFAULT NULL,
   `phone` varchar(10) DEFAULT NULL,
   `squad` int NOT NULL,
   `permissions` int NOT NULL DEFAULT '0',
+  `spTrooper` tinyint NOT NULL DEFAULT '0',
+  `spCostume` tinyint NOT NULL DEFAULT '0',
+  `spAward` tinyint NOT NULL DEFAULT '0',
   `p501` int NOT NULL DEFAULT '0',
   `pRebel` int NOT NULL DEFAULT '0',
   `pDroid` int NOT NULL DEFAULT '0',
@@ -368,6 +377,7 @@ CREATE TABLE `troopers` (
   `subscribe` int NOT NULL DEFAULT '1',
   `theme` int NOT NULL DEFAULT '0',
   `supporter` int NOT NULL DEFAULT '0',
+  `esquad0` tinyint NOT NULL DEFAULT '1',
   `esquad1` tinyint(1) DEFAULT '1',
   `esquad2` tinyint(1) DEFAULT '1',
   `esquad3` tinyint(1) DEFAULT '1',

@@ -1,4 +1,12 @@
 <?php
+
+/**
+ * This file is used for configuration and loading functions.
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -32,6 +40,9 @@ $calendar = new Calendar();
 // Include credential file
 require 'cred.php';
 
+// Include smileys
+require 'script/php/smiley.php';
+
 // Start session
 session_start();
 
@@ -44,10 +55,20 @@ if ($conn->connect_error)
 	trigger_error('Database connection failed: ' . $conn->connect_error, E_USER_ERROR);
 }
 
-// Main costume string
+/**
+ * This variable is used to put these costumes first in a query
+ * 
+ * @var string
+*/
 $mainCostumes = "'501st: N/A', '501st: Command Staff', '501st: Handler'";
 
-// formatTime: Changes the time to timezone
+/**
+ * This is used to format the time to Eastern Standard Time
+ * 
+ * @param string $date This is the format the date should be displayed in
+ * @param string $format This is the date to be formatted
+ * @return string Returns date and Eastern Standard Time
+*/
 function formatTime($date, $format)
 {
 	$datetime = new DateTime($date, new DateTimeZone('UTC'));
@@ -55,7 +76,11 @@ function formatTime($date, $format)
 	return $datetime->format($format);
 }
 
-// randomTip: Returns random tip
+/**
+ * A collection of random tip strings that will be returned to user at random
+ * 
+ * @return string Returns a random tip string
+*/
 function dailyTip()
 {
 	// Get a random number
@@ -156,7 +181,16 @@ function dailyTip()
 	}
 }
 
-// showCalendarLinks: Returns links to add event to calendar
+/**
+ * Returns an HTML string of links to add an event to calendar
+ * 
+ * @param string $name Name of the event
+ * @param string $location Location of the event
+ * @param string $description Description of the event
+ * @param string $date1 Start date of the event
+ * @param string $date2 End date of the event
+ * @return string Returns an HTML string to display to user
+*/
 function showCalendarLinks($name, $location, $description, $date1, $date2)
 {
 	// Convert dates
@@ -179,7 +213,12 @@ function showCalendarLinks($name, $location, $description, $date1, $date2)
 	</p>';
 }
 
-// displaySquadLinks: Returns links for each garrison for troop tracker
+/**
+ * This is used to display squad links to the trooper. These are used on the Troop Tracker page to go through all the events of a squad.
+ * 
+ * @param int $squadLink The ID of the squad to be used in the link
+ * @return string Returns an HTML string to display links to each squad to trooper
+*/
 function displaySquadLinks($squadLink)
 {
 	global $squadArray;
@@ -207,7 +246,12 @@ function displaySquadLinks($squadLink)
 	return $returnVar;
 }
 
-// getTroopCounts: Returns the users total troop counts for each club
+/**
+ * Returns total troop counts for each club of the defined trooper, as well as favorite costume and money raised
+ * 
+ * @param int $id The trooper to get troop counts for
+ * @return string Returns an HTML string to display the information to trooper
+*/
 function getTroopCounts($id)
 {
 	global $conn, $dualCostume, $clubArray, $squadArray;
@@ -266,7 +310,11 @@ function getTroopCounts($id)
 	return $troopCountString;
 }
 
-// showSquadButtons: Returns garrison and squad images on front page
+/**
+ * Returns garrison and squad images to display on the front page. A trooper can click images to see events for that squad.
+ * 
+ * @return string Returns an HTML string to display to trooper
+*/
 function showSquadButtons()
 {
 	global $squadArray;
@@ -294,7 +342,16 @@ function showSquadButtons()
 	return $returnVar;
 }
 
-// squadSelectList: Returns options for select tag of squads
+/**
+ * Returns squads and clubs, and converts them to options to display back to trooper.
+ * 
+ * @param boolean $clubs Optional. This is used to hide/show clubs in the select
+ * @param string $insideElement Optional. Leave blank for a plain select, copy to for the copyEventSelect method, or select to set a selected option.
+ * @param int $eid Optional. This is the event connected to the select.
+ * @param int $squadP Optional. This is squad connected to the event, that will set a default option to select.
+ * @param string $rebelOnly Optional. This will stop at the first club in the list, and not display the others.
+ * @return string Returns an HTML string containing select and option elements
+*/
 function squadSelectList($clubs = true, $insideElement = "", $eid = 0, $squadP = 0, $rebelOnly = false)
 {
 	global $squadArray, $clubArray;
@@ -376,7 +433,14 @@ function squadSelectList($clubs = true, $insideElement = "", $eid = 0, $squadP =
 	return $returnVar;
 }
 
-// addSquadLink: Returns a href link for a squad based on selection
+/**
+ * Returns a link for a squad based on selection
+ * 
+ * @param int $squad The squad that is to be linked
+ * @param int $match Used to filter out results, for example if a squad is selected, and does not need to be displayed
+ * @param string $name Name of the squad to be displayed on the link
+ * @return string Returns an HTML link string
+*/
 function addSquadLink($squad, $match, $name)
 {
 	// Set up link
@@ -396,7 +460,12 @@ function addSquadLink($squad, $match, $name)
 	return $link;
 }
 
-// costume_restrict_query: Restricts the trooper's costume based on there membership
+/**
+ * Restricts the trooper's costume based on there membership to certain clubs
+ * 
+ * @param boolean $addWhere Optional. This is used to add a "where" to the MySQL query.
+ * @return string Returns a query to restrict costumes of clubs a trooper is not a member of
+*/
 function costume_restrict_query($addWhere = false)
 {
 	global $conn, $clubArray, $dualCostume;
@@ -502,9 +571,39 @@ function costume_restrict_query($addWhere = false)
 	return $returnQuery;
 }
 
-// showBBcodes: Converts text to BB Code
+/**
+ * This is used to display all the smiley's in HTML from smiley.php
+ * 
+ * @return string Returns a string of all the smiley's to be displayed to trooper
+*/
+function smileyEditor()
+{
+	global $replacements;
+
+	// Set up return variable
+	$returnVar = "";
+
+	// Set up loop variable
+	$i = 0;
+
+	foreach($replacements as $smiley => $smiley_value)
+	{
+		$returnVar .= $smiley_value . ' ';
+	}
+
+	return $returnVar;
+}
+
+/**
+ * Converts text to BB Code
+ * 
+ * @param string $text The text to convert to BB Code and smilies
+ * @return string Returns a new string that can display BB Code and smilies
+*/
 function showBBcodes($text)
 {
+	global $replacements;
+
 	$text = strip_tags($text);
 
 	// BBcode array
@@ -534,10 +633,19 @@ function showBBcodes($text)
 	);
 
 	// Replacing the BBcodes with corresponding HTML tags
-	return preg_replace($find,$replace,$text);
+	$text = preg_replace($find, $replace, $text);
+
+	return str_replace(array_keys($replacements), $replacements, $text);
 }
 
-// countDonations: Count the number of donations between the two dates - can specify a user
+/**
+ * Counts the number of donations between two dates
+ * 
+ * @param int $trooperid ID of trooper to get number of donations
+ * @param string $dateStart Optional. This is the start date to start searching for donations
+ * @param string $dateEnd Optional. This is the end date to finish searching for donations
+ * @return int Returns the number of donations between the two dates
+*/
 function countDonations($trooperid = "*", $dateStart = "1900-12-1", $dateEnd = "9999-12-1")
 {
 	global $conn;
@@ -558,7 +666,12 @@ function countDonations($trooperid = "*", $dateStart = "1900-12-1", $dateEnd = "
 	return $getNumOfDonators->num_rows;
 }
 
-// drawSupportBadge: A function that draws a support badge if the user is a supporter
+/**
+ * Draws a support badge if the user is a supporter
+ * 
+ * @param int $id The ID of the trooper to determine if they are a supporter
+ * @return string Returns an HTML image string, displaying the suppoer badge
+*/
 function drawSupportBadge($id)
 {
 	global $conn;
@@ -583,7 +696,11 @@ function drawSupportBadge($id)
 	return $value;
 }
 
-// drawSupportGraph: A function that draws a visual graph for troopers to see what we need to support the garrison
+/**
+ * Draws a visual graph for troopers to see what we need to support the garrison
+ * 
+ * @return string Returns an HTML string to display the graph to troopers
+*/
 function drawSupportGraph()
 {
 	global $conn;
@@ -704,7 +821,75 @@ function drawSupportGraph()
 	return $return;
 }
 
-// getAuthForum: Get's auth data from Xenforo
+/**
+ * If a limited event, resets all troopers attendance status in an event, and recalculates status
+ * 
+ * @param int $eventID The event ID to check
+ * @param int $link The main event ID for a shift event
+ * @return void
+*/
+function resetTrooperStatus($eventID, $link = 0)
+{
+	global $conn, $clubArray;
+
+	// Get data
+	$query = "SELECT * FROM events WHERE id = '".$eventID."'";
+
+	// If link added, query link event as well
+	if($link > 0)
+	{
+		$query .= " OR link = '".$link."'";
+	}
+	
+	// Run query...
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Check each club to see if it's limited
+			if($db->limit501st > 500 || $db->limit501st < 500)
+			{
+				// Reset event sign up
+				$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume)");
+
+				// Update statuses to going if room
+				$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ORDER BY signuptime ASC LIMIT " . $db->limit501st);
+			}
+
+			// Loop through clubs to check limits
+			foreach($clubArray as $club => $club_value)
+			{
+				if($db->{$club_value['dbLimit']} > 500 || $db->{$club_value['dbLimit']} < 500)
+				{
+					// Reset event sign up
+					$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume)");
+
+					// Update statuses to going if room
+					$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ORDER BY signuptime ASC LIMIT " . $db->{$club_value['dbLimit']});
+				}
+			}
+
+			// Check total limit
+			if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+			{
+				// Reset event sign up
+				$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."'");
+
+				// Update statuses to going if room
+				$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' ORDER BY signuptime ASC LIMIT " . $db->limitTotalTroopers);
+			}
+		}
+	}
+}
+
+/*********************** XENFORO ***********************/
+
+/**
+ * getAuthForum: Get's auth data from Xenforo for logging in
+ * 
+ * @param int $user_id The Xenforo user ID
+ * @return json Returns JSON data of login token
+*/
 function getAuthForum($user_id)
 {
 	$curl = curl_init();
@@ -719,6 +904,7 @@ function getAuthForum($user_id)
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
 	  ],
 	]);
 
@@ -729,7 +915,13 @@ function getAuthForum($user_id)
 	return json_decode($response, true);
 }
 
-// loginWithForum: Login the trooper with there xenforo credentials
+/**
+ * Login the trooper with there Xenforo credentials. Used for single sign on.
+ * 
+ * @param string $username The username of the trooper
+ * @param string $password The password of the trooper
+ * @return json Return's the Xenforo user data if success
+*/
 function loginWithForum($username, $password)
 {
 	$curl = curl_init();
@@ -744,6 +936,7 @@ function loginWithForum($username, $password)
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
 	  ],
 	]);
 
@@ -754,7 +947,14 @@ function loginWithForum($username, $password)
 	return json_decode($response, true);
 }
 
-// createThread: Create's a thread in Xenforo
+/**
+ * Create's a thread in Xenforo
+ * 
+ * @param int $id The forum ID to be posted in
+ * @param string $title The title of the thread
+ * @param string $message The body of the thread
+ * @return json Return's the thread data if success
+*/
 function createThread($id, $title, $message)
 {
 	// Create Thread
@@ -763,13 +963,14 @@ function createThread($id, $title, $message)
 	curl_setopt_array($curl, [
 	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/threads",
 	  CURLOPT_POST => 1,
-	  CURLOPT_POSTFIELDS => "node_id=" . $id . "&title=" . $title . "&message=" . $message,
+	  CURLOPT_POSTFIELDS => "node_id=" . $id . "&title=" . urlencode($title) . "&message=" . urlencode($message),
 	  CURLOPT_CUSTOMREQUEST => "POST",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
 	  ],
 	]);
 
@@ -780,7 +981,12 @@ function createThread($id, $title, $message)
 	return json_decode($response, true);
 }
 
-// editThread: Locks a thread in Xenforo
+/**
+ * Locks a thread in Xenforo
+ * 
+ * @param int $id The post ID to be locked
+ * @return json Return's the thread data if success
+*/
 function lockThread($id)
 {
 	// Edit Thread
@@ -796,6 +1002,7 @@ function lockThread($id)
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
 	  ],
 	]);
 
@@ -806,8 +1013,15 @@ function lockThread($id)
 	return json_decode($response, true);
 }
 
-// createPost: Create's a post in Xenforo
-function createPost($id, $message)
+/**
+ * Create's a post in Xenforo
+ * 
+ * @param int $id The forum ID to be posted in
+ * @param string $message The body of the post
+ * @param int $userID The Xenforo user ID of the trooper posting. Default value = super admin
+ * @return json Return's the Xenforo user data if success
+*/
+function createPost($id, $message, $userID = xenforoAPI_userID)
 {
 	// Create Post
 	$curl = curl_init();
@@ -815,13 +1029,14 @@ function createPost($id, $message)
 	curl_setopt_array($curl, [
 	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/posts",
 	  CURLOPT_POST => 1,
-	  CURLOPT_POSTFIELDS => "thread_id=" . $id . "&message=" . $message,
+	  CURLOPT_POSTFIELDS => "thread_id=" . $id . "&message=" . urlencode($message),
 	  CURLOPT_CUSTOMREQUEST => "POST",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . $userID,
 	  ],
 	]);
 
@@ -832,7 +1047,13 @@ function createPost($id, $message)
 	return json_decode($response, true);
 }
 
-// editPost: Edits a post in Xenforo
+/**
+ * Edits a post in Xenforo
+ * 
+ * @param int $id The post ID to be edited
+ * @param string $message The body of the post
+ * @return json Return's the Xenforo post data if success
+*/
 function editPost($id, $message)
 {
 	// Edit Post
@@ -841,13 +1062,14 @@ function editPost($id, $message)
 	curl_setopt_array($curl, [
 	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/posts/" . $id,
 	  CURLOPT_POST => 1,
-	  CURLOPT_POSTFIELDS => "message=" . $message,
+	  CURLOPT_POSTFIELDS => "message=" . urlencode($message),
 	  CURLOPT_CUSTOMREQUEST => "POST",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
 	  ],
 	]);
 
@@ -858,7 +1080,45 @@ function editPost($id, $message)
 	return json_decode($response, true);
 }
 
-// getUserForum: Get's Xenforo forum user by username
+/**
+ * Moves a thread to specified forum
+ * 
+ * @param int $id The post ID to be moved
+ * @param int $forum The forum ID the post is to be moved
+ * @return json Return's the Xenforo post data if success
+*/
+function moveThread($id, $forum)
+{
+	// Edit Post
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/threads/" . $id . "/move",
+	  CURLOPT_POST => 1,
+	  CURLOPT_POSTFIELDS => "target_node_id=" . $forum,
+	  CURLOPT_CUSTOMREQUEST => "POST",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+/**
+ * Get's Xenforo forum user by username
+ * 
+ * @param string $username The username of the Xenforo user
+ * @return json Return's the Xenforo user data if success
+*/
 function getUserForum($username)
 {
 	// Get user forum info by forum name
@@ -872,6 +1132,7 @@ function getUserForum($username)
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
 	  ],
 	]);
 
@@ -882,7 +1143,12 @@ function getUserForum($username)
 	return json_decode($response, true);
 }
 
-// getUserForumID: Get's Xenforo forum user by ID
+/**
+ * Get's Xenforo forum user by ID
+ * 
+ * @param int $id The user ID of the Xenforo user
+ * @return json Return's the Xenforo user data if success
+*/
 function getUserForumID($id)
 {
 	// Get user forum info by forum ID
@@ -896,6 +1162,7 @@ function getUserForumID($id)
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
 	  ],
 	]);
 
@@ -906,7 +1173,48 @@ function getUserForumID($id)
 	return json_decode($response, true);
 }
 
-// updateUserForumGroup: Update's user forum groups by ID
+/**
+ * Updates Xenforo user's custom variables
+ * 
+ * @param int $id The user ID of the Xenforo user
+ * @param string $custom The custom variable to be changed
+ * @param string $value The new value for custom variable
+ * @return json Return's JSON data
+*/
+function updateUserCustom($id, $custom, $value)
+{
+	// Update user by forum groups by ID
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/users/" . $id,
+	  CURLOPT_POST => 1,
+	  CURLOPT_POSTFIELDS => "custom_fields[".$custom."]=" . $value,
+	  CURLOPT_CUSTOMREQUEST => "POST",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+/**
+ * Update's user forum groups by ID
+ * 
+ * @param int $id The user ID of the Xenforo user
+ * @param int $groupid The new group ID to set
+ * @param array $group_ids An array of ints to be set for Xenforo secondary groups
+ * @return json Return's JSON data
+*/
 function updateUserForumGroup($id, $groupid, $group_ids)
 {
 	// Update user by forum groups by ID
@@ -933,6 +1241,7 @@ function updateUserForumGroup($id, $groupid, $group_ids)
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
 	  ],
 	]);
 
@@ -943,7 +1252,13 @@ function updateUserForumGroup($id, $groupid, $group_ids)
 	return json_decode($response, true);
 }
 
-// deletePost: Deletes a post in Xenforo
+/**
+ * Deletes a post in Xenforo
+ * 
+ * @param int $id The post ID of the Xenforo post to be deleted
+ * @param boolean $hard_delete Optional. If set to true, will delete the post completely with no record
+ * @return json Return's JSON data
+*/
 function deletePost($id, $hard_delete = false)
 {
 	// Delete Post
@@ -958,6 +1273,7 @@ function deletePost($id, $hard_delete = false)
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
 	  ],
 	]);
 
@@ -968,7 +1284,13 @@ function deletePost($id, $hard_delete = false)
 	return json_decode($response, true);
 }
 
-// deleteThread: Deletes thread in Xenforo
+/**
+ * Deletes thread in Xenforo
+ * 
+ * @param int $id The thread ID of the Xenforo thread to be deleted
+ * @param boolean $hard_delete Optional. If set to true, will delete the thread completely with no record
+ * @return json Return's JSON data
+*/
 function deleteThread($id, $hard_delete = false)
 {
 	// Delete Thread
@@ -983,6 +1305,7 @@ function deleteThread($id, $hard_delete = false)
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
 	  ],
 	]);
 
@@ -993,7 +1316,14 @@ function deleteThread($id, $hard_delete = false)
 	return json_decode($response, true);
 }
 
-// isSupporter: A function to determine if a trooper is a supporter
+/*********************** END XENFORO ***********************/
+
+/**
+ * Determines if a trooper is a supporter
+ * 
+ * @param int $id The ID of the trooper
+ * @return boolean Returns true or false if a trooper is a supporter
+*/
 function isSupporter($id)
 {
 	global $conn;
@@ -1018,7 +1348,12 @@ function isSupporter($id)
 	return $value;
 }
 
-// getRebelLegionUser: A function that returns a troopers Rebel Legion forum username
+/**
+ * Returns a troopers Rebel Legion forum username
+ * 
+ * @param int $id The ID of the trooper
+ * @return boolean Returns the troopers Rebel Forum username from local database
+*/
 function getRebelLegionUser($id)
 {
 	global $conn;
@@ -1043,7 +1378,12 @@ function getRebelLegionUser($id)
 	return $forumName;
 }
 
-// getRebelInfo: A function which returns an array of info about trooper - Rebel Legion
+/**
+ * Returns an array of Rebel Legion info about the trooper
+ * 
+ * @param string $forumid The Rebel Legion forum username of the trooper
+ * @return array Returns an array of Rebel Legion information about the trooper
+*/
 function getRebelInfo($forumid)
 {
 	global $conn;
@@ -1070,7 +1410,12 @@ function getRebelInfo($forumid)
 	return $array;
 }
 
-// getMandoLegionUser: A function that returns a troopers Mando Mercs CAT #
+/**
+ * Returns a troopers Mando Mercs CAT #
+ * 
+ * @param int $id The ID of the trooper
+ * @return int Returns the CAT number for the trooper
+*/
 function getMandoLegionUser($id)
 {
 	global $conn;
@@ -1095,7 +1440,12 @@ function getMandoLegionUser($id)
 	return $mandoid;
 }
 
-// getMandoInfo: A function which returns an array of info about trooper - Mando Mercs
+/**
+ * Returns an array of Mando Mercs info about the trooper
+ * 
+ * @param int $mandoid The CAT# of the trooper
+ * @return int Returns an array of Mando Mercs information about the trooper
+*/
 function getMandoInfo($mandoid)
 {
 	global $conn;
@@ -1123,7 +1473,12 @@ function getMandoInfo($mandoid)
 	return $array;
 }
 
-// getSGUser: A function that returns a troopers SG #
+/**
+ * Returns a trooper's Saber Guild ID number
+ * 
+ * @param int $id The ID of the trooper
+ * @return int Returns the Saber Guild ID of the trooper
+*/
 function getSGUser($id)
 {
 	global $conn;
@@ -1148,7 +1503,12 @@ function getSGUser($id)
 	return $sgid;
 }
 
-// getSGINfo: A function which returns an array of info about trooper - Saber Guild
+/**
+ * Returns an array of Saber Guild info about trooper
+ * 
+ * @param int $sgid The Saber Guild ID of the trooper
+ * @return array Returns an array of Saber Guild information about the trooper
+*/
 function getSGINfo($sgid)
 {
 	global $conn;
@@ -1183,7 +1543,13 @@ function getSGINfo($sgid)
 	return $array;
 }
 
-// get501Info: A function which returns an array of info about trooper - 501st
+/**
+ * Returns an array of 501st info about the trooper
+ * 
+ * @param int $id The ID of the trooper
+ * @param int $squad The ID of the squad of the trooper
+ * @return array Returns an array of 501st information about the trooper
+*/
 function get501Info($id, $squad)
 {
 	global $conn, $squadArray;
@@ -1204,6 +1570,7 @@ function get501Info($id, $squad)
 			while ($db = mysqli_fetch_object($result))
 			{
 				$array['link'] = $db->link;
+				$array['joindate'] = $db->joindate;
 			}
 		}
 	}
@@ -1212,7 +1579,12 @@ function get501Info($id, $squad)
 	return $array;
 }
 
-// getMyRebelCostumes: A function which returns a string of costumes assigned to user in synced database - Rebel Legion
+/**
+ * Returns a string of costumes assigned to user in synced Rebel Legion database
+ * 
+ * @param string $id The Rebel Legion forum username of the trooper
+ * @return string Returns an array of Rebel Legion costume information about the trooper
+*/
 function getMyRebelCostumes($id)
 {
 	global $conn;
@@ -1236,7 +1608,12 @@ function getMyRebelCostumes($id)
 	return $costume;
 }
 
-// getMyCostumes: A function which returns a string of costumes assigned to user in synced database
+/**
+ * Returns a string of 501st costumes assigned to user in synced database
+ * 
+ * @param string $id The Rebel Legion forum username of the trooper
+ * @return string Returns an array of Rebel Legion costume information about the trooper
+*/
 function getMyCostumes($id, $squad)
 {
 	global $conn, $squadArray;
@@ -1264,7 +1641,12 @@ function getMyCostumes($id, $squad)
 	return $costume;
 }
 
-// showRebelCostumes: A function which displays all the users costumes in synced database - Rebel Legion
+/**
+ * Displays all the troopers costumes in synced Rebel Legion database
+ * 
+ * @param string $id The Rebel Legion forum username of the trooper
+ * @return string Returns an HTML string of images of the troopers costumes
+*/
 function showRebelCostumes($id)
 {
 	global $conn;
@@ -1303,7 +1685,12 @@ function showRebelCostumes($id)
 	}
 }
 
-// showMandoCostumes: A function which displays all the users costumes in synced database - Mando Mercs
+/**
+ * Displays all the troopers costumes in synced Mando Mercs database
+ * 
+ * @param string $id The CAT # of the troooper
+ * @return string Returns an HTML string of images of the troopers costumes
+*/
 function showMandoCostumes($id)
 {
 	global $conn;
@@ -1341,7 +1728,12 @@ function showMandoCostumes($id)
 	}
 }
 
-// showSGCostumes: A function which displays all the users costumes in synced database - Saber Guild
+/**
+ * Displays all the troopers costumes in synced Saber Guild database
+ * 
+ * @param string $id The Saber Guild ID of the troooper
+ * @return string Returns an HTML string of images of the troopers costumes
+*/
 function showSGCostumes($id)
 {
 	global $conn;
@@ -1382,7 +1774,12 @@ function showSGCostumes($id)
 	}
 }
 
-// showDroids: A function which displays all the users droids in synced database - Droid Builders
+/**
+ * Displays all the troopers costumes in synced Droid Builders database
+ * 
+ * @param string $id The garrison forum username
+ * @return string Returns an HTML string of images of the troopers droids
+*/
 function showDroids($forum)
 {
 	global $conn;
@@ -1423,7 +1820,13 @@ function showDroids($forum)
 	}
 }
 
-// showCostumes: A function which displays all the users costumes in synced database
+/**
+ * Displays all the troopers costumes in synced 501st database
+ * 
+ * @param int $id The trooper ID
+ * @param int $id The trooper's squad ID
+ * @return string Returns an HTML string of images of the troopers droids
+*/
 function showCostumes($id, $squad)
 {
 	global $conn, $squadArray;
@@ -1495,7 +1898,12 @@ function showCostumes($id, $squad)
 	}
 }
 
-// postTweet: Posts a tweet to Twitter (FLGUPDATES)
+/**
+ * Posts a tweet to Twitter using Twitter API
+ * 
+ * @param string $message The message to post to Twitter
+ * @return void
+*/
 function postTweet($message)
 {
 	// Credentials
@@ -1513,10 +1921,19 @@ function postTweet($message)
 }
 
 
-// squadToDiscord: Converts squad ID to Discord
+/**
+ * Converts squad ID to Discord role ID
+ * 
+ * @param int $squad The ID of the squad
+ * @return string Returns a string of the role ID
+*/
 function squadToDiscord($squad)
 {
-	if($squad == 1)
+	if($squad == 0)
+	{
+		return '<@948046239956627506>';
+	}
+	else if($squad == 1)
 	{
 		return '<@&914344158678900766>';
 	}
@@ -1542,7 +1959,15 @@ function squadToDiscord($squad)
 	}
 }
 
-// sendEventNotifty: Send's a notification to the event channel
+/**
+ * Send's a notification to the Discord event channel using a WebHook
+ * 
+ * @param int $id The ID of the event
+ * @param string $name The name of the event
+ * @param string $description The description of the event
+ * @param int $squad The ID of the squad to be converted to a role ID
+ * @return void
+*/
 function sendEventNotify($id, $name, $description, $squad)
 {
 	$webhookurl = discordWeb1;
@@ -1604,7 +2029,12 @@ function sendEventNotify($id, $name, $description, $squad)
 	curl_close( $ch );
 }
 
-// getSquad: Gets squad by location
+/**
+ * Gets squad by location using the Google API
+ * 
+ * @param string $address The address of the event
+ * @return int Returns the ID of the squad based on location
+*/
 function getSquad($address)
 {
 	// Squad code
@@ -1657,13 +2087,18 @@ function getSquad($address)
     return $squad;
 }
 
-// getSquadName: Returns the squad name / club name
+/**
+ * Returns the squad name / club name
+ * 
+ * @param int $value The ID of the squad or club to get the name
+ * @return string Returns the name of the squad or club
+*/
 function getSquadName($value)
 {
 	global $squadArray, $clubArray;
 	
 	// Set return value
-	$returnValue = "";
+	$returnValue = garrison;
 	
 	// Set squad ID
 	$squadID = 1;
@@ -1699,7 +2134,12 @@ function getSquadName($value)
 	return $returnValue;
 }
 
-// getCostumeQueryValues: Returns query for costume values for club
+/**
+ * Returns query for costume values for club. This will display costumes from the club specified.
+ * 
+ * @param int $clubid The ID of the club
+ * @return string Returns query
+*/
 function getCostumeQueryValues($clubid)
 {
 	global $squadArray, $clubArray;
@@ -1754,7 +2194,13 @@ function getCostumeQueryValues($clubid)
 	return $query;
 }
 
-// isImportant: Is the comment important? If so, we highlight it
+/**
+ * Returns the comment in a red color if it is marked as important
+ * 
+ * @param int $value The comment ID
+ * @param string $text The body of the comment
+ * @return string Return HTML string of the important comment
+*/
 function isImportant($value, $text)
 {
 	if($value == 1)
@@ -1767,6 +2213,11 @@ function isImportant($value, $text)
 	}
 }
 
+/**
+ * Check if the user is logged into Troop Tracker
+ * 
+ * @return boolean
+*/
 function loggedIn()
 {
 	if(isset($_SESSION['id']))
@@ -1776,7 +2227,12 @@ function loggedIn()
 	return false;
 }
 
-// convertDataToJSON: Converts a query to JSON
+/**
+ * Converts a query to JSON. This is used extensively for notifications.
+ * 
+ * @param string $query The query to run, to convert to JSON
+ * @return json Returns the query string to JSON
+*/
 function convertDataToJSON($query)
 {
 	global $conn;
@@ -1803,7 +2259,15 @@ function convertDataToJSON($query)
 	return json_encode($array);
 }
 
-// hasAward: Does the trooper have this award
+/**
+ * Returns if the trooper has an award
+ * 
+ * @param int $trooperid The ID of the trooper
+ * @param int $awardid The ID of the award
+ * @param boolean $echo Optional. Returns text to output
+ * @param boolean $remove Optional. When set, will hide or show element
+ * @return string Returns HTML string
+*/
 function hasAward($trooperid, $awardid, $echo = false, $remove = false)
 {
 	global $conn;
@@ -1846,7 +2310,15 @@ function hasAward($trooperid, $awardid, $echo = false, $remove = false)
 	}
 }
 
-// hasTitle: Does the trooper have this title
+/**
+ * Returns if the trooper has a title
+ * 
+ * @param int $trooperid The ID of the trooper
+ * @param int $awardid The ID of the award
+ * @param boolean $echo Optional. Returns text to output
+ * @param boolean $remove Optional. When set, will hide or show element
+ * @return string Returns HTML string
+*/
 function hasTitle($trooperid, $awardid, $echo = false, $remove = false)
 {
 	global $conn;
@@ -1889,42 +2361,57 @@ function hasTitle($trooperid, $awardid, $echo = false, $remove = false)
 	}
 }
 
-// sendNotification: Sends a notification to the log
+/**
+ * Sends a notification to the log
+ * 
+ * 0 = N/A
+ * 0 - N/A
+ * 1 - Add Costume
+ * 2 - Delete Costume
+ * 3 - Edit Costume
+ * 4 - Delete Award
+ * 5 - Add Award
+ * 6 - Give Award Trooper
+ * 7 - Edit Award
+ * 8 - Deny Trooper
+ * 9 - Approve Trooper
+ * 10 - Delete Trooper
+ * 11 - Update Trooper
+ * 12 - Add Trooper
+ * 13 - Add Event
+ * 14 - Edit Event
+ * 15 - Add Trooper To Event
+ * 16 - Delete Event
+ * 17 - Set Charity
+ * 18 - Remove Trooper From Event
+ * 19 - Add Shift From Edit
+ * 20 - Add Title
+ * 21 - Delete Title
+ * 22 - Give Title
+ * 23 - Edit Title
+ * 24 - Remove Title
+ * 25 - Remove Award
+ * 26 - Update Advanced Options
+ * 
+ * @param string $message Body of the message for the log
+ * @param int $trooperid The ID of the trooper
+ * @param int $type Optional. The ID of the action
+ * @param string $json Optional. The JSON data to send along with the log
+ * @return void
+*/
 function sendNotification($message, $trooperid, $type = 0, $json = "")
 {
 	global $conn;
-
-	// 0 - N/A
-	// 1 - Add Costume
-	// 2 - Delete Costume
-	// 3 - Edit Costume
-	// 4 - Delete Award
-	// 5 - Add Award
-	// 6 - Give Award Trooper
-	// 7 - Edit Award
-	// 8 - Deny Trooper
-	// 9 - Approve Trooper
-	// 10 - Delete Trooper
-	// 11 - Update Trooper
-	// 12 - Add Trooper
-	// 13 - Add Event
-	// 14 - Edit Event
-	// 15 - Add Trooper To Event
-	// 16 - Delete Event
-	// 17 - Set Charity
-	// 18 - Remove Trooper From Event
-	// 19 - Add Shift From Edit
-	// 20 - Add Title
-	// 21 - Delete Title
-	// 22 - Give Title
-	// 23 - Edit Title
-	// 24 - Remove Title
-	// 25 - Remove Award
 	
 	$conn->query("INSERT INTO notifications (message, trooperid, type, json) VALUES ('".$message."', '".$trooperid."', '".$type."', '".$json."')");
 }
 
-// troopCheck: Checks the troop counts of all clubs
+/**
+ * Checks the troop counts of all clubs, to determine if a trooper has reached a milestone
+ * 
+ * @param int $id The ID of the trooper
+ * @return void
+*/
 function troopCheck($id)
 {
 	global $conn, $clubArray, $squadArray;
@@ -1954,7 +2441,15 @@ function troopCheck($id)
 	}
 }
 
-// checkTroopCounts: Checks the troop counts, and puts the information into notifications
+/**
+ * Searches notification log to filter out milestones that have already been reached by the trooper
+ * 
+ * @param int $count The count to check based on the troopers count
+ * @param string $message The message to search in the notification log
+ * @param int $trooperid The ID of the trooper
+ * @param int $club The ID of the club
+ * @return void
+*/
 function checkTroopCounts($count, $message, $trooperid, $club)
 {
 	global $conn;
@@ -1996,7 +2491,11 @@ function checkTroopCounts($count, $message, $trooperid, $club)
 	}
 }
 
-// myEmail: gets users email
+/**
+ * Returns the trooper's e-mail
+ * 
+ * @return string The trooper's e-mail
+*/
 function myEmail()
 {
 	global $conn;
@@ -2011,7 +2510,11 @@ function myEmail()
 	}
 }
 
-// myTheme: gets users theme
+/**
+ * Returns the trooper's set theme
+ * 
+ * @return string The trooper's set theme
+*/
 function myTheme()
 {
 	global $conn;
@@ -2050,7 +2553,13 @@ function myTheme()
 	return $theme;
 }
 
-// getEventTitle: gets event title
+/**
+ * Returns the event title
+ * 
+ * @param int $id The ID of the event
+ * @param boolean $link If set, will return a link to the main event
+ * @return string The trooper's e-mail
+*/
 function getEventTitle($id, $link = false)
 {
 	global $conn;
@@ -2072,7 +2581,12 @@ function getEventTitle($id, $link = false)
 	}
 }
 
-// getEventThreadID: Gets event thread ID on forum
+/**
+ * Returns the event Xenforo thread ID on the forum
+ * 
+ * @param int $id The ID of the event
+ * @return int Returns thread ID
+*/
 function getEventThreadID($id)
 {
 	global $conn;
@@ -2087,7 +2601,12 @@ function getEventThreadID($id)
 	}
 }
 
-// getEventPostID: Gets event post ID on forum
+/**
+ * Returns the event Xenforo post ID on the forum
+ * 
+ * @param int $id The ID of the event
+ * @return int Returns post ID
+*/
 function getEventPostID($id)
 {
 	global $conn;
@@ -2102,7 +2621,12 @@ function getEventPostID($id)
 	}
 }
 
-// getCommentPostID: Gets comment post ID on forum
+/**
+ * Returns the event Xenforo comment ID on the forum
+ * 
+ * @param int $id The ID of the event
+ * @return int Returns comment ID
+*/
 function getCommentPostID($id)
 {
 	global $conn;
@@ -2117,72 +2641,24 @@ function getCommentPostID($id)
 	}
 }
 
-// loginWithTKID: Converts TK number into squad
-function loginWithTKID($tkid)
-{
-	global $clubArray, $squadArray, $conn;
-	
-	// Set club count
-	$clubCount = 0;
-	
-	// Check if in club
-	$inClub = false;
-	
-	// Set squad return
-	$squad = 0;
-	
-	// Loop through squads
-	foreach($clubArray as $club => $club_value)
-	{
-		// Get first letter of club
-		$firstLetter = strtoupper(substr($club, 0, 1));
-		
-		// Check if ID starts with a club
-		if(substr($tkid, 0, 1) === $firstLetter)
-		{
-			// Set club
-			$squad = count($squadArray) + ($clubCount) + 1;
-			
-			// Set club check
-			$inClub = true;
-		}
-		
-		// Increment
-		$clubCount++;
-	}
-	
-	// If not in club, set default
-	if(!$inClub)
-	{
-		if(substr($tkid, 0, 2) === 'TK')
-		{
-			// Remove TK
-			$tkid = substr($tkid, 2);
-		}
-		
-		// Get squad from database
-		$getSquad = $conn->query("SELECT squad FROM troopers WHERE tkid = '".$tkid."'");
-		$getSquad_value = $getSquad->fetch_row();
-		
-		// To prevent warnings, make sure value is set
-		if(isset($getSquad_value[0]))
-		{
-			// Set squad
-			$squad = $getSquad_value[0];
-		}
-	}
-	
-	// Return
-	return $squad;
-}
-
-// removeLetters: Removes letters from string
+/**
+ * Removes letters from string
+ * 
+ * @param string $string The string to be processed
+ * @return string Returns string with no letters
+*/
 function removeLetters($string)
 {
 	return preg_replace('/[^0-9,.]+/', '', $string);
 }
 
-// readTKNumber: Converts other club ID numbers to a readable format
+/**
+ * Converts TKID and other club ID numbers to a readable format
+ * 
+ * @param int $tkid The TKID of the trooper
+ * @param int $squad The squad or club ID of the trooper
+ * @return int Returns the TKID of the trooper based on squad or club
+*/
 function readTKNumber($tkid, $squad)
 {
 	global $conn, $clubArray, $squadArray;
@@ -2224,7 +2700,12 @@ function readTKNumber($tkid, $squad)
 	return $tkid;
 }
 
-// Returns if page is active
+/**
+ * Returns if page is active
+ * 
+ * @param int $page ID of the active page
+ * @return string Returns HTML string
+*/
 function isPageActive($page)
 {
 	if(isset($_GET['action']))
@@ -2243,7 +2724,12 @@ function isPageActive($page)
 	}
 }
 
-// Returns if squad is active
+/**
+ * Returns if squad is active, this is used on the homepage
+ * 
+ * @param int $squad ID of the squad
+ * @return string Returns HTML string
+*/
 function isSquadActive($squad)
 {
 	if(isset($_GET['squad']))
@@ -2264,7 +2750,13 @@ function isSquadActive($squad)
 	}
 }
 
-// getTKNumber: gets TK number
+/**
+ * Returns TK number for trooper
+ * 
+ * @param int $id ID of the trooper
+ * @param boolean $read Optional. If set, will process the TKID through readTKNumber()
+ * @return string Returns HTML string
+*/
 function getTKNumber($id, $read = false)
 {
 	global $conn;
@@ -2287,22 +2779,34 @@ function getTKNumber($id, $read = false)
 	}
 }
 
-// getIDFromTKNumber: gets ID from TK numbers (501st only)
+/**
+ * Returns trooper ID from TK number
+ * 
+ * @param int $tkid TKID of the trooper
+ * @return int ID of the trooper
+*/
 function getIDFromTKNumber($tkid)
 {
 	global $conn, $squadArray;
+
+	$returnVal = 0;
 	
 	$query = "SELECT * FROM troopers WHERE tkid='".$tkid."' AND squad <= ".count($squadArray)."";
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
-			return $db->id;
+			$returnVal = $db->id;
 		}
 	}
 }
 
-// getTrooperSquad: gets squad of trooper
+/**
+ * Returns squad of the trooper
+ * 
+ * @param int $id ID of the trooper
+ * @return int ID of the squad
+*/
 function getTrooperSquad($id)
 {
 	global $conn;
@@ -2317,7 +2821,12 @@ function getTrooperSquad($id)
 	}
 }
 
-// getTrooperForum: gets forum of trooper
+/**
+ * Returns forum username of trooper
+ * 
+ * @param int $id ID of the trooper
+ * @return string Forum username of the trooper
+*/
 function getTrooperForum($id)
 {
 	global $conn;
@@ -2332,7 +2841,12 @@ function getTrooperForum($id)
 	}
 }
 
-// getCostumeClub: gets the costumes club
+/**
+ * Returns the ID of the club assigned to a costume
+ * 
+ * @param int $id ID of the costume
+ * @return int ID of the club
+*/
 function getCostumeClub($id)
 {
 	global $conn;
@@ -2347,7 +2861,16 @@ function getCostumeClub($id)
 	}
 }
 
-// profileTop: Display's user information at top of profile page
+/**
+ * Display's user information at top of profile page, used on profiles
+ * 
+ * @param int $id ID of the trooper
+ * @param int $tkid TKID of the trooper
+ * @param int $squad ID of the trooper's squad
+ * @param string $forum Forum username of the trooper
+ * @param string $phone Phone number of the trooper
+ * @return void
+*/
 function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 {
 	global $conn, $squadArray, $clubArray;
@@ -2357,7 +2880,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	{
 		echo '
 		<h2 class="tm-section-header">Admin Controls</h2>
-		<p style="text-align: center;"><a href="index.php?action=commandstaff&do=managetroopers&uid='.$id.'">Edit/View Member in Command Staff Area</a></p>';
+		<p style="text-align: center;"><a href="index.php?action=commandstaff&do=managetroopers&uid='.$id.'" class="button">Edit/View Member in Command Staff Area</a></p>';
 	}
 	
 	// Only show 501st thumbnail, if a 501st member
@@ -2379,6 +2902,20 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	
 	// Does have a avatar?
 	$haveAvatar = false;
+
+	// Xenforo
+	$xenforo = @getUserForumID(getUserID($id))['user']['avatar_urls']['m'];
+
+	if($xenforo != "")
+	{
+		echo '
+		<p style="text-align: center;">
+			<img src="'.$xenforo.'" />
+		</p>';
+
+		// Set
+		$haveAvatar = true;
+	}
 	
 	// 501
 	if(isset($thumbnail[0]))
@@ -2432,6 +2969,9 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	{
 		while ($db2 = mysqli_fetch_object($result2))
 		{
+			// Is a 501 member?
+			$is501Member = false;
+
 			echo '
 			<div style="text-align: center;">';
 			
@@ -2443,6 +2983,8 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 				<p>
 					<img src="images/ranks/legion_member.png" />
 				</p>';
+
+				$is501Member = true;
 			}
 			// Reserve
 			else if($db2->p501 == 2)
@@ -2451,6 +2993,8 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 				<p>
 					<img src="images/ranks/legion_reserve.png" />
 				</p>';
+
+				$is501Member = true;
 			}
 			// Retired
 			else if($db2->p501 == 3)
@@ -2459,6 +3003,8 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 				<p>
 					<img src="images/ranks/legion_retired.png" />
 				</p>';
+
+				$is501Member = true;
 			}
 
 			// Set up squad count
@@ -2513,7 +3059,17 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	}
 	
 	echo '
-	<p style="text-align: center;"><a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un='.urlencode($forum).'" target="_blank">View Boards Profile</a></p>';
+	<p style="text-align: center;"><a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un='.urlencode($forum).'" target="_blank" class="button">View Boards Profile</a></p>';
+
+	if($is501Member && !is_null(get501Info($tkid, $squad)['joindate']))
+	{
+		echo '
+		<p style="text-align: center;">
+			<b>501st Member Since:</b>
+			<br />
+			'.date("F, d, Y", strtotime(get501Info($tkid, $squad)['joindate'])).'
+		</p>';
+	}
 	
 	if(isAdmin() && $phone != "")
 	{
@@ -2522,7 +3078,12 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	}
 }
 
-// formatPhoneNumber: Show the phone number properly
+/**
+ * Return's a formatted phone number
+ * 
+ * @param string $phoneNumber Phone number to be formatted
+ * @return string The formatted phone number
+*/
 function formatPhoneNumber($phoneNumber)
 {
 	$phoneNumber = preg_replace('/[^0-9]/','',$phoneNumber);
@@ -2555,7 +3116,12 @@ function formatPhoneNumber($phoneNumber)
 	return $phoneNumber;
 }
 
-// profileExist: get's if user exists
+/**
+ * Return's if a trooper exists
+ * 
+ * @param int $id ID of the trooper
+ * @return boolean Returns if trooper exists
+*/
 function profileExist($id)
 {
 	global $conn;
@@ -2563,7 +3129,7 @@ function profileExist($id)
 	// Set up return var
 	$doesExist = false;
 	
-	$query = "SELECT * FROM troopers WHERE id='".$id."'";
+	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
@@ -2577,7 +3143,64 @@ function profileExist($id)
 	return $doesExist;
 }
 
-// getUserID: gets the user's ID Xenforo Forum
+/**
+ * Return's the provided data into BB code format to be displayed on the forum
+ * 
+ * @param string $eventName The name of the event
+ * @param string $eventVenue The venue of the event
+ * @param string $location The address of the event
+ * @param string $date1 The start date for the event
+ * @param string $date2 The end date for the event
+ * @param string $website The website of the event
+ * @param int $numberOfAttend The number of projected attendees
+ * @param int $requestedNumber The requested number of characters
+ * @param int $requestedCharacter The requested characters
+ * @param int $secure Is there provided secure areas?
+ * @param int $blasters Are blasters allowed?
+ * @param int $lightsabers Are lightsabers allowed?
+ * @param int $parking Is there parking?
+ * @param int $mobility Is this venue accessible?
+ * @param string $amenities Is there amenities?
+ * @param string $comments Additional information on the troop - BB Code supported
+ * @param string $referred Who referred the event
+ * @param int $eventId ID for the event
+ * @param string $roster A string of the troopers attending the troop
+ * @return string
+*/
+function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $website, $numberOfAttend, $requestedNumber, $requestedCharacter, $secure, $blasters, $lightsabers, $parking, $mobility, $amenities, $comments, $referred, $eventId, $roster = "")
+{
+	return '
+	[b]Event Name:[/b] '.$eventName.'
+	[b]Venue:[/b] '.$eventVenue.'
+	[b]Venue address:[/b] '.$location.'
+	[b]Event Start:[/b] '.date("m/d/y h:i A", strtotime($date1)).'
+	[b]Event End:[/b] '.date("m/d/y h:i A", strtotime($date2)).'
+	[b]Event Website:[/b] '.$website.'
+	[b]Expected number of attendees:[/b] '.$numberOfAttend.'
+	[b]Requested number of characters:[/b] '.$requestedNumber.'
+	[b]Requested character types:[/b] '.$requestedCharacter.'
+	[b]Secure changing/staging area:[/b] '.yesNo($secure).'
+	[b]Can troopers carry blasters:[/b] '.yesNo($blasters).'
+	[b]Can troopers carry/bring props like lightsabers and staffs:[/b] '.yesNo($lightsabers).'
+	[b]Is parking available:[/b] '.yesNo($parking).'
+	[b]Is venue accessible to those with limited mobility:[/b] '.yesNo($mobility).'
+	[b]Amenities available at venue:[/b] '.ifEmpty($amenities, "No amenities for this event.").'
+	[b]Comments:[/b] '.ifEmpty($comments, "No comments for this event.").'
+	[b]Referred by:[/b] '.ifEmpty($referred, "Not available").'
+
+	'.$roster.'
+
+	[b][u]Sign Up / Event Roster:[/u][/b]
+
+	[url]https://fl501st.com/troop-tracker/index.php?event=' . $eventId . '[/url]';
+}
+
+/**
+ * Return's the user's ID from Xenforo Forum
+ * 
+ * @param int $id ID of the trooper
+ * @return int Returns user ID from Xenforo Forum
+*/
 function getUserID($id)
 {
 	global $conn;
@@ -2592,7 +3215,12 @@ function getUserID($id)
 	}
 }
 
-// getName: gets the troopers's name
+/**
+ * Return's the troopers's name
+ * 
+ * @param int $id ID of the trooper
+ * @return string Returns trooper's name
+*/
 function getName($id)
 {
 	global $conn;
@@ -2607,7 +3235,12 @@ function getName($id)
 	}
 }
 
-// getEmail: gets the troopers's e-mail
+/**
+ * Return's the troopers's e-mail
+ * 
+ * @param int $id ID of the trooper
+ * @return string Returns trooper's e-mail
+*/
 function getEmail($id)
 {
 	global $conn;
@@ -2622,7 +3255,12 @@ function getEmail($id)
 	}
 }
 
-// getPhone: gets the user's phone
+/**
+ * Return's the troopers's phone number
+ * 
+ * @param int $id ID of the trooper
+ * @return string Returns trooper's phone number
+*/
 function getPhone($id)
 {
 	global $conn;
@@ -2637,7 +3275,12 @@ function getPhone($id)
 	}
 }
 
-// getSquadID: gets the user's squad
+/**
+ * Return's the troopers's squad ID
+ * 
+ * @param int $id ID of the trooper
+ * @return string Returns trooper's squad ID
+*/
 function getSquadID($id)
 {
 	global $conn;
@@ -2652,7 +3295,14 @@ function getSquadID($id)
 	}
 }
 
-// copyEvent: Helps with copying event values to create an event page
+/**
+ * Helps with copying event values to create an event page. Set's default values when copying events.
+ * 
+ * @param int $eid ID of the event
+ * @param string $value Value loaded from database
+ * @param int $default Optional. Default value for field
+ * @return string Default value of field
+*/
 function copyEvent($eid, $value, $default = -1)
 {
 	// Check eid
@@ -2676,7 +3326,15 @@ function copyEvent($eid, $value, $default = -1)
 	}
 }
 
-// copyEventSelect: Helps with copying event values to create an event page - this function selects from select list
+/**
+ * Helps with copying event values to create an event page. Set's default values when copying events for select elements.
+ * 
+ * @param int $eid ID of the event
+ * @param string $value Value loaded from database
+ * @param string $value2 Default value for field
+ * @param int $default Optional. Default value for field if interval.
+ * @return string Default value of field
+*/
 function copyEventSelect($eid, $value, $value2, $default = -1)
 {
 	// Check eid
@@ -2730,7 +3388,13 @@ function copyEventSelect($eid, $value, $value2, $default = -1)
 	}
 }
 
-// If the user ID is assigned to an event
+/**
+ * Search for trooper in event, and return if in event
+ * 
+ * @param int $id ID of the trooper
+ * @param int event ID of the event
+ * @return array Returns an array, [inTroop] if trooper is in event, and [status] of the trooper
+*/
 function inEvent($id, $event)
 {
 	global $conn;
@@ -2758,7 +3422,14 @@ function inEvent($id, $event)
 	return $array;
 }
 
-// getStatus: gets status of trooper - 0 = Going, 1 = Stand by, 2 = Tentative, 3 = Attended, 4 = Canceled, 5 = Pending, 6 = Not Picked
+/**
+ * Returns the status of the trooper
+ * 
+ * 0 = Going / 1 = Stand By / 2 = Tentative / 3 = Attended / 4 = Canceled / 5 = Pending / 6 = Not Picked
+ * 
+ * @param int $value The ID of the status
+ * @return string Returns string of the status
+*/
 function getStatus($value)
 {
 	$returnValue = "";
@@ -2795,25 +3466,12 @@ function getStatus($value)
 	return $returnValue;
 }
 
-// getDatesFromRange: Get date ranges
-function getDatesFromRange($start, $end, $format = 'M-d-Y')
-{
-    $array = array();
-    $interval = new DateInterval('P1D');
-
-    $realEnd = new DateTime($end);
-    $realEnd->add($interval);
-
-    $period = new DatePeriod(new DateTime($start), $interval, $realEnd);
-
-    foreach($period as $date) { 
-        $array[] = $date->format($format); 
-    }
-
-    return $array;
-}
-
-// validate_url: Check if URL is valid
+/**
+ * Returns if a URL is valid
+ * 
+ * @param string $url URL to be validated
+ * @return string Returns an HTML string of the validated URL
+*/
 function validate_url($url)
 {
 	$path = parse_url($url, PHP_URL_PATH);
@@ -2831,7 +3489,15 @@ function validate_url($url)
 	}
 }
 
-// ifEmpty: Show empty - if no value, show message. Default is EMPTY
+/**
+ * Formats values if they are empty with a default value
+ * 
+ * If no value, show message. Default is EMPTY.
+ * 
+ * @param string $value Value to check if empty
+ * @param string $message Message to display if empty
+ * @return string Returns message string
+*/
 function ifEmpty($value, $message = "EMPTY")
 {
 	if($value == "")
@@ -2848,12 +3514,17 @@ function ifEmpty($value, $message = "EMPTY")
 	}
 }
 
-// getCostume: What was the costume?
+/**
+ * Returns costume string from costume ID
+ * 
+ * @param int $value ID of costume
+ * @return string Returns costume name
+*/
 function getCostume($value)
 {
 	global $conn;
 	
-	$query = "SELECT * FROM costumes WHERE id='".$value."'";
+	$query = "SELECT * FROM costumes WHERE id = '".$value."'";
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
@@ -2863,7 +3534,13 @@ function getCostume($value)
 	}
 }
 
-// echoSelect: Selects the users set value
+/**
+ * Compares two values, if they match, will return SELECTED to HTML
+ * 
+ * @param int $value1 Value 1 to compare
+ * @param int $value2 Value 2 to compare
+ * @return string HTML SELECTED string
+*/
 function echoSelect($value1, $value2)
 {
 	$returnValue = "";
@@ -2876,7 +3553,12 @@ function echoSelect($value1, $value2)
 	return $returnValue;
 }
 
-// yesNo: Display yes or no
+/**
+ * Displays yes or no string based on interval value
+ * 
+ * @param int $value Checks interval value
+ * @return string HTML yes or no string
+*/
 function yesNo($value)
 {
 	$returnValue = "";
@@ -2893,7 +3575,12 @@ function yesNo($value)
 	return $returnValue;
 }
 
-// addHttp: Adds http if does not exist
+/**
+ * Adds http to url string if it does not exist
+ * 
+ * @param string $url URL string to format
+ * @return string HTML URL string
+*/
 function addHttp($url)
 {
 	if (!preg_match("~^(?:f|ht)tps?://~i", $url))
@@ -2903,7 +3590,13 @@ function addHttp($url)
 	return $url;
 }
 
-// isAdmin: Is the user an admin or squad leader?
+/**
+ * Returns if trooper is an admin or moderator
+ * 
+ * 1 = Super Admin / 2 = Moderator
+ * 
+ * @return boolean Returns if admin or moderator
+*/
 function isAdmin()
 {
 	global $conn;
@@ -2928,8 +3621,16 @@ function isAdmin()
 	return $isAdmin;
 }
 
-// hasPermission: Does the user have permission to access the data?
-// 0 = Regular Member, 1 = Super Admin, 2 = Moderator
+/**
+ * Determines if trooper has permission to access
+ * 
+ * 0 = Regular Member, 1 = Super Admin, 2 = Moderator
+ * 
+ * @param int $permissionLevel1 First permission to check
+ * @param int $permissionLevel2 Optional. Second permission to check
+ * @param int $permissionLevel3 Optional. Third permission to check
+ * @return boolean Returns if admin or moderator
+*/
 function hasPermission($permissionLevel1, $permissionLevel2 = -1, $permissionLevel3 = -1)
 {
 	global $conn;
@@ -2965,7 +3666,14 @@ function hasPermission($permissionLevel1, $permissionLevel2 = -1, $permissionLev
 	return $isAllowed;
 }
 
-// hasSpecialPermission: Check to see if the trooper has a special permission to perform certain functions
+/**
+ * Determines if trooper has special permission access
+ * 
+ * Must be a moderator to utilize this method
+ * 
+ * @param string $permission Database value to check for special permission
+ * @return boolean Returns if trooper has access
+*/
 function hasSpecialPermission($permission)
 {
 	global $conn;
@@ -2989,7 +3697,37 @@ function hasSpecialPermission($permission)
 	return $hasPermission;
 }
 
-// isWebsiteClosed: Is the website closed?
+/**
+ * Returns if trooper has club access
+ * 
+ * @param int $dbclub ID of club to check
+ * @return boolean Returns if trooper has access to a club
+*/
+function isClubMember($dbclub)
+{
+	global $conn;
+	
+	$returnValue = 0;
+	
+	// Check if the trooper is a moderator
+	$query = "SELECT * FROM troopers WHERE id = '".$_SESSION['id']."'";
+
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			$returnValue = $db->{$dbclub};
+		}
+	}
+	
+	return $returnValue;
+}
+
+/**
+ * Returns if the website is closed
+ *
+ * @return boolean Returns if the website is open or closed
+*/
 function isWebsiteClosed()
 {
 	global $conn;
@@ -3016,7 +3754,11 @@ function isWebsiteClosed()
 	return $isWebsiteClosed;
 }
 
-// isSignUpClosed: Are the website sign ups closed?
+/**
+ * Returns if the website sign ups are open or closed
+ *
+ * @return boolean Returns if the website sign ups are open or closed
+*/
 function isSignUpClosed()
 {
 	global $conn;
@@ -3038,7 +3780,13 @@ function isSignUpClosed()
 	return $isWebsiteClosed;
 }
 
-// Does the TK ID exist?
+/**
+ * Returns if the TKID exists
+ *
+ * @param int $tk The TKID of the trooper
+ * @param int $squad The squad or club ID of the trooper
+ * @return boolean Returns if the TKID exists
+*/
 function doesTKExist($tk, $squad = 0)
 {
 	global $conn, $squadArray;
@@ -3068,7 +3816,13 @@ function doesTKExist($tk, $squad = 0)
 	return $exist;
 }
 
-// Is the TK ID registered?
+/**
+ * Returns if the TKID is registered
+ *
+ * @param int $tk The TKID of the trooper
+ * @param int $squad The squad or club ID of the trooper
+ * @return boolean Returns if the TKID is registered
+*/
 function isTKRegistered($tk, $squad = 0)
 {
 	global $conn, $squadArray;
@@ -3101,14 +3855,27 @@ function isTKRegistered($tk, $squad = 0)
 	return $registered;
 }
 
-// cleanInput: Prevents hack by cleaning input
+/**
+ * Prevents hacks by sanitizing input
+ *
+ * @param string $value The input to be sanitized
+ * @return string Returns sanitized input
+*/
 function cleanInput($value)
 {
 	$value = filter_var($value, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 	return $value;
 }
 
-// sendEventUpdate: Send's an e-mail (if subscribed) to user
+/**
+ * Send's an e-mail if trooper is subscribed to an event
+ *
+ * @param int $troopid Event ID of the troop
+ * @param int $trooperid ID of the trooper
+ * @param string $subject Subject of the e-mail
+ * @param string $message Body of the e-mail message
+ * @return void
+*/
 function sendEventUpdate($troopid, $trooperid, $subject, $message)
 {
 	global $conn;
@@ -3127,7 +3894,15 @@ function sendEventUpdate($troopid, $trooperid, $subject, $message)
 	}
 }
 
-// sendEmail: Send's an e-mail to specified user
+/**
+ * Send's an e-mail to a specified trooper
+ *
+ * @param string $sendTo E-mail address to send to
+ * @param string $Name Name of the trooper
+ * @param string $Subject Subject of the e-mail
+ * @param string $Mesage Body of the e-mail message
+ * @return void
+*/
 function sendEmail($SendTo, $Name, $Subject, $Message)
 {
 	// MAIL
@@ -3175,7 +3950,12 @@ function sendEmail($SendTo, $Name, $Subject, $Message)
 	// END MAIL
 }
 
-// getEra: what is the era?
+/**
+ * Returns string of Era ID
+ *
+ * @param int $number ID of era to format
+ * @return string String of era
+*/
 function getEra($number)
 {
 	// Return value
@@ -3206,26 +3986,13 @@ function getEra($number)
 	return $text;
 }
 
-// convertNumber: convert number to unlimited if 500
-function convertNumber($number, $total)
-{
-	// Number is high enough return unlimited and if total is less than unlimited
-	if($number == 500 && $total == 500)
-	{
-		$number = "unlimited";
-	}
-	
-	// If total troopers allowed is set less than other trooper counts
-	if($total < $number)
-	{
-		$number = $total;
-	}
-	
-	// Return
-	return $number;
-}
-
-// eraCheck: Check to see if the event is limited to certain costumes
+/**
+ * Returns if costume is allowed at the event based off era allowed
+ *
+ * @param int $eventID ID of the event
+ * @param int $costumeID ID of the costume
+ * @return boolean Returns if costume is allowed at the event based off era allowed
+*/
 function eraCheck($eventID, $costumeID)
 {
 	global $conn;
@@ -3260,7 +4027,13 @@ function eraCheck($eventID, $costumeID)
 	return $eventFail;
 }
 
-// troopersRemaining: Returns the number of troopers remaining
+/**
+ * Returns the number of troopers remaining
+ *
+ * @param int $value1 First number to compare
+ * @param int $value2 Second number to compare
+ * @return string Returns string of remaining spots
+*/
 function troopersRemaining($value1, $value2)
 {
 	// Subtract values
@@ -3270,7 +4043,13 @@ function troopersRemaining($value1, $value2)
 	return '<b>' . $remaining . ' spots remaining.</b>';
 }
 
-// eventClubCount: Returns number of troopers signed up for this event based on costume
+/**
+ * Returns number of troopers signed up for this event based on costume
+ *
+ * @param int $eventID ID of the event
+ * @param int $clubID ID of the club
+ * @return string Returns count of club in the event
+*/
 function eventClubCount($eventID, $clubID)
 {
 	global $conn, $clubArray, $dualCostume;
@@ -3287,6 +4066,9 @@ function eventClubCount($eventID, $clubID)
 	
 	// Total count
 	$total = 0;
+
+	// Total all together
+	$totalAll = 0;
 	
 	// Set up return number
 	$returnVal = 0;
@@ -3308,6 +4090,9 @@ function eventClubCount($eventID, $clubID)
 					if($db2->club == 0)
 					{
 						$c501++;
+
+						// Increment total count
+						$totalAll++;
 					}
 					
 					// Loop through clubs
@@ -3321,6 +4106,9 @@ function eventClubCount($eventID, $clubID)
 							{
 								// Increment to club
 								${"c" . $club_value['dbLimit']}++;
+
+								// Increment total count
+								$totalAll++;
 							}
 						}
 					}
@@ -3369,11 +4157,23 @@ function eventClubCount($eventID, $clubID)
 		$returnVal = $total;
 	}
 
+	// If want total
+	if($clubID == "all")
+	{
+		$returnVal = $totalAll;
+	}
+
 	// Return
 	return $returnVal;
 }
 
-// isEventFull: Check to see if the event is full ($eventID = ID of the event, $costumeID = costume they are going to wear)
+/**
+ * Checks to see if the event is full
+ *
+ * @param int $eventID ID of the event
+ * @param int $costumeID ID of the costume
+ * @return boolean Returns if event is full based on costume choice
+*/
 function isEventFull($eventID, $costumeID)
 {
 	global $conn, $dualCostume, $clubArray;
@@ -3448,7 +4248,12 @@ function isEventFull($eventID, $costumeID)
 	return $eventFull;
 }
 
-// getPermissionName: Converts value to title string of permission
+/**
+ * Converts value to title string of permission
+ *
+ * @param int $value ID of the permission
+ * @return string Returns string value based off permission ID
+*/
 function getPermissionName($value)
 {
 	if($value == 0)
@@ -3469,8 +4274,13 @@ function getPermissionName($value)
 	}
 }
 
-// getClubPermissionName: Converts value to title string of permission
-function getClubPermissionName($value, $type = "")
+/**
+ * Converts value to title string of permission
+ *
+ * @param int $value ID of the permission
+ * @return string Returns string value based off permission ID
+*/
+function getClubPermissionName($value)
 {
 	if($value == 0)
 	{
@@ -3478,36 +4288,15 @@ function getClubPermissionName($value, $type = "")
 	}
 	else if($value == 1)
 	{
-		if($type == "sheets")
-		{
-			return 'Active';
-		}
-		else
-		{
-			return 'Regular Member';
-		}
+		return 'Regular Member';
 	}
 	else if($value == 2)
 	{
-		if($type == "sheets")
-		{
-			return 'Reserve';
-		}
-		else
-		{
-			return 'Reserve Member';
-		}
+		return 'Reserve Member';
 	}
 	else if($value == 3)
 	{
-		if($type == "sheets")
-		{
-			return 'Retired';
-		}
-		else
-		{
-			return 'Retired Member';
-		}
+		return 'Retired Member';
 	}
 	else if($value == 4)
 	{
@@ -3519,7 +4308,14 @@ function getClubPermissionName($value, $type = "")
 	}
 }
 
-// canAccess: Determines if a trooper can access the troop tracker to sign up for events
+/**
+ * Determines if a trooper can access the troop tracker to sign up for events
+ * 
+ * This is determined by if the trooper is in a reserved status.
+ *
+ * @param int $id ID of the trooper
+ * @return string Returns if a trooper can access the troop tracker
+*/
 function canAccess($id)
 {
 	global $conn, $clubArray;
@@ -3553,7 +4349,13 @@ function canAccess($id)
 	return $canAccess;
 }
 
-// emailSettingStatus: Is the setting on or off
+/**
+ * Returns if a e-mail setting is on or off
+ *
+ * @param string $column Database field name
+ * @param boolean print Optional. If set to true, will return CHECKED
+ * @return string Returns if a trooper is subscribed to an e-mail setting
+*/
 function emailSettingStatus($column, $print = false)
 {
 	global $conn;
@@ -3583,7 +4385,12 @@ function emailSettingStatus($column, $print = false)
 	}
 }
 
-// isLink: Is this a linked event?
+/**
+ * Returns if an event is linked
+ *
+ * @param int $id ID of the event
+ * @return string ID of the linked event
+*/
 function isLink($id)
 {
 	global $conn;
@@ -3615,9 +4422,13 @@ function isLink($id)
 	return $link;
 }
 
-// getSheet: Gets the Google Sheet values
-// spreadsheetId: ID of spreadsheet (in URL)
-// get_range: Sheet Name OR Sheet Name!A1:G3
+/**
+ * Get's Google Sheet
+ *
+ * @param int $spreadsheetId ID of the spreadsheet
+ * @param int $get_range Sheet Name OR Sheet Name!A1:G3
+ * @return string Returns values from spreadsheet
+*/
 function getSheet($spreadsheetId, $get_range)
 {
 	// Google API set up
@@ -3632,12 +4443,16 @@ function getSheet($spreadsheetId, $get_range)
 	return $values;
 }
 
-// editSheet: Edit's the Google Sheet
-// spreadsheetId: ID of spreadsheet (in URL)
-// sheetName: Name of the sheet we want to edit
-// columnFrom: The letter of column we want to start editing from
-// columnTo: The letter of column we want to stop editing from
-// newValues: The new values (array) we want to change the values to
+/**
+ * Edit's the Google Sheet
+ *
+ * @param int $spreadsheetId ID of the spreadsheet (in URL)
+ * @param int $sheetName Name of the sheet we want to edit
+ * @param int $columnFrom The letter of column we want to start editing from
+ * @param int The letter of column we want to stop editing from
+ * @param int $newValues The new values (array) we want to change the values to
+ * @return void
+*/
 function editSheet($spreadsheetId, $sheetName, $columnFrom, $columnTo, $newValues)
 {
 	// Google API set up
@@ -3660,10 +4475,14 @@ function editSheet($spreadsheetId, $sheetName, $columnFrom, $columnTo, $newValue
 	$update_sheet = $service->spreadsheets_values->update($spreadsheetId, $update_range, $body, $params);
 }
 
-// addToSheet: Adds to bottom of Google Sheet
-// spreadsheetId: The ID of the spreadsheet
-// sheetName: The name of the spreadsheet we want to add to
-// newValues: Array of new values to add
+/**
+ * Adds to bottom of Google Sheet
+ *
+ * @param int $spreadsheetId ID of the spreadsheet (in URL)
+ * @param int $sheetName Name of the sheet we want to edit
+ * @param int $newValues Array of new values to add
+ * @return void
+*/
 function addToSheet($spreadsheetId, $sheetName, $newValues)
 {
 	// Google API set up
@@ -3682,11 +4501,15 @@ function addToSheet($spreadsheetId, $sheetName, $newValues)
 	$service->spreadsheets_values->append($spreadsheetId, $range, $valueRange, $conf);
 }
 
-// deleteSheetRows: Deletes rows from sheet
-// spreadsheetId: The ID of the spreadsheet
-// sheetID: The ID of the spreadsheet GID in URL
-// start: Index to start delete
-// end: Index to end delete
+/**
+ * Deletes rows from sheet
+ *
+ * @param int $spreadsheetId ID of the spreadsheet (in URL)
+ * @param int $sheetID The ID of the spreadsheet GID in URL
+ * @param int $start Index to start delete
+ * @param int $end Index to end delete
+ * @return void
+*/
 function deleteSheetRows($spreadsheetId, $sheetID, $start, $end)
 {
 	// Google API set up
@@ -3713,7 +4536,12 @@ function deleteSheetRows($spreadsheetId, $sheetID, $start, $end)
 	$result = $service->spreadsheets->batchUpdate($spreadsheetId, $delete_body);
 }
 
-// get_numerics: Gets the numbers
+/**
+ * Returns numbers from string
+ *
+ * @param string $str String to format into numbers)
+ * @return str String with just numbers
+*/
 function get_numerics($str)
 {
     preg_match_all('/\d+/', $str, $matches);
@@ -3741,7 +4569,8 @@ if(!loggedIn() && !isset($_POST['loginWithTK']))
 				if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
 				{
 					// Update password, e-mail, and user ID
-					$conn->query("UPDATE troopers SET password = '".password_hash($_COOKIE['TroopTrackerPassword'], PASSWORD_DEFAULT)."', email = '".$forumLogin['user']['email']."', user_id = '".$forumLogin['user']['user_id']."', forum_id = '".$forumLogin['user']['username']."' WHERE id = '".$db->id."'");
+
+					$conn->query("UPDATE troopers SET password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', email = '".$forumLogin['user']['email']."', user_id = '".$forumLogin['user']['user_id']."', forum_id = '".$forumLogin['user']['username']."' WHERE id = '".$db->id."'");
 				}
 
 				// Check credentials and make sure trooper still has access
@@ -3777,7 +4606,7 @@ if(loggedIn())
 }
 
 // Check for events that need to be closed
-$query = "SELECT * FROM events WHERE dateEnd < ".date('Y-m-d H:i:s')." - INTERVAL 1 HOUR AND closed != '2' AND closed != '1'";
+$query = "SELECT * FROM events WHERE dateEnd < '".date('Y-m-d H:i:s', strtotime('-1 HOUR'))."' AND closed != '2' AND closed != '1'";
 if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))

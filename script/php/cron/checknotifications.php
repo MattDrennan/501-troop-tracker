@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file monitors changes to notification_check database, and sends notifications based on the results.
+ * 
+ * This file should be run every two minutes by a cronjob.
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 // Include config
 include(dirname(__DIR__) . '/../../config.php');
 

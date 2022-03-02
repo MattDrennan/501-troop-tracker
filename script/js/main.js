@@ -5,12 +5,12 @@ jQuery.validator.addMethod("noSpace", function(value, element)
 }, "Please enter a comment.");
 
 // bbcoder: Converts textbox content to BB Code
-function bbcoder(code)
+function bbcoder(code, textarea)
 {
 	try
 	{
 		var old = "";
-		var textarea = document.getElementsByName("comments")[0];
+		textarea = $("#" + textarea)[0];
 		var value = textarea.value;
 		var startPos = textarea.selectionStart;
 		var endPos = textarea.selectionEnd;
@@ -293,6 +293,22 @@ $(document).ready(function()
 		$.LoadingOverlay("hide");
 	});
 
+	// Limit Change - Total Troopers (Prevent admin from adding a total limit for a club and a total limit)
+	$("body").on("input", "#limitTotalTroopers", function(e)
+	{
+		// If not default value, change others
+		if($(this).val() != 500)
+		{
+			$("#limit501st").val(500);
+
+			// Loop through clubs
+			for(var i = 0; i <= (clubArray.length - 1); i++)
+			{
+				$("#" + clubDBLimitArray[i]).val(500);
+			}
+		}
+	})
+
 	// Image Upload - Change Upload Type
 	$("body").on("click", "#trooperInformationButton", function(e)
 	{
@@ -464,8 +480,11 @@ $(document).ready(function()
 		e.preventDefault();
 
 		// Reset
+		$("#postToBoards").val(1);
 		$("#era").val(4);
 		$("#limit501st").val(500);
+		$("#limitedEvent").val(0);
+		$("#limitTotalTroopers").val(500);
 
 		// On index.php, clear all fields
 		clearLimit();
@@ -1110,6 +1129,14 @@ $(document).ready(function()
 					$("#submitCharity").val("Set Charity Amount");
 				}
 
+				// If advanced options visible
+				if($("#advancedOptions").is(":visible"))
+				{
+					// Hide Charity
+					$("#advancedOptions").hide();
+					$("#submitCharity").val("Advanced Options");
+				}
+
 				// If edit event is hidden
 				if($("#editEventInfo").is(":hidden"))
 				{
@@ -1143,11 +1170,12 @@ $(document).ready(function()
 					$("#era").val(json.limitTo);
 					$("#limitRebels").val(json.limitRebels);
 					$("#limit501st").val(json.limit501st);
+					$("#limitTotalTroopers").val(json.limitTotalTroopers);
 
 					// Loop through clubs
 					for(var i = 0; i <= (clubArray.length - 1); i++)
 					{
-						$("#" + clubArray[i]).val(json[clubArray[i]]);
+						$("#" + clubDBLimitArray[i]).val(json[clubDBLimitArray[i]]);
 					}
 
 					$("#referred").val(json.referred);
@@ -1178,6 +1206,106 @@ $(document).ready(function()
 			}
 		});
 	})
+
+	/************************* ADVANCED OPTIONS *******************************/
+	
+	// Advanced options button
+	$("#submitAdvanced").button().click(function(e)
+	{
+		e.preventDefault();
+			
+		// Hide event info
+		if($("#editEventInfo").is(":visible"))
+		{
+			$("#editEventInfo").hide();
+			$("#submitEdit").val("Edit");
+		}
+
+		// Hide roster info
+		if($("#rosterInfo").is(":visible"))
+		{
+			$("#submitRoster").val("Roster");
+			$("#rosterInfo").html("");
+			$("#rosterInfo").hide();
+		}
+
+		// Hide charity info
+		if($("#charityAmount").is(":visible"))
+		{
+			$("#submitCharity").val("Set Charity Amount");
+			$("#charityAmount").hide();
+		}
+		
+		// Show advanced options button, when pressed
+		if($("#advancedOptions").is(":hidden"))
+		{
+			// Show advanced options
+			$("#advancedOptions").show();
+			
+			// Change button to close
+			$("#submitAdvanced").val("Close");
+			
+			// Get form info
+			var form = $("#editEvents");
+			var url = form.attr("action");
+
+			// Request event data
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitEdit=1",
+				success: function(data)
+				{
+					var json = JSON.parse(data);
+					
+					// Set advanced fields
+					$("#threadIDA").val(json.thread_id);
+					$("#postIDA").val(json.post_id);
+				}
+			});
+		}
+		else
+		{
+			// Hide charity form
+			$("#advancedOptions").hide();
+			$("#submitAdvanced").val("Advanced Options");
+		}
+	})
+	
+	// Set advanced button
+	$("#advancedOptionsSave").button().click(function(e)
+	{
+		e.preventDefault();
+		
+		// Get form info
+		var form = $("#editEvents");
+		var url = form.attr("action");
+
+		if(parseInt($("#threadIDA").val()) || parseInt($("#threadIDA").val()) === 0 && parseInt($("#postIDA").val()) || parseInt($("#postIDA").val()) === 0)
+		{
+			// Save
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitAdvanced=1&threadIDA=" + $("#threadIDA").val() + "&postIDA=" + $("#postIDA").val(),
+				success: function(data)
+				{
+					// Hide advanced form
+					$("#advancedOptions").hide();
+					$("#submitAdvanced").val("Advanced Options");
+			
+					// Send success message
+					alert("Success!");
+				}
+			});
+		}
+		else
+		{
+			alert("Enter a valid number.");
+		}
+	})
+	
+	/************************* END ADVANCED OPTIONS *******************************/
 	
 	/************************* CHARITY *******************************/
 	
@@ -1199,6 +1327,13 @@ $(document).ready(function()
 			$("#submitRoster").val("Roster");
 			$("#rosterInfo").html("");
 			$("#rosterInfo").hide();
+		}
+
+		// Hide advanced info
+		if($("#advancedOptions").is(":visible"))
+		{
+			$("#submitAdvanced").val("Advanced Options");
+			$("#advancedOptions").hide();
 		}
 		
 		// Show charity button, when pressed
@@ -1297,6 +1432,13 @@ $(document).ready(function()
 					// Hide Charity
 					$("#charityAmount").hide();
 					$("#submitCharity").val("Set Charity Amount");
+				}
+
+				// Hide advanced info
+				if($("#advancedOptions").is(":visible"))
+				{
+					$("#submitAdvanced").val("Advanced Options");
+					$("#advancedOptions").hide();
 				}
 
 				if($("#rosterInfo").is(":hidden"))
@@ -1403,6 +1545,37 @@ $(document).ready(function()
 		}
 	});
 
+	// When trooper clicks button to add smiley
+	$("body").on("click", "[name=addSmiley]", function(e)
+	{
+		var thisE = $(this);
+
+		$.ajax({
+			type: "POST",
+			url: "process.php?do=smileyeditor",
+			data: "",
+			success: function(data)
+			{
+				var json = JSON.parse(data);
+
+				thisE.parent().find("[name=smileyarea]").html(json.data);
+			}
+		});
+	});
+
+	// When trooper clicks a smiley
+	$("body").on("click", "[name=smileyarea] img", function(e)
+	{
+		e.preventDefault();
+
+		var textarea = $(this).parent().parent().find("textarea")[0];
+		var value = textarea.value;
+		var startPos = textarea.selectionStart;
+		var endPos = textarea.selectionEnd;
+
+		textarea.value = value.replaceBetween(startPos, endPos, $(this).attr("code"));
+	});
+
 	// When trooper quotes a comment
 	$("body").on("click", "[id^=quoteComment]", function(e)
 	{
@@ -1411,8 +1584,16 @@ $(document).ready(function()
 		// Get ID of comment
 		var id = $(this).attr("name");
 
+		var changeThis = $($("table[name=comment_" + id + "] td[name=insideComment]").prop("outerHTML"));
+
+		// Replace smileys with code
+		$(changeThis).find("img").each(function() {
+			$(this).replaceWith($(this).attr("code"));
+		});
+
 		// Add comment to comment text area
-		$("#comment").val($("#comment").val() + "[quotec trooperid=" + $(this).attr("trooperid") + " name=" + $(this).attr("troopername") + " tkid=" + $(this).attr("tkid") + " commentid=" + id + "]" + $("table[name=comment_" + id + "] td[name=insideComment]").text() + "[/quotec]\n\n");
+		$("#comment").val($("#comment").val() + "[quotec trooperid=" + $(this).attr("trooperid") + " name=" + $(this).attr("troopername") + " tkid=" + $(this).attr("tkid") + " commentid=" + id + "]" + $(changeThis).text() + "[/quotec]\n\n");
+
 	});
 	
 	// When trooper quotes a comment
@@ -1422,9 +1603,14 @@ $(document).ready(function()
 
 		// Get ID of comment
 		var id = $(this).attr("name");
+
+		// Replace smileys with code
+		$("table[name=comment_" + id + "] td[name=insideComment] img").each(function() {
+			$(this).replaceWith($(this).attr("code"));
+		});
 		
 		// Add comment to comment text area with HTML for display purposes
-		$("table[name=comment_" + id + "] td[name=insideComment]").html('<textarea commentid="' + id + '">' + $("table[name=comment_" + id + "] td[name=insideComment]").text().replace('<br/>', '\n').replace('<br />', '\n') + '</textarea><br /><input type="submit" name="editCommentSubmit" commentid="' + id + '" value="Save" />');
+		$("table[name=comment_" + id + "] td[name=insideComment]").html('<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\', \'textcomment_' + id + '\')" class="button">Bold</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\', \'textcomment_' + id + '\')" class="button">Italic</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\', \'textcomment_' + id + '\')" class="button">Underline</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'Q\', \'textcomment_' + id + '\')" class="button">Quote</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\', \'textcomment_' + id + '\')" class="button">Color</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\', \'textcomment_' + id + '\')" class="button">Size</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\', \'textcomment_' + id + '\')" class="button">URL</a> <a href="#/" name="addSmiley" class="button">Add Smiley</a><textarea id="textcomment_' + id + '" commentid="' + id + '">' + $("table[name=comment_" + id + "] td[name=insideComment]").text().replace('<br/>', '\n').replace('<br />', '\n') + '</textarea><span name="smileyarea"></span><br /><input type="submit" name="editCommentSubmit" commentid="' + id + '" value="Save" />');
 	});
 	
 	// When trooper quotes a comment
@@ -1438,9 +1624,6 @@ $(document).ready(function()
 		// Get comment
 		var comment = $("table[name=comment_" + id + "] td[name=insideComment] textarea").val().replace(/\n/g, '\n<br />')
 		
-		// Add text area to comment
-		$("table[name=comment_" + id + "] td[name=insideComment]").html(comment);
-		
 		// Save comment
 		$.ajax({
 			type: "POST",
@@ -1448,6 +1631,11 @@ $(document).ready(function()
 			data: "commentid=" + id + "&comment=" + comment,
 			success: function(data)
 			{
+				var json = JSON.parse(data);
+
+				// Add text area to comment
+				$("table[name=comment_" + id + "] td[name=insideComment]").html(json.data);
+
 				// Alert to success
 				alert("Comment updated!");
 			}
@@ -1986,6 +2174,13 @@ $(document).ready(function()
 			$("#submitCharity").val("Set Charity Amount");
 		}
 
+		// Hide advanced info
+		if(!$("#advancedOptions").is(":hidden"))
+		{
+			$("#submitAdvanced").val("Advanced Options");
+			$("#advancedOptions").hide();
+		}
+
 		// Show options to prevent not showing when changing
 		$("#options").show();
 	});
@@ -2314,6 +2509,7 @@ $(document).ready(function()
 
 		$("#editTitle").val($("#titleIDEdit :selected").attr("title"));
 		$("#editTitleImage").val($("#titleIDEdit :selected").attr("titleImage"));
+		$("#editTitleForumID").val($("#titleIDEdit :selected").attr("titleForumID"));
 	});
 
 	// Titles - Finsih Edit
@@ -2345,6 +2541,7 @@ $(document).ready(function()
 					$("#titleIDEdit :selected").text($("#editTitle").val());
 					$("#titleIDEdit :selected").attr("title", $("#editTitle").val());
 					$("#titleIDEdit :selected").attr("titleImage", $("#editTitleImage").val());
+					$("#titleIDEdit :selected").attr("titleForumID", $("#editTitleForumID").val());
 					$("#titleIDEdit").select2();
 
 					$("#editTitleList").hide();
@@ -2381,6 +2578,7 @@ $(document).ready(function()
 					// Clear form
 					$("#titleName").val("");
 					$("#titleImage").val("");
+					$("#titleForumID").val(0);
 
 					// Alert to success
 			  		alert(json[0].message);
