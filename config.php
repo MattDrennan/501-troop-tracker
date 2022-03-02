@@ -1018,9 +1018,10 @@ function lockThread($id)
  * 
  * @param int $id The forum ID to be posted in
  * @param string $message The body of the post
+ * @param int $userID The Xenforo user ID of the trooper posting. Default value = super admin
  * @return json Return's the Xenforo user data if success
 */
-function createPost($id, $message)
+function createPost($id, $message, $userID = xenforoAPI_userID)
 {
 	// Create Post
 	$curl = curl_init();
@@ -1035,7 +1036,7 @@ function createPost($id, $message)
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
-	    "XF-Api-User: " . xenforoAPI_userID,
+	    "XF-Api-User: " . $userID,
 	  ],
 	]);
 
