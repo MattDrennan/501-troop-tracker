@@ -2880,7 +2880,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	{
 		echo '
 		<h2 class="tm-section-header">Admin Controls</h2>
-		<p style="text-align: center;"><a href="index.php?action=commandstaff&do=managetroopers&uid='.$id.'">Edit/View Member in Command Staff Area</a></p>';
+		<p style="text-align: center;"><a href="index.php?action=commandstaff&do=managetroopers&uid='.$id.'" class="button">Edit/View Member in Command Staff Area</a></p>';
 	}
 	
 	// Only show 501st thumbnail, if a 501st member
@@ -2912,7 +2912,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 		<p style="text-align: center;">
 			<img src="'.$xenforo.'" />
 		</p>';
-		
+
 		// Set
 		$haveAvatar = true;
 	}

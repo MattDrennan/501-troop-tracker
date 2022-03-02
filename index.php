@@ -4507,8 +4507,8 @@ if(isset($_GET['event']))
 			{
 				echo '
 				<h2 class="tm-section-header">Admin Controls</h2>
-				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=editevent&eid='.$db->id.'">Edit/View Event in Command Staff Area</a></p>
-				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=createevent&eid='.$db->id.'">Copy Event in Command Staff Area</a></p>
+				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=editevent&eid='.$db->id.'" class="button">Edit/View Event in Command Staff Area</a></p>
+				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=createevent&eid='.$db->id.'" class="button">Copy Event in Command Staff Area</a></p>
 				<br />
 				<hr />';
 			}
