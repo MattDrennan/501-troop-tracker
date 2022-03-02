@@ -21,6 +21,29 @@ $storeFolder = '../../images/uploads/';
 // If file exists
 if (!empty($_FILES))
 {
+	/**
+	 * Verify this is an allowed image
+	 * 
+	 * https://www.geeksforgeeks.org/php-exif_imagetype-function/
+	 * 
+	 * @var array $filesAllowed
+	*/
+	$filesAllowed = array(1, 2, 3);
+
+	/**
+	 * @var int $uploadedType Returns an int based on the file type
+	*/
+	$uploadedType = exif_imagetype($_FILES['file']['tmp_name']);
+
+	// Check if this is an allowed image
+	$error = !in_array($uploadedType, $filesAllowed);
+
+	// This file is not allowed, stop the script
+	if($error)
+	{
+		die("Uploaded File is not allowed!");
+	}
+
 	// Set up file and move to folder
 	$fileName = date("Y-m-d-H-i-s-") . $_FILES['file']['name'];
 	$tempFile = $_FILES['file']['tmp_name'];         

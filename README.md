@@ -268,7 +268,8 @@ $clubArray = array(
 ?>
 ```
 
-<li>Set file permissions to 'images/uploads' to 777</li>
+<li>Change ownership for 'images/uploads' to the web server user</li>
+<li>Set file permissions to 'images/uploads' to 750</li>
 <li>Manually modify getSquad() function in 'config.php' to fit your needs</li>
 <li>Set up a Google Cloud API for Google Sheets, then create a service account under "Credentials"</li>
 <li>Download the JSON file from the service account, rename it to "sheets_api_secret.json", and upload it the root directory"</li>
