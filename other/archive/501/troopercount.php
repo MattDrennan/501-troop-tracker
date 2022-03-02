@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is used for putting the trooper counts in the notification database, so redundant trooper count notifications are not sent.
+ * 
+ * This file should be run once, when all the old troop tracker data is merged.
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 include 'config.php';
 
 // Delete old notifications

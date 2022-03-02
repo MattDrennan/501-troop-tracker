@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * This file is used for merging old Rebel Legion troop tracker data into the database.
+ * 
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);

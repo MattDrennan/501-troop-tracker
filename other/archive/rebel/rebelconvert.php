@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * This file is was used for linking 501st troops with Rebel Legion data to prevent duplicate data.
+ * 
+ * The commented out code was used and modified to get the proper results.
+ * The file was modified on the fly to complete the merging, and will not work out of the box.
+ * This file is archived for historical purposes.
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);

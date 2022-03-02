@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is used for displaying the website.
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 // Include config file
 include 'config.php';
 
@@ -31,7 +38,6 @@ echo '
 	<link href="css/lightbox.min.css" rel="stylesheet" />
 	<link href="css/calendar.css" rel="stylesheet" />
 	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-	<link href="css/all.css" rel="stylesheet" />
 	<link rel="stylesheet" href="https://unpkg.com/balloon-css/balloon.min.css">
 	
 	<!-- Icon -->
@@ -41,6 +47,8 @@ echo '
 	<script>
 	var placeholder = '.placeholder.';
 	var clubArray = [';
+
+	/* CHECK IF MEMBER CLUB DB VALUE */
 
 	// Club count
 	$clubCount = count($clubArray);
@@ -64,6 +72,33 @@ echo '
 	}
 
 	echo'];';
+
+	/* DB LIMIT CLUBS */
+
+	// Club step
+	$i = 0;
+
+	echo '
+	var clubDBLimitArray = [';
+
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
+	{
+		echo '"'.$club_value['dbLimit'].'"';
+
+		// Add comma
+		if($i < ($clubCount - 1))
+		{
+			echo ',';
+		}
+
+		// Increment
+		$i++;
+	}
+
+	echo'];';
+
+	/* CLUB SPECIAL FORUM VALUE */
 
 	// Club count with value
 	$clubCount = array_filter($clubArray, function($x) { return !empty($x['db3Name']); });
@@ -265,6 +300,10 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 		<div id="emailSettingsOptions" '.$subscribe.'>
 			<h3>Squads / Clubs</h3>
 			<form action="process.php?do=emailsettings" method="POST" id="emailsettingsForm" name="emailsettingsForm">';
+
+			// Florida Garrison
+			echo '
+			<input type="checkbox" name="esquad0" id="esquad0" ' . emailSettingStatus("esquad0", true) . ' />501st / Florida Garrison<br />';
 			
 			// Squad count
 			$i = 1;
@@ -395,6 +434,7 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 			<p>Squad/Club:</p>
 			<select name="squad" id="squad">
 				'.squadSelectList().'
+				<option value="0">'.garrison.' / 501st Visitor</option>
 			</select>
 			<br /><br />
 			<input type="submit" name="submitRequest" value="Request" />
@@ -1830,13 +1870,21 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			
 			foreach($squadArray as $squad => $squad_value)
 			{
-				echo '<a href="index.php?action=commandstaff&do=roster&squad='.$i.'" class="button">' . $squad_value['name'] . '</a> ';
+				if(getSquadID($_SESSION['id']) == $i || hasPermission(1))
+				{
+					echo '<a href="index.php?action=commandstaff&do=roster&squad='.$i.'" class="button">' . $squad_value['name'] . '</a> ';
+				}
+
 				$i++;
 			}
 			
 			foreach($clubArray as $club => $club_value)
 			{
-				echo '<a href="index.php?action=commandstaff&do=roster&squad='.$i.'" class="button">' . $club_value['name'] . '</a> ';
+				if(isClubMember($club_value['db']) > 0 || hasPermission(1))
+				{
+					echo '<a href="index.php?action=commandstaff&do=roster&squad='.$i.'" class="button">' . $club_value['name'] . '</a> ';
+				}
+
 				$i++;
 			}
 			
@@ -1867,6 +1915,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				else if($_GET['squad'] <= count($squadArray))
 				{
 					$queryAdd .= "squad = '".cleanInput($_GET['squad'])."' AND p501 > 0";
+
+					// Check if a member of club
+					if(getSquadID($_SESSION['id']) != cleanInput($_GET['squad']) && hasPermission(2))
+					{
+						die("<p>Not a member of this squad / club.</p>");
+					}
 				}
 				
 				// Set up count
@@ -1880,6 +1934,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					{
 						// Add to query
 						$queryAdd .= " ".$club_value['db']." > 0";
+
+						// Check if a member of club
+						if(isClubMember($club_value['db']) == 0 && hasPermission(2))
+						{
+							die("<p>Not a member of this squad / club.</p>");
+						}
 					}
 					
 					// Increment
@@ -2031,7 +2091,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					// Match
 					if($_GET['squad'] == $clubCount)
 					{
-						$queryAdd = "".$club_value['db2']."".$club_value['db']."";
+						$queryAdd = "".$club_value['db']."";
 					}
 					
 					// Increment
@@ -2098,16 +2158,24 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			
 			echo '
 			<a href="index.php?action=commandstaff&do=troopercheck" class="button">All</a>';
-			
+
 			foreach($squadArray as $squad => $squad_value)
 			{
-				echo '<a href="index.php?action=commandstaff&do=troopercheck&squad='.$i.'" class="button">' . $squad_value['name'] . '</a> ';
+				if(getSquadID($_SESSION['id']) == $i || hasPermission(1))
+				{
+					echo '<a href="index.php?action=commandstaff&do=troopercheck&squad='.$i.'" class="button">' . $squad_value['name'] . '</a> ';
+				}
+
 				$i++;
 			}
 			
 			foreach($clubArray as $club => $club_value)
 			{
-				echo '<a href="index.php?action=commandstaff&do=troopercheck&squad='.$i.'" class="button">' . $club_value['name'] . '</a> ';
+				if(isClubMember($club_value['db']) > 0 || hasPermission(1))
+				{
+					echo '<a href="index.php?action=commandstaff&do=troopercheck&squad='.$i.'" class="button">' . $club_value['name'] . '</a> ';
+				}
+
 				$i++;
 			}
 			
@@ -2123,6 +2191,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				if($_GET['squad'] <= count($squadArray))
 				{
 					$queryAdd .= "troopers.squad = '".cleanInput($_GET['squad'])."' AND (p501 = 1 OR p501 = 2) AND";
+
+					// Check if a member of club
+					if(getSquadID($_SESSION['id']) != cleanInput($_GET['squad']) && hasPermission(2))
+					{
+						die("<p>Not a member of this squad / club.</p>");
+					}
 				}
 				
 				// Set up count
@@ -2135,6 +2209,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					if($_GET['squad'] == $clubCount)
 					{
 						$queryAdd .= "(troopers.".$club_value['db']." = 1 OR troopers.".$club_value['db']." = 2) AND";
+
+						// Check if a member of club
+						if(isClubMember($club_value['db']) == 0 && hasPermission(2))
+						{
+							die("<p>Not a member of this squad / club.</p>");
+						}
 					}
 					
 					// Increment
@@ -2745,10 +2825,20 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			echo '<br /><hr /><br /><h3>Create Title</h3>
 
 			<form action="process.php?do=assigntitles" method="POST" name="addTitle" id="addTitle">
-				<b>Title Name:</b></br />
-				<input type="text" name="titleName" id="titleName" />
-				<b>Title Image (example.png):</b></br />
-				<input type="text" name="titleImage" id="titleImage" />
+				<p>
+					<b>Title Name:</b>
+					<input type="text" name="titleName" id="titleName" />
+				</p>
+
+				<p>
+					<b>Title Image (example.png):</b></br />
+					<input type="text" name="titleImage" id="titleImage" />
+				</p>
+
+				<p>
+					<b>Corresponding Forum Title ID:</b></br />
+					<input type="number" name="titleForumID" id="titleForumID" value="0" />
+				</p>
 				<input type="submit" name="submitTitleAdd" id="submitTitleAdd" value="Add Title" />
 			</form>';
 
@@ -2776,7 +2866,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<option value="0" SELECTED>Please select a title...</option>';
 					}
 
-					echo '<option value="'.$db->id.'" title="'.$db->title.'" titleID="'.$db->id.'" titleImage="'.$db->icon.'">'.$db->title.'</option>';
+					echo '<option value="'.$db->id.'" title="'.$db->title.'" titleID="'.$db->id.'" titleImage="'.$db->icon.'" titleForumID="'.$db->forum_id.'">'.$db->title.'</option>';
 
 					// Increment
 					$i++;
@@ -2796,13 +2886,20 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<div id="editTitleList" name="editTitleList" style="display: none;">
 
-				<b>Title:</b><br />
-				<input type="text" name="editTitleTitle" id="editTitle" />
+				<p>
+					<b>Title:</b><br />
+					<input type="text" name="editTitleTitle" id="editTitle" />
+				</p>
 
-				<br /><b>Image:</b><br />
-				<input type="text" name="editTitleImage" id="editTitleImage" />
+				<p>
+					<b>Image:</b><br />
+					<input type="text" name="editTitleImage" id="editTitleImage" />
+				</p>
 
-				<br />
+				<p>
+					<b>Corresponding Forum ID:</b><br />
+					<input type="number" name="editTitleForumID" id="editTitleForumID" />
+				</p>
 
 				<input type="submit" name="submitEditTitle" id="submitEditTitle" value="Edit Title" />
 
@@ -2946,10 +3043,15 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			echo '<br /><hr /><br /><h3>Create Award</h3>
 
 			<form action="process.php?do=assignawards" method="POST" name="addAward" id="addAward">
-				<b>Award Name:</b></br />
-				<input type="text" name="awardName" id="awardName" />
-				<b>Award Image (example.png):</b></br />
-				<input type="text" name="awardImage" id="awardImage" />
+				<p>
+					<b>Award Name:</b></br />
+					<input type="text" name="awardName" id="awardName" />
+				</p>
+
+				<p>
+					<b>Award Image (example.png):</b></br />
+					<input type="text" name="awardImage" id="awardImage" />
+				</p>
 				<input type="submit" name="submitAwardAdd" id="submitAwardAdd" value="Add Award" />
 			</form>';
 
@@ -2997,13 +3099,15 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<div id="editAwardList" name="editAwardList" style="display: none;">
 
-				<b>Award Title:</b><br />
-				<input type="text" name="editAwardTitle" id="editAwardTitle" />
+				<p>
+					<b>Award Title:</b><br />
+					<input type="text" name="editAwardTitle" id="editAwardTitle" />
+				</p>
 
-				<br /><b>Award Image:</b><br />
-				<input type="text" name="editAwardImage" id="editAwardImage" />
-
-				<br />
+				<p>
+					<b>Award Image:</b><br />
+					<input type="text" name="editAwardImage" id="editAwardImage" />
+				</p>
 
 				<input type="submit" name="submitEditAward" id="submitEditAward" value="Edit Award" />
 
@@ -3134,9 +3238,20 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				}
 				
 				echo '
-				<input type="submit" name="submitCancel" id="submitCancel" value="Mark Canceled" /> <input type="submit" name="submitFinish" id="submitFinish" value="Mark Finished" /> <input type="submit" name="submitOpen" id="submitOpen" value="Mark Open" /> <input type="submit" name="submitLock" id="submitLock" value="Mark Locked" /> <input type="submit" name="submitEdit" id="submitEdit" value="Edit" /> <input type="submit" name="submitRoster" id="submitRoster" value="Roster" /> <input type="submit" name="submitCharity" id="submitCharity" value="Set Charity Amount" /> <input type="submit" name="viewEvent" id="viewEvent" value="View Event" />
+				<input type="submit" name="submitCancel" id="submitCancel" value="Mark Canceled" /> <input type="submit" name="submitFinish" id="submitFinish" value="Mark Finished" /> <input type="submit" name="submitOpen" id="submitOpen" value="Mark Open" /> <input type="submit" name="submitLock" id="submitLock" value="Mark Locked" /> <input type="submit" name="submitEdit" id="submitEdit" value="Edit" /> <input type="submit" name="submitRoster" id="submitRoster" value="Roster" /> <input type="submit" name="submitCharity" id="submitCharity" value="Set Charity Amount" /> <input type="submit" name="submitAdvanced" id="submitAdvanced" value="Advanved Options" /> <input type="submit" name="viewEvent" id="viewEvent" value="View Event" />
 
 				</form>
+
+				<div name="advancedOptions" id="advancedOptions" style="display:none;">
+					<br />
+					<form action="process.php?do=editadvanced" method="POST">
+						Thread ID: <input type="number" id="threadIDA" name="threadIDA" />
+						<br /><br />
+						Post ID: <input type="number" id="postIDA" name="postIDA" />
+						<br />
+						<input type="submit" id="advancedOptionsSave" value="Set" />
+					</form>
+				</div>
 				
 				<div name="charityAmount" id="charityAmount" style="display:none;">
 					<br />
@@ -3233,14 +3348,18 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<input type="text" name="amenities" id="amenities" />
 
 						<p>Additional Comments:</p>
-						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\')" class="button">Bold</a>
-						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\')" class="button">Italic</a>
-						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\')" class="button">Underline</a>
-						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'Q\')" class="button">Quote</a>
-						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\')" class="button">Color</a>
-						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\')" class="button">Size</a>
-						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\')" class="button">URL</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\', \'comments\')" class="button">Bold</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\', \'comments\')" class="button">Italic</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\', \'comments\')" class="button">Underline</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'Q\', \'comments\')" class="button">Quote</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\', \'comments\')" class="button">Color</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\', \'comments\')" class="button">Size</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\', \'comments\')" class="button">URL</a>
+						<a href="#/" class="button" name="addSmiley">Add Smiley</a>
 						<textarea rows="10" cols="50" name="comments" id="comments"></textarea>
+
+						<span name="smileyarea" style="display: block;">
+						</span>
 
 						<p>Label:</p>
 						<select name="label" id="label">
@@ -3256,18 +3375,18 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<option value="7">Virtual Troop</option>
 							<option value="8">Other</option>
 						</select>
-
-						<p>Is this a manual selection event?</p>
-						<select name="limitedEvent" id="limitedEvent">
-							<option value="1">Yes</option>
-							<option value="0">No</option>
-						</select>
 						
 						<p>
 							<a href="#/" class="button" id="limitChange">Change Limits</a>
 						</p>
 						
 						<div id="limitChangeArea" style="display: none;">
+
+						<p>Is this a manual selection event?</p>
+						<select name="limitedEvent" id="limitedEvent">
+							<option value="0">No</option>
+							<option value="1">Yes</option>
+						</select>
 
 						<p>Do you wish to limit the era of the costume?</p>
 						<select name="era" id="era">
@@ -3290,6 +3409,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						}
 
 						echo '
+						<p>Limit of Total Troopers:</p>
+						<input type="number" name="limitTotalTroopers" value="500" id="limitTotalTroopers" class="limitClass" />
+
 						<p>
 							<a href="#/" class="button" id="resetDefaultCount">Reset Default</a>
 						</p>
@@ -3436,6 +3558,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						<p>Squad/Club:</p>
 						<select name="squad" id="squad">
+							<option value="0">'.garrison.'</option>
 							'.squadSelectList().'
 						</select>';
 
@@ -3582,6 +3705,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			$limitedEvent = "";
 			$limitTo = "";
 			$limit501st = "";
+			$limitTotalTroopers = "";
 
 			// Loop through clubs
 			foreach($clubArray as $club => $club_value)
@@ -3632,6 +3756,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						$limitedEvent = $db->limitedEvent;
 						$limitTo = $db->limitTo;
 						$limit501st = $db->limit501st;
+						$limitTotalTroopers = $db->limitTotalTroopers;
 
 						// Loop through clubs
 						foreach($clubArray as $club => $club_value)
@@ -3762,14 +3887,18 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<input type="text" name="amenities" id="amenities" value="'.copyEvent($eid, $amenities).'" />
 
 				<p>Additional Comments:</p>
-				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\')" class="button">Bold</a>
-				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\')" class="button">Italic</a>
-				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\')" class="button">Underline</a>
-				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'Q\')" class="button">Quote</a>
-				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\')" class="button">Color</a>
-				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\')" class="button">Size</a>
-				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\')" class="button">URL</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\', \'comments\')" class="button">Bold</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\', \'comments\')" class="button">Italic</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\', \'comments\')" class="button">Underline</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'Q\', \'comments\')" class="button">Quote</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\', \'comments\')" class="button">Color</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\', \'comments\')" class="button">Size</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\', \'comments\')" class="button">URL</a>
+				<a href="#/" class="button" name="addSmiley">Add Smiley</a>
 				<textarea rows="10" cols="50" name="comments" id="comments">'.copyEvent($eid, $comments).'</textarea>
+
+				<span name="smileyarea" style="display: block;">
+				</span>
 
 				<p>Label:</p>
 				<select name="label" id="label">
@@ -3786,19 +3915,24 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<option value="7" '.copyEventSelect($eid, $label, 7).'>Virtual Troop</option>
 					<option value="8" '.copyEventSelect($eid, $label, 8).'>Other</option>
 				</select>
-
-				<p>Is this a manual selection event?</p>
-				<select name="limitedEvent" id="limitedEvent">
-					<option value="null" '.copyEventSelect($eid, $limitedEvent, "null").'>Please choose an option...</option>
-					<option value="1" '.copyEventSelect($eid, $limitedEvent, 1).'>Yes</option>
-					<option value="0" '.copyEventSelect($eid, $limitedEvent, 0).'>No</option>
-				</select>
 				
 				<p>
 					<a href="#/" class="button" id="limitChange">Change Limits</a>
 				</p>
 
 				<div id="limitChangeArea" style="display: none;">
+
+				<p>Post to boards?</p>
+				<select name="postToBoards" id="postToBoards">
+					<option value="1">Yes</option>
+					<option value="0">No</option>
+				</select>
+
+				<p>Is this a manual selection event?</p>
+				<select name="limitedEvent" id="limitedEvent">
+					<option value="0" '.copyEventSelect($eid, $limitedEvent, 0).'>No</option>
+					<option value="1" '.copyEventSelect($eid, $limitedEvent, 1).'>Yes</option>
+				</select>
 
 				<p>Do you wish to limit the era of the costume?</p>
 				<select name="era" id="era">
@@ -3821,6 +3955,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				}
 
 				echo '
+				<p>Limit of Total Troopers:</p>
+				<input type="number" name="limitTotalTroopers" id="limitTotalTroopers" class="limitClass" value="'.copyEvent($eid, $limitTotalTroopers, 500).'" />
+
 				<p>
 					<a href="#/" class="button" id="resetDefaultCount">Reset Default</a>
 				</p>
@@ -4355,6 +4492,12 @@ if(isset($_GET['event']))
 				// Add
 				$limitTotal += $db->{$club_value['dbLimit']};
 			}
+
+			// Check for total limit set, if it is, replace limit with it
+			if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+			{
+				$limitTotal = $db->limitTotalTroopers;
+			}
 			
 			// Set event exist
 			$eventExist = true;
@@ -4364,8 +4507,8 @@ if(isset($_GET['event']))
 			{
 				echo '
 				<h2 class="tm-section-header">Admin Controls</h2>
-				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=editevent&eid='.$db->id.'">Edit/View Event in Command Staff Area</a></p>
-				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=createevent&eid='.$db->id.'">Copy Event in Command Staff Area</a></p>
+				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=editevent&eid='.$db->id.'" class="button">Edit/View Event in Command Staff Area</a></p>
+				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=createevent&eid='.$db->id.'" class="button">Copy Event in Command Staff Area</a></p>
 				<br />
 				<hr />';
 			}
@@ -4622,6 +4765,12 @@ if(isset($_GET['event']))
 							$isLimited = true;
 						}
 					}
+
+					// Check for total limit set, if it is, set event as limited
+					if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+					{
+						$isLimited = true;
+					}
 				
 					// If this event is limited in troopers
 					if($db->limit501st < 500 || $isLimited)
@@ -4633,20 +4782,33 @@ if(isset($_GET['event']))
 						
 						<div style="color: red;" name="troopersRemainingDisplay">
 							<ul>
-								<li>This event is limited to '.$limitTotal.' troopers.</li>
-								<li>This event is limited to '.$db->limit501st.' 501st troopers. '.troopersRemaining($db->limit501st, eventClubCount($db->id, 0)).' </li>';
+								<li>This event is limited to '.$limitTotal.' troopers. ';
 
-								// Set up club count
-								$clubCount = 1;
-
-								// Loop through clubs
-								foreach($clubArray as $club => $club_value)
+								// Check for total limit set, if it is, add remaining troopers
+								if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
 								{
 									echo '
-									<li>This event is limited to '.$db->{$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining($db->{$club_value['dbLimit']}, eventClubCount($db->id, $clubCount)).'</li>';
+									' . troopersRemaining($limitTotal, eventClubCount($db->id, "all")) . '</li>';
+								}
+								else
+								{
+									echo '
+									</li>
 
-									// Increment club count
-									$clubCount++;
+									<li>This event is limited to '.$db->limit501st.' 501st troopers. '.troopersRemaining($db->limit501st, eventClubCount($db->id, 0)).' </li>';
+
+									// Set up club count
+									$clubCount = 1;
+
+									// Loop through clubs
+									foreach($clubArray as $club => $club_value)
+									{
+										echo '
+										<li>This event is limited to '.$db->{$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining($db->{$club_value['dbLimit']}, eventClubCount($db->id, $clubCount)).'</li>';
+
+										// Increment club count
+										$clubCount++;
+									}
 								}
 						echo '
 							</ul>
@@ -5589,17 +5751,30 @@ if(isset($_GET['event']))
 
 					<h2 class="tm-section-header">Discussion</h2>
 					<div style="text-align: center;">
+
+					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\', \'comment\')" class="button">Bold</a>
+					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\', \'comment\')" class="button">Italic</a>
+					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\', \'comment\')" class="button">Underline</a>
+					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'Q\', \'comment\')" class="button">Quote</a>
+					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\', \'comment\')" class="button">Color</a>
+					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\', \'comment\')" class="button">Size</a>
+					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\', \'comment\')" class="button">URL</a>
+					<a href="#/" class="button" name="addSmiley">Add Smiley</a>
+
 					<textarea cols="30" rows="10" name="comment" id="comment"></textarea>
 
 					<br />
 
-					<p aria-label="This will highlight and notify command staff of your comment." data-balloon-pos="up" data-balloon-length="fit">Is this an important message?</p>
+					<p aria-label="This will highlight and notify command staff of your comment." data-balloon-pos="up" data-balloon-length="fit">Notify command staff?</p>
 					<select name="important" id="important">
 						<option value="0">No</option>
 						<option value="1">Yes</option>
 					</select>
 
 					<br /><br />
+
+					<span name="smileyarea" style="display: block;">
+					</span>
 
 					<input type="submit" name="submitComment" value="Post!" />
 					</div>
@@ -5714,7 +5889,7 @@ if(isset($_GET['event']))
 else
 {
 	// Only show home page when it is loaded
-	if(!isset($_GET['action']) && !isset($_GET['profile']) && !isset($_GET['event']))
+	if(!isset($_GET['action']) && !isset($_GET['profile']) && !isset($_GET['tkid']) && !isset($_GET['event']))
 	{
 		if(!isWebsiteClosed())
 		{
@@ -5890,6 +6065,12 @@ else
 							{
 								// Add
 								$limitTotal += $db->{$club_value['dbLimit']};
+							}
+
+							// Check for total limit set, if it is, replace limit with it
+							if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+							{
+								$limitTotal = $db->limitTotalTroopers;
 							}
 
 							// If not enough troopers
@@ -6151,7 +6332,7 @@ else
 			{
 				echo '
 				<p style="text-align: center;">
-					<a href="index.php?action=photos">[Recent events with photos]</a>
+					<a href="index.php?action=photos" class="button">Recent events with photos</a>
 				</p>';
 			}
 		}

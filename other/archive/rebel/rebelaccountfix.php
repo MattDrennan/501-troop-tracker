@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * This file is used for fixing Rebel Legion accounts that are duplicates.
+ * 
+ * Set trooperForum as the Florida Garrison board name, and trooperForum as the Rebel Legion forum username to merge accounts.
+ * This issue was caused by having dual members that had different names or incorrect forum information between both databases.
+ * The duplicate accounts TKID typically show as R0 in the database.
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);

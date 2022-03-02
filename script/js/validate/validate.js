@@ -116,9 +116,11 @@ $(function()
                             $("#amenities").val("");
                             $("#comments").val("");
                             $("#label").val("null");
-                            $("#limitedEvent").val("null");
+                            $("#limitedEvent").val("0");
                             $("#era").val("4");
                             $("#limit501st").val("500");
+                            $("[name=smileyarea]").html("");
+                            $("#postToBoards").val(1);
 
                             // Loop through clubs
                             for(var i = 0; i <= (clubArray.length - 1); i++)
@@ -153,7 +155,7 @@ $(function()
             squad:
             {
                 required: true,
-                range: [1, 9]
+                range: [0, 9]
             },
             permissions:
             {
@@ -307,6 +309,9 @@ $(function()
                         $("#submitEdit").val("Edit");
                         $("#options").show();
                         $("#editEventInfo").hide();
+                        $("#limitChangeArea").hide();
+                        $("#limitChange").text("Change Limits");
+                        $("[name=smileyarea]").html("");
 
                         // Is linked event
                         if($("#eventId option:selected").attr("link") != 0)
@@ -661,6 +666,7 @@ $(function()
                     // Return vars to default
                     $("#comment").val("");
                     $("#important").val("0");
+                    $("[name=smileyarea]").html("");
 					
 					// Re-enable button
 					$("input[name=submitComment]").prop("disabled", false);
