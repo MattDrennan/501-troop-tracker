@@ -8,8 +8,6 @@ $test = updateUserForumGroup(15970, 1400, $array);
 
 print_r($test);*/
 
-$test = moveThread(41065, 73);
-
-print_r($test);
+deleteThread(41072, true);
 
 ?>

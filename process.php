@@ -2398,15 +2398,18 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 
 		// Get number of events with link
 		$getNumOfLinks = $conn->query("SELECT id FROM events WHERE link = '".cleanInput($_POST['eventId'])."'");
+
+		// Delete thread on forum
+		if(getEventThreadID(cleanInput($_POST['eventId'])) != 0)
+		{
+			deleteThread(getEventThreadID(cleanInput($_POST['eventId'])), true);
+		}
 		
 		// Query the database
 		$conn->query("DELETE FROM events WHERE id = '".cleanInput($_POST['eventId'])."'");
 
 		// Delete from sign ups - event_sign_up
 		$conn->query("DELETE FROM event_sign_up WHERE troopid = '".cleanInput($_POST['eventId'])."'");
-
-		// Delete thread on forum
-		deleteThread(getEventThreadID(cleanInput($_POST['eventId'])), true);
 		
 		// Delete from event_notifications
 		$conn->query("DELETE FROM event_notifications WHERE troopid = '".cleanInput($_POST['eventId'])."'");

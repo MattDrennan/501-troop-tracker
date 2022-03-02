@@ -9,3 +9,4 @@ sheets_api_secret.json
 vendor/
 vendor/*
 docs/cache/
+test.php
