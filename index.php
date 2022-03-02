@@ -4074,10 +4074,10 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 				$i++;
 
 				// Login with forum
-				$forumLogin = loginWithForum($tkid, cleanInput($_POST['password']));
+				$forumLogin = loginWithForum($tkid, $_POST['password']);
 
 				// Check credentials
-				if(isset($forumLogin['success']) && $forumLogin['success'] == 1 || password_verify(cleanInput($_POST['password']), $db->password))
+				if(isset($forumLogin['success']) && $forumLogin['success'] == 1 || password_verify($_POST['password'], $db->password))
 				{
 					if($db->approved != 0)
 					{
@@ -4091,7 +4091,7 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 							if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
 							{
 								// Update password, e-mail, and user ID
-								$conn->query("UPDATE troopers SET password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', email = '".$forumLogin['user']['email']."', user_id = '".$forumLogin['user']['user_id']."', forum_id = '".$forumLogin['user']['username']."' WHERE id = '".$db->id."'");
+								$conn->query("UPDATE troopers SET password = '".password_hash($_POST['password'], PASSWORD_DEFAULT)."', email = '".$forumLogin['user']['email']."', user_id = '".$forumLogin['user']['user_id']."', forum_id = '".$forumLogin['user']['username']."' WHERE id = '".$db->id."'");
 							}
 							
 							// Set log in cookie, if set to keep logged in
@@ -4099,7 +4099,7 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 							{
 								// Set cookies
 								setcookie("TroopTrackerUsername", $db->forum_id, time() + (10 * 365 * 24 * 60 * 60));
-								setcookie("TroopTrackerPassword", cleanInput($_POST['password']), time() + (10 * 365 * 24 * 60 * 60));
+								setcookie("TroopTrackerPassword", $_POST['password'], time() + (10 * 365 * 24 * 60 * 60));
 							}
 
 							// Cookie set
@@ -4198,7 +4198,7 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed())
 					if(cleanInput($_POST['squad']) <= count($squadArray))
 					{
 						// Query the database
-						$conn->query("UPDATE troopers SET email = '".$forumLogin['user']['email']."', password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE tkid = '".cleanInput($_POST['tkid'])."'");
+						$conn->query("UPDATE troopers SET email = '".$forumLogin['user']['email']."', password = '".password_hash($_POST['password'], PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE tkid = '".cleanInput($_POST['tkid'])."'");
 						
 						// Display output
 						echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';
@@ -4213,7 +4213,7 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed())
 							{
 								// If a club
 								// Query the database
-								$conn->query("UPDATE troopers SET email = '".$forumLogin['user']['email']."', tkid = '".cleanInput($_POST['tkid2'])."', password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE rebelforum = '".cleanInput($_POST['tkid'])."'");
+								$conn->query("UPDATE troopers SET email = '".$forumLogin['user']['email']."', tkid = '".cleanInput($_POST['tkid2'])."', password = '".password_hash($_POST['password'], PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE rebelforum = '".cleanInput($_POST['tkid'])."'");
 								
 								// Display output
 								echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';

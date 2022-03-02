@@ -3104,7 +3104,7 @@ function isTKRegistered($tk, $squad = 0)
 // cleanInput: Prevents hack by cleaning input
 function cleanInput($value)
 {
-	$value = strip_tags(addslashes($value));
+	$value = filter_var($value, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 	return $value;
 }
 
@@ -3741,11 +3741,11 @@ if(!loggedIn() && !isset($_POST['loginWithTK']))
 				if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
 				{
 					// Update password, e-mail, and user ID
-					$conn->query("UPDATE troopers SET password = '".password_hash(cleanInput($_COOKIE['TroopTrackerPassword']), PASSWORD_DEFAULT)."', email = '".$forumLogin['user']['email']."', user_id = '".$forumLogin['user']['user_id']."', forum_id = '".$forumLogin['user']['username']."' WHERE id = '".$db->id."'");
+					$conn->query("UPDATE troopers SET password = '".password_hash($_COOKIE['TroopTrackerPassword'], PASSWORD_DEFAULT)."', email = '".$forumLogin['user']['email']."', user_id = '".$forumLogin['user']['user_id']."', forum_id = '".$forumLogin['user']['username']."' WHERE id = '".$db->id."'");
 				}
 
 				// Check credentials and make sure trooper still has access
-				if((isset($forumLogin['success']) && $forumLogin['success'] == 1 || password_verify(cleanInput($_POST['password']), $db->password)) && canAccess($db->id))
+				if((isset($forumLogin['success']) && $forumLogin['success'] == 1 || password_verify($_POST['password'], $db->password)) && canAccess($db->id))
 				{
 					// Set session
 					$_SESSION['id'] = $db->id;

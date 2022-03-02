@@ -2109,7 +2109,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			}
 
 			// Login with forum
-			$forumLogin = loginWithForum(cleanInput($_POST['forumid']), cleanInput($_POST['password']));
+			$forumLogin = loginWithForum(cleanInput($_POST['forumid']), $_POST['password']);
 
 			// Verify forum and password
 			if(isset($forumLogin['success']) && $forumLogin['success'] != 1)
@@ -2181,7 +2181,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 				}
 				
 				// Insert
-				$conn->query("INSERT INTO troopers (name, tkid, email, forum_id, ".$addToQuery1."p501,".$addToQuery3."phone, squad, password) VALUES ('".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".$forumLogin['user']['email']."', '".cleanInput($_POST['forumid'])."',".$addToQuery2."'".$p501."',".$addToQuery4."'".cleanInput($_POST['phone'])."', '".$squad."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."')") or die($conn->error);
+				$conn->query("INSERT INTO troopers (name, tkid, email, forum_id, ".$addToQuery1."p501,".$addToQuery3."phone, squad, password) VALUES ('".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".$forumLogin['user']['email']."', '".cleanInput($_POST['forumid'])."',".$addToQuery2."'".$p501."',".$addToQuery4."'".cleanInput($_POST['phone'])."', '".$squad."', '".password_hash($_POST['password'], PASSWORD_DEFAULT)."')") or die($conn->error);
 				
 				// Last ID
 				$last_id = $conn->insert_id;
