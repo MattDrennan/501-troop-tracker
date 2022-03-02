@@ -28,8 +28,14 @@ use DG\Twitter\Twitter;
 // Calendar links - namespace
 use Spatie\CalendarLinks\Link;
 
+// Classes
+require 'script/php/TroopTracker/Event.php';
+
 // Composer Autoload
 require 'vendor/autoload.php';
+
+// Classes
+use TroopTracker\Event;
 
 // Calendar Namespace
 use benhall14\phpCalendar\Calendar;

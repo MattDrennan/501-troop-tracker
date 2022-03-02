@@ -10,6 +10,12 @@
 // Include config file
 include 'config.php';
 
+$event = new TroopTracker\Event\Event();
+$event->setEventId(1);
+
+print_r($event);
+
+
 // Include Scripts
 echo '
 <!DOCTYPE html>
