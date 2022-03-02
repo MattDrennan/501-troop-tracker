@@ -2902,6 +2902,20 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	
 	// Does have a avatar?
 	$haveAvatar = false;
+
+	// Xenforo
+	$xenforo = getUserForumID(getUserID($id))['user']['avatar_urls']['m'];
+
+	if($xenforo != "")
+	{
+		echo '
+		<p style="text-align: center;">
+			<img src="'.$xenforo.'" />
+		</p>';
+		
+		// Set
+		$haveAvatar = true;
+	}
 	
 	// 501
 	if(isset($thumbnail[0]))
