@@ -6332,7 +6332,7 @@ else
 			{
 				echo '
 				<p style="text-align: center;">
-					<a href="index.php?action=photos">[Recent events with photos]</a>
+					<a href="index.php?action=photos" class="button">Recent events with photos</a>
 				</p>';
 			}
 		}
