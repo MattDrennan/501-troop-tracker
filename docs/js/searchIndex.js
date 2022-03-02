@@ -376,6 +376,11 @@ Search.appendIndex(
             "summary": "Return\u0027s\u0020if\u0020a\u0020trooper\u0020exists",
             "url": "namespaces/default.html#function_profileExist"
         },                {
+            "fqsen": "\\threadTemplate\u0028\u0029",
+            "name": "threadTemplate",
+            "summary": "Return\u0027s\u0020the\u0020provided\u0020data\u0020into\u0020BB\u0020code\u0020format\u0020to\u0020be\u0020displayed\u0020on\u0020the\u0020forum",
+            "url": "namespaces/default.html#function_threadTemplate"
+        },                {
             "fqsen": "\\getUserID\u0028\u0029",
             "name": "getUserID",
             "summary": "Return\u0027s\u0020the\u0020user\u0027s\u0020ID\u0020from\u0020Xenforo\u0020Forum",

@@ -2217,7 +2217,6 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 			$date1 = date('Y-m-d H:i:s', strtotime(cleanInput($_POST['dateStart'])));
 			$date2 = date('Y-m-d H:i:s', strtotime(cleanInput($_POST['dateEnd'])));
 
-
 			// Set up add to query
 			$addToQuery1 = "";
 			$addToQuery2 = "";
@@ -2236,49 +2235,27 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 			// Event ID - Last insert from database
 			$eventId = $conn->insert_id;
 
+			// Only create thread if we can and admin allows
+			if($_POST['postToBoards'] == 1 && $_POST['squadm'] != 0)
+			{
+				// Make thread body
+				$thread_body = threadTemplate($_POST['eventName'], $_POST['eventVenue'], $_POST['location'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['comments'], $_POST['referred'], $eventId);
+
+				// Create thread on forum
+				$thread = createThread($squadArray[intval($_POST['squadm'] - 1)]['eventForum'], date("m/d/y", strtotime($date1)) . " " . $_POST['eventName'], $thread_body);
+
+				// Lock the thread
+				lockThread($thread['thread']['thread_id']);
+
+				// Update event with thread and post IDs
+				$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."', post_id = '".$thread['thread']['last_post_id']."' WHERE id = '".$eventId."'");
+			}
+
 			// Only notify if event is in the future
 			if(strtotime($date1) > strtotime("now"))
 			{
 				// Send to database to send out notifictions later
 				$conn->query("INSERT INTO notification_check (troopid) VALUES ($eventId)");
-
-
-				// Make thread body
-				$thread_body = '
-				[b]Event Name:[/b] '.$_POST['eventName'].'
-				[b]Venue:[/b] '.$_POST['eventVenue'].'
-				[b]Venue address:[/b] '.$_POST['location'].'
-				[b]Event Start:[/b] '.date("m/d/y h:i A", strtotime($date1)).'
-				[b]Event End:[/b] '.date("m/d/y h:i A", strtotime($date2)).'
-				[b]Event Website:[/b] '.$_POST['website'].'
-				[b]Expected number of attendees:[/b] '.$_POST['numberOfAttend'].'
-				[b]Requested number of characters:[/b] '.$_POST['requestedNumber'].'
-				[b]Requested character types:[/b] '.$_POST['requestedCharacter'].'
-				[b]Secure changing/staging area:[/b] '.yesNo($_POST['secure']).'
-				[b]Can troopers carry blasters:[/b] '.yesNo($_POST['blasters']).'
-				[b]Can troopers carry/bring props like lightsabers and staffs:[/b] '.yesNo($_POST['lightsabers']).'
-				[b]Is parking available:[/b] '.yesNo($_POST['parking']).'
-				[b]Is venue accessible to those with limited mobility:[/b] '.yesNo($_POST['mobility']).'
-				[b]Amenities available at venue:[/b] '.ifEmpty($_POST['amenities'], "No amenities for this event.").'
-				[b]Comments:[/b] '.ifEmpty($_POST['comments'], "No comments for this event.").'
-				[b]Referred by:[/b] '.ifEmpty($_POST['referred'], "Not available").'
-
-				[b][u]Sign Up / Event Roster:[/u][/b]
-
-				[url]https://fl501st.com/troop-tracker/index.php?event=' . $eventId . '[/url]';
-
-				// Only create thread if we can and admin allows
-				if($_POST['postToBoards'] == 1 && $_POST['squadm'] != 0)
-				{
-					// Create thread on forum
-					$thread = createThread($squadArray[intval($_POST['squadm'] - 1)]['eventForum'], date("m/d/y", strtotime($date1)) . " " . $_POST['eventName'], $thread_body);
-
-					// Lock the thread
-					lockThread($thread['thread']['thread_id']);
-
-					// Update event with thread and post IDs
-					$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."', post_id = '".$thread['thread']['last_post_id']."' WHERE id = '".$eventId."'");
-				}
 			}
 			
 			// Loop through shifts
@@ -2315,33 +2292,12 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 						// Last ID
 						$last_id = $conn->insert_id;
 
-						// Make thread body
-						$thread_body = '
-						[b]Event Name:[/b] '.$_POST['eventName'].'
-						[b]Venue:[/b] '.$_POST['eventVenue'].'
-						[b]Venue address:[/b] '.$_POST['location'].'
-						[b]Event Start:[/b] '.date("m/d/y h:i A", strtotime($date1)).'
-						[b]Event End:[/b] '.date("m/d/y h:i A", strtotime($date2)).'
-						[b]Event Website:[/b] '.$_POST['website'].'
-						[b]Expected number of attendees:[/b] '.$_POST['numberOfAttend'].'
-						[b]Requested number of characters:[/b] '.$_POST['requestedNumber'].'
-						[b]Requested character types:[/b] '.$_POST['requestedCharacter'].'
-						[b]Secure changing/staging area:[/b] '.yesNo($_POST['secure']).'
-						[b]Can troopers carry blasters:[/b] '.yesNo($_POST['blasters']).'
-						[b]Can troopers carry/bring props like lightsabers and staffs:[/b] '.yesNo($_POST['lightsabers']).'
-						[b]Is parking available:[/b] '.yesNo($_POST['parking']).'
-						[b]Is venue accessible to those with limited mobility:[/b] '.yesNo($_POST['mobility']).'
-						[b]Amenities available at venue:[/b] '.ifEmpty($_POST['amenities'], "No amenities for this event.").'
-						[b]Comments:[/b] '.ifEmpty($_POST['comments'], "No comments for this event.").'
-						[b]Referred by:[/b] '.ifEmpty($_POST['referred'], "Not available").'
-
-						[b][u]Sign Up / Event Roster:[/u][/b]
-
-						[url]https://fl501st.com/troop-tracker/index.php?event=' . $eventId . '[/url]';
-
 						// Only create thread if we can and admin allows
 						if($_POST['postToBoards'] == 1 && $_POST['squadm'] != 0)
 						{
+							// Make thread body
+							$thread_body = threadTemplate($_POST['eventName'], $_POST['eventVenue'], $_POST['location'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['comments'], $_POST['referred'], $last_id);
+
 							// Create thread on forum
 							$thread = createThread($squadArray[intval($_POST['squadm'] - 1)]['eventForum'], date("m/d/y", strtotime($date1)) . " " . $_POST['eventName'], $thread_body);
 
@@ -2897,28 +2853,6 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			
 			// Get number of events with link
 			$getNumOfLinks = $conn->query("SELECT id FROM events WHERE link = '".cleanInput($_POST['eventIdE'])."'");
-
-			// Make thread body
-			$thread_body = '
-			[b]Event Name:[/b] '.$_POST['eventName'].'
-			[b]Venue:[/b] '.$_POST['eventVenue'].'
-			[b]Venue address:[/b] '.$_POST['location'].'
-			[b]Event Start:[/b] '.date("m/d/y h:i A", strtotime($date1)).'
-			[b]Event End:[/b] '.date("m/d/y h:i A", strtotime($date2)).'
-			[b]Event Website:[/b] '.$_POST['website'].'
-			[b]Expected number of attendees:[/b] '.$_POST['numberOfAttend'].'
-			[b]Requested number of characters:[/b] '.$_POST['requestedNumber'].'
-			[b]Requested character types:[/b] '.$_POST['requestedCharacter'].'
-			[b]Secure changing/staging area:[/b] '.yesNo($_POST['secure']).'
-			[b]Can troopers carry blasters:[/b] '.yesNo($_POST['blasters']).'
-			[b]Can troopers carry/bring props like lightsabers and staffs:[/b] '.yesNo($_POST['lightsabers']).'
-			[b]Is parking available:[/b] '.yesNo($_POST['parking']).'
-			[b]Is venue accessible to those with limited mobility:[/b] '.yesNo($_POST['mobility']).'
-			[b]Amenities available at venue:[/b] '.ifEmpty($_POST['amenities'], "No amenities for this event.").'
-			[b]Comments:[/b] '.ifEmpty($_POST['comments'], "No comments for this event.").'
-			[b]Referred by:[/b] '.ifEmpty($_POST['referred'], "Not available").'
-
-			[b][u]Sign Up / Event Roster:[/u][/b]';
 			
 			// Set up add to query
 			$addToQuery = "";
@@ -2949,10 +2883,8 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				{
 					while ($db = mysqli_fetch_object($result))
 					{
-						// Add to thread body
-						$thread_body .= '
-
-						[url]https://fl501st.com/troop-tracker/index.php?event=' . $db->id . '[/url]';
+						// Make thread body
+						$thread_body = threadTemplate($_POST['eventName'], $_POST['eventVenue'], $_POST['location'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['comments'], $_POST['referred'], $db->id);
 
 						// Update thread
 						editPost($db->post_id, $thread_body);
@@ -2972,15 +2904,13 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				$conn->query("UPDATE events SET dateStart = '".cleanInput($date1)."', dateEnd = '".cleanInput($date2)."' WHERE id = '".cleanInput($_POST['eventIdE'])."'") or die($conn->error);
 
 				// Query database for event info from above
-				$query = "SELECT * FROM events WHERE thread_body != 0 AND id = '".cleanInput($_POST['eventIdE'])."' OR link = '".cleanInput($_POST['eventIdE'])."'";
+				$query = "SELECT * FROM events WHERE thread_id != 0 AND post_id != 0 AND (id = '".cleanInput($_POST['eventIdE'])."' OR link = '".cleanInput($_POST['eventIdE'])."')";
 				if ($result = mysqli_query($conn, $query))
 				{
 					while ($db = mysqli_fetch_object($result))
 					{
-						// Add to thread body
-						$thread_body .= '
-
-						[url]https://fl501st.com/troop-tracker/index.php?event=' . $db->id . '[/url]';
+						// Make thread body
+						$thread_body = threadTemplate($_POST['eventName'], $_POST['eventVenue'], $_POST['location'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['comments'], $_POST['referred'], $db->id);
 
 						// Update thread
 						editPost($db->post_id, $thread_body);
@@ -2990,10 +2920,8 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			}
 			else
 			{
-				// Add to thread body
-				$thread_body .= '
-
-				[url]https://fl501st.com/troop-tracker/index.php?event=' . cleanInput($_POST['eventIdE']) . '[/url]';
+				// Make thread body
+				$thread_body = threadTemplate($_POST['eventName'], $_POST['eventVenue'], $_POST['location'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['comments'], $_POST['referred'], $cleanInput($_POST['eventIdE']));
 
 				// Update thread
 				editPost(getEventPostID(cleanInput($_POST['eventIdE'])), $thread_body);
@@ -3005,9 +2933,6 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				// Update if limited event
 				resetTrooperStatus(cleanInput($_POST['eventIdE']));
 			}
-			
-			// Set up if we should send notification
-			$sendNotificationCheck = true;
 			
 			// Loop through shifts - if exist
 			foreach($_POST as $key => $value)
@@ -3064,11 +2989,8 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				}
 			}
 			
-			// Send notification to command staff, if we have not already
-			if($sendNotificationCheck)
-			{
-				sendNotification(getName($_SESSION['id']) . " has edited event ID: [" . cleanInput($_POST['eventIdE']) . "]", cleanInput($_SESSION['id']), 14, convertDataToJSON("SELECT * FROM events WHERE id = '".cleanInput($_POST['eventIdE'])."'"));
-			}
+			// Send notification that event was edited
+			sendNotification(getName($_SESSION['id']) . " has edited event ID: [" . cleanInput($_POST['eventIdE']) . "]", cleanInput($_SESSION['id']), 14, convertDataToJSON("SELECT * FROM events WHERE id = '".cleanInput($_POST['eventIdE'])."'"));
 
 			// For updating title, send date back
 			$newDate = "[" . date("l", strtotime($date1)) . " : " . date("m/d - h:i A", strtotime($date1)) . " - " . date("h:i A", strtotime($date2)) . "] ";

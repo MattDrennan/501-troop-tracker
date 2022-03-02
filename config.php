@@ -830,7 +830,7 @@ function drawSupportGraph()
 */
 function resetTrooperStatus($eventID, $link = 0)
 {
-	global $conn;
+	global $conn, $clubArray;
 
 	// Get data
 	$query = "SELECT * FROM events WHERE id = '".$eventID."'";
@@ -3127,6 +3127,58 @@ function profileExist($id)
 	
 	// Return
 	return $doesExist;
+}
+
+/**
+ * Return's the provided data into BB code format to be displayed on the forum
+ * 
+ * @param string $eventName The name of the event
+ * @param string $eventVenue The venue of the event
+ * @param string $location The address of the event
+ * @param string $date1 The start date for the event
+ * @param string $date2 The end date for the event
+ * @param string $website The website of the event
+ * @param int $numberOfAttend The number of projected attendees
+ * @param int $requestedNumber The requested number of characters
+ * @param int $requestedCharacter The requested characters
+ * @param int $secure Is there provided secure areas?
+ * @param int $blasters Are blasters allowed?
+ * @param int $lightsabers Are lightsabers allowed?
+ * @param int $parking Is there parking?
+ * @param int $mobility Is this venue accessible?
+ * @param string $amenities Is there amenities?
+ * @param string $comments Additional information on the troop - BB Code supported
+ * @param string $referred Who referred the event
+ * @param int $eventId ID for the event
+ * @param string $roster A string of the troopers attending the troop
+ * @return string
+*/
+function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $website, $numberOfAttend, $requestedNumber, $requestedCharacter, $secure, $blasters, $lightsabers, $parking, $mobility, $amenities, $comments, $referred, $eventId, $roster = "")
+{
+	return '
+	[b]Event Name:[/b] '.$eventName.'
+	[b]Venue:[/b] '.$eventVenue.'
+	[b]Venue address:[/b] '.$location.'
+	[b]Event Start:[/b] '.date("m/d/y h:i A", strtotime($date1)).'
+	[b]Event End:[/b] '.date("m/d/y h:i A", strtotime($date2)).'
+	[b]Event Website:[/b] '.$website.'
+	[b]Expected number of attendees:[/b] '.$numberOfAttend.'
+	[b]Requested number of characters:[/b] '.$requestedNumber.'
+	[b]Requested character types:[/b] '.$requestedCharacter.'
+	[b]Secure changing/staging area:[/b] '.yesNo($secure).'
+	[b]Can troopers carry blasters:[/b] '.yesNo($blasters).'
+	[b]Can troopers carry/bring props like lightsabers and staffs:[/b] '.yesNo($lightsabers).'
+	[b]Is parking available:[/b] '.yesNo($parking).'
+	[b]Is venue accessible to those with limited mobility:[/b] '.yesNo($mobility).'
+	[b]Amenities available at venue:[/b] '.ifEmpty($amenities, "No amenities for this event.").'
+	[b]Comments:[/b] '.ifEmpty($comments, "No comments for this event.").'
+	[b]Referred by:[/b] '.ifEmpty($referred, "Not available").'
+
+	'.$roster.'
+
+	[b][u]Sign Up / Event Roster:[/u][/b]
+
+	[url]https://fl501st.com/troop-tracker/index.php?event=' . $eventId . '[/url]';
 }
 
 /**
