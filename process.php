@@ -245,8 +245,11 @@ if(isset($_GET['do']) && $_GET['do'] == "deletephoto" && loggedIn())
 			// If is trooper or is admin
 			if($db->trooperid == $_SESSION['id'] || isAdmin())
 			{
-				// Delete file
-				unlink("images/uploads/" . $db->filename);
+				// Delete file if exist
+				if(file_exists("images/uploads/" . $db->filename))
+				{
+					unlink("images/uploads/" . $db->filename);
+				}
 				
 				// Query database
 				$conn->query("DELETE FROM uploads WHERE id = '".cleanInput($_POST['photoid'])."'");
