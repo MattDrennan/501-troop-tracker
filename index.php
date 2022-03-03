@@ -4837,6 +4837,14 @@ if(isset($_GET['event']))
 								</ul>
 							</div>';
 						}
+						
+						if($db->limitedEvent == 1)
+						{
+							echo '
+							<p>
+								<b>Reminder:</b> This event has been set as a <i>manual selection</i> event. When a trooper needs to make a change to their attending status or costume, troopers must comment below what changes need to be made, and command staff will make the changes. Please note, this only applies to manual selection events.
+							</p>';
+						}
 					}
 				}
 			}
