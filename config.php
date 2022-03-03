@@ -734,7 +734,7 @@ function drawSupportGraph()
 		
 		// If goal is 0, there is no goal and do not show
 		if($goal != 0)
-		{
+		{			
 			// Find percent
 			$percent = floor(($getSupportNum[0]/$goal) * 100);
 			
@@ -743,6 +743,10 @@ function drawSupportGraph()
 			{
 				$percent = 100;
 			}
+			
+			// Format to currency
+			$formatter = new NumberFormatter('en_US', NumberFormatter::CURRENCY);
+			$goal = $formatter->formatCurrency($goal, 'USD');
 			
 			$return .= '
 			<style>
@@ -766,7 +770,7 @@ function drawSupportGraph()
 				}
 			</style>
 			
-			<h2 class="tm-section-header">'.date("F").' - Donation Goal</h2>
+			<h2 class="tm-section-header">'.date("F").' - Donation Goal - '.$goal.' </h2>
 			
 			<p style="text-align: center;">
 				<div class="bargraph">
@@ -3863,7 +3867,7 @@ function isTKRegistered($tk, $squad = 0)
 */
 function cleanInput($value)
 {
-	$value = strip_tags(addslashes($value));
+	$value = filter_var($value, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 	return $value;
 }
 
@@ -4569,11 +4573,12 @@ if(!loggedIn() && !isset($_POST['loginWithTK']))
 				if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
 				{
 					// Update password, e-mail, and user ID
+
 					$conn->query("UPDATE troopers SET password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', email = '".$forumLogin['user']['email']."', user_id = '".$forumLogin['user']['user_id']."', forum_id = '".$forumLogin['user']['username']."' WHERE id = '".$db->id."'");
 				}
 
 				// Check credentials and make sure trooper still has access
-				if((isset($forumLogin['success']) && $forumLogin['success'] == 1 || password_verify(cleanInput($_POST['password']), $db->password)) && canAccess($db->id))
+				if((isset($forumLogin['success']) && $forumLogin['success'] == 1 || password_verify($_POST['password'], $db->password)) && canAccess($db->id))
 				{
 					// Set session
 					$_SESSION['id'] = $db->id;
