@@ -23,7 +23,7 @@ if ($result = mysqli_query($conn, $query))
 		$count = $troops_get->fetch_row();
 		
 		// Set up message
-		$message = "Hello!\n\nYou have ".$count[0]." troops that need to be confirmed in order to give you troop credit. Please login to the troop tracker and confirm these troops.\n\nIf you need assistance, please contact your squad leader.\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com";
+		$message = "Hello!\n\nYou have ".$count[0]." troops that need to be confirmed in order to give you troop credit. Please login to the troop tracker and confirm these troops.\n\nConfirm troops here: https://fl501st.com/troop-tracker/index.php#confirmtroops\n\nIf you need assistance, please contact your squad leader.\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com";
 		
 		// Send E-mail
 		sendEmail($db->email, $db->name, "Troop Tracker: Troops need your attention!", $message);
