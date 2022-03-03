@@ -734,7 +734,7 @@ function drawSupportGraph()
 		
 		// If goal is 0, there is no goal and do not show
 		if($goal != 0)
-		{
+		{			
 			// Find percent
 			$percent = floor(($getSupportNum[0]/$goal) * 100);
 			
@@ -743,6 +743,10 @@ function drawSupportGraph()
 			{
 				$percent = 100;
 			}
+			
+			// Format to currency
+			$formatter = new NumberFormatter('en_US', NumberFormatter::CURRENCY);
+			$goal = $formatter->formatCurrency($goal, 'USD');
 			
 			$return .= '
 			<style>
@@ -766,7 +770,7 @@ function drawSupportGraph()
 				}
 			</style>
 			
-			<h2 class="tm-section-header">'.date("F").' - Donation Goal '.$goal.' </h2>
+			<h2 class="tm-section-header">'.date("F").' - Donation Goal - '.$goal.' </h2>
 			
 			<p style="text-align: center;">
 				<div class="bargraph">
