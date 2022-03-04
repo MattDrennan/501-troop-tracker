@@ -4933,7 +4933,7 @@ if(isset($_GET['event']))
 										$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
 									}
 									
-									$query3 .= costume_restrict_query() . " ORDER BY FIELD(costume, ".$mainCostumes."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
+									$query3 .= costume_restrict_query(false, $db2->trooperId) . " ORDER BY FIELD(costume, ".$mainCostumes."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
 									
 									if ($result3 = mysqli_query($conn, $query3))
 									{
@@ -4970,7 +4970,7 @@ if(isset($_GET['event']))
 										$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
 									}
 									
-									$query3 .= costume_restrict_query() . " ORDER BY FIELD(costume, ".$mainCostumes."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
+									$query3 .= costume_restrict_query(false, $db2->trooperId) . " ORDER BY FIELD(costume, ".$mainCostumes."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
 									
 									// Count results
 									$c = 0;

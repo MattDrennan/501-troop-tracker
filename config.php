@@ -464,9 +464,10 @@ function addSquadLink($squad, $match, $name)
  * Restricts the trooper's costume based on there membership to certain clubs
  * 
  * @param boolean $addWhere Optional. This is used to add a "where" to the MySQL query.
+ * @param int $friendID Optional. This is used to determine which costumes to display. If this interval does not match the session interval, then all costumes will display.
  * @return string Returns a query to restrict costumes of clubs a trooper is not a member of
 */
-function costume_restrict_query($addWhere = false)
+function costume_restrict_query($addWhere = false, $friendID = 0)
 {
 	global $conn, $clubArray, $dualCostume;
 	
@@ -480,6 +481,15 @@ function costume_restrict_query($addWhere = false)
 	}
 	
 	$returnQuery .= "(";
+
+	// Set up query to check add a friend
+	$friendQuery = "";
+
+	// Check if friend ID
+	if($friendID != $_SESSION['id'])
+	{
+		$friendQuery = " OR (costumes.club >= 0)";
+	}
 
 	// Club detected
 	$hit = false;
@@ -568,7 +578,7 @@ function costume_restrict_query($addWhere = false)
 	
 	$returnQuery .= ")";
 	
-	return $returnQuery;
+	return $returnQuery . $friendQuery;
 }
 
 /**
