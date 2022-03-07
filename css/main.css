@@ -332,7 +332,7 @@ label {
 }
 
 /* Style the submit button */
-input[type=submit] {
+input[type=submit], input[type=button] {
 	display: inline-block;
 	background-color: var(--main-theme-bg-color);
 	border: 1px solid var(--button-border-color);
