@@ -1434,7 +1434,8 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 			echo '
 			<p><b>Favorite Costume:</b> '.ifEmpty(getCostume($favoriteCostume['costume']), "N/A").'</p>
 			<p><b>Volunteers at Troops:</b> '.number_format($count1[0]).'</p>
-			<p><b>Money Raised:</b> $'.number_format($countMoney[0]).'</p>
+			<p><b>Direct Donations Raised:</b> $'.number_format($countMoney[0]).'</p>
+			<p><b>Indirect Donations Raised:</b> $'.number_format($countMoney2[0]).'</p>
 			<p><b>Regular Troops:</b> '.number_format($count2[0]).'</p>
 			<p><b>Armor Parties:</b> '.number_format($count13[0]).'</p>
 			<p><b>Charity Troops:</b> '.number_format($count3[0]).'</p>
