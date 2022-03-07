@@ -15,12 +15,6 @@ include(dirname(__DIR__) . '/../../config.php');
 // Get Simple PHP DOM Tool - just a note, for this code to work, $stripRN must be false in tool
 include(dirname(__DIR__) . '/../../tool/dom/simple_html_dom.php');
 
-// Purge rebel troopers
-$conn->query("DELETE FROM rebel_troopers") or die($conn->error);
-
-// Purge rebel costumes
-$conn->query("DELETE FROM rebel_costumes") or die($conn->error);
-
 // Check date time for sync
 $query = "SELECT syncdaterebels FROM settings";
 if ($result = mysqli_query($conn, $query) or die($conn->error))
@@ -35,6 +29,12 @@ if ($result = mysqli_query($conn, $query) or die($conn->error))
 		}
 	}
 }
+
+// Purge rebel troopers
+$conn->query("DELETE FROM rebel_troopers") or die($conn->error);
+
+// Purge rebel costumes
+$conn->query("DELETE FROM rebel_costumes") or die($conn->error);
 
 // Costume image array (duplicate check)
 $costumeImagesG = array();
