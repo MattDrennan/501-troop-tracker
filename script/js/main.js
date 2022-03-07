@@ -2464,7 +2464,7 @@ $(document).ready(function()
 	/************ TITLES ********************/
 	
 	// Titles - select change
-	$("body").on("change", "#userIDTitle", function(e)
+	$("body").on("change", "#userIDTitle, #titleIDAssign", function(e)
 	{
 		// Get trooper ID
 		var trooperid = $("#userIDTitle option:selected").val();
@@ -2719,7 +2719,7 @@ $(document).ready(function()
 	/************ AWARD ********************/
 	
 	// Awards - select change
-	$("body").on("change", "#userIDAward", function(e)
+	$("body").on("change", "#userIDAward, #awardIDAssign", function(e)
 	{
 		// Get trooper ID
 		var trooperid = $("#userIDAward option:selected").val();
