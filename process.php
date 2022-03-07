@@ -740,7 +740,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 	// Add costume...
 	if(isset($_POST['addCostumeButton']))
 	{
-		$message = "Costume added";
+		$message = "Costume added!";
 
 		// Check if has value
 		if(cleanInput($_POST['costumeName']) == "")
@@ -1283,7 +1283,7 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 	// Add award...
 	if(isset($_POST['submitAddAward']))
 	{
-		$message = "Award added";
+		$message = "Award added!";
 
 		// Set up in advance to prevent error
 		$last_id = 0;
