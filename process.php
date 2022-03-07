@@ -14,13 +14,17 @@ include 'config.php';
 if(isset($_GET['do']) && $_GET['do'] == "saveplaceholder" && loggedIn())
 {
 	// Query database for placeholder
-	$query = "SELECT * FROM event_sign_up WHERE id = '".cleanInput($_POST['signid'])."' AND addedby = '".$_SESSION['id']."' AND trooperid = '".placeholder."'";
+	$query = "SELECT * FROM event_sign_up WHERE id = '".cleanInput($_POST['signid'])."' AND trooperid = '".placeholder."'";
 	
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
-			$conn->query("UPDATE event_sign_up SET note = '".cleanInput($_POST['note'])."' WHERE id = '".cleanInput($_POST['signid'])."'");
+			// Check if added or is admin
+			if($db->addedby == $_SESSION['id'] || isAdmin())
+			{
+				$conn->query("UPDATE event_sign_up SET note = '".cleanInput($_POST['note'])."' WHERE id = '".cleanInput($_POST['signid'])."'");
+			}
 		}
 	}
 }
@@ -2640,7 +2644,15 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 					</td>
 
 					<td>
-						<div name="tknumber1'.$db->trooperid.'" signid="'.$db->id.'"><a href="index.php?profile='.$db->trooperid.'" target="_blank">'.readTKNumber(getTKNumber($db->trooperid), getSquadID($db->trooperid)).' - '.getName($db->trooperid).'</a></div>
+						<div name="tknumber1'.$db->trooperid.'" signid="'.$db->id.'"><a href="index.php?profile='.$db->trooperid.'" target="_blank">'.readTKNumber(getTKNumber($db->trooperid), getSquadID($db->trooperid)).' - '.getName($db->trooperid).'</a></div>';
+
+						// If placeholder
+						if($db->trooperid == placeholder)
+						{
+							echo '<input type="text" name="placeholdertext" signid="'.$db->id.'" value="'.$db->note.'" />';
+						}
+
+					echo '
 					</td>
 
 					<td>
