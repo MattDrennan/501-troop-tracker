@@ -3077,7 +3077,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	}
 	
 	echo '
-	<p style="text-align: center;"><a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un='.urlencode($forum).'" target="_blank" class="button">View Boards Profile</a></p>';
+	<p style="text-align: center;"><a href="https://www.fl501st.com/boards/index.php?members/'.$forum.'.'.getUserForum($forum)['exact']['user_id'].'" target="_blank" class="button">View Boards Profile</a></p>';
 
 	if($is501Member && !is_null(get501Info($tkid, $squad)['joindate']))
 	{
