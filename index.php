@@ -5095,7 +5095,7 @@ if(isset($_GET['event']))
 			<div style="overflow-x: auto;" id="signuparea1" name="signuparea1">';
 
 			// Query database for roster info
-			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, event_sign_up.status, event_sign_up.signuptime, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' ORDER BY event_sign_up.id ASC";
+			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.note, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, event_sign_up.status, event_sign_up.signuptime, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' ORDER BY event_sign_up.id ASC";
 			$i = 0;
 			
 			if ($result2 = mysqli_query($conn, $query2))
@@ -5138,7 +5138,15 @@ if(isset($_GET['event']))
 						<tr>
 							<td>
 								'.drawSupportBadge($db2->trooperId).'
+
 								<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
+
+								// If a placeholder account, allow edit name
+								if($db2->trooperId == placeholder)
+								{
+									echo '
+									<input type="text" name="placeholdertext" signid="'.$db2->signId.'" value="'.$db2->note.'" />';
+								}
 
 								// Show who added the trooper
 								if($db2->addedby != 0)
@@ -5358,6 +5366,13 @@ if(isset($_GET['event']))
 							<td>
 								'.drawSupportBadge($db2->trooperId).'
 								<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
+
+								// If a placeholder account, allow edit name
+								if($db2->trooperId == placeholder)
+								{
+									echo '
+									<b>'.$db2->note.'</b>';
+								}
 
 								// Show who added the trooper
 								if($db2->addedby != 0)

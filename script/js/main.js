@@ -263,6 +263,22 @@ $(document).ready(function()
 	// Add select2 to DOM
 	selectAdd();
 
+	// Placeholder save note
+	$(document).on('blur', '[name=placeholdertext]', function()
+	{
+		var placeholder = $(this);
+
+		$.ajax({
+			type: "POST",
+			url: "process.php?do=saveplaceholder",
+			data: "note=" + placeholder.val() + "&signid=" + placeholder.attr("signid"),
+			success: function(data)
+			{
+				// Nothing
+			}
+		});
+	});
+
     // Add rules to clubs - clubs
     $('.clubs').each(function()
     {

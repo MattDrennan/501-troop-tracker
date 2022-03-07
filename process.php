@@ -9,6 +9,22 @@
 
 include 'config.php';
 
+/******************** SAVE PLACEHOLDER *******************************/
+
+if(isset($_GET['do']) && $_GET['do'] == "saveplaceholder" && loggedIn())
+{
+	// Query database for placeholder
+	$query = "SELECT * FROM event_sign_up WHERE id = '".cleanInput($_POST['signid'])."' AND addedby = '".$_SESSION['id']."' AND trooperid = '".placeholder."'";
+	
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			$conn->query("UPDATE event_sign_up SET note = '".cleanInput($_POST['note'])."' WHERE id = '".cleanInput($_POST['signid'])."'");
+		}
+	}
+}
+
 /******************** SMILEY EDITOR *******************************/
 
 if(isset($_GET['do']) && $_GET['do'] == "smileyeditor")
@@ -3241,7 +3257,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 			{
 
 				// Query database for roster info
-				$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, event_sign_up.status, event_sign_up.signuptime, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".cleanInput($_POST['event'])."' ORDER BY event_sign_up.id ASC";
+				$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.note, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, event_sign_up.status, event_sign_up.signuptime, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".cleanInput($_POST['event'])."' ORDER BY event_sign_up.id ASC";
 				$i = 0;
 
 				if ($result2 = mysqli_query($conn, $query2))
@@ -3278,6 +3294,13 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 								<td>
 									'.drawSupportBadge($db2->trooperId).'
 									<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
+
+									// If a placeholder account, allow edit name
+									if($db2->trooperId == placeholder)
+									{
+										$data .= '
+										<input type="text" name="placeholdertext" signid="'.$db2->signId.'" value="'.$db2->note.'" />';
+									}
 
 									// Show who added the trooper
 									if($db2->addedby != 0)
@@ -3448,6 +3471,13 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 									'.drawSupportBadge($db2->trooperId).'
 									<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
 
+									// If a placeholder account, allow edit name
+									if($db2->trooperId == placeholder)
+									{
+										$data .= '
+										<input type="text" name="placeholdertext" signid="'.$db2->signId.'" value="'.$db2->note.'" />';
+									}
+
 									// Show who added the trooper
 									if($db2->addedby != 0)
 									{
@@ -3510,6 +3540,13 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 								<td>
 									'.drawSupportBadge($db2->trooperId).'
 									<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
+
+									// If a placeholder account, allow edit name
+									if($db2->trooperId == placeholder)
+									{
+										$data .= '
+										<b>'.$db2->note.'</b>';
+									}
 
 									// Show who added the trooper
 									if($db2->addedby != 0)
