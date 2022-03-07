@@ -307,8 +307,8 @@ function getTroopCounts($id)
 	$troopCountString .= '
 	<p><b>Total Finished Troops:</b> ' . number_format($count_total->num_rows) . '</p>
 	<p><b>Favorite Costume:</b> '.ifEmpty(getCostume($favoriteCostume['costume']), "N/A").'</p>
-	<p><b>Direct Money Raised:</b> $'.number_format($charityDirectFunds[0]).'</p>
-	<p><b>Indirect Money Raised:</b> $'.number_format($charityIndirectFunds[0]).'</p>';
+	<p><b>Direct Donations Raised:</b> $'.number_format($charityDirectFunds[0]).'</p>
+	<p><b>Indirect Donations Raised:</b> $'.number_format($charityIndirectFunds[0]).'</p>';
 
 	// Return
 	return $troopCountString;
