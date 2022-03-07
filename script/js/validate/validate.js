@@ -343,7 +343,6 @@ $(function()
 
     $("form[name='loginForm']").validate(
     {
-        // Specify validation rules
         rules:
         {
             tkid: "required",
@@ -416,7 +415,6 @@ $(function()
 
     $("form[name='requestAccessForm']").validate(
     {
-        // Specify validation rules
         rules:
         {
             tkid:
@@ -716,11 +714,55 @@ $(function()
         }
     });
 
+    $("form[name='editcharityForm']").validate(
+    {
+        rules:
+        {
+            charityDirectFunds:
+            {
+                required: false,
+                digits: true
+            },
+            charityIndirectFunds:
+            {
+                required: false,
+                digits: true
+            },
+            charityAddHours:
+            {
+                required: false,
+                digits: true
+            }
+        },
+        messages:
+        {
+            charityDirectFunds: "Please enter a valid number.",
+            charityIndirectFunds: "Please enter a valid number.",
+            charityAddHours: "Please enter a valid number."
+        },
+        submitHandler: function(form)
+        {
+            $.ajax({
+                type: "POST",
+                url: form.action,
+                data: $('#editcharityForm').serialize() + "&eventId=" + $("#eventId").val() + "&submitCharity=1",
+                success: function(data)
+                {
+                    // Hide charity form
+                    $("#charityAmount").hide();
+                    $("#submitCharity").val("Charity");
+            
+                    // Send success message
+                    alert("Charity updated!");
+                }
+            });
+        }
+    });
+
     $("body").on("click", "#troopRosterFormAdd", function(e)
     {
         $("form[name='troopRosterFormAdd']").validate(
         {
-            // Specify validation rules
             rules:
             {
                 trooperSelect: "required",

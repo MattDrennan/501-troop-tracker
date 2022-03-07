@@ -1126,7 +1126,7 @@ $(document).ready(function()
 				{
 					// Hide Charity
 					$("#charityAmount").hide();
-					$("#submitCharity").val("Set Charity Amount");
+					$("#submitCharity").val("Charity");
 				}
 
 				// If advanced options visible
@@ -1232,7 +1232,7 @@ $(document).ready(function()
 		// Hide charity info
 		if($("#charityAmount").is(":visible"))
 		{
-			$("#submitCharity").val("Set Charity Amount");
+			$("#submitCharity").val("Charity");
 			$("#charityAmount").hide();
 		}
 		
@@ -1359,7 +1359,11 @@ $(document).ready(function()
 					var json = JSON.parse(data);
 					
 					// Set charity field
-					$("#charityAmountField").val(json.moneyRaised);
+					$("#charityDirectFunds").val(json.charityDirectFunds);
+					$("#charityIndirectFunds").val(json.charityIndirectFunds);
+					$("#charityName").val(json.charityName);
+					$("#charityAddHours").val(json.charityAddHours);
+					$("#charityNote").val(json.charityNote);
 				}
 			});
 		}
@@ -1367,40 +1371,7 @@ $(document).ready(function()
 		{
 			// Hide charity form
 			$("#charityAmount").hide();
-			$("#submitCharity").val("Set Charity Amount");
-		}
-	})
-	
-	// Set charity amount button
-	$("#charityAmountSave").button().click(function(e)
-	{
-		e.preventDefault();
-		
-		// Get form info
-		var form = $("#editEvents");
-		var url = form.attr("action");
-
-		if(parseInt($("#charityAmountField").val()) || parseInt($("#charityAmountField").val()) === 0)
-		{
-			// Save
-			$.ajax({
-				type: "POST",
-				url: url,
-				data: form.serialize() + "&submitCharity=1&charity=" + $("#charityAmountField").val(),
-				success: function(data)
-				{
-					// Hide charity form
-					$("#charityAmount").hide();
-					$("#submitCharity").val("Set Charity Amount");
-			
-					// Send success message
-					alert("Success!");
-				}
-			});
-		}
-		else
-		{
-			alert("Enter a valid number.");
+			$("#submitCharity").val("Charity");
 		}
 	})
 	
@@ -1431,7 +1402,7 @@ $(document).ready(function()
 				{
 					// Hide Charity
 					$("#charityAmount").hide();
-					$("#submitCharity").val("Set Charity Amount");
+					$("#submitCharity").val("Charity");
 				}
 
 				// Hide advanced info
@@ -2171,7 +2142,7 @@ $(document).ready(function()
 		if(!$("#charityAmount").is(":hidden"))
 		{
 			$("#charityAmount").hide();
-			$("#submitCharity").val("Set Charity Amount");
+			$("#submitCharity").val("Charity");
 		}
 
 		// Hide advanced info

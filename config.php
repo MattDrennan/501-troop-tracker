@@ -291,8 +291,8 @@ function getTroopCounts($id)
 	$favoriteCostume = mysqli_fetch_array($favoriteCostume_get);
 
 	// Get total money raised
-	$moneyRaised_get = $conn->query("SELECT SUM(moneyRaised) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$id."'") or die($conn->error);
-	$moneyRaised = mysqli_fetch_array($moneyRaised_get);
+	$charityDirectFunds_get = $conn->query("SELECT SUM(charityDirectFunds) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$id."'") or die($conn->error);
+	$charityDirectFunds = mysqli_fetch_array($charityDirectFunds_get);
 
 	// Prevent notice error
 	if($favoriteCostume == "")
@@ -304,7 +304,7 @@ function getTroopCounts($id)
 	$troopCountString .= '
 	<p><b>Total Finished Troops:</b> ' . number_format($count_total->num_rows) . '</p>
 	<p><b>Favorite Costume:</b> '.ifEmpty(getCostume($favoriteCostume['costume']), "N/A").'</p>
-	<p><b>Money Raised:</b> $'.number_format($moneyRaised[0]).'</p>';
+	<p><b>Money Raised:</b> $'.number_format($charityDirectFunds[0]).'</p>';
 
 	// Return
 	return $troopCountString;

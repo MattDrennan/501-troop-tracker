@@ -2492,11 +2492,16 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 	// Charity submitted for event...
 	if(isset($_POST['submitCharity']))
 	{
+		// Form Check
+		if(!is_numeric($_POST['charityDirectFunds'])) { return false; }
+		if(!is_numeric($_POST['charityIndirectFunds'])) { return false; }
+		if(!is_numeric($_POST['charityAddHours'])) { return false; }
+
 		// Query the database
-		$conn->query("UPDATE events SET moneyRaised = '".cleanInput($_POST['charity'])."' WHERE id = '".cleanInput($_POST['eventId'])."'");
+		$conn->query("UPDATE events SET charityDirectFunds = '".cleanInput($_POST['charityDirectFunds'])."', charityIndirectFunds = '".cleanInput($_POST['charityIndirectFunds'])."', charityName = '".cleanInput($_POST['charityName'])."', charityAddHours = '".cleanInput($_POST['charityAddHours'])."', charityNote = '".cleanInput($_POST['charityNote'])."' WHERE id = '".cleanInput($_POST['eventId'])."'");
 		
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has set charity raised to [".cleanInput($_POST['charity'])."] on event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']), 17, json_encode(array("id" => cleanInput($_POST['eventId']), "moneyRaised" => cleanInput($_POST['charity']))));
+		sendNotification(getName($_SESSION['id']) . " has updated charity on event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']), 17, json_encode(array("id" => cleanInput($_POST['eventId']), "charityDirectFunds" => cleanInput($_POST['charityDirectFunds']), "charityIndirectFunds" => cleanInput($_POST['charityIndirectFunds']), "charityName" => cleanInput($_POST['charityName']), "charityAddHours" => cleanInput($_POST['charityAddHours']), "charityNote" => cleanInput($_POST['charityNote']))));
 	}
 
 	// Advanced options set...
@@ -2833,7 +2838,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$array = array('id' => $db->id, 'name' => $db->name, 'venue' => $db->venue, 'dateStart' => $db->dateStart, 'dateEnd' => $db->dateEnd, 'website' => $db->website, 'numberOfAttend' => $db->numberOfAttend, 'requestedNumber' => $db->requestedNumber, 'requestedCharacter' => $db->requestedCharacter, 'secureChanging' => $db->secureChanging, 'blasters' => $db->blasters, 'lightsabers' => $db->lightsabers, 'parking' => $db->parking, 'mobility' => $db->mobility, 'amenities' => $db->amenities, 'referred' => $db->referred, 'comments' => $db->comments, 'location' => $db->location, 'squad' => $db->squad, 'label' => $db->label, 'postComment' => $db->postComment, 'notes' => $db->notes, 'limitedEvent' => $db->limitedEvent, 'limitTo' => $db->limitTo, 'limit501st' => $db->limit501st, 'limitTotalTroopers' => $db->limitTotalTroopers, 'closed' => $db->closed, 'moneyRaised' => $db->moneyRaised, 'eventLink' => $db->link, 'thread_id' => $db->thread_id, 'post_id' => $db->post_id);
+				$array = array('id' => $db->id, 'name' => $db->name, 'venue' => $db->venue, 'dateStart' => $db->dateStart, 'dateEnd' => $db->dateEnd, 'website' => $db->website, 'numberOfAttend' => $db->numberOfAttend, 'requestedNumber' => $db->requestedNumber, 'requestedCharacter' => $db->requestedCharacter, 'secureChanging' => $db->secureChanging, 'blasters' => $db->blasters, 'lightsabers' => $db->lightsabers, 'parking' => $db->parking, 'mobility' => $db->mobility, 'amenities' => $db->amenities, 'referred' => $db->referred, 'comments' => $db->comments, 'location' => $db->location, 'squad' => $db->squad, 'label' => $db->label, 'postComment' => $db->postComment, 'notes' => $db->notes, 'limitedEvent' => $db->limitedEvent, 'limitTo' => $db->limitTo, 'limit501st' => $db->limit501st, 'limitTotalTroopers' => $db->limitTotalTroopers, 'closed' => $db->closed, 'charityDirectFunds' => $db->charityDirectFunds, 'charityIndirectFunds' => $db->charityIndirectFunds, 'charityName' => $db->charityName, 'charityAddHours' => $db->charityAddHours,'charityNote' => $db->charityNote, 'eventLink' => $db->link, 'thread_id' => $db->thread_id, 'post_id' => $db->post_id);
 
 				// Loop through clubs
 				foreach($clubArray as $club => $club_value)
