@@ -361,6 +361,11 @@ Search.appendIndex(
             "summary": "Returns\u0020the\u0020club\u0020ID\u0020based\u0020on\u0020the\u0020costume\u0020ID",
             "url": "namespaces/default.html#function_getCostumeClub"
         },                {
+            "fqsen": "\\replaceCostumeID\u0028\u0029",
+            "name": "replaceCostumeID",
+            "summary": "Replaces\u0020the\u0020costume\u0020ID\u0020with\u0020an\u0020N\/A\u0020costume",
+            "url": "namespaces/default.html#function_replaceCostumeID"
+        },                {
             "fqsen": "\\profileTop\u0028\u0029",
             "name": "profileTop",
             "summary": "Display\u0027s\u0020user\u0020information\u0020at\u0020top\u0020of\u0020profile\u0020page,\u0020used\u0020on\u0020profiles",
