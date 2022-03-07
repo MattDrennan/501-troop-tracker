@@ -38,25 +38,33 @@ $obj = json_decode($json);
 // Loop through all members
 foreach($obj->unit->members as $value)
 {
-	// Get specific data on member
-	$json2 = file_get_contents("https://www.501st.com/memberAPI/v3/legionId/" . $value->legionId);
-	$obj2 = json_decode($json2);
+	try {
+		// Get specific data on member
+		$json2 = file_get_contents("https://www.501st.com/memberAPI/v3/legionId/" . $value->legionId);
+		$obj2 = json_decode($json2);
 
-	$conn->query("INSERT INTO 501st_troopers (legionid, name, thumbnail, link, squad, approved, status, standing, joindate) VALUES ('".$value->legionId."', '".$value->fullName."', '".$value->thumbnail."', '".$value->link."', '".convertSquadId($value->squadId)."', '".convertMemberApproved($obj2->memberApproved)."', '".convertMemberStatus($obj2->memberStatus)."', '".convertMemberStanding($obj2->memberStanding)."', '".$obj2->joinDate."')");
+		$conn->query("INSERT INTO 501st_troopers (legionid, name, thumbnail, link, squad, approved, status, standing, joindate) VALUES ('".$value->legionId."', '".$value->fullName."', '".$value->thumbnail."', '".$value->link."', '".convertSquadId($value->squadId)."', '".convertMemberApproved($obj2->memberApproved)."', '".convertMemberStatus($obj2->memberStatus)."', '".convertMemberStanding($obj2->memberStanding)."', '".$obj2->joinDate."')");
+	} catch (Exception $ex) {
+		die("Failed!");
+	}
 }
 
 // Loop through all members
 foreach($obj->unit->members as $value)
 {
-	// Get specific data on member - costumes
-	$json2 = file_get_contents("https://www.501st.com/memberAPI/v3/legionId/" . $value->legionId . "/costumes");
-	$obj2 = json_decode($json2);
-	
-	// Loop through all costumes
-	foreach($obj2->costumes as $costume)
-	{
-		// Insert into database
-		$conn->query("INSERT INTO 501st_costumes (legionid, costumeid, prefix, costumename, photo, thumbnail, bucketoff) VALUES ('".$value->legionId."', '".$costume->costumeId."', '".$costume->prefix."', '".$costume->costumeName."', '".$costume->photoURL."', '".$costume->thumbnail."', '".$costume->bucketOffPhoto."')");
+	try {
+		// Get specific data on member - costumes
+		$json2 = file_get_contents("https://www.501st.com/memberAPI/v3/legionId/" . $value->legionId . "/costumes");
+		$obj2 = json_decode($json2);
+		
+		// Loop through all costumes
+		foreach($obj2->costumes as $costume)
+		{
+			// Insert into database
+			$conn->query("INSERT INTO 501st_costumes (legionid, costumeid, prefix, costumename, photo, thumbnail, bucketoff) VALUES ('".$value->legionId."', '".$costume->costumeId."', '".$costume->prefix."', '".$costume->costumeName."', '".$costume->photoURL."', '".$costume->thumbnail."', '".$costume->bucketOffPhoto."')");
+		}
+	} catch (Exception $ex) {
+		die("Failed!");
 	}
 }
 
