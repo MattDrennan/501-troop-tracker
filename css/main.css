@@ -530,6 +530,19 @@ span.select2-selection__rendered
 	color:  gray;
 }
 
+/************ BOX AROUND CHARITY DATA ON EVENT PAGE *******************/
+
+.charitybox {
+	text-align: center;
+	border: 1px solid;
+	padding: 10px;
+	box-shadow: 5px 5px #888888;
+	width: 80%;
+	display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /************************ COMMENT TEXTAREA **************************************/
 
 table[name*="comment_"] textarea {

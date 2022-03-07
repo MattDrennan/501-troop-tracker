@@ -456,7 +456,7 @@ if(isset($_GET['profile']))
 	}
 	
 	// Get data
-	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.forum_id, troopers.tkid, troopers.squad, troopers.phone FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".cleanInput($_GET['profile'])."' AND troopers.id != ".placeholder." AND events.closed = '1' AND event_sign_up.status = '3' ORDER BY events.dateEnd DESC";
+	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.forum_id, troopers.tkid, troopers.squad, troopers.phone FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".cleanInput($_GET['profile'])."' AND troopers.id != ".placeholder." AND events.closed = '1' AND event_sign_up.status = '3' ORDER BY events.dateEnd DESC";
 	$i = 0;
 	
 	if ($result = mysqli_query($conn, $query))
@@ -833,7 +833,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 	if($_POST['searchType'] == "regular")
 	{
 		// Query for search
-		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE";
+		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE";
 		
 		if(strlen($_POST['tkID']) > 0)
 		{
@@ -910,6 +910,9 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			// Get charity counts
 			$charity_get = $conn->query("SELECT SUM(charityDirectFunds) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."'") or die($conn->error);
 			$charity_count = $charity_get->fetch_row();
+
+			$charity_get2 = $conn->query("SELECT SUM(charityIndirectFunds) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."'") or die($conn->error);
+			$charity_count2 = $charity_get->fetch_row();
 		}
 		
 		// If 501st
@@ -925,6 +928,9 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			// Get charity counts
 			$charity_get = $conn->query("SELECT SUM(charityDirectFunds) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."' AND squad = '".cleanInput($_POST['squad'])."'") or die($conn->error);
 			$charity_count = $charity_get->fetch_row();
+
+			$charity_get2 = $conn->query("SELECT SUM(charityIndirectFunds) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."' AND squad = '".cleanInput($_POST['squad'])."'") or die($conn->error);
+			$charity_count2 = $charity_get->fetch_row();
 			
 			// If active only set
 			if(isset($_POST['activeonly']) && $_POST['activeonly'] == 1)
@@ -949,6 +955,9 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				// Get charity counts
 				$charity_get = $conn->query("SELECT SUM(total) FROM (SELECT events.charityDirectFunds AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ".getCostumeQueryValues($clubID)." GROUP BY event_sign_up.troopid) AS ABC") or die($conn->error);
 				$charity_count = $charity_get->fetch_row();
+
+				$charity_get2 = $conn->query("SELECT SUM(total) FROM (SELECT events.charityIndirectFunds AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ".getCostumeQueryValues($clubID)." GROUP BY event_sign_up.troopid) AS ABC") or die($conn->error);
+				$charity_count2 = $charity_get->fetch_row();
 				
 				// If active only set
 				if(isset($_POST['activeonly']) && $_POST['activeonly'] == 1)
@@ -1022,6 +1031,11 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		{
 			$charity_count[0] = 0;
 		}
+
+		if(!isset($charity_count2[0]))
+		{
+			$charity_count2[0] = 0;
+		}
 		
 		// Format numbers to prevent errors - troop
 		if(!isset($troop_count[0]))
@@ -1043,7 +1057,11 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 					</p>
 					
 					<p>
-						Total Money Raised: $'.number_format($charity_count[0]).'
+						Direct Charity: $'.number_format($charity_count[0]).'
+					</p>
+
+					<p>
+						Indirect Charity: $'.number_format($charity_count2[0]).'
 					</p>
 					
 					<div style="overflow-x: auto;">
@@ -1147,7 +1165,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		<div id="mystats" name="mystats" style="display: none;">';
 
 		// Get data
-		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND status = 3 AND events.closed = '1' ORDER BY events.dateEnd DESC";
+		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND status = 3 AND events.closed = '1' ORDER BY events.dateEnd DESC";
 
 		// Troop count
 		$i = 0;
@@ -1177,7 +1195,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 
 				echo '
 				<tr>
-					<td><a href="index.php?event='.$db->eventId.'">'.$add.''.$db->eventName.'</a></td>	<td>'.ifEmpty(getCostume($db->costume), "N/A").'</td>	<td>$'.number_format($db->charityDirectFunds).'</td>
+					<td><a href="index.php?event='.$db->eventId.'">'.$add.''.$db->eventName.'</a></td>	<td>'.ifEmpty(getCostume($db->costume), "N/A").'</td>	<td>Direct: $'.number_format($db->charityDirectFunds).'<br />Indirect: $'.number_format($db->charityIndirectFunds).'</td>
 				</tr>';
 
 				// Increment troop count
@@ -1210,7 +1228,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 	if(!isset($_GET['squad']))
 	{
 		// Get data
-		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND events.dateEnd > CURRENT_DATE - INTERVAL 60 DAY GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT 20";
+		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND events.dateEnd > CURRENT_DATE - INTERVAL 60 DAY GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT 20";
 	}
 	else
 	{
@@ -1256,7 +1274,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		}
 		
 		// Squad is set, show only that data
-		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' ".$add2." GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT ".$startFrom.", ".$results."";
+		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' ".$add2." GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT ".$startFrom.", ".$results."";
 	}
 
 	// Query count
@@ -1296,7 +1314,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 
 			echo '
 			<tr>
-				<td><a href="index.php?event='.$db->eventId.'">'.$add.''.$db->eventName.'</a></td>	<td>'.$count[0].'</td>	<td>$'.number_format($db->charityDirectFunds).'</td>
+				<td><a href="index.php?event='.$db->eventId.'">'.$add.''.$db->eventName.'</a></td>	<td>'.$count[0].'</td>	<td>Direct: $'.number_format($db->charityDirectFunds).'<br />Indirect: $'.number_format($db->charityIndirectFunds).'</td>
 			</tr>';
 
 			$i++;
@@ -1357,6 +1375,8 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		// How much total money was raised
 		$money_get = $conn->query("SELECT SUM(charityDirectFunds) FROM events WHERE closed = '1'") or die($conn->error);
 		$countMoney = $money_get->fetch_row();
+		$money_get2 = $conn->query("SELECT SUM(charityIndirectFunds) FROM events WHERE closed = '1'") or die($conn->error);
+		$countMoney2 = $money_get2->fetch_row();
 		
 		// Get squad for squadLink function
 		if(isset($_GET['squad']))
@@ -3780,7 +3800,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						}
 
 						$closed = $db->closed;
-						$charityDirectFunds = $db->charityDirectFunds;
 						$squad = $db->squad;
 
 						// Increment
@@ -4624,8 +4643,11 @@ if(isset($_GET['event']))
 					// If event closed
 					if($db->closed == 1)
 					{
+						$hours = timeBetweenDates($db->dateStart, $db->dateEnd);
+						$hours += intval($db->charityAddHours);
+
 						echo '
-						<p><b>Event Raised:</b> $'.number_format($db->charityDirectFunds).'</p>';
+						<div class="charitybox"><b>Event Raised:</b><br />Direct: $'.number_format($db->charityDirectFunds).'<br />Indirect: $'.number_format($db->charityIndirectFunds).'<br />Charity Name: '.ifEmpty($db->charityName, "N/A").'<br />Charity Hours: '.$hours.'<br />Charity Note:<br />'.ifEmpty(nl2br($db->charityNote), "N/A").'</div>';
 					}
 
 					// Set up show options

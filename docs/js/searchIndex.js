@@ -381,6 +381,11 @@ Search.appendIndex(
             "summary": "Return\u0027s\u0020the\u0020provided\u0020data\u0020into\u0020BB\u0020code\u0020format\u0020to\u0020be\u0020displayed\u0020on\u0020the\u0020forum",
             "url": "namespaces/default.html#function_threadTemplate"
         },                {
+            "fqsen": "\\timeBetweenDates\u0028\u0029",
+            "name": "timeBetweenDates",
+            "summary": "Returns\u0020the\u0020hours\u0020between\u0020two\u0020date\u0020times",
+            "url": "namespaces/default.html#function_timeBetweenDates"
+        },                {
             "fqsen": "\\getUserID\u0028\u0029",
             "name": "getUserID",
             "summary": "Return\u0027s\u0020the\u0020user\u0027s\u0020ID\u0020from\u0020Xenforo\u0020Forum",

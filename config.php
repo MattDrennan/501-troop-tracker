@@ -294,6 +294,9 @@ function getTroopCounts($id)
 	$charityDirectFunds_get = $conn->query("SELECT SUM(charityDirectFunds) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$id."'") or die($conn->error);
 	$charityDirectFunds = mysqli_fetch_array($charityDirectFunds_get);
 
+	$charityIndirectFunds_get = $conn->query("SELECT SUM(charityIndirectFunds) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$id."'") or die($conn->error);
+	$charityIndirectFunds = mysqli_fetch_array($charityIndirectFunds_get);
+
 	// Prevent notice error
 	if($favoriteCostume == "")
 	{
@@ -304,7 +307,8 @@ function getTroopCounts($id)
 	$troopCountString .= '
 	<p><b>Total Finished Troops:</b> ' . number_format($count_total->num_rows) . '</p>
 	<p><b>Favorite Costume:</b> '.ifEmpty(getCostume($favoriteCostume['costume']), "N/A").'</p>
-	<p><b>Money Raised:</b> $'.number_format($charityDirectFunds[0]).'</p>';
+	<p><b>Direct Money Raised:</b> $'.number_format($charityDirectFunds[0]).'</p>
+	<p><b>Indirect Money Raised:</b> $'.number_format($charityIndirectFunds[0]).'</p>';
 
 	// Return
 	return $troopCountString;
@@ -3207,6 +3211,22 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 	[b][u]Sign Up / Event Roster:[/u][/b]
 
 	[url]https://fl501st.com/troop-tracker/index.php?event=' . $eventId . '[/url]';
+}
+
+/**
+ * Returns the hours between two date times
+ * 
+ * @param string $datetime1 The first date to check
+ * @param string $datetime2 The second date to check
+ */
+function timeBetweenDates($datetime1, $datetime2)
+{
+	$date1 = new DateTime($datetime1);
+	$date2 = new DateTime($datetime2);
+	
+	$diff = $date2->diff($date1);
+	
+	return $diff->h;
 }
 
 /**
