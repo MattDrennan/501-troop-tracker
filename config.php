@@ -981,7 +981,7 @@ function createThread($id, $title, $message)
 	curl_setopt_array($curl, [
 	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/threads",
 	  CURLOPT_POST => 1,
-	  CURLOPT_POSTFIELDS => "node_id=" . $id . "&title=" . urlencode($title) . "&message=" . urlencode($message),
+	  CURLOPT_POSTFIELDS => "node_id=" . $id . "&title=" . urlencode($title) . "&message=" . urlencode($message) . "&api_bypass_permissions=1",
 	  CURLOPT_CUSTOMREQUEST => "POST",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
@@ -1013,7 +1013,7 @@ function lockThread($id)
 	curl_setopt_array($curl, [
 	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/threads/" . $id,
 	  CURLOPT_POST => 1,
-	  CURLOPT_POSTFIELDS => "discussion_open=" . false,
+	  CURLOPT_POSTFIELDS => "discussion_open=" . false . "&api_bypass_permissions=1",
 	  CURLOPT_CUSTOMREQUEST => "POST",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
@@ -1047,7 +1047,7 @@ function createPost($id, $message, $userID = xenforoAPI_userID)
 	curl_setopt_array($curl, [
 	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/posts",
 	  CURLOPT_POST => 1,
-	  CURLOPT_POSTFIELDS => "thread_id=" . $id . "&message=" . urlencode($message),
+	  CURLOPT_POSTFIELDS => "thread_id=" . $id . "&message=" . urlencode($message) . "&api_bypass_permissions=1",
 	  CURLOPT_CUSTOMREQUEST => "POST",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
@@ -1080,7 +1080,7 @@ function editPost($id, $message)
 	curl_setopt_array($curl, [
 	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/posts/" . $id,
 	  CURLOPT_POST => 1,
-	  CURLOPT_POSTFIELDS => "message=" . urlencode($message),
+	  CURLOPT_POSTFIELDS => "message=" . urlencode($message) . "&api_bypass_permissions=1",
 	  CURLOPT_CUSTOMREQUEST => "POST",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
@@ -1113,7 +1113,7 @@ function moveThread($id, $forum)
 	curl_setopt_array($curl, [
 	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/threads/" . $id . "/move",
 	  CURLOPT_POST => 1,
-	  CURLOPT_POSTFIELDS => "target_node_id=" . $forum,
+	  CURLOPT_POSTFIELDS => "target_node_id=" . $forum . "&api_bypass_permissions=1",
 	  CURLOPT_CUSTOMREQUEST => "POST",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
@@ -1285,7 +1285,7 @@ function deletePost($id, $hard_delete = false)
 	curl_setopt_array($curl, [
 	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/posts/" . $id,
 	  CURLOPT_CUSTOMREQUEST => "DELETE",
-	  CURLOPT_POSTFIELDS => "hard_delete=" . $hard_delete,
+	  CURLOPT_POSTFIELDS => "hard_delete=" . $hard_delete . "&api_bypass_permissions=1",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
@@ -1317,7 +1317,7 @@ function deleteThread($id, $hard_delete = false)
 	curl_setopt_array($curl, [
 	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/threads/" . $id,
 	  CURLOPT_CUSTOMREQUEST => "DELETE",
-	  CURLOPT_POSTFIELDS => "hard_delete=" . $hard_delete,
+	  CURLOPT_POSTFIELDS => "hard_delete=" . $hard_delete . "&api_bypass_permissions=1",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
