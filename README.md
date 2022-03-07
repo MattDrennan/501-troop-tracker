@@ -126,6 +126,12 @@ define('garrisonImage', 'garrison_emblem.png');
 $dualCostume = 5;
 
 /**
+ * dualNA: This variable is used to determine which costume ID is the dual N/A
+*/
+
+$dualNA = 721;
+
+/**
  * squadArray
  * name: Name of the squad
  * logo: Image of the squad logo located in images folder
@@ -207,8 +213,10 @@ $squadArray = array(
  * rankRegular: An image file that will show on troopers profiles of this club (Active Regular Members)
  * rankReserve: An image file that will show on troopers profiles of this club (Reserve Members)
  * rankRetired: An image file that will show on troopers profiles of this club (Inactive Retired Members)
+ * naCostume: The ID of the costume that is the clubs other or N/A
  */
 
+// Clubs
 $clubArray = array(
 	array(
 		"name" => "Rebel Legion",
@@ -222,7 +230,8 @@ $clubArray = array(
 		"dbLimit" => "limitRebels",
 		"rankRegular" => "rebel.png",
 		"rankReserve" => "rebel_reserve.png",
-		"rankRetired" => "rebel_retired.png"),
+		"rankRetired" => "rebel_retired.png",
+		"naCostume" => 720),
 	array(
 		"name" => "Droid Builders",
 		"logo" => "test", "costumes" => array(3),
@@ -234,7 +243,8 @@ $clubArray = array(
 		"dbLimit" => "limitDroid",
 		"rankRegular" => "r2.png",
 		"rankReserve" => "r2_reserve.png",
-		"rankRetired" => "r2_retired.png"),
+		"rankRetired" => "r2_retired.png",
+		"naCostume" => 716),
 	array(
 		"name" => "Mando Mercs",
 		"logo" => "test",
@@ -248,7 +258,8 @@ $clubArray = array(
 		"dbLimit" => "limitMando",
 		"rankRegular" => "mercs.png",
 		"rankReserve" => "mercs_reserve.png",
-		"rankRetired" => "mercs_retired.png"), 
+		"rankRetired" => "mercs_retired.png",
+		"naCostume" => 715), 
 	array(
 		"name" => "Other",
 		"logo" => "test",
@@ -262,7 +273,8 @@ $clubArray = array(
 		"dbLimit" => "limitOther",
 		"rankRegular" => "saberguildmember.png",
 		"rankReserve" => "",
-		"rankRetired" => "")
+		"rankRetired" => "",
+		"naCostume" => 717)
 );
 
 ?>

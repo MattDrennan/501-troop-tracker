@@ -726,6 +726,26 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 	// Costume submitted for deletion...
 	if(isset($_POST['submitDeleteCostume']))
 	{
+		// Don't allow delete N/A costume
+		foreach($clubArray as $club => $club_value)
+		{
+			if(cleanInput($_POST['costumeID']) == $club_value['naCostume'])
+			{
+				$array = array('success' => 'fail');
+				echo json_encode($array);
+
+				return false;
+			}
+		}
+
+		if(cleanInput($_POST['costumeID']) == $dualNA)
+		{
+			$array = array('success' => 'fail');
+			echo json_encode($array);
+
+			return false;
+		}
+
 		// Send notification to command staff
 		sendNotification(getName($_SESSION['id']) . " has deleted costume ID: " . cleanInput($_POST['costumeID']) . "", cleanInput($_SESSION['id']), 2, convertDataToJSON("SELECT * FROM costumes WHERE id = '".cleanInput($_POST['costumeID'])."'"));
 
@@ -733,8 +753,11 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 		$conn->query("DELETE FROM costumes WHERE id = '".cleanInput($_POST['costumeID'])."'");
 		
 		// Update other databases that are affected
-		$conn->query("UPDATE event_sign_up SET costume = '0' WHERE costume = '".cleanInput($_POST['costumeID'])."'");
-		$conn->query("UPDATE event_sign_up SET costume_backup = '0' WHERE costume_backup = '".cleanInput($_POST['costumeID'])."'");
+		$conn->query("UPDATE event_sign_up SET costume = '".replaceCostumeID(cleanInput($_POST['costumeID']))."' WHERE costume = '".cleanInput($_POST['costumeID'])."'");
+		$conn->query("UPDATE event_sign_up SET costume_backup = '".replaceCostumeID(cleanInput($_POST['costumeID']))."' WHERE costume_backup = '".cleanInput($_POST['costumeID'])."'");
+
+		$array = array('success' => 'pass');
+		echo json_encode($array);
 	}
 	
 	// Add costume...

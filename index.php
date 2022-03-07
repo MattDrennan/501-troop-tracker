@@ -2776,32 +2776,38 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			
 			<form action="process.php?do=managecostumes" method="POST" name="addCostumeForm" id="addCostumeForm">
 			
-				<b>Costume Name:</b></br />
-				<input type="text" name="costumeName" id="costumeName" />
+				<p>
+					<b>Costume Name:</b></br />
+					<input type="text" name="costumeName" id="costumeName" />
+				</p>
 				
-				<b>Costume Era:</b></br />
-				<select name="costumeEra" id="costumeEra">
-					<option value="0">Prequel</option>
-					<option value="1" SELECTED>Original</option>
-					<option value="2">Sequel</option>
-					<option value="3">Expanded</option>
-					<option value="4">All</option>
-				</select>
+				<p>
+					<b>Costume Era:</b></br />
+					<select name="costumeEra" id="costumeEra">
+						<option value="0">Prequel</option>
+						<option value="1" SELECTED>Original</option>
+						<option value="2">Sequel</option>
+						<option value="3">Expanded</option>
+						<option value="4">All</option>
+					</select>
+				</p>
 				
-				<b>Costume Club:</b></br />
-				<select name="costumeClub" id="costumeClub">
-					<option value="0" SELECTED>501st Legion</option>';
+				<p>
+					<b>Costume Club:</b></br />
+					<select name="costumeClub" id="costumeClub">
+						<option value="0" SELECTED>501st Legion</option>';
 
-					// Loop through clubs
-					foreach($clubArray as $club => $club_value)
-					{
+						// Loop through clubs
+						foreach($clubArray as $club => $club_value)
+						{
+							echo '
+							<option value="'.$club_value['costumes'][0].'">'.$club_value['name'].'</option>';
+						}
+
 						echo '
-						<option value="'.$club_value['costumes'][0].'">'.$club_value['name'].'</option>';
-					}
-
-					echo '
-					<option value="'.$dualCostume.'">Dual (501st + Rebel)</option>
-				</select>
+						<option value="'.$dualCostume.'">Dual (501st + Rebel)</option>
+					</select>
+				</p>
 				
 				<input type="submit" name="addCostumeButton" id="addCostumeButton" value="Add Costume" />
 				
@@ -2856,38 +2862,38 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<div id="editCostumeList" name="editCostumeList" style="display: none;">
 
-				<b>Costume Name:</b></br />
-				<input type="text" name="costumeNameEdit" id="costumeNameEdit" />
-
-				<br />
+				<p>
+					<b>Costume Name:</b></br />
+					<input type="text" name="costumeNameEdit" id="costumeNameEdit" />
+				</p>
 				
-				<b>Costume Era:</b></br />
-				<select name="costumeEraEdit" id="costumeEraEdit">
-					<option value="0">Prequel</option>
-					<option value="1" SELECTED>Original</option>
-					<option value="2">Sequel</option>
-					<option value="3">Expanded</option>
-					<option value="4">All</option>
-				</select>
-				
-				<br />
+				<p>
+					<b>Costume Era:</b></br />
+					<select name="costumeEraEdit" id="costumeEraEdit">
+						<option value="0">Prequel</option>
+						<option value="1" SELECTED>Original</option>
+						<option value="2">Sequel</option>
+						<option value="3">Expanded</option>
+						<option value="4">All</option>
+					</select>
+				</p>
 
-				<b>Costume Club:</b></br />
-				<select name="costumeClubEdit" id="costumeClubEdit">
-					<option value="0" SELECTED>501st Legion</option>';
+				<p>
+					<b>Costume Club:</b></br />
+					<select name="costumeClubEdit" id="costumeClubEdit">
+						<option value="0" SELECTED>501st Legion</option>';
 
-					// Loop through clubs
-					foreach($clubArray as $club => $club_value)
-					{
+						// Loop through clubs
+						foreach($clubArray as $club => $club_value)
+						{
+							echo '
+							<option value="'.$club_value['costumes'][0].'">'.$club_value['name'].'</option>';
+						}
+
 						echo '
-						<option value="'.$club_value['costumes'][0].'">'.$club_value['name'].'</option>';
-					}
-
-					echo '
-					<option value="'.$dualCostume.'">Dual (501st + Rebel)</option>
-				</select>
-
-				<br />
+						<option value="'.$dualCostume.'">Dual (501st + Rebel)</option>
+					</select>
+				</p>
 
 				<input type="submit" name="submitEditCostume" id="submitEditCostume" value="Edit Costume" />
 

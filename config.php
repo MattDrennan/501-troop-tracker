@@ -2880,6 +2880,24 @@ function getCostumeClub($id)
 }
 
 /**
+ * Replaces the costume ID with an N/A costume
+ * 
+ * @param int $id The costume ID
+ * @return int Returns the N/A costume for the club
+ */
+function replaceCostumeID($id)
+{
+	global $clubArray, $dualCostume, $dualNA;
+
+	$club = getCostumeClub($id);
+
+	if($club == 0) { return 0; }
+	if($club == $dualCostume) { return $dualNA; }
+
+	return $clubArray[$club - 1]['naCostume'];
+}
+
+/**
  * Display's user information at top of profile page, used on profiles
  * 
  * @param int $id ID of the trooper

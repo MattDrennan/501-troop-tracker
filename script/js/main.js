@@ -2402,30 +2402,40 @@ $(document).ready(function()
 				data: form.serialize() + "&submitDeleteCostume=1",
 				success: function(data)
 				{
-					// Delete from edit list
-					$("#costumeIDEdit").children("option[value='" + $("#costumeID :selected").val() + "']").remove();
+					// Get JSON
+					var json = JSON.parse(data);
 
-					// Clear
-					$("#costumeID").find("option:selected").remove();
-					
-					// Alert to success
-			  		alert("The costume was deleted successfully!");
+					if(json.success == "pass")
+					{
+						// Delete from edit list
+						$("#costumeIDEdit").children("option[value='" + $("#costumeID :selected").val() + "']").remove();
 
-			  		// Clear edit area
-			  		$("#editCostumeList").hide();
-
-			  		// Show message if empty
-			  		if($("#costumeID option").length <= 0)
-			  		{
-			  			$("#costumeDeleteForm").html("No costume to display.");
+						// Clear
+						$("#costumeID").find("option:selected").remove();
 						
-			  		}
-					
-			  		// Show message if empty - edit
-			  		if($("#costumeIDEdit option").length <= 1)
-			  		{
-			  			$("#costumeEditForm").html("No costume to display.");
-			  		}
+						// Alert to success
+						alert("The costume was deleted successfully!");
+
+						// Clear edit area
+						$("#editCostumeList").hide();
+
+						// Show message if empty
+						if($("#costumeID option").length <= 0)
+						{
+							$("#costumeDeleteForm").html("No costume to display.");
+							
+						}
+						
+						// Show message if empty - edit
+						if($("#costumeIDEdit option").length <= 1)
+						{
+							$("#costumeEditForm").html("No costume to display.");
+						}
+					}
+					else
+					{
+						alert("Unable to delete this costume.");
+					}
 				}
 			});
 
