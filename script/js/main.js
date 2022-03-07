@@ -707,12 +707,21 @@ $(document).ready(function()
 			$("#searchNameDiv").show();
 			$("#tkIDDiv").show();
 			$("#trooper_count_radio").hide();
+			$("[name=activeRadios]").hide();
 		}
-		else
+		else if($("input[name='searchType']:checked").val() == "trooper")
 		{
 			$("#searchNameDiv").hide();
 			$("#tkIDDiv").hide();
 			$("#trooper_count_radio").show();
+			$("[name=activeRadios]").show();
+		}
+		else if($("input[name='searchType']:checked").val() == "donations")
+		{
+			$("#searchNameDiv").hide();
+			$("#tkIDDiv").hide();
+			$("#trooper_count_radio").show();
+			$("[name=activeRadios]").hide();
 		}
 	})
 	
