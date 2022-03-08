@@ -3417,12 +3417,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			// If edid set - this makes sure that old events are shown in the edit screen
 			if($eid >= 0)
 			{
-				$query = "(SELECT * FROM events WHERE id = ".$eid." LIMIT 1) UNION (SELECT * FROM events ORDER BY dateStart DESC LIMIT 150)";
+				$query = "(SELECT * FROM events WHERE id = ".$eid." LIMIT 1) UNION (SELECT * FROM events ORDER BY dateStart DESC LIMIT 1000)";
 			}
 			else
 			{
 				// If eid is not set
-				$query = "SELECT * FROM events ORDER BY dateStart DESC LIMIT 150";
+				$query = "SELECT * FROM events ORDER BY dateStart DESC LIMIT 1000";
 			}
 
 			// Amount of events
