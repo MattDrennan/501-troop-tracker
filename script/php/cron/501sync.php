@@ -49,6 +49,9 @@ foreach($obj->unit->members as $value)
 	}
 }
 
+// Wait
+sleep(10);
+
 // Loop through all members
 foreach($obj->unit->members as $value)
 {
@@ -63,6 +66,9 @@ foreach($obj->unit->members as $value)
 			// Insert into database
 			$conn->query("INSERT INTO 501st_costumes (legionid, costumeid, prefix, costumename, photo, thumbnail, bucketoff) VALUES ('".$value->legionId."', '".$costume->costumeId."', '".$costume->prefix."', '".$costume->costumeName."', '".$costume->photoURL."', '".$costume->thumbnail."', '".$costume->bucketOffPhoto."')");
 		}
+		
+		// Wait
+		sleep(5);
 	} catch (Exception $ex) {
 		die("Failed!");
 	}
