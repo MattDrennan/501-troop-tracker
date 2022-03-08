@@ -97,10 +97,11 @@ else
 	
 	foreach($data[0] as $item)
 	{
-		//echo $key;
-		//print_r($item);
+		// Get path info
+		$info = pathinfo("images/uploads/".$item["fileName"]."");
+
 		echo '
-		<img class="slideshow" src="https://www.fl501st.com/troop-tracker/images/uploads/'.$item["fileName"].'" width="100%" height="100%">';
+		<img class="slideshow" src="images/uploads/resize/'.$info['filename'].'.jpg" width="100%" height="100%">';
 	}
 	
 	echo '

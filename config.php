@@ -2898,6 +2898,18 @@ function replaceCostumeID($id)
 }
 
 /**
+ * Get's the file name of the file
+ * 
+ * @param string $file The path to file
+ * @return string Returns the file name without the extension
+ */
+function getFileName($file)
+{
+	$info = pathinfo($file);
+	return $info['filename'];
+}
+
+/**
  * Display's user information at top of profile page, used on profiles
  * 
  * @param int $id ID of the trooper

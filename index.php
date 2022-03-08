@@ -2003,8 +2003,26 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 			echo '</ul>
 			
-			<h2>Statistics</h2>
-			
+			<h2>Statistics</h2>';
+
+			// Show all troopers with titles
+			$query = "SELECT * FROM settings";
+
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					echo '
+					<p>
+						<b>501st Sync Date:</b> '.$db->syncdate.'
+					</p>
+					<p>
+						<b>Rebel Legion Sync Date:</b> '.$db->syncdaterebels.'
+					</p>';
+				}
+			}
+
+			echo '
 			<h3>Troop Tracker Usage</h3>
 
 			<p><b>501st Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUp501->num_rows).'</p>';
@@ -5754,7 +5772,7 @@ if(isset($_GET['event']))
 						
 						echo '
 						<div class="container-image">
-							<a href="images/uploads/'.$db->filename.'" data-lightbox="photosadmin" data-title="Uploaded by '.getName($db->trooperid).'" id="photo'.$db->id.'"><img src="images/uploads/'.$db->filename.'" width="200px" height="200px" class="image-c" /></a>
+							<a href="images/uploads/'.$db->filename.'" data-lightbox="photosadmin" data-title="Uploaded by '.getName($db->trooperid).'" id="photo'.$db->id.'"><img src="images/uploads/resize/'.getFileName($db->filename).'.jpg" width="200px" height="200px" class="image-c" /></a>
 							
 							<p class="container-text">';
 							
@@ -6572,7 +6590,7 @@ else
 				while ($db = mysqli_fetch_object($result))
 				{
 					echo '
-					<a href="images/uploads/'.$db->filename.'" data-lightbox="photo" data-title="Uploaded by '.getName($db->trooperid).' on '.getEventTitle($db->troopid, true).'."><img src="images/uploads/'.$db->filename.'" width="200px" height="200px" /></a>';
+					<a href="images/uploads/'.$db->filename.'" data-lightbox="photo" data-title="Uploaded by '.getName($db->trooperid).' on '.getEventTitle($db->troopid, true).'."><img src="images/uploads/resize/'.getFileName($db->filename).'.jpg" width="200px" height="200px" /></a>';
 					
 					// Increment
 					$i++;
