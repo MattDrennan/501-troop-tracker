@@ -4349,6 +4349,12 @@ if(isset($_GET['action']) && $_GET['action'] == "faq")
 	<p>
 		<a href="https://github.com/MattDrennan/501-troop-tracker/blob/master/manual/troop_tracker_manual.pdf" target="_blank">Click here to view PDF manual.</a>
 	</p>
+	
+	<h3>I cannot login / I forgot my password</h3>
+	<p>
+		The Troop Tracker has been integrated with the boards. You must use your Florida Garrison boards username and password to login to Troop Tracker. To recover your password, use password recovery on the Florida Garrison forum.
+	</p>
+
 
 	<h3>I am missing troop data / My troop data is incorrect</h3>
 	<p>
