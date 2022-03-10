@@ -2537,7 +2537,7 @@ function myTheme()
 {
 	global $conn;
 	
-	$theme = "florida";
+	$theme = "floridadark";
 
 	if(loggedIn())
 	{
@@ -2549,7 +2549,7 @@ function myTheme()
 				switch($db->theme)
 				{
 					case 0:
-						$theme = "florida";
+						$theme = "floridadark";
 					break;
 					
 					case 1:
@@ -2561,7 +2561,7 @@ function myTheme()
 					break;
 					
 					case 3:
-						$theme = "parjai";
+						$theme = "florida";
 					break;
 				}
 			}

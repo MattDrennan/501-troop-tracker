@@ -2,8 +2,6 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Generation Time: Mar 01, 2022 at 07:42 PM
--- Server version: 8.0.23
 -- PHP Version: 7.4.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -173,7 +171,11 @@ CREATE TABLE `events` (
   `limitOther` int NOT NULL DEFAULT '500',
   `limitTotalTroopers` int NOT NULL DEFAULT '500',
   `closed` tinyint(1) NOT NULL DEFAULT '0',
-  `moneyRaised` int NOT NULL DEFAULT '0',
+  `charityDirectFunds` int NOT NULL DEFAULT '0',
+  `charityIndirectFunds` int NOT NULL,
+  `charityName` varchar(255) NOT NULL,
+  `charityAddHours` int NOT NULL,
+  `charityNote` text NOT NULL,
   `squad` int NOT NULL,
   `link` int NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -237,7 +239,7 @@ CREATE TABLE `mando_troopers` (
 
 CREATE TABLE `notifications` (
   `id` int NOT NULL,
-  `message` varchar(100) NOT NULL,
+  `message` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
   `trooperid` int NOT NULL,
   `type` int NOT NULL DEFAULT '0',
   `json` text NOT NULL,

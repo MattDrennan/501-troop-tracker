@@ -49,7 +49,7 @@
 	--nav-active-link-color: #2869a5;
 }
 
-.parjai {
+.floridadark {
 	--primary-bg-color: #000000;
 	--primary-text-color: #fff;
 	--select-text-color: #fff;
@@ -391,68 +391,68 @@ input, select, textarea {
 	font-size: 16px;
 }
 
-/************************* PARJAI *******************************/ 
+/************************* FLORIDA DARK *******************************/ 
 
-.parjai input[type=text], input[type=number], select, textarea{
+.floridadark input[type=text], input[type=number], select, textarea{
   background-color: var(--main-content-color);
   color: #fff;
 }
 
-.parjai a:hover {
+.floridadark a:hover {
 	color: #01bcfb;
 }
 
-.parjai input[type=password], input[type=number], select, textarea{
+.floridadark input[type=password], input[type=number], select, textarea{
   background-color: var(--main-content-color);
   color: #fff;
 }
 
-.parjai #photoupload
+.floridadark #photoupload
 {
 	background-color: var(--main-content-color);
 }
 
-.parjai .select2-search
-{
-	background-color: var(--main-content-color);
-	color: #fff;
-}
-
-.parjai .select2-search input
+.floridadark .select2-search
 {
 	background-color: var(--main-content-color);
 	color: #fff;
 }
 
-.parjai .select2-results
+.floridadark .select2-search input
 {
 	background-color: var(--main-content-color);
 	color: #fff;
 }
 
-.parjai .select2-selection__rendered
+.floridadark .select2-results
 {
 	background-color: var(--main-content-color);
 	color: #fff;
 }
 
-.parjai .select2-selection select2-selection--single
+.floridadark .select2-selection__rendered
 {
 	background-color: var(--main-content-color);
 	color: #fff;
 }
 
-.parjai span[class*="select2"]
+.floridadark .select2-selection select2-selection--single
+{
+	background-color: var(--main-content-color);
+	color: #fff;
+}
+
+.floridadark span[class*="select2"]
 {
 	background-color: var(--main-content-color) !important;
 	color: #fff !important;
 }
 
-.parjai th {
+.floridadark th {
 	background-color: #000;
 }
 
-/************************* END PARJAI *******************************/
+/************************* END FLORIDA DARK *******************************/
 
 /************************ SELECT 2 **************************************/
 

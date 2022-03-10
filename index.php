@@ -349,10 +349,10 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 				while ($db = mysqli_fetch_object($result))
 				{
 					echo '
-					<option value="0" '.echoSelect(0, $db->theme).'>Florida Garrison Theme (Default)</option>
+					<option value="0" '.echoSelect(0, $db->theme).'>Florida Garrison Theme (Dark Theme)</option>
 					<option value="1" '.echoSelect(1, $db->theme).'>Everglades Theme</option>
 					<option value="2" '.echoSelect(2, $db->theme).'>Makaze Theme</option>
-					<option value="3" '.echoSelect(3, $db->theme).'>Parjai Theme (Dark Theme)</option>';
+					<option value="3" '.echoSelect(3, $db->theme).'>Florida Garrison Theme</option>';
 				}
 			}
 		echo '

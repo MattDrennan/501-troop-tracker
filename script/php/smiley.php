@@ -26,7 +26,7 @@ $replacements = array(
 ':revan2:' => '<img src="https://www.fl501st.com/boards/images/smilies/revan.png" code=":revan2:" />',
 ':blitz:' => '<img src="https://www.fl501st.com/boards/images/smilies/Blitz_Helmet.png" code=":blitz:" />',
 ':colt:' => '<img src="https://www.fl501st.com/boards/images/smilies/Colt_Helmet.png" code=":colt:" />',
-':echo' => '<img src="https://www.fl501st.com/boards/images/smilies/Echo_Helmet.png" code=":echo" />',
+':echo:' => '<img src="https://www.fl501st.com/boards/images/smilies/Echo_Helmet.png" code=":echo:" />',
 ':fives:' => '<img src="https://www.fl501st.com/boards/images/smilies/Fives_Helmet.png" code=":fives:" />',
 ':fox:' => '<img src="https://www.fl501st.com/boards/images/smilies/Fox_Helmet.png" code=":fox:" />',
 ':hammer:' => '<img src="https://www.fl501st.com/boards/images/smilies/Hammer_Helmet.png" code=":hammer:" />',
