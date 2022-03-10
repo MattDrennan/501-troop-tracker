@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is used for merging two Rebel Legion accounts.
+ * 
+ * goodRebel is the Rebel Legion forum username to keep, and badRebel is the ID of the trooper to delete after merging.
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);

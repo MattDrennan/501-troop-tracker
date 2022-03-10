@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is used for scraping 501st data.
+ * 
+ * This should be run weekly by a cronjob.
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 // Include config
 include(dirname(__DIR__) . '/../../config.php');
 
@@ -29,25 +38,39 @@ $obj = json_decode($json);
 // Loop through all members
 foreach($obj->unit->members as $value)
 {
-	// Get specific data on member
-	$json2 = file_get_contents("https://www.501st.com/memberAPI/v3/legionId/" . $value->legionId);
-	$obj2 = json_decode($json2);
+	try {
+		// Get specific data on member
+		$json2 = file_get_contents("https://www.501st.com/memberAPI/v3/legionId/" . $value->legionId);
+		$obj2 = json_decode($json2);
 
-	$conn->query("INSERT INTO 501st_troopers (legionid, name, thumbnail, link, squad, approved, status, standing, joindate) VALUES ('".$value->legionId."', '".$value->fullName."', '".$value->thumbnail."', '".$value->link."', '".convertSquadId($value->squadId)."', '".convertMemberApproved($obj2->memberApproved)."', '".convertMemberStatus($obj2->memberStatus)."', '".convertMemberStanding($obj2->memberStanding)."', '".$obj2->joinDate."')");
+		$conn->query("INSERT INTO 501st_troopers (legionid, name, thumbnail, link, squad, approved, status, standing, joindate) VALUES ('".$value->legionId."', '".$value->fullName."', '".$value->thumbnail."', '".$value->link."', '".convertSquadId($value->squadId)."', '".convertMemberApproved($obj2->memberApproved)."', '".convertMemberStatus($obj2->memberStatus)."', '".convertMemberStanding($obj2->memberStanding)."', '".$obj2->joinDate."')");
+	} catch (Exception $ex) {
+		die("Failed!");
+	}
 }
+
+// Wait
+sleep(10);
 
 // Loop through all members
 foreach($obj->unit->members as $value)
 {
-	// Get specific data on member - costumes
-	$json2 = file_get_contents("https://www.501st.com/memberAPI/v3/legionId/" . $value->legionId . "/costumes");
-	$obj2 = json_decode($json2);
-	
-	// Loop through all costumes
-	foreach($obj2->costumes as $costume)
-	{
-		// Insert into database
-		$conn->query("INSERT INTO 501st_costumes (legionid, costumeid, prefix, costumename, photo, thumbnail, bucketoff) VALUES ('".$value->legionId."', '".$costume->costumeId."', '".$costume->prefix."', '".$costume->costumeName."', '".$costume->photoURL."', '".$costume->thumbnail."', '".$costume->bucketOffPhoto."')");
+	try {
+		// Get specific data on member - costumes
+		$json2 = file_get_contents("https://www.501st.com/memberAPI/v3/legionId/" . $value->legionId . "/costumes");
+		$obj2 = json_decode($json2);
+		
+		// Loop through all costumes
+		foreach($obj2->costumes as $costume)
+		{
+			// Insert into database
+			$conn->query("INSERT INTO 501st_costumes (legionid, costumeid, prefix, costumename, photo, thumbnail, bucketoff) VALUES ('".$value->legionId."', '".$costume->costumeId."', '".$costume->prefix."', '".$costume->costumeName."', '".$costume->photoURL."', '".$costume->thumbnail."', '".$costume->bucketOffPhoto."')");
+		}
+		
+		// Wait
+		sleep(5);
+	} catch (Exception $ex) {
+		die("Failed!");
 	}
 }
 
@@ -113,7 +136,12 @@ COMPLETE!';
 // Update date time for last sync
 $conn->query("UPDATE settings SET syncdate = NOW()");
 
-// convertMemberApproved: Returns an int based on the member approved
+/**
+ * Converts the member approval string value to an interger
+ *
+ * @param string $value The string value to be formatted
+ * @return int Returns 1 for yes and 0 for all else
+ */
 function convertMemberApproved($value)
 {
 	$returnValue = 0;
@@ -127,7 +155,12 @@ function convertMemberApproved($value)
 	return $returnValue;
 }
 
-// convertMemberStatus: Returns an int based on the member status
+/**
+ * Returns an interger based on the member status
+ *
+ * @param string $value The string value to be formatted
+ * @return int Returns 1 for active, 2 for reserve, and 0 for all else
+ */
 function convertMemberStatus($value)
 {
 	$returnValue = 0;
@@ -145,7 +178,12 @@ function convertMemberStatus($value)
 	return $returnValue;
 }
 
-// convertMemberStanding: Returns an int based on the member standing
+/**
+ * Returns an interger based on the member standing
+ *
+ * @param string $value The string value to be formatted
+ * @return int Returns 1 for good, and 0 for all else
+ */
 function convertMemberStanding($value)
 {
 	$returnValue = 0;
@@ -159,7 +197,12 @@ function convertMemberStanding($value)
 	return $returnValue;
 }
 
-// convertSquadId: Returns the squad's ID for troop tracker
+/**
+ * Returns the squad's ID for troop tracker
+ *
+ * @param int $value The string value to be formatted
+ * @return int Returns squad ID based on value
+ */
 function convertSquadId($value)
 {
 	$returnValue = 0;

@@ -1,16 +1,10 @@
 // Wait for the DOM to be ready
 $(function()
-{	
-    // Initialize form validation on the registration form.
-    // It has the name attribute "registration"
+{
     $("form[name='createEventForm']").validate(
     {
-        // Specify validation rules
         rules:
         {
-            // The key name on the left side is the name attribute
-            // of an input field. Validation rules are defined
-            // on the right side
             eventName: "required",
             eventVenue: "required",
             location: "required",
@@ -65,34 +59,8 @@ $(function()
             {
                 required: true,
                 range: [0, 1]
-            },
-            limit501st:
-            {
-                required: false,
-                digits: true
-            },
-            limitDroid:
-            {
-                required: false,
-                digits: true
-            },
-            limitOther:
-            {
-                required: false,
-                digits: true
-            },
-            limitRebels:
-            {
-                required: false,
-                digits: true
-            },
-            limitMando:
-            {
-                required: false,
-                digits: true
             }
         },
-        // Specify validation error messages
         messages:
         {
             eventName: "Please enter the event name.",
@@ -111,8 +79,6 @@ $(function()
             label: "Please enter a valid option.",
             limitedEvent: "Please enter a valid option."
         },
-        // Make sure the form is submitted to the destination defined
-        // in the "action" attribute of the form when valid
         submitHandler: function(form)
         {
             var r = confirm("Are you sure you want to create this event?");
@@ -150,13 +116,18 @@ $(function()
                             $("#amenities").val("");
                             $("#comments").val("");
                             $("#label").val("null");
-                            $("#limitedEvent").val("null");
+                            $("#limitedEvent").val("0");
                             $("#era").val("4");
                             $("#limit501st").val("500");
-                            $("#limitRebels").val("500");
-                            $("#limitMando").val("500");
-                            $("#limitDroid").val("500");
-							$("#limitOther").val("500");
+                            $("[name=smileyarea]").html("");
+                            $("#postToBoards").val(1);
+
+                            // Loop through clubs
+                            for(var i = 0; i <= (clubArray.length - 1); i++)
+                            {
+                                $("#" + clubArray[i]).val(500);
+                            }
+
                             $("#referred").val("");
                             $("#options").show();
 
@@ -177,23 +148,14 @@ $(function()
 
     $("form[name='editUserForm']").validate(
     {
-        // Specify validation rules
         rules:
         {
-            // The key name on the left side is the name attribute
-            // of an input field. Validation rules are defined
-            // on the right side
             user: "required",
             forumid: "required",
-            email:
-            {
-                //required: true,
-                email: true
-            },
             squad:
             {
                 required: true,
-                range: [1, 9]
+                range: [0, 9]
             },
             permissions:
             {
@@ -205,33 +167,12 @@ $(function()
                 required: true,
                 range: [0, 4]
             },
-            pRebel:
-            {
-                required: true,
-                range: [0, 4]
-            },
-            pDroid:
-            {
-                required: true,
-                range: [0, 4]
-            },
-            pMando:
-            {
-                required: true,
-                range: [0, 4]
-            },
-            pOther:
-            {
-                required: true,
-                range: [0, 4]
-            },
             tkid:
             {
                 required: true,
                 digits: true
             }
         },
-        // Specify validation error messages
         messages:
         {
             user: "Please enter a name.",
@@ -240,8 +181,6 @@ $(function()
             tkid: "Please enter a TKID.",
             forumid: "Please enter a forum ID."
         },
-        // Make sure the form is submitted to the destination defined
-        // in the "action" attribute of the form when valid
         submitHandler: function(form)
         {
             var r = confirm("Are you sure you want to edit this trooper?");
@@ -275,12 +214,8 @@ $(function()
 
     $("form[name='editEventForm']").validate(
     {
-        // Specify validation rules
         rules:
         {
-            // The key name on the left side is the name attribute
-            // of an input field. Validation rules are defined
-            // on the right side
             eventName: "required",
             eventVenue: "required",
             location: "required",
@@ -335,34 +270,8 @@ $(function()
             {
                 required: true,
                 range: [0, 1]
-            },
-            limit501st:
-            {
-                required: false,
-                digits: true
-            },
-            limitDroid:
-            {
-                required: false,
-                digits: true
-            },
-            limitOther:
-            {
-                required: false,
-                digits: true
-            },
-            limitRebels:
-            {
-                required: false,
-                digits: true
-            },
-            limitMando:
-            {
-                required: false,
-                digits: true
             }
         },
-        // Specify validation error messages
         messages:
         {
             eventName: "Please enter the event name.",
@@ -381,8 +290,6 @@ $(function()
             label: "Please enter a valid option.",
             limitedEvent: "Please enter a valid option."
         },
-        // Make sure the form is submitted to the destination defined
-        // in the "action" attribute of the form when valid
         submitHandler: function(form)
         {
             var r = confirm("Are you sure you want to edit this event?");
@@ -402,6 +309,9 @@ $(function()
                         $("#submitEdit").val("Edit");
                         $("#options").show();
                         $("#editEventInfo").hide();
+                        $("#limitChangeArea").hide();
+                        $("#limitChange").text("Change Limits");
+                        $("[name=smileyarea]").html("");
 
                         // Is linked event
                         if($("#eventId option:selected").attr("link") != 0)
@@ -433,85 +343,30 @@ $(function()
 
     $("form[name='loginForm']").validate(
     {
-        // Specify validation rules
         rules:
         {
-            // The key name on the left side is the name attribute
-            // of an input field. Validation rules are defined
-            // on the right side
             tkid: "required",
             password: "required"
         },
-        // Specify validation error messages
         messages:
         {
-            tkid: "Please enter your TKID or forum username.",
-            password: "Please enter your password."
+            tkid: "Please enter your FL Garrison Board username.",
+            password: "Please enter your FL Garrison Board password."
         },
-        // Make sure the form is submitted to the destination defined
-        // in the "action" attribute of the form when valid
         submitHandler: function(form)
         {
             form.submit();
         }
     });
 
-    $("form[name='changeEmailForm']").validate(
-    {
-        // Specify validation rules
-        rules:
-        {
-            // The key name on the left side is the name attribute
-            // of an input field. Validation rules are defined
-            // on the right side
-            email:
-            {
-                required: true,
-                email: true
-            }
-        },
-        // Specify validation error messages
-        messages:
-        {
-            email: "Please enter a valid e-mail."
-        },
-        // Make sure the form is submitted to the destination defined
-        // in the "action" attribute of the form when valid
-        submitHandler: function(form)
-        {
-            var form = $("#changeEmailForm");
-            var url = form.attr("action");
-
-            $.ajax(
-            {
-                type: "POST",
-                url: url,
-                data: form.serialize() + "&emailButton=1",
-                success: function(data)
-                {
-                    alert(data);
-                }
-            });
-        }
-    });
-
     $("form[name='changePhoneForm']").validate(
     {
-        // Specify validation rules
         rules:
         {
-            // The key name on the left side is the name attribute
-            // of an input field. Validation rules are defined
-            // on the right side
-            //phone: "required"
         },
-        // Specify validation error messages
         messages:
         {
-            //phone: "Please enter a phone number."
         },
-        // Make sure the form is submitted to the destination defined
-        // in the "action" attribute of the form when valid
         submitHandler: function(form)
         {
             var form = $("#changePhoneForm");
@@ -532,21 +387,14 @@ $(function()
 
     $("form[name='changeNameForm']").validate(
     {
-        // Specify validation rules
         rules:
         {
-            // The key name on the left side is the name attribute
-            // of an input field. Validation rules are defined
-            // on the right side
             name: "required"
         },
-        // Specify validation error messages
         messages:
         {
             name: "Please enter a name."
         },
-        // Make sure the form is submitted to the destination defined
-        // in the "action" attribute of the form when valid
         submitHandler: function(form)
         {
             var form = $("#changeNameForm");
@@ -567,62 +415,27 @@ $(function()
 
     $("form[name='requestAccessForm']").validate(
     {
-        // Specify validation rules
         rules:
         {
-            // The key name on the left side is the name attribute
-            // of an input field. Validation rules are defined
-            // on the right side
             tkid:
             {
                 required: true,
                 digits: true,
                 maxlength: 11
             },
-            email:
-            {
-                required: true,
-                email: true
-            },
-			rebelforum:
-			{
-				required: function()
-				{
-					return $('#squad').val() == 6;
-				}				
-			},
-			mandoid:
-			{
-				digits: true,
-				required: function()
-				{
-					return $('#squad').val() == 8;
-				}				
-			},
-            sgid:
-            {
-				required: false,
-                digits: true          
-            },
             forumid: "required",
             password: "required",
-            passwordC: "required",
             name: "required"
         },
-        // Specify validation error messages
         messages:
         {
             tkid: "Please enter your TKID and make sure it is no more than eleven (11) characters.",
             forumid: "Please enter your FL 501st Forum Username.",
             password: "Please enter your password.",
-            passwordC: "Please re-enter your password to confirm it.",
-            email: "Please enter a valid e-mail.",
             name: "Please enter your name.",
 			rebelforum: "Please enter your Rebel Legion forum username.",
 			mandoid: "Please enter your Mando Mercs CAT #."
         },
-        // Make sure the form is submitted to the destination defined
-        // in the "action" attribute of the form when valid
         submitHandler: function(form)
         {
             $.ajax(
@@ -644,12 +457,8 @@ $(function()
 
     $("form[name='signupForm']").validate(
     {
-        // Specify validation rules
         rules:
         {
-            // The key name on the left side is the name attribute
-            // of an input field. Validation rules are defined
-            // on the right side
             costume:
             {
                 required: true,
@@ -661,14 +470,11 @@ $(function()
                 range: [0, 5]
             }
         },
-        // Specify validation error messages
         messages:
         {
             costume: "Please choose a costume.",
             status: "Please choose your status."
         },
-        // Make sure the form is submitted to the destination defined
-        // in the "action" attribute of the form when valid
         submitHandler: function(form)
         {
             $.ajax(
@@ -689,12 +495,8 @@ $(function()
 
     $("form[name='signupForm2']").validate(
     {
-        // Specify validation rules
         rules:
         {
-            // The key name on the left side is the name attribute
-            // of an input field. Validation rules are defined
-            // on the right side
             costume:
             {
                 required: true,
@@ -706,14 +508,11 @@ $(function()
                 range: [0, 5]
             }
         },
-        // Specify validation error messages
         messages:
         {
             costume: "Please choose a costume.",
             status: "Please choose your status."
         },
-        // Make sure the form is submitted to the destination defined
-        // in the "action" attribute of the form when valid
         submitHandler: function(form)
         {
             $.ajax(
@@ -754,12 +553,8 @@ $(function()
 
     $("form[name='signupForm3']").validate(
     {
-        // Specify validation rules
         rules:
         {
-            // The key name on the left side is the name attribute
-            // of an input field. Validation rules are defined
-            // on the right side
             trooperSelect:
             {
                 required: true,
@@ -776,14 +571,11 @@ $(function()
                 range: [0, 5]
             }
         },
-        // Specify validation error messages
         messages:
         {
             costume: "Please choose a costume.",
             status: "Please choose your status."
         },
-        // Make sure the form is submitted to the destination defined
-        // in the "action" attribute of the form when valid
         submitHandler: function(form)
         {
             $.ajax(
@@ -831,135 +623,10 @@ $(function()
         }
     });
 
-    $("form[name='createUserForm']").validate(
-    {
-        // Specify validation rules
-        rules:
-        {
-            // The key name on the left side is the name attribute
-            // of an input field. Validation rules are defined
-            // on the right side
-            name: "required",
-            forumid: "required",
-            email:
-            {
-                required: true,
-                email: true
-            },
-            squad:
-            {
-                required: true,
-                range: [0, 1]
-            },
-            permissions:
-            {
-                required: true,
-                range: [0, 2]
-            },
-            p501:
-            {
-                required: true,
-                range: [0, 4]
-            },
-            pRebel:
-            {
-                required: true,
-                range: [0, 4]
-            },
-            pDroid:
-            {
-                required: true,
-                range: [0, 4]
-            },
-            pMando:
-            {
-                required: true,
-                range: [0, 4]
-            },
-            pOther:
-            {
-                required: true,
-                range: [0, 4]
-            },
-            tkid:
-            {
-                required: true,
-                digits: true
-            },
-			mandoid:
-			{
-				digits: true
-			},
-            sgid:
-            {
-                digits: true
-            },
-            password:
-            {
-                required: true,
-                minlength: 6
-            }
-        },
-        // Specify validation error messages
-        messages:
-        {
-            name: "Please enter a name.",
-            forumid: "Please enter the FL 501st Username.",
-            email: "Please enter a valid e-mail address.",
-            squad: "Please choose a squad.",
-            tkid: "Please enter a valid ID.",
-            password: "Please enter a valid password."
-        },
-        // Make sure the form is submitted to the destination defined
-        // in the "action" attribute of the form when valid
-        submitHandler: function(form)
-        {
-            var r = confirm("Are you sure you want to create this user?");
-
-            if (r == true)
-            {
-                $.ajax(
-                {
-                    type: "POST",
-                    url: form.action,
-                    data: $(form).serialize() + "&submitUser=1",
-                    success: function(data)
-                    {
-                        var json = JSON.parse(data);
-
-                        // If success
-                        if (json.success == "success")
-                        {
-                            // Clear Form
-                            $("#name").val("");
-                            $("#email").val("");
-                            $("#forumid").val("");
-							$("#rebelforum").val("");
-							$("#mandoid").val("");
-                            $("#sgid").val("");
-                            $("#phone").val("");
-                            $("#squad").val("1");
-                            $("#permissions").val("0");
-                            $("#tkid").val("");
-                            $("#password").val("");
-                        }
-
-                        // Alert to success
-                        alert(json.data);
-                    }
-                });
-            }
-        }
-    });
-
     $("form[name='commentForm']").validate(
     {
-        // Specify validation rules
         rules:
         {
-            // The key name on the left side is the name attribute
-            // of an input field. Validation rules are defined
-            // on the right side
             comment:
 			{
 				required: true,
@@ -971,14 +638,11 @@ $(function()
                 range: [0, 1]
             }
         },
-        // Specify validation error messages
         messages:
         {
             comment: "Please enter a comment.",
             important: "Please pick an importance."
         },
-        // Make sure the form is submitted to the destination defined
-        // in the "action" attribute of the form when valid
         submitHandler: function(form)
         {
 			// Disable button
@@ -1000,6 +664,7 @@ $(function()
                     // Return vars to default
                     $("#comment").val("");
                     $("#important").val("0");
+                    $("[name=smileyarea]").html("");
 					
 					// Re-enable button
 					$("input[name=submitComment]").prop("disabled", false);
@@ -1013,30 +678,19 @@ $(function()
 
     $("form[name='registerForm']").validate(
     {
-        // Specify validation rules
         rules:
         {
-            // The key name on the left side is the name attribute
-            // of an input field. Validation rules are defined
-            // on the right side
             tkid:
             {
                 required: true
             },
-            email:
+            forum_id:
             {
-                required: true,
-                email: true
+                required: true
             },
             password:
             {
-                required: true,
-                minlength: 6
-            },
-            password2:
-            {
-                required: true,
-                minlength: 6
+                required: true
             },
             tkid2:
             {
@@ -1047,20 +701,61 @@ $(function()
                 }
             }
         },
-        // Specify validation error messages
         messages:
         {
             tkid: "Please enter your TKID.",
-            password: "Please enter a six (6) character password.",
-            password2: "Please enter a matching six (6) character password.",
-            email: "Please enter a valid e-mail address.",
+            forum_id: "Please enter your FL Garrison Board username.",
+            password: "Please enter your FL Garrison Board password.",
             tkid2: "Please enter an ID."
         },
-        // Make sure the form is submitted to the destination defined
-        // in the "action" attribute of the form when valid
         submitHandler: function(form)
         {
             form.submit();
+        }
+    });
+
+    $("form[name='editcharityForm']").validate(
+    {
+        rules:
+        {
+            charityDirectFunds:
+            {
+                required: false,
+                digits: true
+            },
+            charityIndirectFunds:
+            {
+                required: false,
+                digits: true
+            },
+            charityAddHours:
+            {
+                required: false,
+                digits: true
+            }
+        },
+        messages:
+        {
+            charityDirectFunds: "Please enter a valid number.",
+            charityIndirectFunds: "Please enter a valid number.",
+            charityAddHours: "Please enter a valid number."
+        },
+        submitHandler: function(form)
+        {
+            $.ajax({
+                type: "POST",
+                url: form.action,
+                data: $('#editcharityForm').serialize() + "&eventId=" + $("#eventId").val() + "&submitCharity=1",
+                success: function(data)
+                {
+                    // Hide charity form
+                    $("#charityAmount").hide();
+                    $("#submitCharity").val("Charity");
+            
+                    // Send success message
+                    alert("Charity updated!");
+                }
+            });
         }
     });
 
@@ -1068,12 +763,8 @@ $(function()
     {
         $("form[name='troopRosterFormAdd']").validate(
         {
-            // Specify validation rules
             rules:
             {
-                // The key name on the left side is the name attribute
-                // of an input field. Validation rules are defined
-                // on the right side
                 trooperSelect: "required",
                 costume:
                 {
@@ -1086,14 +777,11 @@ $(function()
                     range: [0, 4]
                 }
             },
-            // Specify validation error messages
             messages:
             {
                 costume: "Please select a costume.",
                 status: "Please select a status."
             },
-            // Make sure the form is submitted to the destination defined
-            // in the "action" attribute of the form when valid
             submitHandler: function(form)
             {
                 $.ajax(
@@ -1185,89 +873,5 @@ $(function()
                 });
             }
         });
-    });
-
-    $("form[name='changePasswordForm']").validate(
-    {
-        // Specify validation rules
-        rules:
-        {
-            // The key name on the left side is the name attribute
-            // of an input field. Validation rules are defined
-            // on the right side
-            oldpassword: "required",
-            newpassword:
-            {
-                required: true,
-                minlength: 6
-            },
-            newpassword2:
-            {
-                required: true,
-                minlength: 6
-            }
-        },
-        // Specify validation error messages
-        messages:
-        {
-            oldpassword: "Please enter your old password.",
-            newpassword: "Please enter a six (6) character password.",
-            newpassword2: "Please enter a matching six (6) character password."
-        },
-        // Make sure the form is submitted to the destination defined
-        // in the "action" attribute of the form when valid
-        submitHandler: function(form)
-        {
-            var form = $("#changePasswordForm");
-            var url = form.attr("action");
-
-            $.ajax(
-            {
-                type: "POST",
-                url: url,
-                data: form.serialize() + "&changePasswordSend=1",
-                success: function(data)
-                {
-                    $("#oldpassword").val("");
-                    $("#newpassword").val("");
-                    $("#newpassword2").val("");
-                    alert(data);
-                }
-            });
-        }
-    });
-
-    $("form[name='forgotPasswordForm']").validate(
-    {
-        // Specify validation rules
-        rules:
-        {
-            // The key name on the left side is the name attribute
-            // of an input field. Validation rules are defined
-            // on the right side
-            tkid: "required"
-        },
-        // Specify validation error messages
-        messages:
-        {
-            tkid: "Please enter your TK ID or forum username.",
-            email: "Please enter a valid e-mail address.",
-        },
-        // Make sure the form is submitted to the destination defined
-        // in the "action" attribute of the form when valid
-        submitHandler: function(form)
-        {
-            $.ajax(
-            {
-                type: "POST",
-                url: url,
-                data: form.serialize(),
-                success: function(data)
-                {
-                    //alert(data); // show response from the php script.
-                }
-            });
-            form.submit();
-        }
     });
 });

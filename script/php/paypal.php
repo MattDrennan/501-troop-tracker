@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * This file is used for processing PayPal IPN data.
+ *
+ */
+
 // Read the post from PayPal system and add 'cmd'
 $req = 'cmd=_notify-validate';
 

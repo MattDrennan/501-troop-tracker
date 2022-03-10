@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is used for displaying the website.
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 // Include config file
 include 'config.php';
 
@@ -31,14 +38,113 @@ echo '
 	<link href="css/lightbox.min.css" rel="stylesheet" />
 	<link href="css/calendar.css" rel="stylesheet" />
 	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-	<link href="css/all.css" rel="stylesheet" />
 	<link rel="stylesheet" href="https://unpkg.com/balloon-css/balloon.min.css">
 	
 	<!-- Icon -->
 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
 	
 	<!-- Setup Variable -->
-	<script>var placeholder = '.placeholder.';</script>
+	<script>
+	var placeholder = '.placeholder.';
+	var clubArray = [';
+
+	/* CHECK IF MEMBER CLUB DB VALUE */
+
+	// Club count
+	$clubCount = count($clubArray);
+
+	// Club step
+	$i = 0;
+
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
+	{
+		echo '"'.$club_value['db'].'"';
+
+		// Add comma
+		if($i < ($clubCount - 1))
+		{
+			echo ',';
+		}
+
+		// Increment
+		$i++;
+	}
+
+	echo'];';
+
+	/* DB LIMIT CLUBS */
+
+	// Club step
+	$i = 0;
+
+	echo '
+	var clubDBLimitArray = [';
+
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
+	{
+		echo '"'.$club_value['dbLimit'].'"';
+
+		// Add comma
+		if($i < ($clubCount - 1))
+		{
+			echo ',';
+		}
+
+		// Increment
+		$i++;
+	}
+
+	echo'];';
+
+	/* CLUB SPECIAL FORUM VALUE */
+
+	// Club count with value
+	$clubCount = array_filter($clubArray, function($x) { return !empty($x['db3Name']); });
+
+	// Club step
+	$i = 0;
+
+	echo '
+	var clubDB3Array = [';
+
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
+	{
+		// Don't allow empty result
+		if($club_value['db3Name'] != "")
+		{
+			echo '"'.$club_value['db3'].'"';
+
+			// Add comma
+			if($i < count($clubCount) - 1)
+			{
+				echo ',';
+			}
+
+			// Increment
+			$i++;
+		}
+	}
+
+	echo'];';
+
+	echo '
+	// Clear limits
+	function clearLimit()
+	{';
+
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
+	{
+		echo '
+		$("#'.$club_value['dbLimit'].'").val(500);';
+	}
+
+	echo '
+	}
+	</script>
 
 	<!-- JQUERY -->
 	<script src="script/lib/jquery-3.4.1.min.js"></script>
@@ -63,12 +169,12 @@ echo '
 	<script src="script/lib/lightbox.min.js"></script>
 
 	<script>
- 	$( function() {
+ 	$(function() {
 		$("#datepicker").datetimepicker();
 		$("#datepicker2").datetimepicker();
 		$("#datepicker3").datetimepicker();
 		$("#datepicker4").datetimepicker();
-	} );
+	});
 	</script>
 </head>
 
@@ -154,10 +260,8 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 	<h2 class="tm-section-header">Manage Account</h2>
 
 	<a href="#/" id="emailSettingLink" class="button">E-mail Settings</a> 
-	<a href="#/" id="changeemailLink" class="button">Change E-mail</a> 
 	<a href="#/" id="changephoneLink" class="button">Change Phone</a> 
 	<a href="#/" id="changenameLink" class="button">Change Name</a> 
-	<a href="#/" id="changepasswordLink" class="button">Change Password</a>
 	<a href="#/" id="changethemeLink" class="button">Change Theme</a> 
 	<a href="index.php?action=donation" class="button">Donate</a> 
 	<a href="index.php?profile='.$_SESSION['id'].'" class="button">View Your Profile</a>
@@ -196,6 +300,10 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 		<div id="emailSettingsOptions" '.$subscribe.'>
 			<h3>Squads / Clubs</h3>
 			<form action="process.php?do=emailsettings" method="POST" id="emailsettingsForm" name="emailsettingsForm">';
+
+			// Florida Garrison
+			echo '
+			<input type="checkbox" name="esquad0" id="esquad0" ' . emailSettingStatus("esquad0", true) . ' />501st / Florida Garrison<br />';
 			
 			// Squad count
 			$i = 1;
@@ -204,7 +312,7 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 			foreach($squadArray as $squad => $squad_value)
 			{
 				echo '
-				<input type="checkbox" name="esquad'.$i.'" id="esquad'.$i.'" ' . emailSettingStatus("esquad" . $i, true) . ' />' . $squad . '<br />';
+				<input type="checkbox" name="esquad'.$i.'" id="esquad'.$i.'" ' . emailSettingStatus("esquad" . $i, true) . ' />' . $squad_value['name'] . '<br />';
 				
 				// Increment squad count
 				$i++;
@@ -214,7 +322,7 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 			foreach($clubArray as $club => $club_value)
 			{
 				echo '
-				<input type="checkbox" name="esquad'.$i.'" id="esquad'.$i.'" ' . emailSettingStatus("esquad" . $i, true) . ' />' . $club . '<br />';
+				<input type="checkbox" name="esquad'.$i.'" id="esquad'.$i.'" ' . emailSettingStatus("esquad" . $i, true) . ' />' . $club_value['name'] . '<br />';
 				
 				// Increment squad count
 				$i++;
@@ -241,34 +349,15 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 				while ($db = mysqli_fetch_object($result))
 				{
 					echo '
-					<option value="0" '.echoSelect(0, $db->theme).'>Florida Garrison Theme (Default)</option>
+					<option value="0" '.echoSelect(0, $db->theme).'>Florida Garrison Theme (Dark Theme)</option>
 					<option value="1" '.echoSelect(1, $db->theme).'>Everglades Theme</option>
 					<option value="2" '.echoSelect(2, $db->theme).'>Makaze Theme</option>
-					<option value="3" '.echoSelect(3, $db->theme).'>Parjai Theme (Dark Theme)</option>';
+					<option value="3" '.echoSelect(3, $db->theme).'>Florida Garrison Theme</option>';
 				}
 			}
 		echo '
 				<input type="submit" name="themeButton" id="themeButton" value="Change Theme" />
 			</select>
-		</form>
-	</div>
-
-	<div id="changeemail" style="display:none;">
-		<h2 class="tm-section-header">Change Your E-mail</h2>
-
-		<form action="process.php?do=changeemail" method="POST" name="changeEmailForm" id="changeEmailForm">';
-		$query = "SELECT email FROM troopers WHERE id = '".$_SESSION['id']."'";
-
-		if ($result = mysqli_query($conn, $query) or die($conn->error))
-		{
-			while ($db = mysqli_fetch_object($result))
-			{
-				echo '
-				<input type="text" name="email" id="email" value="'.$db->email.'" />
-				<input type="submit" name="emailButton" id="emailButton" value="Update" />';
-			}
-		}
-		echo '
 		</form>
 	</div>
 
@@ -288,25 +377,6 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 			}
 		}
 		echo '
-		</form>
-	</div>
-
-	<div id="changepassword" style="display:none;">
-		<h2 class="tm-section-header">Change Your Password</h2>
-
-		<form action="process.php?do=changepassword" method="POST" name="changePasswordForm" id="changePasswordForm">
-			<p>Old Password:</p>
-			<input type="password" name="oldpassword" id="oldpassword" />
-
-			<p>New Password:</p>
-			<input type="password" name="newpassword" id="newpassword" />
-
-			<p>Re-enter New Password:</p>
-			<input type="password" name="newpassword2" id="newpassword2" />
-
-			<br /><br />
-
-			<input type="submit" value="Submit!" name="changePasswordSend" id="changePasswordSend" />
 		</form>
 	</div>
 
@@ -343,25 +413,28 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 			<br /><br />
 			TKID (numbers only): <input type="text" name="tkid" id="tkid" />
 			<p><i>Non-501st clubs, please enter an ID number of your choosing.</i></p>
-			E-mail: <input type="text" name="email" id="email" />
-			<br /><br />
 			Phone (Optional): <input type="text" name="phone" id="phone" />
 			<br /><br />
 			FL Garrison Forum Username: <input type="text" name="forumid" id="forumid" />
-			<br /><br />
-			Rebel Legion Forum Username (if applicable): <input type="text" name="rebelforum" id="rebelforum" />
-			<br /><br />
-			Mando Mercs CAT # (if applicable): <input type="text" name="mandoid" id="mandoid" />
-			<br /><br />
-			Saber Guild SG # (if applicable): <input type="text" name="sgid" id="sgid" />
-			<br /><br />
-			Password: <input type="password" name="password" id="password" />
-			<br /><br />
-			Password (Confirm): <input type="password" name="passwordC" id="passwordC" />
-			<br /><br />
+			<br /><br />';
+
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
+			{
+				// If DB3 defined
+				if($club_value['db3Name'] != "")
+				{
+					echo '
+					'.$club_value['db3Name'].' (if applicable): <input type="text" name="'.$club_value['db3'].'" id="'.$club_value['db3'].'" />
+					<br /><br />';
+				}
+			}
+
+			echo '
 			<p>Squad/Club:</p>
 			<select name="squad" id="squad">
 				'.squadSelectList().'
+				<option value="0">'.garrison.' / 501st Visitor</option>
 			</select>
 			<br /><br />
 			<input type="submit" name="submitRequest" value="Request" />
@@ -383,7 +456,7 @@ if(isset($_GET['profile']))
 	}
 	
 	// Get data
-	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.forum_id, troopers.tkid, troopers.squad, troopers.phone FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".cleanInput($_GET['profile'])."' AND troopers.id != ".placeholder." AND events.closed = '1' AND event_sign_up.status = '3' ORDER BY events.dateEnd DESC";
+	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.forum_id, troopers.tkid, troopers.squad, troopers.phone FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".cleanInput($_GET['profile'])."' AND troopers.id != ".placeholder." AND events.closed = '1' AND event_sign_up.status = '3' ORDER BY events.dateEnd DESC";
 	$i = 0;
 	
 	if ($result = mysqli_query($conn, $query))
@@ -708,22 +781,14 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			}
 			
 			// Set search type
-			if($_POST['searchType'] == "regular")
-			{
-				echo '
-				<input type="hidden" name="searchType" value="regular" />';
-			}
-			else
-			{
-				echo '
-				<input type="hidden" name="searchType" value="trooper" />';
-			}
+			echo '
+			<input type="hidden" name="searchType" value="'.cleanInput($_POST['searchType']).'" />';
 			
 			// If trooper search, include searchType for another search
-			if($_POST['searchType'] == "trooper")
+			if($_POST['searchType'] == "trooper" || $_POST['searchType'] == "donations")
 			{
 				echo '
-				<input type="hidden" name="searchType" value="trooper" />
+				<input type="hidden" name="searchType" value="'.cleanInput($_POST['searchType']).'" />
 				
 				<select name="squad" id="squad">
 					<option value="0" '.echoSelect(0, cleanInput($_POST['squad'])).'>All</option>
@@ -731,20 +796,23 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				</select>
 				<br /><br />';
 				
-				// If active only set
-				if(isset($_POST['activeonly']) && $_POST['activeonly'] == 1)
+				if($_POST['searchType'] == "trooper")
 				{
+					// If active only set
+					if(isset($_POST['activeonly']) && $_POST['activeonly'] == 1)
+					{
+						echo '
+						<input type="checkbox" name="activeonly" value="1" CHECKED /> Active Members Only?';	
+					}
+					else
+					{
+						echo '
+						<input type="checkbox" name="activeonly" value="1" /> Active Members Only?';	
+					}
+
 					echo '
-					<input type="checkbox" name="activeonly" value="1" CHECKED /> Active Members Only?';	
+					<br /><br />';
 				}
-				else
-				{
-					echo '
-					<input type="checkbox" name="activeonly" value="1" /> Active Members Only?';	
-				}
-				
-				echo '
-				<br /><br />';
 			}
 			
 			echo '
@@ -760,7 +828,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 	if($_POST['searchType'] == "regular")
 	{
 		// Query for search
-		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE";
+		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE";
 		
 		if(strlen($_POST['tkID']) > 0)
 		{
@@ -814,10 +882,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		}
 	}
 	else if($_POST['searchType'] == "trooper")
-	{
-		// Query for search
-		$query = "SELECT * FROM troopers";
-		
+	{	
 		// Format date start
 		$date = strtotime(cleanInput($_POST['dateStart']));
 		$dateF = date('Y-m-d H:i:s', $date);
@@ -825,6 +890,9 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		// Format date end
 		$date = strtotime(cleanInput($_POST['dateEnd']));
 		$dateE = date('Y-m-d H:i:s', $date);
+
+		// Query for search
+		$query = "SELECT * FROM troopers";
 		
 		// Get the squad search type
 		// If All
@@ -835,12 +903,15 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			$troop_count = $troops_get->fetch_row();
 			
 			// Get charity counts
-			$charity_get = $conn->query("SELECT SUM(moneyRaised) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."'") or die($conn->error);
+			$charity_get = $conn->query("SELECT SUM(charityDirectFunds) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."'") or die($conn->error);
 			$charity_count = $charity_get->fetch_row();
+
+			$charity_get2 = $conn->query("SELECT SUM(charityIndirectFunds) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."'") or die($conn->error);
+			$charity_count2 = $charity_get->fetch_row();
 		}
 		
 		// If 501st
-		if(($_POST['squad'] >= 1 && $_POST['squad'] <= 5))
+		if(($_POST['squad'] >= 1 && $_POST['squad'] <= count($squadArray)))
 		{
 			// Add to query
 			$query .= " WHERE squad = '".cleanInput($_POST['squad'])."'";
@@ -850,8 +921,11 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			$troop_count = $troops_get->fetch_row();
 			
 			// Get charity counts
-			$charity_get = $conn->query("SELECT SUM(moneyRaised) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."' AND squad = '".cleanInput($_POST['squad'])."'") or die($conn->error);
+			$charity_get = $conn->query("SELECT SUM(charityDirectFunds) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."' AND squad = '".cleanInput($_POST['squad'])."'") or die($conn->error);
 			$charity_count = $charity_get->fetch_row();
+
+			$charity_get2 = $conn->query("SELECT SUM(charityIndirectFunds) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."' AND squad = '".cleanInput($_POST['squad'])."'") or die($conn->error);
+			$charity_count2 = $charity_get->fetch_row();
 			
 			// If active only set
 			if(isset($_POST['activeonly']) && $_POST['activeonly'] == 1)
@@ -860,77 +934,113 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			}
 		}
 		
-		// If Rebel Legion
-		else if($_POST['squad'] == 6)
+		// Set up Squad ID
+		$clubID = count($squadArray) + 1;
+		
+		// Loop through clubs
+		foreach($clubArray as $club => $club_value)
 		{
-			// Get troop counts - Rebel Legion
-			$troops_get = $conn->query("SELECT COUNT(total) FROM (SELECT event_sign_up.troopid AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('1' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY event_sign_up.troopid) AS ABC") or die($conn->error);
+			// Check if squad ID matches value of search
+			if($clubID == $_POST['squad'])
+			{
+				// Get troop counts
+				$troops_get = $conn->query("SELECT COUNT(total) FROM (SELECT event_sign_up.troopid AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ".getCostumeQueryValues($clubID)." GROUP BY event_sign_up.troopid) AS ABC") or die($conn->error);
+				$troop_count = $troops_get->fetch_row();
+				
+				// Get charity counts
+				$charity_get = $conn->query("SELECT SUM(total) FROM (SELECT events.charityDirectFunds AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ".getCostumeQueryValues($clubID)." GROUP BY event_sign_up.troopid) AS ABC") or die($conn->error);
+				$charity_count = $charity_get->fetch_row();
+
+				$charity_get2 = $conn->query("SELECT SUM(total) FROM (SELECT events.charityIndirectFunds AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ".getCostumeQueryValues($clubID)." GROUP BY event_sign_up.troopid) AS ABC") or die($conn->error);
+				$charity_count2 = $charity_get->fetch_row();
+				
+				// If active only set
+				if(isset($_POST['activeonly']) && $_POST['activeonly'] == 1)
+				{
+					$query .= " WHERE ".$club_value['db']." = '1' OR ".$club_value['db']." = '2'";
+				}
+			}
+			
+			// Increment
+			$clubID++;
+		}
+	}
+	else if($_POST['searchType'] == "donations")
+	{	
+		// Format date start
+		$date = strtotime(cleanInput($_POST['dateStart']));
+		$dateF = date('Y-m-d H:i:s', $date);
+		
+		// Format date end
+		$date = strtotime(cleanInput($_POST['dateEnd']));
+		$dateE = date('Y-m-d H:i:s', $date);
+
+		// Query for search
+		$query = "SELECT events.id AS id, events.dateStart, events.dateEnd, events.name, events.charityDirectFunds, events.charityAddHours, events.charityDirectFunds, events.charityIndirectFunds, events.charityName, events.charityNote FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."'";
+		
+		// Get the squad search type
+		// If All
+		if($_POST['squad'] == 0)
+		{
+			// Get troop counts
+			$troops_get = $conn->query("SELECT COUNT(id) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."'") or die($conn->error);
 			$troop_count = $troops_get->fetch_row();
 			
-			// Get charity counts - Rebel Legion
-			$charity_get = $conn->query("SELECT SUM(total) FROM (SELECT events.moneyRaised AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('1' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY event_sign_up.troopid) AS ABC") or die($conn->error);
+			// Get charity counts
+			$charity_get = $conn->query("SELECT SUM(charityDirectFunds) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."'") or die($conn->error);
 			$charity_count = $charity_get->fetch_row();
-			
-			// If active only set
-			if(isset($_POST['activeonly']) && $_POST['activeonly'] == 1)
-			{
-				$query .= " WHERE pRebel = '1' OR pRebel = '2'";
-			}
+
+			$charity_get2 = $conn->query("SELECT SUM(charityIndirectFunds) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."'") or die($conn->error);
+			$charity_count2 = $charity_get->fetch_row();
 		}
 		
-		// If Mando Mercs
-		else if($_POST['squad'] == 7)
+		// If 501st
+		if(($_POST['squad'] >= 1 && $_POST['squad'] <= count($squadArray)))
 		{
-			// Get troop counts - Mando Mercs
-			$troops_get = $conn->query("SELECT COUNT(total) FROM (SELECT event_sign_up.troopid AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('2' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY event_sign_up.troopid) AS ABC") or die($conn->error);
+			// Add to query
+			$query .= " AND squad = '".cleanInput($_POST['squad'])."'";
+			
+			// Get troop counts
+			$troops_get = $conn->query("SELECT COUNT(id) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."' AND squad = '".cleanInput($_POST['squad'])."'") or die($conn->error);
 			$troop_count = $troops_get->fetch_row();
 			
-			// Get charity counts - Mando Mercs
-			$charity_get = $conn->query("SELECT SUM(total) FROM (SELECT events.moneyRaised AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('2' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY event_sign_up.troopid) AS ABC") or die($conn->error);
+			// Get charity counts
+			$charity_get = $conn->query("SELECT SUM(charityDirectFunds) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."' AND squad = '".cleanInput($_POST['squad'])."'") or die($conn->error);
 			$charity_count = $charity_get->fetch_row();
-			
-			// If active only set
-			if(isset($_POST['activeonly']) && $_POST['activeonly'] == 1)
-			{
-				$query .= " WHERE pMando = '1' OR pMando = '2'";
-			}
+
+			$charity_get2 = $conn->query("SELECT SUM(charityIndirectFunds) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."' AND squad = '".cleanInput($_POST['squad'])."'") or die($conn->error);
+			$charity_count2 = $charity_get->fetch_row();
 		}
 		
-		// If Droid Builders
-		else if($_POST['squad'] == 8)
-		{
-			// Get troop counts - Droid Builders
-			$troops_get = $conn->query("SELECT COUNT(total) FROM (SELECT event_sign_up.troopid AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('3' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY event_sign_up.troopid) AS ABC") or die($conn->error);
-			$troop_count = $troops_get->fetch_row();
-			
-			// Get charity counts - Droid Builders
-			$charity_get = $conn->query("SELECT SUM(total) FROM (SELECT events.moneyRaised AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('3' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY event_sign_up.troopid) AS ABC") or die($conn->error);
-			$charity_count = $charity_get->fetch_row();
-			
-			// If active only set
-			if(isset($_POST['activeonly']) && $_POST['activeonly'] == 1)
-			{
-				$query .= " WHERE pDroid = '1' OR pDroid = '2'";
-			}
-		}
+		// Set up Squad ID
+		$clubID = count($squadArray) + 1;
 		
-		// If Other
-		else if($_POST['squad'] == 9)
+		// Loop through clubs
+		foreach($clubArray as $club => $club_value)
 		{
-			// Get troop counts - Other
-			$troops_get = $conn->query("SELECT COUNT(total) FROM (SELECT event_sign_up.troopid AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY event_sign_up.troopid) AS ABC") or die($conn->error);
-			$troop_count = $troops_get->fetch_row();
-			
-			// Get charity counts - Other
-			$troops_get = $conn->query("SELECT COUNT(total) FROM (SELECT event_sign_up.troopid AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY event_sign_up.troopid) AS ABC") or die($conn->error);
-			$troop_count = $troops_get->fetch_row();
-			
-			// If active only set
-			if(isset($_POST['activeonly']) && $_POST['activeonly'] == 1)
+			// Check if squad ID matches value of search
+			if($clubID == $_POST['squad'])
 			{
-				$query .= " WHERE pOther = '1' OR pOther = '2'";
+				// Get troop counts
+				$troops_get = $conn->query("SELECT COUNT(total) FROM (SELECT event_sign_up.troopid AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ".getCostumeQueryValues($clubID)." GROUP BY event_sign_up.troopid) AS ABC") or die($conn->error);
+				$troop_count = $troops_get->fetch_row();
+				
+				// Get charity counts
+				$charity_get = $conn->query("SELECT SUM(total) FROM (SELECT events.charityDirectFunds AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ".getCostumeQueryValues($clubID)." GROUP BY event_sign_up.troopid) AS ABC") or die($conn->error);
+				$charity_count = $charity_get->fetch_row();
+
+				$charity_get2 = $conn->query("SELECT SUM(total) FROM (SELECT events.charityIndirectFunds AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ".getCostumeQueryValues($clubID)." GROUP BY event_sign_up.troopid) AS ABC") or die($conn->error);
+				$charity_count2 = $charity_get->fetch_row();
+
+				// Add to query
+				$query .= " AND ".getCostumeQueryValues($clubID)."";
 			}
+			
+			// Increment
+			$clubID++;
 		}
+
+		$query .= " GROUP BY events.id";
 	}
 
 	// Get our search type, and show certain fields
@@ -993,6 +1103,11 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		{
 			$charity_count[0] = 0;
 		}
+
+		if(!isset($charity_count2[0]))
+		{
+			$charity_count2[0] = 0;
+		}
 		
 		// Format numbers to prevent errors - troop
 		if(!isset($troop_count[0]))
@@ -1014,7 +1129,11 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 					</p>
 					
 					<p>
-						Total Money Raised: $'.number_format($charity_count[0]).'
+						Direct Charity: $'.number_format($charity_count[0]).'
+					</p>
+
+					<p>
+						Indirect Charity: $'.number_format($charity_count2[0]).'
 					</p>
 					
 					<div style="overflow-x: auto;">
@@ -1036,43 +1155,29 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				}
 				
 				// If 501st
-				else if(($_POST['squad'] >= 1 && $_POST['squad'] <= count($squadArray)))
+				if(($_POST['squad'] >= 1 && $_POST['squad'] <= count($squadArray)))
 				{
 					// Get troop counts - 501st
 					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR EXISTS(SELECT events.id, events.oldid FROM events WHERE events.oldid != 0 AND events.id = event_sign_up.troopid))") or die($conn->error);
 					$count = $troops_get->fetch_row();
 				}
 				
-				// If Rebel Legion
-				else if(getSquadName($_POST['squad']) == "Rebel Legion")
-				{
-					// Get troop counts - Rebel Legion
-					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('1' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume))") or die($conn->error);
-					$count = $troops_get->fetch_row();
-				}
+				// Set up Squad ID
+				$clubID = count($squadArray) + 1;
 				
-				// If Mando Mercs
-				else if(getSquadName($_POST['squad']) == "Mando Mercs")
+				// Loop through clubs
+				foreach($clubArray as $club => $club_value)
 				{
-					// Get troop counts - Mando Mercs
-					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('2' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume))") or die($conn->error);
-					$count = $troops_get->fetch_row();
-				}
-				
-				// If Droid Builders
-				else if(getSquadName($_POST['squad']) == "Droid Builders")
-				{
-					// Get troop counts - Droid Builders
-					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('3' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume))") or die($conn->error);
-					$count = $troops_get->fetch_row();
-				}
-				
-				// If Other
-				else if(getSquadName($_POST['squad']) == "Other")
-				{
-					// Get troop counts - Other
-					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('4' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume))") or die($conn->error);
-					$count = $troops_get->fetch_row();
+					// Does club match
+					if(getSquadName($_POST['squad']) == $club_value['name'])
+					{
+						// Get troop counts
+						$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ".getCostumeQueryValues($clubID)."") or die($conn->error);
+						$count = $troops_get->fetch_row();
+					}
+					
+					// Increment
+					$clubID++;
 				}
 				
 				// Create an array of our count
@@ -1094,6 +1199,122 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			echo '
 			<tr>
 				<td><a href="index.php?profile='.$value[3].'">'.readTKNumber($value[0], $value[4]).'</a> - '.$value[2].'</td>	<td>'.$value[1].'</td>
+			</tr>';
+		}
+	}
+	// Donation search
+	else if($_POST['searchType'] == "donations")
+	{
+		// Get data
+		$i = 0;
+		
+		// Troop array
+		$troopArray = array();
+
+		// Format numbers to prevent errors - charity
+		if(!isset($charity_count[0]))
+		{
+			$charity_count[0] = 0;
+		}
+
+		if(!isset($charity_count2[0]))
+		{
+			$charity_count2[0] = 0;
+		}
+		
+		// Format numbers to prevent errors - troop
+		if(!isset($troop_count[0]))
+		{
+			$troop_count[0] = 0;
+		}
+		
+		// Start going through troopers
+		if ($result = mysqli_query($conn, $query))
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				// Show table
+				if($i == 0)
+				{
+					echo '
+					<p>
+						Total Troops: '.$troop_count[0].'
+					</p>
+					
+					<p>
+						Direct Charity: $'.number_format($charity_count[0]).'
+					</p>
+
+					<p>
+						Indirect Charity: $'.number_format($charity_count2[0]).'
+					</p>
+					
+					<div style="overflow-x: auto;">
+					<table border="1">
+					<tr>
+						<th>Event</th>	<th>Direct</th>	<th>Indirect</th>	<th>Charity Name</th>	<th>Hours</th>	<th>Notes</th>
+					</tr>';
+				}
+
+				// Increment $i
+				$i++;
+				
+				// If All
+				if($_POST['squad'] == 0)
+				{
+					// Get troop counts - All
+					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."'") or die($conn->error);
+					$count = $troops_get->fetch_row();
+				}
+				
+				// If 501st
+				if(($_POST['squad'] >= 1 && $_POST['squad'] <= count($squadArray)))
+				{
+					// Get troop counts - 501st
+					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR EXISTS(SELECT events.id, events.oldid FROM events WHERE events.oldid != 0 AND events.id = event_sign_up.troopid))") or die($conn->error);
+					$count = $troops_get->fetch_row();
+				}
+				
+				// Set up Squad ID
+				$clubID = count($squadArray) + 1;
+				
+				// Loop through clubs
+				foreach($clubArray as $club => $club_value)
+				{
+					// Does club match
+					if(getSquadName($_POST['squad']) == $club_value['name'])
+					{
+						// Get troop counts
+						$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ".getCostumeQueryValues($clubID)."") or die($conn->error);
+						$count = $troops_get->fetch_row();
+					}
+					
+					// Increment
+					$clubID++;
+				}
+
+				$hours = timeBetweenDates($db->dateStart, $db->dateEnd);
+				$hours += intval($db->charityAddHours);
+				
+				// Create an array of our count
+				$tempArray = array($db->id, $db->name, $db->charityDirectFunds, $db->charityIndirectFunds, $db->charityName, $hours, $db->charityNote);
+				
+				// Push to main array
+				array_push($troopArray, $tempArray);
+			}
+		}
+		
+		// Sort array for display
+		$keys = array_column($troopArray, 1);
+		array_multisort($keys, SORT_DESC, $troopArray);
+
+		// Loop through array
+		foreach($troopArray as $value)
+		{
+			// Display
+			echo '
+			<tr>
+				<td><a href="index.php?event='.$value[0].'">'.$value[1].'</a></td>	<td>$'.number_format($value[2]).'</td>	<td>$'.number_format($value[3]).'</td>	<td>'.ifEmpty($value[4], "N/A").'</td>	<td>'.number_format($value[5]).'</td>	<td>'.ifEmpty(nl2br($value[6]), "N/A").'</td>
 			</tr>';
 		}
 	}
@@ -1132,7 +1353,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		<div id="mystats" name="mystats" style="display: none;">';
 
 		// Get data
-		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND status = 3 AND events.closed = '1' ORDER BY events.dateEnd DESC";
+		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND status = 3 AND events.closed = '1' ORDER BY events.dateEnd DESC";
 
 		// Troop count
 		$i = 0;
@@ -1162,7 +1383,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 
 				echo '
 				<tr>
-					<td><a href="index.php?event='.$db->eventId.'">'.$add.''.$db->eventName.'</a></td>	<td>'.ifEmpty(getCostume($db->costume), "N/A").'</td>	<td>$'.number_format($db->moneyRaised).'</td>
+					<td><a href="index.php?event='.$db->eventId.'">'.$add.''.$db->eventName.'</a></td>	<td>'.ifEmpty(getCostume($db->costume), "N/A").'</td>	<td>Direct: $'.number_format($db->charityDirectFunds).'<br />Indirect: $'.number_format($db->charityIndirectFunds).'</td>
 				</tr>';
 
 				// Increment troop count
@@ -1195,7 +1416,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 	if(!isset($_GET['squad']))
 	{
 		// Get data
-		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND events.dateEnd > CURRENT_DATE - INTERVAL 60 DAY GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT 20";
+		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND events.dateEnd > CURRENT_DATE - INTERVAL 60 DAY GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT 20";
 	}
 	else
 	{
@@ -1207,7 +1428,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		if($_GET['squad'] != 0)
 		{
 			// If is a squad, add to query
-			$add = "WHERE squad = '".cleanInput($_GET['squad'])."'";
+			$add = "WHERE squad = '".cleanInput($_GET['squad'])."' AND closed = 1";
 			$add2 = "AND events.squad = '".cleanInput($_GET['squad'])."'";
 		}
 		
@@ -1241,7 +1462,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		}
 		
 		// Squad is set, show only that data
-		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' ".$add2." GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT ".$startFrom.", ".$results."";
+		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' ".$add2." GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT ".$startFrom.", ".$results."";
 	}
 
 	// Query count
@@ -1281,7 +1502,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 
 			echo '
 			<tr>
-				<td><a href="index.php?event='.$db->eventId.'">'.$add.''.$db->eventName.'</a></td>	<td>'.$count[0].'</td>	<td>$'.number_format($db->moneyRaised).'</td>
+				<td><a href="index.php?event='.$db->eventId.'">'.$add.''.$db->eventName.'</a></td>	<td>'.$count[0].'</td>	<td>Direct: $'.number_format($db->charityDirectFunds).'<br />Indirect: $'.number_format($db->charityIndirectFunds).'</td>
 			</tr>';
 
 			$i++;
@@ -1340,8 +1561,10 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		$total_get = $conn->query("SELECT COUNT(*) FROM events WHERE closed = '1'") or die($conn->error);
 		$count11 = $total_get->fetch_row();
 		// How much total money was raised
-		$money_get = $conn->query("SELECT SUM(moneyRaised) FROM events WHERE closed = '1'") or die($conn->error);
+		$money_get = $conn->query("SELECT SUM(charityDirectFunds) FROM events WHERE closed = '1'") or die($conn->error);
 		$countMoney = $money_get->fetch_row();
+		$money_get2 = $conn->query("SELECT SUM(charityIndirectFunds) FROM events WHERE closed = '1'") or die($conn->error);
+		$countMoney2 = $money_get2->fetch_row();
 		
 		// Get squad for squadLink function
 		if(isset($_GET['squad']))
@@ -1399,7 +1622,8 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 			echo '
 			<p><b>Favorite Costume:</b> '.ifEmpty(getCostume($favoriteCostume['costume']), "N/A").'</p>
 			<p><b>Volunteers at Troops:</b> '.number_format($count1[0]).'</p>
-			<p><b>Money Raised:</b> $'.number_format($countMoney[0]).'</p>
+			<p><b>Direct Donations Raised:</b> $'.number_format($countMoney[0]).'</p>
+			<p><b>Indirect Donations Raised:</b> $'.number_format($countMoney2[0]).'</p>
 			<p><b>Regular Troops:</b> '.number_format($count2[0]).'</p>
 			<p><b>Armor Parties:</b> '.number_format($count13[0]).'</p>
 			<p><b>Charity Troops:</b> '.number_format($count3[0]).'</p>
@@ -1445,6 +1669,8 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 			<input type="radio" name="searchType" value="regular" CHECKED />Default
 			<br />
 			<input type="radio" name="searchType" value="trooper" />Troop Count Per Trooper
+			<br />
+			<input type="radio" name="searchType" value="donations" />Donation Count Per Event
 			<br /><br />
 			<div id="trooper_count_radio" style="display: none;">
 				<select name="squad" id="squad">
@@ -1452,8 +1678,10 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 					'.squadSelectList().'
 				</select>
 				<br /><br />
+				<span name="activeRadios">
 				<input type="checkbox" name="activeonly" value="1" /> Active Members Only?
 				<br /><br />
+				</span>
 			</div>
 			<input type="submit" name="submitSearch" id="submitSearch" value="Search!" />
 		</form>
@@ -1487,6 +1715,24 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<a href="index.php?action=commandstaff&do=assigntitles" class="button">Title Management</a>
 				<a href="index.php?action=commandstaff&do=stats" class="button">Statistics</a>
 				<a href="index.php?action=commandstaff&do=sitesettings" class="button">Site Settings</a>';
+			}
+
+			// If have special permission for trooper management
+			if(hasSpecialPermission("spTrooper"))
+			{
+				echo '<a href="index.php?action=commandstaff&do=managetroopers" class="button">Trooper Management</a> ';
+			}
+
+			// If have special permission for costume management
+			if(hasSpecialPermission("spCostume"))
+			{
+				echo '<a href="index.php?action=commandstaff&do=managecostumes" class="button">Costume Management</a> ';
+			}
+
+			// If have special permission for award management
+			if(hasSpecialPermission("spAward"))
+			{
+				echo '<a href="index.php?action=commandstaff&do=assignawards" class="button">Award Management</a> ';
 			}
 			
 		echo '
@@ -1560,38 +1806,52 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		
 		if(isset($_GET['do']) && $_GET['do'] == "stats")
 		{
-			// Count number of users with set up accounts
-			$totalAccountsSetUp = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1'");
-
+			// Set up count
+			$squadCount = 1;
+			
+			// Loop through squads
+			foreach($squadArray as $squad => $squad_value)
+			{
+				// Set up name
+				$squadName = str_replace(" ", "", $squad_value['name']);
+				
+				// Set variable
+				${"totalAccountsSetUp" . $squadName} = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = ".$squadCount."");
+				
+				// Increment
+				$squadCount++;
+			}
+			
+			// Set up count
+			$clubCount = count($squadArray) + 1;
+			
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
+			{
+				// Set up name
+				$clubName = str_replace(" ", "", $club_value['name']);
+				
+				// Set variable
+				${"totalAccountsSetUp" . $clubName} = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = ".$clubCount."");
+				
+				// Count active members
+				${"totalActive" . $clubName} = $conn->query("SELECT id FROM troopers WHERE ".$club_value['db']." = '1'");
+				
+				// Count reserve members
+				${"totalReserve" . $clubName} = $conn->query("SELECT id FROM troopers WHERE ".$club_value['db']." = '2'");
+				
+				// Count retired members
+				${"totalRetired" . $clubName} = $conn->query("SELECT id FROM troopers WHERE ".$club_value['db']." = '3'");
+				
+				// Increment
+				$clubCount++;
+			}
+			
 			// Count number of users with set up accounts - 501
-			$totalAccountsSetUp501 = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad <= 5");
-
-			// Count number of users with set up accounts - Everglades
-			$totalAccountsSetUpE = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 1");
-
-			// Count number of users with set up accounts - Makaze
-			$totalAccountsSetUpM = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 2");
-
-			// Count number of users with set up accounts - Parjai
-			$totalAccountsSetUpP = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 3");
-
-			// Count number of users with set up accounts - Squad 7
-			$totalAccountsSetUpS = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 4");
-
-			// Count number of users with set up accounts - Tampa Bay
-			$totalAccountsSetUpT = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 5");
-
-			// Count number of users with set up accounts - Rebel
-			$totalAccountsSetUpRebel = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 6");
-
-			// Count number of users with set up accounts - Mando
-			$totalAccountsSetUpMando = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 8");
-
-			// Count number of users with set up accounts - Droid
-			$totalAccountsSetUpDroid = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 7");
-
-			// Count number of users with set up accounts - Other
-			$totalAccountsSetUpOther = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = 9");
+			$totalAccountsSetUp501 = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad <= ".count($squadArray)."");
+			
+			// Count number of users with set up accounts (TOTAL)
+			$totalAccountsSetUp = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1'");
 
 			// Total number of accounts
 			$totalAccounts = $conn->query("SELECT id FROM troopers");
@@ -1607,42 +1867,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			
 			// Count retired members - 501
 			$totalRetired501 = $conn->query("SELECT id FROM troopers WHERE p501 = '3'");
-			
-			// Count active members - Rebel
-			$totalActiveRebel = $conn->query("SELECT id FROM troopers WHERE pRebel = '1'");
-			
-			// Count reserve members - Rebel
-			$totalReserveRebel = $conn->query("SELECT id FROM troopers WHERE pRebel = '2'");
-			
-			// Count retired members - Rebel
-			$totalRetiredRebel = $conn->query("SELECT id FROM troopers WHERE pRebel = '3'");
-			
-			// Count active members - Mando
-			$totalActiveMando = $conn->query("SELECT id FROM troopers WHERE pMando = '1'");
-			
-			// Count reserve members - Mando
-			$totalReserveMando = $conn->query("SELECT id FROM troopers WHERE pMando = '2'");
-			
-			// Count retired members - Mando
-			$totalRetiredMando = $conn->query("SELECT id FROM troopers WHERE pMando = '3'");
-			
-			// Count active members - Droid
-			$totalActiveDroid = $conn->query("SELECT id FROM troopers WHERE pDroid = '1'");
-			
-			// Count reserve members - Droid
-			$totalReserveDroid = $conn->query("SELECT id FROM troopers WHERE pDroid = '2'");
-			
-			// Count retired members - Droid
-			$totalRetiredDroid = $conn->query("SELECT id FROM troopers WHERE pDroid = '3'");
-			
-			// Count active members - Other
-			$totalActiveOther = $conn->query("SELECT id FROM troopers WHERE pOther = '1'");
-			
-			// Count reserve members - Other
-			$totalReserveOther = $conn->query("SELECT id FROM troopers WHERE pOther = '2'");
-			
-			// Count retired members - Other
-			$totalRetiredOther = $conn->query("SELECT id FROM troopers WHERE pOther = '3'");
 
 			echo '
 			<h2>Important People</h2>
@@ -1779,24 +2003,57 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 			echo '</ul>
 			
-			<h2>Statistics</h2>
-			
+			<h2>Statistics</h2>';
+
+			// Show all troopers with titles
+			$query = "SELECT * FROM settings";
+
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					echo '
+					<p>
+						<b>501st Sync Date:</b> '.$db->syncdate.'
+					</p>
+					<p>
+						<b>Rebel Legion Sync Date:</b> '.$db->syncdaterebels.'
+					</p>';
+				}
+			}
+
+			echo '
 			<h3>Troop Tracker Usage</h3>
 
-			<p><b>501st Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUp501->num_rows).'</p>
-			<p><b>Everglades Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpE->num_rows).'</p>
-			<p><b>Makaze Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpM->num_rows).'</p>
-			<p><b>Parjai Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpP->num_rows).'</p>
-			<p><b>Squad 7 Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpS->num_rows).'</p>
-			<p><b>Tampa Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpT->num_rows).'</p>
+			<p><b>501st Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUp501->num_rows).'</p>';
 			
-			<br />
+			// Loop through squads
+			foreach($squadArray as $squad => $squad_value)
+			{
+				// Set up name
+				$squadName = str_replace(" ", "", $squad_value['name']);
+				
+				echo '
+				<p><b>'.$squad_value['name'].' Total Accounts (Set Up):</b> '.number_format(${"totalAccountsSetUp" . $squadName}->num_rows).'</p>';
+				
+				// Set variable
+				${"totalAccountsSetUp" . $squadName} = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = ".$squadCount."");
+			}
 			
-			<p><b>Rebel Legion Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpRebel->num_rows).'</p>
-			<p><b>Mando Mercs Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpMando->num_rows).'</p>
-			<p><b>Droid Builders Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpDroid->num_rows).'</p>
-			<p><b>Other Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUpOther->num_rows).'</p>
+			echo '
+			<br />';
 			
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
+			{
+				// Set up name
+				$clubName = str_replace(" ", "", $club_value['name']);
+				
+				echo '
+				<p><b>'.$club_value['name'].' Total Accounts (Set Up):</b> ' . number_format(${"totalAccountsSetUp" . $clubName}->num_rows) . '</p>';
+			}
+			
+			echo '
 			<br />
 			
 			<p><b>Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUp->num_rows).'</p>
@@ -1811,29 +2068,21 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<p><b>501st Total Accounts (Reserve):</b> '.number_format($totalReserve501->num_rows).'</p>
 			<p><b>501st Total Accounts (Retired):</b> '.number_format($totalRetired501->num_rows).'</p>
 			
-			<br />
+			<br />';
 			
-			<p><b>Rebel Legion Total Accounts (Active):</b> '.number_format($totalActiveRebel->num_rows).'</p>
-			<p><b>Rebel Legion Total Accounts (Reserve):</b> '.number_format($totalReserveRebel->num_rows).'</p>
-			<p><b>Rebel Legion Total Accounts (Retired):</b> '.number_format($totalRetiredRebel->num_rows).'</p>
-			
-			<br />
-			
-			<p><b>Mando Mercs Total Accounts (Active):</b> '.number_format($totalActiveMando->num_rows).'</p>
-			<p><b>Mando Mercs Total Accounts (Reserve):</b> '.number_format($totalReserveMando->num_rows).'</p>
-			<p><b>Mando Mercs Total Accounts (Retired):</b> '.number_format($totalRetiredMando->num_rows).'</p>
-			
-			<br />
-			
-			<p><b>Droid Builders Total Accounts (Active):</b> '.number_format($totalActiveDroid->num_rows).'</p>
-			<p><b>Droid Builders Total Accounts (Reserve):</b> '.number_format($totalReserveDroid->num_rows).'</p>
-			<p><b>Droid Builders Total Accounts (Retired):</b> '.number_format($totalRetiredDroid->num_rows).'</p>
-			
-			<br />
-			
-			<p><b>Other Total Accounts (Active):</b> '.number_format($totalActiveOther->num_rows).'</p>
-			<p><b>Other Total Accounts (Reserve):</b> '.number_format($totalReserveOther->num_rows).'</p>
-			<p><b>Other Total Accounts (Retired):</b> '.number_format($totalRetiredOther->num_rows).'</p>';
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
+			{
+				// Set up name
+				$clubName = str_replace(" ", "", $club_value['name']);
+				
+				echo '
+				<p><b>'.$club_value['name'].' Total Accounts (Active):</b> ' . number_format(${"totalActive" . $clubName}->num_rows) . '</p>
+				<p><b>'.$club_value['name'].' Total Accounts (Reserve):</b> ' . number_format(${"totalReserve" . $clubName}->num_rows) . '</p>
+				<p><b>'.$club_value['name'].' Total Accounts (Retired):</b> ' . number_format(${"totalRetired" . $clubName}->num_rows) . '</p>
+				
+				<br />';
+			}
 		}
 
 		/**************************** Roster *********************************/
@@ -1852,13 +2101,21 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			
 			foreach($squadArray as $squad => $squad_value)
 			{
-				echo '<a href="index.php?action=commandstaff&do=roster&squad='.$i.'" class="button">' . $squad . '</a> ';
+				if(getSquadID($_SESSION['id']) == $i || hasPermission(1))
+				{
+					echo '<a href="index.php?action=commandstaff&do=roster&squad='.$i.'" class="button">' . $squad_value['name'] . '</a> ';
+				}
+
 				$i++;
 			}
 			
 			foreach($clubArray as $club => $club_value)
 			{
-				echo '<a href="index.php?action=commandstaff&do=roster&squad='.$i.'" class="button">' . $club . '</a> ';
+				if(isClubMember($club_value['db']) > 0 || hasPermission(1))
+				{
+					echo '<a href="index.php?action=commandstaff&do=roster&squad='.$i.'" class="button">' . $club_value['name'] . '</a> ';
+				}
+
 				$i++;
 			}
 			
@@ -1889,22 +2146,35 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				else if($_GET['squad'] <= count($squadArray))
 				{
 					$queryAdd .= "squad = '".cleanInput($_GET['squad'])."' AND p501 > 0";
+
+					// Check if a member of club
+					if(getSquadID($_SESSION['id']) != cleanInput($_GET['squad']) && hasPermission(2))
+					{
+						die("<p>Not a member of this squad / club.</p>");
+					}
 				}
-				else if($_GET['squad'] == 6)
+				
+				// Set up count
+				$clubCount = count($squadArray) + 1;
+				
+				// Loop through clubs
+				foreach($clubArray as $club => $club_value)
 				{
-					$queryAdd .= " pRebel > 0";
-				}
-				else if($_GET['squad'] == 7)
-				{
-					$queryAdd .= " pDroid > 0";
-				}
-				else if($_GET['squad'] == 8)
-				{
-					$queryAdd .= " pMando > 0";
-				}
-				else if($_GET['squad'] == 9)
-				{
-					$queryAdd .= " pOther > 0";
+					// Match
+					if($_GET['squad'] == $clubCount)
+					{
+						// Add to query
+						$queryAdd .= " ".$club_value['db']." > 0";
+
+						// Check if a member of club
+						if(isClubMember($club_value['db']) == 0 && hasPermission(2))
+						{
+							die("<p>Not a member of this squad / club.</p>");
+						}
+					}
+					
+					// Increment
+					$clubCount++;
 				}
 				
 				$queryAdd .= " AND";
@@ -1968,21 +2238,22 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							{
 								$permission = $db->p501;
 							}
-							else if($_GET['squad'] == 6)
+							
+							// Set up count
+							$clubCount = count($squadArray) + 1;
+							
+							// Loop through clubs
+							foreach($clubArray as $club => $club_value)
 							{
-								$permission = $db->pRebel;
-							}
-							else if($_GET['squad'] == 7)
-							{
-								$permission = $db->pDroid;
-							}
-							else if($_GET['squad'] == 8)
-							{
-								$permission = $db->pMando;
-							}
-							else if($_GET['squad'] == 9)
-							{
-								$permission = $db->pOther;
+								// Match
+								if($_GET['squad'] == $clubCount)
+								{
+									// Set permission
+									$permission = $db->{$club_value['db']};
+								}
+								
+								// Increment
+								$clubCount++;
 							}
 							
 							// If a moderator
@@ -2041,21 +2312,21 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				{
 					$queryAdd = "p501";
 				}
-				else if($_GET['squad'] == 6)
+				
+				// Set up count
+				$clubCount = count($squadArray) + 1;
+				
+				// Loop through clubs
+				foreach($clubArray as $club => $club_value)
 				{
-					$queryAdd = "rebelforum != '' AND pRebel";
-				}
-				else if($_GET['squad'] == 7)
-				{
-					$queryAdd = "pDroid";
-				}
-				else if($_GET['squad'] == 8)
-				{
-					$queryAdd = "pMando";
-				}
-				else if($_GET['squad'] == 9)
-				{
-					$queryAdd = "pOther";
+					// Match
+					if($_GET['squad'] == $clubCount)
+					{
+						$queryAdd = "".$club_value['db']."";
+					}
+					
+					// Increment
+					$clubCount++;
 				}
 	
 				// Get data
@@ -2118,16 +2389,24 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			
 			echo '
 			<a href="index.php?action=commandstaff&do=troopercheck" class="button">All</a>';
-			
+
 			foreach($squadArray as $squad => $squad_value)
 			{
-				echo '<a href="index.php?action=commandstaff&do=troopercheck&squad='.$i.'" class="button">' . $squad . '</a> ';
+				if(getSquadID($_SESSION['id']) == $i || hasPermission(1))
+				{
+					echo '<a href="index.php?action=commandstaff&do=troopercheck&squad='.$i.'" class="button">' . $squad_value['name'] . '</a> ';
+				}
+
 				$i++;
 			}
 			
 			foreach($clubArray as $club => $club_value)
 			{
-				echo '<a href="index.php?action=commandstaff&do=troopercheck&squad='.$i.'" class="button">' . $club . '</a> ';
+				if(isClubMember($club_value['db']) > 0 || hasPermission(1))
+				{
+					echo '<a href="index.php?action=commandstaff&do=troopercheck&squad='.$i.'" class="button">' . $club_value['name'] . '</a> ';
+				}
+
 				$i++;
 			}
 			
@@ -2143,22 +2422,34 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				if($_GET['squad'] <= count($squadArray))
 				{
 					$queryAdd .= "troopers.squad = '".cleanInput($_GET['squad'])."' AND (p501 = 1 OR p501 = 2) AND";
+
+					// Check if a member of club
+					if(getSquadID($_SESSION['id']) != cleanInput($_GET['squad']) && hasPermission(2))
+					{
+						die("<p>Not a member of this squad / club.</p>");
+					}
 				}
-				else if($_GET['squad'] == 6)
+				
+				// Set up count
+				$clubCount = count($squadArray) + 1;
+				
+				// Loop through clubs
+				foreach($clubArray as $club => $club_value)
 				{
-					$queryAdd .= "(troopers.pRebel = 1 OR troopers.pRebel = 2) AND";
-				}
-				else if($_GET['squad'] == 7)
-				{
-					$queryAdd .= "(troopers.pDroid = 1 OR troopers.pDroid = 2) AND";
-				}
-				else if($_GET['squad'] == 8)
-				{
-					$queryAdd .= "(troopers.pMando = 1 OR troopers.pMando = 2) AND";
-				}
-				else if($_GET['squad'] == 9)
-				{
-					$queryAdd .= "(troopers.pOther = 1 OR troopers.pOther = 2) AND";
+					// Match
+					if($_GET['squad'] == $clubCount)
+					{
+						$queryAdd .= "(troopers.".$club_value['db']." = 1 OR troopers.".$club_value['db']." = 2) AND";
+
+						// Check if a member of club
+						if(isClubMember($club_value['db']) == 0 && hasPermission(2))
+						{
+							die("<p>Not a member of this squad / club.</p>");
+						}
+					}
+					
+					// Increment
+					$clubCount++;
 				}
 			}
 			
@@ -2242,21 +2533,22 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							{
 								$permission = $db->p501;
 							}
-							else if($_GET['squad'] == 6)
+							
+							// Set up count
+							$clubCount = count($squadArray) + 1;
+							
+							// Loop through clubs
+							foreach($clubArray as $club => $club_value)
 							{
-								$permission = $db->pRebel;
-							}
-							else if($_GET['squad'] == 7)
-							{
-								$permission = $db->pDroid;
-							}
-							else if($_GET['squad'] == 8)
-							{
-								$permission = $db->pMando;
-							}
-							else if($_GET['squad'] == 9)
-							{
-								$permission = $db->pOther;
+								// Match
+								if($_GET['squad'] == $clubCount)
+								{
+									// Set permission
+									$permission = $db->{$club_value['db']};
+								}
+								
+								// Increment
+								$clubCount++;
 							}
 						
 							echo '
@@ -2495,34 +2787,45 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		/**************************** COSTUMES *********************************/
 
 		// Manage costumes - allow command staff to add, edit, and delete costumes
-		if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && hasPermission(1))
+		if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && (hasPermission(1) || hasSpecialPermission("spCostume")))
 		{
 			echo '
 			<h3>Add Costume</h3>
 			
 			<form action="process.php?do=managecostumes" method="POST" name="addCostumeForm" id="addCostumeForm">
 			
-				<b>Costume Name:</b></br />
-				<input type="text" name="costumeName" id="costumeName" />
+				<p>
+					<b>Costume Name:</b></br />
+					<input type="text" name="costumeName" id="costumeName" />
+				</p>
 				
-				<b>Costume Era:</b></br />
-				<select name="costumeEra" id="costumeEra">
-					<option value="0">Prequel</option>
-					<option value="1" SELECTED>Original</option>
-					<option value="2">Sequel</option>
-					<option value="3">Expanded</option>
-					<option value="4">All</option>
-				</select>
+				<p>
+					<b>Costume Era:</b></br />
+					<select name="costumeEra" id="costumeEra">
+						<option value="0">Prequel</option>
+						<option value="1" SELECTED>Original</option>
+						<option value="2">Sequel</option>
+						<option value="3">Expanded</option>
+						<option value="4">All</option>
+					</select>
+				</p>
 				
-				<b>Costume Club:</b></br />
-				<select name="costumeClub" id="costumeClub">
-					<option value="0" SELECTED>501st Legion</option>
-					<option value="1">Rebel Legion</option>
-					<option value="2">Mando Mercs</option>
-					<option value="3">Droid Builders</option>
-					<option value="4">Other</option>
-					<option value="5">Dual (501st + Rebel)</option>
-				</select>
+				<p>
+					<b>Costume Club:</b></br />
+					<select name="costumeClub" id="costumeClub">
+						<option value="0" SELECTED>501st Legion</option>';
+
+						// Loop through clubs
+						foreach($clubArray as $club => $club_value)
+						{
+							echo '
+							<option value="'.$club_value['costumes'][0].'">'.$club_value['name'].'</option>';
+						}
+
+						echo '
+						<option value="'.$dualCostume.'">Dual (501st + Rebel)</option>
+					</select>
+				</p>
 				
 				<input type="submit" name="addCostumeButton" id="addCostumeButton" value="Add Costume" />
 				
@@ -2577,33 +2880,38 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<div id="editCostumeList" name="editCostumeList" style="display: none;">
 
-				<b>Costume Name:</b></br />
-				<input type="text" name="costumeNameEdit" id="costumeNameEdit" />
-
-				<br />
+				<p>
+					<b>Costume Name:</b></br />
+					<input type="text" name="costumeNameEdit" id="costumeNameEdit" />
+				</p>
 				
-				<b>Costume Era:</b></br />
-				<select name="costumeEraEdit" id="costumeEraEdit">
-					<option value="0">Prequel</option>
-					<option value="1" SELECTED>Original</option>
-					<option value="2">Sequel</option>
-					<option value="3">Expanded</option>
-					<option value="4">All</option>
-				</select>
-				
-				<br />
+				<p>
+					<b>Costume Era:</b></br />
+					<select name="costumeEraEdit" id="costumeEraEdit">
+						<option value="0">Prequel</option>
+						<option value="1" SELECTED>Original</option>
+						<option value="2">Sequel</option>
+						<option value="3">Expanded</option>
+						<option value="4">All</option>
+					</select>
+				</p>
 
-				<b>Costume Club:</b></br />
-				<select name="costumeClubEdit" id="costumeClubEdit">
-					<option value="0" SELECTED>501st Legion</option>
-					<option value="1">Rebel Legion</option>
-					<option value="2">Mando Mercs</option>
-					<option value="3">Droid Builders</option>
-					<option value="4">Other</option>
-					<option value="5">Dual (501st + Rebel)</option>
-				</select>
+				<p>
+					<b>Costume Club:</b></br />
+					<select name="costumeClubEdit" id="costumeClubEdit">
+						<option value="0" SELECTED>501st Legion</option>';
 
-				<br />
+						// Loop through clubs
+						foreach($clubArray as $club => $club_value)
+						{
+							echo '
+							<option value="'.$club_value['costumes'][0].'">'.$club_value['name'].'</option>';
+						}
+
+						echo '
+						<option value="'.$dualCostume.'">Dual (501st + Rebel)</option>
+					</select>
+				</p>
 
 				<input type="submit" name="submitEditCostume" id="submitEditCostume" value="Edit Costume" />
 
@@ -2754,10 +3062,20 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			echo '<br /><hr /><br /><h3>Create Title</h3>
 
 			<form action="process.php?do=assigntitles" method="POST" name="addTitle" id="addTitle">
-				<b>Title Name:</b></br />
-				<input type="text" name="titleName" id="titleName" />
-				<b>Title Image (example.png):</b></br />
-				<input type="text" name="titleImage" id="titleImage" />
+				<p>
+					<b>Title Name:</b>
+					<input type="text" name="titleName" id="titleName" />
+				</p>
+
+				<p>
+					<b>Title Image (example.png):</b></br />
+					<input type="text" name="titleImage" id="titleImage" />
+				</p>
+
+				<p>
+					<b>Corresponding Forum Title ID:</b></br />
+					<input type="number" name="titleForumID" id="titleForumID" value="0" />
+				</p>
 				<input type="submit" name="submitTitleAdd" id="submitTitleAdd" value="Add Title" />
 			</form>';
 
@@ -2785,7 +3103,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<option value="0" SELECTED>Please select a title...</option>';
 					}
 
-					echo '<option value="'.$db->id.'" title="'.$db->title.'" titleID="'.$db->id.'" titleImage="'.$db->icon.'">'.$db->title.'</option>';
+					echo '<option value="'.$db->id.'" title="'.$db->title.'" titleID="'.$db->id.'" titleImage="'.$db->icon.'" titleForumID="'.$db->forum_id.'">'.$db->title.'</option>';
 
 					// Increment
 					$i++;
@@ -2805,13 +3123,20 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<div id="editTitleList" name="editTitleList" style="display: none;">
 
-				<b>Title:</b><br />
-				<input type="text" name="editTitleTitle" id="editTitle" />
+				<p>
+					<b>Title:</b><br />
+					<input type="text" name="editTitleTitle" id="editTitle" />
+				</p>
 
-				<br /><b>Image:</b><br />
-				<input type="text" name="editTitleImage" id="editTitleImage" />
+				<p>
+					<b>Image:</b><br />
+					<input type="text" name="editTitleImage" id="editTitleImage" />
+				</p>
 
-				<br />
+				<p>
+					<b>Corresponding Forum ID:</b><br />
+					<input type="number" name="editTitleForumID" id="editTitleForumID" />
+				</p>
 
 				<input type="submit" name="submitEditTitle" id="submitEditTitle" value="Edit Title" />
 
@@ -2864,7 +3189,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		/**************************** AWARDS *********************************/
 
 		// Assign an award to users
-		if(isset($_GET['do']) && $_GET['do'] == "assignawards")
+		if(isset($_GET['do']) && $_GET['do'] == "assignawards" && (hasPermission(1) || hasSpecialPermission("spTrooper")))
 		{
 			echo '<h3>Assign Awards</h3>
 			
@@ -2955,10 +3280,15 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			echo '<br /><hr /><br /><h3>Create Award</h3>
 
 			<form action="process.php?do=assignawards" method="POST" name="addAward" id="addAward">
-				<b>Award Name:</b></br />
-				<input type="text" name="awardName" id="awardName" />
-				<b>Award Image (example.png):</b></br />
-				<input type="text" name="awardImage" id="awardImage" />
+				<p>
+					<b>Award Name:</b></br />
+					<input type="text" name="awardName" id="awardName" />
+				</p>
+
+				<p>
+					<b>Award Image (example.png):</b></br />
+					<input type="text" name="awardImage" id="awardImage" />
+				</p>
 				<input type="submit" name="submitAwardAdd" id="submitAwardAdd" value="Add Award" />
 			</form>';
 
@@ -3006,13 +3336,15 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<div id="editAwardList" name="editAwardList" style="display: none;">
 
-				<b>Award Title:</b><br />
-				<input type="text" name="editAwardTitle" id="editAwardTitle" />
+				<p>
+					<b>Award Title:</b><br />
+					<input type="text" name="editAwardTitle" id="editAwardTitle" />
+				</p>
 
-				<br /><b>Award Image:</b><br />
-				<input type="text" name="editAwardImage" id="editAwardImage" />
-
-				<br />
+				<p>
+					<b>Award Image:</b><br />
+					<input type="text" name="editAwardImage" id="editAwardImage" />
+				</p>
 
 				<input type="submit" name="submitEditAward" id="submitEditAward" value="Edit Award" />
 
@@ -3085,12 +3417,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			// If edid set - this makes sure that old events are shown in the edit screen
 			if($eid >= 0)
 			{
-				$query = "(SELECT * FROM events WHERE id = ".$eid." LIMIT 1) UNION (SELECT * FROM events ORDER BY dateStart DESC LIMIT 150)";
+				$query = "(SELECT * FROM events WHERE id = ".$eid." LIMIT 1) UNION (SELECT * FROM events ORDER BY dateStart DESC LIMIT 1000)";
 			}
 			else
 			{
 				// If eid is not set
-				$query = "SELECT * FROM events ORDER BY dateStart DESC LIMIT 150";
+				$query = "SELECT * FROM events ORDER BY dateStart DESC LIMIT 1000";
 			}
 
 			// Amount of events
@@ -3143,14 +3475,40 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				}
 				
 				echo '
-				<input type="submit" name="submitCancel" id="submitCancel" value="Mark Canceled" /> <input type="submit" name="submitFinish" id="submitFinish" value="Mark Finished" /> <input type="submit" name="submitOpen" id="submitOpen" value="Mark Open" /> <input type="submit" name="submitLock" id="submitLock" value="Mark Locked" /> <input type="submit" name="submitEdit" id="submitEdit" value="Edit" /> <input type="submit" name="submitRoster" id="submitRoster" value="Roster" /> <input type="submit" name="submitCharity" id="submitCharity" value="Set Charity Amount" /> <input type="submit" name="viewEvent" id="viewEvent" value="View Event" />
+				<input type="submit" name="submitCancel" id="submitCancel" value="Mark Canceled" /> <input type="submit" name="submitFinish" id="submitFinish" value="Mark Finished" /> <input type="submit" name="submitOpen" id="submitOpen" value="Mark Open" /> <input type="submit" name="submitLock" id="submitLock" value="Mark Locked" /> <input type="submit" name="submitEdit" id="submitEdit" value="Edit" /> <input type="submit" name="submitRoster" id="submitRoster" value="Roster" /> <input type="submit" name="submitCharity" id="submitCharity" value="Charity" /> <input type="submit" name="submitAdvanced" id="submitAdvanced" value="Advanced Options" /> <input type="submit" name="viewEvent" id="viewEvent" value="View Event" />
 
 				</form>
+
+				<div name="advancedOptions" id="advancedOptions" style="display:none;">
+					<br />
+					<form action="process.php?do=editadvanced" method="POST">
+						Thread ID: <input type="number" id="threadIDA" name="threadIDA" />
+						<br /><br />
+						Post ID: <input type="number" id="postIDA" name="postIDA" />
+						<br />
+						<input type="submit" id="advancedOptionsSave" value="Set" />
+					</form>
+				</div>
 				
 				<div name="charityAmount" id="charityAmount" style="display:none;">
 					<br />
-					<form action="process.php?do=editcharity" id="editcharityForm" name="editcharityForm" method="POST">
-						Charity Amount Raised: $<input type="number" name="charityAmountField" id="charityAmountField" />
+					<form action="process.php?do=editevent" id="editcharityForm" name="editcharityForm" method="POST">
+						<p>
+							Direct Charity Raised: $<input type="number" name="charityDirectFunds" id="charityDirectFunds" />
+						</p>
+						<p>
+							Indirect Charity Raised: $<input type="number" name="charityIndirectFunds" id="charityIndirectFunds" />
+						</p>
+						<p>
+							Charity Name: <input type="text" name="charityName" id="charityName" />
+						</p>
+						<p>
+							Charity Add Hours: <input type="number" name="charityAddHours" id="charityAddHours" />
+						</p>
+						<p>
+							Charity Note: <textarea width="100%" rows="5" name="charityNote" id="charityNote"></textarea>
+						</p>
+
 						<input type="submit" name="charityAmountSave" id="charityAmountSave" value="Set" />
 					</form>
 				</div>
@@ -3242,14 +3600,18 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<input type="text" name="amenities" id="amenities" />
 
 						<p>Additional Comments:</p>
-						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\')" class="button">Bold</a>
-						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\')" class="button">Italic</a>
-						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\')" class="button">Underline</a>
-						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'Q\')" class="button">Quote</a>
-						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\')" class="button">Color</a>
-						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\')" class="button">Size</a>
-						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\')" class="button">URL</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\', \'comments\')" class="button">Bold</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\', \'comments\')" class="button">Italic</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\', \'comments\')" class="button">Underline</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'Q\', \'comments\')" class="button">Quote</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\', \'comments\')" class="button">Color</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\', \'comments\')" class="button">Size</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\', \'comments\')" class="button">URL</a>
+						<a href="#/" class="button" name="addSmiley">Add Smiley</a>
 						<textarea rows="10" cols="50" name="comments" id="comments"></textarea>
+
+						<span name="smileyarea" style="display: block;">
+						</span>
 
 						<p>Label:</p>
 						<select name="label" id="label">
@@ -3265,18 +3627,18 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<option value="7">Virtual Troop</option>
 							<option value="8">Other</option>
 						</select>
-
-						<p>Is this a manual selection event?</p>
-						<select name="limitedEvent" id="limitedEvent">
-							<option value="1">Yes</option>
-							<option value="0">No</option>
-						</select>
 						
 						<p>
 							<a href="#/" class="button" id="limitChange">Change Limits</a>
 						</p>
 						
 						<div id="limitChangeArea" style="display: none;">
+
+						<p>Is this a manual selection event?</p>
+						<select name="limitedEvent" id="limitedEvent">
+							<option value="0">No</option>
+							<option value="1">Yes</option>
+						</select>
 
 						<p>Do you wish to limit the era of the costume?</p>
 						<select name="era" id="era">
@@ -3288,19 +3650,19 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						</select>
 
 						<p>Limit of 501st Troopers:</p>
-						<input type="number" name="limit501st" value="500" id="limit501st" />
+						<input type="number" name="limit501st" value="500" id="limit501st" class="limitClass" />';
 
-						<p>Limit of Rebels:</p>
-						<input type="number" name="limitRebels" value="500" id="limitRebels" />
+						// Loop through clubs
+						foreach($clubArray as $club => $club_value)
+						{
+							echo '
+							<p>Limit of '.$club_value['name'].':</p>
+							<input type="number" name="'.$club_value['dbLimit'].'" value="500" id="'.$club_value['dbLimit'].'" class="limitClass" />';
+						}
 
-						<p>Limit of Mandos:</p>
-						<input type="number" name="limitMando" value="500" id="limitMando" />
-
-						<p>Limit of Droid Builders:</p>
-						<input type="number" name="limitDroid" value="500" id="limitDroid" />
-						
-						<p>Limit of Others:</p>
-						<input type="number" name="limitOther" value="500" id="limitOther" />
+						echo '
+						<p>Limit of Total Troopers:</p>
+						<input type="number" name="limitTotalTroopers" value="500" id="limitTotalTroopers" class="limitClass" />
 
 						<p>
 							<a href="#/" class="button" id="resetDefaultCount">Reset Default</a>
@@ -3371,7 +3733,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<th>Name</th>	<th>E-mail</th>	<th>Forum ID (FG)</th>	<th>Forum ID (RL)</th>	<th>Mando CAT</th>	<th>SG #</th>	<th>Phone</th>	<th>Squad</th>	<th>TKID</th>
 				</tr>
 					<tr id="userList" name="userList">
-						<td id="nameTable"></td>	<td id="emailTable"></td> <td id="forumTable"></td> <td id="forumRebelTable"></td> <td id="mandoTable"></td>	<td id="sgTable"></td>	<td id="phoneTable"></td>	<td id="squadTable"></td>	<td id="tkTable"></td>
+						<td id="nameTable"></td>	<td id="emailTable"></td> <td id="forumTable"></td> <td id="rebelforumTable"></td> <td id="mandoidTable"></td>	<td id="sgidTable"></td>	<td id="phoneTable"></td>	<td id="squadTable"></td>	<td id="tkTable"></td>
 					</tr>
 				</table>
 				</div>';
@@ -3379,7 +3741,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		}
 
 		// Manage users
-		if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && hasPermission(1))
+		if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && (hasPermission(1) || hasSpecialPermission("spTrooper")))
 		{
 			// If admin is visting this page from the event page
 			
@@ -3433,7 +3795,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<br /><br />
 
-				<input type="submit" name="submitDeleteUser" id="submitDeleteUser" value="Delete" /> <input type="submit" name="submitResetPasswordUser" id="submitResetPasswordUser" value="Reset Password" /> <input type="submit" name="submitViewProfile" id="submitViewProfile" value="View Profile" /> <input type="submit" name="submitEditUser" id="submitEditUser" value="Edit" />
+				<input type="submit" name="submitDeleteUser" id="submitDeleteUser" value="Delete" /> <input type="submit" name="submitViewProfile" id="submitViewProfile" value="View Profile" /> <input type="submit" name="submitEditUser" id="submitEditUser" value="Edit" />
 				</form>
 
 				<div name="editUserInfo" id="editUserInfo" style="display:none;">
@@ -3443,84 +3805,114 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<p>Name of the user:</p>
 						<input type="text" name="user" id="user" />
 
-						<p>E-mail:</p>
-						<input type="text" name="email" id="email" />
-
 						<p>Phone (Optional):</p>
-						<input type="text" name="phone" id="phone" />
+						<input type="text" name="phone" id="phone" maxlength="10" />
 
 						<p>Squad/Club:</p>
 						<select name="squad" id="squad">
+							<option value="0">'.garrison.'</option>
 							'.squadSelectList().'
-						</select>
+						</select>';
 
-						<p>Permissions:</p>
-						<select name="permissions" id="permissions">
-							<option value="0">Regular Member</option>
-							<option value="2">Moderator</option>
-							<option value="1">Super Admin</option>
-						</select>
+						if(hasPermission(1))
+						{
+							echo '
+							<p>General Permissions:</p>
+							<select name="permissions" id="permissions">
+								<option value="0">Regular Member</option>
+								<option value="2">Moderator</option>
+								<option value="1">Super Admin</option>
+							</select>';
+						}
+
+						echo '
+						<span name="specialPermissions" style="display: none;">';
+
+						if(hasPermission(1))
+						{
+							echo '
+							<p>Special Permissions:</p>
+
+							<p>
+								<input type="checkbox" name="spTrooper" /> Trooper Management
+							</p>
+
+							<p>
+								<input type="checkbox" name="spCostume" /> Costume Management
+							</p>
+
+							<p>
+								<input type="checkbox" name="spAward" /> Award Management
+							</p>';
+						}
+
+						echo '
+						</span>
+
+						<p>
+							<a href="#/" class="button" id="trooperInformationButton">Show Trooper Information</a>
+						</p>
+
+						<span name="trooperInformation" style="display: none;">
+
+						<p>
+							<hr />
+						</p>
 						
-						<p>501st Member Permissions:</p>
+						<p>501st Member Status:</p>
 						<select name="p501" id="p501">
 							<option value="0">Not A Member</option>
 							<option value="1">Regular Member</option>
 							<option value="2">Reserve Member</option>
 							<option value="3">Retired Member</option>
 							<option value="4">Handler</option>
-						</select>
+						</select>';
 						
-						<p>Rebel Legion Member Permissions:</p>
-						<select name="pRebel" id="pRebel">
-							<option value="0">Not A Member</option>
-							<option value="1">Regular Member</option>
-							<option value="2">Reserve Member</option>
-							<option value="3">Retired Member</option>
-							<option value="4">Handler</option>
-						</select>
+						// Set up count
+						$clubCount = count($squadArray) + 1;
 						
-						<p>Droid Builders Member Permissions:</p>
-						<select name="pDroid" id="pDroid">
-							<option value="0">Not A Member</option>
-							<option value="1">Regular Member</option>
-							<option value="2">Reserve Member</option>
-							<option value="3">Retired Member</option>
-							<option value="4">Handler</option>
-						</select>
-						
-						<p>Mando Mercs Member Permissions:</p>
-						<select name="pMando" id="pMando">
-							<option value="0">Not A Member</option>
-							<option value="1">Regular Member</option>
-							<option value="2">Reserve Member</option>
-							<option value="3">Retired Member</option>
-							<option value="4">Handler</option>
-						</select>
-						
-						<p>Other Member Permissions:</p>
-						<select name="pOther" id="pOther">
-							<option value="0">Not A Member</option>
-							<option value="1">Regular Member</option>
-							<option value="2">Reserve Member</option>
-							<option value="3">Retired Member</option>
-							<option value="4">Handler</option>
-						</select>
+						// Loop through clubs
+						foreach($clubArray as $club => $club_value)
+						{
+							echo '
+							<p>'.$club_value['name'].' Member Status:</p>
+							<select name="'.$club_value['db'].'" id="'.$club_value['db'].'" class="clubs">
+								<option value="0">Not A Member</option>
+								<option value="1">Regular Member</option>
+								<option value="2">Reserve Member</option>
+								<option value="3">Retired Member</option>
+								<option value="4">Handler</option>
+							</select>';
+							
+							// Increment
+							$clubCount++;
+						}
 
+						echo '
 						<p>TKID:</p>
 						<input type="text" name="tkid" id="tkid" />
 						
 						<p>Forum ID ('.garrison.'):</p>
-						<input type="text" name="forumid" id="forumid" />
-						
-						<p>Forum ID (Rebel Legion):</p>
-						<input type="text" name="rebelforum" id="rebelforum" />
-						
-						<p>Mando Mercs CAT #:</p>
-						<input type="text" name="mandoid" id="mandoid" />
+						<input type="text" name="forumid" id="forumid" />';
 
-						<p>Saber Guild SG #:</p>
-						<input type="text" name="sgid" id="sgid" />
+						// Loop through clubs
+						foreach($clubArray as $club => $club_value)
+						{
+							// If DB3 defined
+							if($club_value['db3Name'] != "")
+							{
+								echo '
+								<p>'.$club_value['db3Name'].':</p>
+								<input type="text" name="'.$club_value['db3'].'" id="'.$club_value['db3'].'" />';
+							}
+						}
 						
+						echo '
+						<p>
+							<hr />
+						</p>
+						</span>
+
 						<p>Supporter:</p>
 						<select name="supporter" id="supporter">
 							<option value="0">No</option>
@@ -3533,109 +3925,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					</form>
 				</div>';
 			}
-			
-			echo '
-			<p>
-				<a href="index.php?action=commandstaff&do=createuser" class="button">Create Trooper</a>
-			</p>';
-		}
-
-		// Create a user
-		if(isset($_GET['do']) && $_GET['do'] == "createuser" && hasPermission(1))
-		{
-			// Display create user form
-			echo '
-			<h3>Create a user</h3>
-
-			<form action="process.php?do=createuser" id="createUserForm" name="createUserForm" method="POST">
-				<p>Name:</p>
-				<input type="text" name="name" id="name" />
-
-				<p>E-mail:</p>
-				<input type="text" name="email" id="email" />
-
-				<p>Phone (Optional):</p>
-				<input type="text" name="phone" id="phone" />
-				
-				<p>FLG Forum Username:</p>
-				<input type="text" name="forumid" id="forumid" />
-				
-				<p>Rebel Legion Forum Username (if applicable):</p>
-				<input type="text" name="rebelforum" id="rebelforum" />
-				
-				<p>Mando Mercs CAT # (if applicable):</p>
-				<input type="text" name="mandoid" id="mandoid" />
-
-				<p>Saber Guild SG # (if applicable):</p>
-				<input type="text" name="sgid" id="sgid" />
-
-				<p>Squad/Club:</p>
-				<select name="squad" id="squad">
-					'.squadSelectList().'
-				</select>
-
-				<p>Permissions:</p>
-				<select name="permissions" id="permissions">
-					<option value="0">Regular Member</option>
-					<option value="2">Moderator</option>
-					<option value="1">Super Admin</option>
-				</select>
-		
-				<p>501st Member Permissions:</p>
-				<select name="p501" id="p501">
-					<option value="0" SELECTED>Not A Member</option>
-					<option value="1">Regular Member</option>
-					<option value="2">Reserve Member</option>
-					<option value="3">Retired Member</option>
-					<option value="4">Handler</option>
-				</select>
-				
-				<p>Rebel Legion Member Permissions:</p>
-				<select name="pRebel" id="pRebel">
-					<option value="0" SELECTED>Not A Member</option>
-					<option value="1">Regular Member</option>
-					<option value="2">Reserve Member</option>
-					<option value="3">Retired Member</option>
-					<option value="4">Handler</option>
-				</select>
-				
-				<p>Droid Builders Member Permissions:</p>
-				<select name="pDroid" id="pDroid">
-					<option value="0" SELECTED>Not A Member</option>
-					<option value="1">Regular Member</option>
-					<option value="2">Reserve Member</option>
-					<option value="3">Retired Member</option>
-					<option value="4">Handler</option>
-				</select>
-				
-				<p>Mando Mercs Member Permissions:</p>
-				<select name="pMando" id="pMando">
-					<option value="0" SELECTED>Not A Member</option>
-					<option value="1">Regular Member</option>
-					<option value="2">Reserve Member</option>
-					<option value="3">Retired Member</option>
-					<option value="4">Handler</option>
-				</select>
-				
-				<p>Other Member Permissions:</p>
-				<select name="pOther" id="pOther">
-					<option value="0" SELECTED>Not A Member</option>
-					<option value="1">Regular Member</option>
-					<option value="2">Reserve Member</option>
-					<option value="3">Retired Member</option>
-					<option value="4">Handler</option>
-				</select>
-
-				<p>TKID:</p>
-				<input type="text" name="tkid" id="tkid" />
-				
-				<p>Password:</p>
-				<input type="text" name="password" id="password" />
-
-				<br /><br />
-
-				<input type="submit" name="submitUser" value="Create!" />
-			</form>';
 		}
 
 		// Create an event form
@@ -3667,13 +3956,18 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			$notes = "";
 			$limitedEvent = "";
 			$limitTo = "";
-			$limitRebels = "";
 			$limit501st = "";
-			$limitMando = "";
-			$limitDroid = "";
-			$limitOther = "";
+			$limitTotalTroopers = "";
+
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
+			{
+				// Add vars
+				${$club_value['dbLimit']} = "";
+			}
+
 			$closed = "";
-			$moneyRaised = "";
+			$charityDirectFunds = "";
 			$squad = "";
 			
 			// If edid set - lets load events
@@ -3713,13 +4007,16 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						$notes = $db->notes;
 						$limitedEvent = $db->limitedEvent;
 						$limitTo = $db->limitTo;
-						$limitRebels = $db->limitRebels;
 						$limit501st = $db->limit501st;
-						$limitMando = $db->limitMando;
-						$limitDroid = $db->limitDroid;
-						$limitOther = $db->limitOther;
+						$limitTotalTroopers = $db->limitTotalTroopers;
+
+						// Loop through clubs
+						foreach($clubArray as $club => $club_value)
+						{
+							${$club_value['dbLimit']} = $db->{$club_value['dbLimit']};
+						}
+
 						$closed = $db->closed;
-						$moneyRaised = $db->moneyRaised;
 						$squad = $db->squad;
 
 						// Increment
@@ -3841,14 +4138,18 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<input type="text" name="amenities" id="amenities" value="'.copyEvent($eid, $amenities).'" />
 
 				<p>Additional Comments:</p>
-				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\')" class="button">Bold</a>
-				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\')" class="button">Italic</a>
-				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\')" class="button">Underline</a>
-				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'Q\')" class="button">Quote</a>
-				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\')" class="button">Color</a>
-				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\')" class="button">Size</a>
-				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\')" class="button">URL</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\', \'comments\')" class="button">Bold</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\', \'comments\')" class="button">Italic</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\', \'comments\')" class="button">Underline</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'Q\', \'comments\')" class="button">Quote</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\', \'comments\')" class="button">Color</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\', \'comments\')" class="button">Size</a>
+				<a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\', \'comments\')" class="button">URL</a>
+				<a href="#/" class="button" name="addSmiley">Add Smiley</a>
 				<textarea rows="10" cols="50" name="comments" id="comments">'.copyEvent($eid, $comments).'</textarea>
+
+				<span name="smileyarea" style="display: block;">
+				</span>
 
 				<p>Label:</p>
 				<select name="label" id="label">
@@ -3865,19 +4166,24 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<option value="7" '.copyEventSelect($eid, $label, 7).'>Virtual Troop</option>
 					<option value="8" '.copyEventSelect($eid, $label, 8).'>Other</option>
 				</select>
-
-				<p>Is this a manual selection event?</p>
-				<select name="limitedEvent" id="limitedEvent">
-					<option value="null" '.copyEventSelect($eid, $limitedEvent, "null").'>Please choose an option...</option>
-					<option value="1" '.copyEventSelect($eid, $limitedEvent, 1).'>Yes</option>
-					<option value="0" '.copyEventSelect($eid, $limitedEvent, 0).'>No</option>
-				</select>
 				
 				<p>
 					<a href="#/" class="button" id="limitChange">Change Limits</a>
 				</p>
 
 				<div id="limitChangeArea" style="display: none;">
+
+				<p>Post to boards?</p>
+				<select name="postToBoards" id="postToBoards">
+					<option value="1">Yes</option>
+					<option value="0">No</option>
+				</select>
+
+				<p>Is this a manual selection event?</p>
+				<select name="limitedEvent" id="limitedEvent">
+					<option value="0" '.copyEventSelect($eid, $limitedEvent, 0).'>No</option>
+					<option value="1" '.copyEventSelect($eid, $limitedEvent, 1).'>Yes</option>
+				</select>
 
 				<p>Do you wish to limit the era of the costume?</p>
 				<select name="era" id="era">
@@ -3889,19 +4195,19 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				</select>
 				
 				<p>Limit of 501st Troopers:</p>
-				<input type="number" name="limit501st" value="'.copyEvent($eid, $limit501st, 500).'" id="limit501st" />
+				<input type="number" name="limit501st" value="'.copyEvent($eid, $limit501st, 500).'" id="limit501st" class="limitClass" />';
 
-				<p>Limit of Rebels:</p>
-				<input type="number" name="limitRebels" value="'.copyEvent($eid, $limitRebels, 500).'" id="limitRebels" />
+				// Loop through clubs
+				foreach($clubArray as $club => $club_value)
+				{
+					echo '
+					<p>Limit of '.$club_value['name'].':</p>
+					<input type="number" name="'.$club_value['dbLimit'].'" value="'.copyEvent($eid, ${$club_value['dbLimit']}, 500).'" id="'.$club_value['dbLimit'].'" class="limitClass" />';
+				}
 
-				<p>Limit of Mandos:</p>
-				<input type="number" name="limitMando" value="'.copyEvent($eid, $limitMando, 500).'" id="limitMando" />
-
-				<p>Limit of Droid Builders:</p>
-				<input type="number" name="limitDroid" value="'.copyEvent($eid, $limitDroid, 500).'" id="limitDroid" />
-				
-				<p>Limit of Others:</p>
-				<input type="number" name="limitOther" value="'.copyEvent($eid, $limitOther, 500).'" id="limitOther" />
+				echo '
+				<p>Limit of Total Troopers:</p>
+				<input type="number" name="limitTotalTroopers" id="limitTotalTroopers" class="limitClass" value="'.copyEvent($eid, $limitTotalTroopers, 500).'" />
 
 				<p>
 					<a href="#/" class="button" id="resetDefaultCount">Reset Default</a>
@@ -4142,27 +4448,24 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 		// Get TKID
 		$tkid = cleanInput($_POST['tkid']);
 
-		// Get squad from TKID
-		$squad = loginWithTKID($tkid);
-
 		// Get data
-		$query = "SELECT * FROM troopers WHERE (tkid = '".removeLetters($tkid)."' AND squad = '".$squad."') OR forum_id = '".cleanInput($_POST['tkid'])."' OR rebelforum = '".cleanInput($_POST['tkid'])."'";
+		$query = "SELECT * FROM troopers WHERE forum_id = '".cleanInput($_POST['tkid'])."' LIMIT 1";
+		
+		// Trooper count
 		$i = 0;
+
 		if ($result = mysqli_query($conn, $query))
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
+				// Increment trooper count
 				$i++;
-				
-				// Check if old MD5 password
-				if(cleanInput(md5($_POST['password'])) == $db->password)
-				{
-					// Update MySQL password
-					$conn->query("UPDATE troopers SET password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."' WHERE id = '".$db->id."'");
-				}
+
+				// Login with forum
+				$forumLogin = loginWithForum($tkid, $_POST['password']);
 
 				// Check credentials
-				if(password_verify(cleanInput($_POST['password']), $db->password))
+				if(isset($forumLogin['success']) && $forumLogin['success'] == 1 || password_verify($_POST['password'], $db->password))
 				{
 					if($db->approved != 0)
 					{
@@ -4171,13 +4474,20 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 							// Set session
 							$_SESSION['id'] = $db->id;
 							$_SESSION['tkid'] = $db->tkid;
+
+							// If logged in with forum details, and password does not match
+							if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
+							{
+								// Update password, e-mail, and user ID
+								$conn->query("UPDATE troopers SET password = '".password_hash($_POST['password'], PASSWORD_DEFAULT)."', email = '".$forumLogin['user']['email']."', user_id = '".$forumLogin['user']['user_id']."', forum_id = '".$forumLogin['user']['username']."' WHERE id = '".$db->id."'");
+							}
 							
 							// Set log in cookie, if set to keep logged in
 							if(isset($_POST['keepLog']) && $_POST['keepLog'] == 1)
 							{
 								// Set cookies
 								setcookie("TroopTrackerUsername", $db->forum_id, time() + (10 * 365 * 24 * 60 * 60));
-								setcookie("TroopTrackerPassword", cleanInput($_POST['password']), time() + (10 * 365 * 24 * 60 * 60));
+								setcookie("TroopTrackerPassword", $_POST['password'], time() + (10 * 365 * 24 * 60 * 60));
 							}
 
 							// Cookie set
@@ -4212,9 +4522,7 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 				else
 				{
 					echo '
-					<p>Incorrect username or password. <a href="index.php?action=login">Try again?</a></p>
-					
-					<p><a href="index.php?action=forgotpassword">Need to recover your password? Click here.</a>';
+					<p>Incorrect username or password. <a href="index.php?action=login">Try again?</a></p>';
 				}
 			}
 		}
@@ -4223,22 +4531,14 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 		if($i == 0)
 		{
 			echo '
-			<p>Account not found. <a href="index.php?action=login">Try again?</a> - <span style="color: red;">BEFORE E-MAILING COMMAND STAFF FOR HELP, READ BELOW:</span></p>
-			
-			<p><b>IF YOU ARE USING YOUR TKID, NUMBERS ONLY! DO NOT USE A PREFIX</b></p>
-			
-			<p><b>YOU CAN USE YOUR FLORIDA GARRISON BOARDS OR REBEL LEGION FORUM USERNAME AS YOUR TKID, IF YOU DON\'T KNOW OR FORGOT YOUR TKID</b></p>
-			
-			<p><b>IF YOU HAD TROOPS ON THE OLD TROOP TRACKER, USE <a href="index.php?action=setup">ACCOUNT SETUP</a>. IF YOU ARE NEW, PLEASE <a href="index.php?action=requestaccess">REQUEST ACCESS</a>.</b></p>
-			
-			<p><b>IF THE ABOVE DID NOT SOLVE YOUR ISSUES, WHEN SENDING AN E-MAIL FOR HELP, INCLUDE (TKID, FL 501ST BOARDS NAME, REBEL LEGION FORUM NAME (IF APPLICABLE), AND AS MUCH DETAIL AS POSSIBLE. PLEASE DO NOT SEND AN E-MAIL ASKING FOR HELP AND NOTHING FURTHER.</b></p>';
+			<p>Account not found. <a href="index.php?action=login">Try again?</a></p>';
 		}
 	}
 	else
 	{
 		echo '
 		<form action="index.php?action=login" method="POST" name="loginForm" id="loginForm">
-			<p>TKID / Forum Name:</p>
+			<p>Board Name:</p>
 			<input type="text" name="tkid" id="tkid" />
 
 			<p>Password:</p>
@@ -4252,14 +4552,10 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 
 			<input type="submit" value="Login!" name="loginWithTK" />
 		</form>
-
-		<p><a href="index.php?action=forgotpassword" class="button">Forgot Your Password</a><p>
 		
 		<p>
 			<small>
-				<b>Remember:</b><br />If you are in a club other than the 501st, enter the first letter of your club, and then your TKID, or use your forum username.
-				<br />
-				<b>Example:</b><br />Rebel Legion: R1234
+				<b>Remember:</b><br />Login with your '.garrison.' board username and password.
 			</small>
 		</p>';
 	}
@@ -4280,64 +4576,50 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed())
 			// Is this TK ID registered?
 			if(!isTKRegistered(cleanInput($_POST['tkid']), cleanInput($_POST['squad'])))
 			{
-				if(strlen(cleanInput($_POST['password'])) >= 6)
-				{
-					if(cleanInput($_POST['password']) == cleanInput($_POST['password2']))
-					{
-						// Verify emails
-						include("script/lib/EmailAddressValidator.php");
+				// Login with forum
+				$forumLogin = loginWithForum($tkid, cleanInput($_POST['password']));
 
-						$validator = new EmailAddressValidator;
-						if ($validator->check_email_address(cleanInput($_POST['email'])))
+				// Verify forum login
+				if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
+				{
+					// If 501st
+					if(cleanInput($_POST['squad']) <= count($squadArray))
+					{
+						// Query the database
+						$conn->query("UPDATE troopers SET email = '".$forumLogin['user']['email']."', password = '".password_hash($_POST['password'], PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE tkid = '".cleanInput($_POST['tkid'])."'");
+						
+						// Display output
+						echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';
+					}
+					else
+					{
+						$tkIDTaken = $conn->query("SELECT id FROM troopers WHERE tkid = '".cleanInput($_POST['tkid2'])."' AND squad = '".cleanInput($_POST['squad'])."'");
+						
+						if($tkIDTaken->num_rows == 0)
 						{
-							// If 501st
-							if(cleanInput($_POST['squad']) <= count($squadArray))
+							if(cleanInput($_POST['tkid2']) != "")
 							{
+								// If a club
 								// Query the database
-								$conn->query("UPDATE troopers SET email = '".cleanInput($_POST['email'])."', password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE tkid = '".cleanInput($_POST['tkid'])."'");
+								$conn->query("UPDATE troopers SET email = '".$forumLogin['user']['email']."', tkid = '".cleanInput($_POST['tkid2'])."', password = '".password_hash($_POST['password'], PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE rebelforum = '".cleanInput($_POST['tkid'])."'");
 								
 								// Display output
 								echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';
 							}
 							else
 							{
-								$tkIDTaken = $conn->query("SELECT id FROM troopers WHERE tkid = '".cleanInput($_POST['tkid2'])."' AND squad = '".cleanInput($_POST['squad'])."'");
-								
-								if($tkIDTaken->num_rows == 0)
-								{
-									if(cleanInput($_POST['tkid2']) != "")
-									{
-										// If a club
-										// Query the database
-										$conn->query("UPDATE troopers SET email = '".cleanInput($_POST['email'])."', tkid = '".cleanInput($_POST['tkid2'])."', password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE rebelforum = '".cleanInput($_POST['tkid'])."'");
-										
-										// Display output
-										echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';
-									}
-									else
-									{
-										echo 'Please enter an ID.';
-									}
-								}
-								else
-								{
-									echo 'The ID you have chosen is already in use. Please pick another.';
-								}
+								echo 'Please enter an ID.';
 							}
 						}
 						else
 						{
-						echo 'Please enter a valid e-mail address.';
+							echo 'The ID you have chosen is already in use. Please pick another.';
 						}
-					}
-					else
-					{
-						echo 'Your passwords do not match.';
 					}
 				}
 				else
 				{
-					echo 'Your password must be at least six (6) characters long.';
+					echo 'Your passwords do not match.';
 				}
 			}
 			else
@@ -4360,14 +4642,11 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed())
 			<p>What is your TKID (numbers only) or Rebel Forum username (if Rebel Legion member only):</p>
 			<input type="text" name="tkid" id="tkid" />
 
-			<p>What is your e-mail:</p>
-			<input type="text" name="email" id="email" />
+			<p>'.garrison.' Board Username:</p>
+			<input type="text" name="forum_id" id="forum_id" />
 
-			<p>What do you want your password to be?</p>
+			<p>'.garrison.' Board Password:</p>
 			<input type="password" name="password" id="password" />
-
-			<p>Please re-enter your password:</p>
-			<input type="password" name="password2" id="password2" />
 			
 			<p>Squad/Club</p>
 			
@@ -4408,68 +4687,6 @@ if(isset($_GET['action']) && $_GET['action'] == "logout")
 	</div>';
 }
 
-// Show the forgot your password page
-if(isset($_GET['action']) && $_GET['action'] == "forgotpassword")
-{
-	// Display submission for forgot your password, otherwise show the form
-	if(isset($_POST['forgotPasswordSend']))
-	{
-		// Does data exist
-		$i = 0;
-
-		// Get data
-		$query = "SELECT * FROM troopers WHERE (tkid = '".cleanInput($_POST['tkid'])."' OR forum_id = '".cleanInput($_POST['tkid'])."' OR rebelforum = '".cleanInput($_POST['tkid'])."') AND email != '' AND password != ''";
-		if ($result = mysqli_query($conn, $query))
-		{
-			while ($db = mysqli_fetch_object($result))
-			{
-				// Generate a new password
-				$newPassword = rand(100000, 900000);
-				
-				// Query the database
-				$conn->query("UPDATE troopers SET password = '".password_hash($newPassword, PASSWORD_DEFAULT)."' WHERE id = '".$db->id."'");
-				
-				// Send e-mail
-				sendEmail($db->email, readTKNumber($db->tkid, $db->squad), "FL 501st Troop Software Password Reset", "Your new password is:\n\n" . $newPassword . "\n\nPlease change your password as soon as possible.");
-				
-				echo '
-				<p>
-					An e-mail has been sent to your inbox with your new password. Be sure to check your spam folder. If an e-mail does not appear in your inbox within thirty minutes, please contact command staff for assistance.
-				</p>';
-
-				// Increment data exist
-				$i++;
-			}
-		}
-
-		if($i == 0)
-		{
-			echo '
-			<p>
-				Account not found.
-			</p>
-			
-			<p>
-				If you were on the old troop tracker, please do <a href="index.php?action=setup">account setup</a>. If you never trooped before, please do <a href="index.php?action=requestaccess">request access.</a> If you continue to have issues, please contact command staff for assistance.
-			</p>';
-		}
-	}
-	else
-	{
-		echo '
-		<h2 class="tm-section-header">Forgot Your Password</h2>
-
-		<form action="index.php?action=forgotpassword" method="POST" name="forgotPasswordForm" id="forgotPasswordForm">
-			<p>TKID / Forum Name:</p>
-			<input type="text" name="tkid" id="tkid" />
-
-			<br /><br />
-
-			<input type="submit" value="Retrieve Password!" name="forgotPasswordSend" />
-		</form>';	
-	}
-}
-
 if(isset($_POST['submitCancelTroop']))
 {
 	// Query the database
@@ -4488,6 +4705,10 @@ if(isset($_GET['event']))
 	// Delete Comment
 	if(isset($_POST['deleteComment']) && isAdmin())
 	{
+		// Delete from thread forum
+		deletePost(getCommentPostID(cleanInput($_POST['comment'])), true);
+
+		// Delete
 		$conn->query("DELETE FROM comments WHERE id = '".cleanInput($_POST['comment'])."'") or die($conn->error);
 	}
 
@@ -4514,7 +4735,20 @@ if(isset($_GET['event']))
 			$limitTo = $db->limitTo;
 			
 			// Set total
-			$limitTotal = $db->limit501st + $db->limitRebels + $db->limitMando + $db->limitDroid + $db->limitOther;
+			$limitTotal = $db->limit501st;
+
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
+			{
+				// Add
+				$limitTotal += $db->{$club_value['dbLimit']};
+			}
+
+			// Check for total limit set, if it is, replace limit with it
+			if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+			{
+				$limitTotal = $db->limitTotalTroopers;
+			}
 			
 			// Set event exist
 			$eventExist = true;
@@ -4524,8 +4758,8 @@ if(isset($_GET['event']))
 			{
 				echo '
 				<h2 class="tm-section-header">Admin Controls</h2>
-				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=editevent&eid='.$db->id.'">Edit/View Event in Command Staff Area</a></p>
-				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=createevent&eid='.$db->id.'">Copy Event in Command Staff Area</a></p>
+				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=editevent&eid='.$db->id.'" class="button">Edit/View Event in Command Staff Area</a></p>
+				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=createevent&eid='.$db->id.'" class="button">Copy Event in Command Staff Area</a></p>
 				<br />
 				<hr />';
 			}
@@ -4626,8 +4860,11 @@ if(isset($_GET['event']))
 					// If event closed
 					if($db->closed == 1)
 					{
+						$hours = timeBetweenDates($db->dateStart, $db->dateEnd);
+						$hours += intval($db->charityAddHours);
+
 						echo '
-						<p><b>Event Raised:</b> $'.number_format($db->moneyRaised).'</p>';
+						<div class="charitybox"><b>Event Raised:</b><br />Direct: $'.number_format($db->charityDirectFunds).'<br />Indirect: $'.number_format($db->charityIndirectFunds).'<br />Charity Name: '.ifEmpty($db->charityName, "N/A").'<br />Charity Hours: '.$hours.'<br />Charity Note:<br />'.ifEmpty(nl2br($db->charityNote), "N/A").'</div>';
 					}
 
 					// Set up show options
@@ -4658,6 +4895,13 @@ if(isset($_GET['event']))
 					<p><b>Amenities available at venue:</b> '.ifEmpty($db->amenities, "No amenities for this event.").'</p>
 					<p><b>Comments:</b><br />'.ifEmpty(nl2br(showBBcodes($db->comments)), "No comments for this event.").'</p>
 					<p><b>Referred by:</b> '.ifEmpty($db->referred, "Not available").'</p>';
+
+					// If attached to a forum thread
+					if($db->thread_id > 0)
+					{
+						echo '
+						<p><b>View post on forum:</b> <a href="https://www.fl501st.com/forums/index.php?threads/'.$db->thread_id.'" target="_blank">https://www.fl501st.com/forums/index.php?threads/'.$db->thread_id.'</a></p>';
+					}
 				
 					// Get number of events with link
 					$getNumOfLinks = $conn->query("SELECT id FROM events WHERE link = '".$db->id."'");
@@ -4762,9 +5006,28 @@ if(isset($_GET['event']))
 							This event is limited to ' . getEra($db->limitTo) . ' era.
 						</div>';
 					}
+
+					// Set up is limited event?
+					$isLimited = false;
+
+					// Loop through clubs
+					foreach($clubArray as $club => $club_value)
+					{
+						// Check if limited
+						if($db->{$club_value['dbLimit']} < 500)
+						{
+							$isLimited = true;
+						}
+					}
+
+					// Check for total limit set, if it is, set event as limited
+					if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+					{
+						$isLimited = true;
+					}
 				
 					// If this event is limited in troopers
-					if($db->limit501st < 500 || $db->limitRebels < 500 || $db->limitMando < 500 || $db->limitDroid < 500 || $db->limitOther < 500)
+					if($db->limit501st < 500 || $isLimited)
 					{
 						echo '
 						<br />
@@ -4773,12 +5036,35 @@ if(isset($_GET['event']))
 						
 						<div style="color: red;" name="troopersRemainingDisplay">
 							<ul>
-								<li>This event is limited to '.$limitTotal.' troopers.</li>
-								<li>This event is limited to '.$db->limit501st.' 501st troopers. '.troopersRemaining($db->limit501st, eventClubCount($db->id, 0)).' </li>
-								<li>This event is limited to '.$db->limitRebels.' Rebel Legion troopers. '.troopersRemaining($db->limitRebels, eventClubCount($db->id, 1)).'</li>
-								<li>This event is limited to '.$db->limitMando.' Mando Merc troopers. '.troopersRemaining($db->limitMando, eventClubCount($db->id, 2)).'</li>
-								<li>This event is limited to '.$db->limitDroid.' Droid Builder troopers. '.troopersRemaining($db->limitDroid, eventClubCount($db->id, 3)).'</li>
-								<li>This event is limited to '.$db->limitOther.' Other troopers. '.troopersRemaining($db->limitOther, eventClubCount($db->id, 4)).'</li>
+								<li>This event is limited to '.$limitTotal.' troopers. ';
+
+								// Check for total limit set, if it is, add remaining troopers
+								if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+								{
+									echo '
+									' . troopersRemaining($limitTotal, eventClubCount($db->id, "all")) . '</li>';
+								}
+								else
+								{
+									echo '
+									</li>
+
+									<li>This event is limited to '.$db->limit501st.' 501st troopers. '.troopersRemaining($db->limit501st, eventClubCount($db->id, 0)).' </li>';
+
+									// Set up club count
+									$clubCount = 1;
+
+									// Loop through clubs
+									foreach($clubArray as $club => $club_value)
+									{
+										echo '
+										<li>This event is limited to '.$db->{$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining($db->{$club_value['dbLimit']}, eventClubCount($db->id, $clubCount)).'</li>';
+
+										// Increment club count
+										$clubCount++;
+									}
+								}
+						echo '
 							</ul>
 						</div>';
 					}
@@ -4805,6 +5091,14 @@ if(isset($_GET['event']))
 								</ul>
 							</div>';
 						}
+						
+						if($db->limitedEvent == 1)
+						{
+							echo '
+							<p>
+								<b>Reminder:</b> This event has been set as a <i>manual selection</i> event. When a trooper needs to make a change to their attending status or costume, troopers must comment below what changes need to be made, and command staff will make the changes. Please note, this only applies to manual selection events.
+							</p>';
+						}
 					}
 				}
 			}
@@ -4819,7 +5113,7 @@ if(isset($_GET['event']))
 			<div style="overflow-x: auto;" id="signuparea1" name="signuparea1">';
 
 			// Query database for roster info
-			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, event_sign_up.status, event_sign_up.signuptime, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' ORDER BY event_sign_up.id ASC";
+			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.note, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, event_sign_up.status, event_sign_up.signuptime, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' ORDER BY event_sign_up.id ASC";
 			$i = 0;
 			
 			if ($result2 = mysqli_query($conn, $query2))
@@ -4862,7 +5156,15 @@ if(isset($_GET['event']))
 						<tr>
 							<td>
 								'.drawSupportBadge($db2->trooperId).'
+
 								<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
+
+								// If a placeholder account, allow edit name
+								if($db2->trooperId == placeholder)
+								{
+									echo '
+									<input type="text" name="placeholdertext" signid="'.$db2->signId.'" value="'.$db2->note.'" />';
+								}
 
 								// Show who added the trooper
 								if($db2->addedby != 0)
@@ -4893,7 +5195,7 @@ if(isset($_GET['event']))
 										$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
 									}
 									
-									$query3 .= costume_restrict_query() . " ORDER BY FIELD(costume, ".$mainCostumes."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
+									$query3 .= costume_restrict_query(false, $db2->trooperId) . " ORDER BY FIELD(costume, ".$mainCostumes."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
 									
 									if ($result3 = mysqli_query($conn, $query3))
 									{
@@ -4930,7 +5232,7 @@ if(isset($_GET['event']))
 										$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
 									}
 									
-									$query3 .= costume_restrict_query() . " ORDER BY FIELD(costume, ".$mainCostumes."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
+									$query3 .= costume_restrict_query(false, $db2->trooperId) . " ORDER BY FIELD(costume, ".$mainCostumes."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
 									
 									// Count results
 									$c = 0;
@@ -5082,6 +5384,13 @@ if(isset($_GET['event']))
 							<td>
 								'.drawSupportBadge($db2->trooperId).'
 								<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
+
+								// If a placeholder account, allow edit name
+								if($db2->trooperId == placeholder)
+								{
+									echo '
+									<b>'.$db2->note.'</b>';
+								}
 
 								// Show who added the trooper
 								if($db2->addedby != 0)
@@ -5259,8 +5568,17 @@ if(isset($_GET['event']))
 								// Get troop count
 								$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' AND status != '4' AND status != '1'");
 
+								// Set up total troopers
+								$totalTroopers = $db->limit501st;
+
+								// Loop through clubs
+								foreach($clubArray as $club => $club_value)
+								{
+									$totalTroopers += $db->{$club_value['dbLimit']};
+								}
+
 								// Is the event full?
-								if($getNumOfTroopers->num_rows >= ($db->limit501st + $db->limitRebels + $db->limitMando + $db->limitDroid + $db->limitOther))
+								if($getNumOfTroopers->num_rows >= $totalTroopers)
 								{
 									echo '
 									<b>This event is full, you will be placed on the stand by list.</b>';
@@ -5454,7 +5772,7 @@ if(isset($_GET['event']))
 						
 						echo '
 						<div class="container-image">
-							<a href="images/uploads/'.$db->filename.'" data-lightbox="photosadmin" data-title="Uploaded by '.getName($db->trooperid).'" id="photo'.$db->id.'"><img src="images/uploads/'.$db->filename.'" width="200px" height="200px" class="image-c" /></a>
+							<a href="images/uploads/'.$db->filename.'" data-lightbox="photosadmin" data-title="Uploaded by '.getName($db->trooperid).'" id="photo'.$db->id.'"><img src="images/uploads/resize/'.getFileName($db->filename).'.jpg" width="200px" height="200px" class="image-c" /></a>
 							
 							<p class="container-text">';
 							
@@ -5710,17 +6028,30 @@ if(isset($_GET['event']))
 
 					<h2 class="tm-section-header">Discussion</h2>
 					<div style="text-align: center;">
+
+					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\', \'comment\')" class="button">Bold</a>
+					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\', \'comment\')" class="button">Italic</a>
+					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\', \'comment\')" class="button">Underline</a>
+					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'Q\', \'comment\')" class="button">Quote</a>
+					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\', \'comment\')" class="button">Color</a>
+					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\', \'comment\')" class="button">Size</a>
+					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\', \'comment\')" class="button">URL</a>
+					<a href="#/" class="button" name="addSmiley">Add Smiley</a>
+
 					<textarea cols="30" rows="10" name="comment" id="comment"></textarea>
 
 					<br />
 
-					<p aria-label="This will highlight and notify command staff of your comment." data-balloon-pos="up" data-balloon-length="fit">Is this an important message?</p>
+					<p aria-label="This will highlight and notify command staff of your comment." data-balloon-pos="up" data-balloon-length="fit">Notify command staff?</p>
 					<select name="important" id="important">
 						<option value="0">No</option>
 						<option value="1">Yes</option>
 					</select>
 
 					<br /><br />
+
+					<span name="smileyarea" style="display: block;">
+					</span>
 
 					<input type="submit" name="submitComment" value="Post!" />
 					</div>
@@ -5835,7 +6166,7 @@ if(isset($_GET['event']))
 else
 {
 	// Only show home page when it is loaded
-	if(!isset($_GET['action']) && !isset($_GET['profile']) && !isset($_GET['event']))
+	if(!isset($_GET['action']) && !isset($_GET['profile']) && !isset($_GET['tkid']) && !isset($_GET['event']))
 	{
 		if(!isWebsiteClosed())
 		{
@@ -5889,12 +6220,22 @@ else
 					<br />
 					<hr />';
 				}
+
+				// Set up add to query
+				$addToQuery = "";
+
+				// Loop through clubs
+				foreach($clubArray as $club => $club_value)
+				{
+					// Add
+					$addToQuery .= "events.".$club_value['dbLimit'].", ";
+				}
 				
 				// Was a squad defined? (Prevents displays div when not needed)
 				if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
 				{
 					// Query
-					$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, events.limitRebels, events.limitMando, events.limitDroid, events.limitOther, events.closed FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() - INTERVAL 1 DAY AND event_sign_up.status < 3 AND (events.closed = 0 OR events.closed = 3) ORDER BY events.dateStart";
+					$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, ".$addToQuery."events.limitTotalTroopers, events.closed FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() - INTERVAL 1 DAY AND event_sign_up.status < 3 AND (events.closed = 0 OR events.closed = 3) ORDER BY events.dateStart";
 				}
 				else if(isset($_GET['squad']) && $_GET['squad'] == "canceledtroops")
 				{
@@ -5993,6 +6334,22 @@ else
 						// Prevent on canceled events
 						if($db->closed != 2)
 						{
+							// Set total
+							$limitTotal = $db->limit501st;
+
+							// Loop through clubs
+							foreach($clubArray as $club => $club_value)
+							{
+								// Add
+								$limitTotal += $db->{$club_value['dbLimit']};
+							}
+
+							// Check for total limit set, if it is, replace limit with it
+							if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+							{
+								$limitTotal = $db->limitTotalTroopers;
+							}
+
 							// If not enough troopers
 							if($getNumOfTroopers->num_rows <= 1)
 							{
@@ -6001,7 +6358,7 @@ else
 								<span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
 							}
 							// If full
-							else if($getNumOfTroopers->num_rows >= ($db->limit501st + $db->limitRebels + $db->limitMando + $db->limitDroid + $db->limitOther))
+							else if($getNumOfTroopers->num_rows >= $limitTotal)
 							{
 								echo '
 								<br />
@@ -6090,8 +6447,18 @@ else
 					// If on my troops
 					if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
 					{
+						// Set up add to query
+						$addToQuery = "";
+
+						// Loop through clubs
+						foreach($clubArray as $club => $club_value)
+						{
+							// Add
+							$addToQuery .= "events.".$club_value['dbLimit'].", ";
+						}
+
 						// Query
-						$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, events.limitRebels, events.limitMando, events.limitDroid, events.limitOther FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.closed = 1 ORDER BY dateEnd DESC LIMIT 20";
+						$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, ".$addToQuery."events.limit501st FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.closed = 1 ORDER BY dateEnd DESC LIMIT 20";
 					}
 					// If on squad
 					else if(isset($_GET['squad']))
@@ -6223,7 +6590,7 @@ else
 				while ($db = mysqli_fetch_object($result))
 				{
 					echo '
-					<a href="images/uploads/'.$db->filename.'" data-lightbox="photo" data-title="Uploaded by '.getName($db->trooperid).' on '.getEventTitle($db->troopid, true).'."><img src="images/uploads/'.$db->filename.'" width="200px" height="200px" /></a>';
+					<a href="images/uploads/'.$db->filename.'" data-lightbox="photo" data-title="Uploaded by '.getName($db->trooperid).' on '.getEventTitle($db->troopid, true).'."><img src="images/uploads/resize/'.getFileName($db->filename).'.jpg" width="200px" height="200px" /></a>';
 					
 					// Increment
 					$i++;
@@ -6242,7 +6609,7 @@ else
 			{
 				echo '
 				<p style="text-align: center;">
-					<a href="index.php?action=photos">[Recent events with photos]</a>
+					<a href="index.php?action=photos" class="button">Recent events with photos</a>
 				</p>';
 			}
 		}
@@ -6338,6 +6705,96 @@ If you are missing troops or notice incorrect data, please refer to your squad l
       
 </script>
 
+<script>
+$(document).ready(function()
+{';
+
+// Loop through clubs - add rules for validation
+foreach($clubArray as $club => $club_value)
+{
+	// Get array
+	$getArray = explode(",", $club_value['db3Require']);
+
+	// If squad set
+	if($getArray[2] != "0")
+	{
+		// Get squad
+		$getSquad = explode(":", $getArray[2])[1];
+
+		echo '
+	    // Add rules to clubs - IDs
+	    $(\'#'.$club_value['db3'].'\').each(function()
+	    {
+	        $(this).rules(\'add\',
+	        {';
+	        	// If digits
+	        	if($getArray[1] == "digits")
+	        	{
+					echo '
+					digits: true,';
+				}
+				else
+				{
+					echo '
+					digits: false,';
+				}
+
+				// If squad
+				if($getArray[2] != "0")
+				{
+					echo '
+					required: function()
+					{
+						return $(\'#squad\').val() == '.$getSquad.';
+					}';
+				}
+				else
+				{
+					echo '
+					required: false';
+				}
+
+			echo '
+	        })
+	    });';
+	}
+	else
+	{
+		// If value set
+		if($club_value['db3'] != "")
+		{
+			// Squad not set
+			echo '
+		    // Add rules to clubs - IDs
+		    $(\'#'.$club_value['db3'].'\').each(function()
+		    {
+		        $(this).rules(\'add\',
+		        {';
+		        	// If digits
+		        	if($getArray[1] == "digits")
+		        	{
+						echo '
+						digits: true,';
+					}
+					else
+					{
+						echo '
+						digits: false,';
+					}
+
+					echo '
+					required: false
+		        })
+		    });';
+		}
+	}
+}
+
+echo '
+});
+</script>';
+
+echo '
 <!-- External JS File -->
 <script type="text/javascript" src="script/js/main.js"></script>
 </body>

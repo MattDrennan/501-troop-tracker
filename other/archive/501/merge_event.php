@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is used for merging two events.
+ * 
+ * Edit variables deleteID and newID to merge events. deleteID is the event ID to be deleted, and newID is the event ID to be retained.
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -34,7 +43,12 @@ if($eventCount->num_rows == 0)
 	die("Already done.");
 }
 
-// getCostumeClub: gets the costumes club
+/**
+ * Returns the club ID based on the costume ID
+ * 
+ * @param int $id The costume ID
+ * @return int Returns the costume club ID
+ */
 function getCostumeClub($id)
 {
 	global $conn;

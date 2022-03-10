@@ -1,16 +1,19 @@
 <?php
 
+/**
+ * This file is used for scraping Rebel Legion data.
+ * 
+ * This should be run weekly by a cronjob.
+ *
+ * @author  Matthew Drennan
+ *
+ */
+
 // Include config
 include(dirname(__DIR__) . '/../../config.php');
 
 // Get Simple PHP DOM Tool - just a note, for this code to work, $stripRN must be false in tool
 include(dirname(__DIR__) . '/../../tool/dom/simple_html_dom.php');
-
-// Purge rebel troopers
-$conn->query("DELETE FROM rebel_troopers") or die($conn->error);
-
-// Purge rebel costumes
-$conn->query("DELETE FROM rebel_costumes") or die($conn->error);
 
 // Check date time for sync
 $query = "SELECT syncdaterebels FROM settings";
@@ -26,6 +29,12 @@ if ($result = mysqli_query($conn, $query) or die($conn->error))
 		}
 	}
 }
+
+// Purge rebel troopers
+$conn->query("DELETE FROM rebel_troopers") or die($conn->error);
+
+// Purge rebel costumes
+$conn->query("DELETE FROM rebel_costumes") or die($conn->error);
 
 // Costume image array (duplicate check)
 $costumeImagesG = array();
@@ -230,7 +239,12 @@ COMPLETE!';
 // Update date time for last sync
 $conn->query("UPDATE settings SET syncdaterebels = NOW()");
 
-// print_r_reverse: Convert a string (print_r) back to a value
+/**
+ * Convert a string (print_r) back to an array value
+ * 
+ * @param string $input The string value to be formatted
+ * @return array Returns PHP array
+ */
 function print_r_reverse($input)
 {
     $lines = preg_split('#\r?\n#', trim($input));
@@ -298,7 +312,15 @@ function print_r_reverse($input)
     }
 }
 
-// For early PHP version
+/**
+ * Checks if string is inside another string
+ * 
+ * This is used due to PHP version issues.
+ * 
+ * @param string $haystack The string value to search
+ * @param string $needle The string value to find
+ * @return boolean Returns if found
+ */
 function contains($haystack, $needle)
 {
 	return $needle !== '' && mb_strpos($haystack, $needle) !== false;
