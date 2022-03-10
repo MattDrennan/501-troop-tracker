@@ -2817,6 +2817,8 @@ function getIDFromTKNumber($tkid)
 			$returnVal = $db->id;
 		}
 	}
+	
+	return $returnVal;
 }
 
 /**
@@ -2999,7 +3001,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	}
 
 	// Title ranks
-	$query2 = "SELECT title_troopers.titleid, title_troopers.trooperid, titles.id, titles.title, titles.icon FROM title_troopers LEFT JOIN titles ON titles.id = title_troopers.titleid WHERE title_troopers.trooperid = '".cleanInput($_GET['profile'])."'";
+	$query2 = "SELECT title_troopers.titleid, title_troopers.trooperid, titles.id, titles.title, titles.icon FROM title_troopers LEFT JOIN titles ON titles.id = title_troopers.titleid WHERE title_troopers.trooperid = '".$id."'";
 	if ($result2 = mysqli_query($conn, $query2))
 	{
 		while ($db2 = mysqli_fetch_object($result2))
@@ -3012,7 +3014,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	}
 	
 	// Ranks for members
-	$query2 = "SELECT * FROM troopers WHERE id = '".cleanInput($_GET['profile'])."'";
+	$query2 = "SELECT * FROM troopers WHERE id = '".$id."'";
 	if ($result2 = mysqli_query($conn, $query2))
 	{
 		while ($db2 = mysqli_fetch_object($result2))
@@ -3106,8 +3108,14 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 		}
 	}
 	
-	echo '
-	<p style="text-align: center;"><a href="https://www.fl501st.com/boards/index.php?members/'.$forum.'.'.getUserForum($forum)['exact']['user_id'].'" target="_blank" class="button">View Boards Profile</a></p>';
+	// Check if the username was found
+	if(isset(getUserForum($forum)['exact']['user_id'])) {
+		echo '
+		<p style="text-align: center;"><a href="https://www.fl501st.com/boards/index.php?members/'.$forum.'.'.getUserForum($forum)['exact']['user_id'].'" target="_blank" class="button">View Boards Profile</a></p>';
+	} else {
+		echo '
+		<p style="text-align: center;">Boards Name: '.$forum.'</p>';
+	}
 
 	if($is501Member && !is_null(get501Info($tkid, $squad)['joindate']))
 	{

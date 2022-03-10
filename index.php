@@ -449,14 +449,17 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 // Show the profile page
 if(isset($_GET['profile']))
 {
+	// Hold value
+	$profile = cleanInput($_GET['profile']);
+	
 	// Convert TKID to profile
 	if(isset($_GET['tkid']))
 	{
-		$_GET['profile'] = getIDFromTKNumber($_GET['tkid']);
+		$profile = getIDFromTKNumber($_GET['tkid']);
 	}
 	
 	// Get data
-	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.forum_id, troopers.tkid, troopers.squad, troopers.phone FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".cleanInput($_GET['profile'])."' AND troopers.id != ".placeholder." AND events.closed = '1' AND event_sign_up.status = '3' ORDER BY events.dateEnd DESC";
+	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.forum_id, troopers.tkid, troopers.squad, troopers.phone FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".$profile."' AND troopers.id != ".placeholder." AND events.closed = '1' AND event_sign_up.status = '3' ORDER BY events.dateEnd DESC";
 	$i = 0;
 	
 	if ($result = mysqli_query($conn, $query))
@@ -470,7 +473,7 @@ if(isset($_GET['profile']))
 				profileTop($db->id, $db->tkid, $db->name, $db->squad, $db->forum_id, $db->phone);
 				
 				echo  '
-				<span style="text-align: center;">' . getTroopCounts(cleanInput($_GET['profile'])) . '</span>
+				<span style="text-align: center;">' . getTroopCounts($profile) . '</span>
 				<div style="overflow-x: auto;">
 				<table border="1">
 				<tr>
@@ -503,7 +506,7 @@ if(isset($_GET['profile']))
 	}
 
 	// If profile does not exist
-	if(!profileExist($_GET['profile']))
+	if(!profileExist($profile))
 	{
 		echo '
 		<p style="text-align: center;">
@@ -511,7 +514,7 @@ if(isset($_GET['profile']))
 		</p>';
 	}
 	// Check if placeholder
-	else if($_GET['profile'] == placeholder)
+	else if($profile == placeholder)
 	{
 		echo '
 		<p style="text-align: center;">
@@ -523,12 +526,12 @@ if(isset($_GET['profile']))
 		// Profile exists - if nothing to show
 		if($i == 0)
 		{
-			echo profileTop($_GET['profile'], getTKNumber($_GET['profile']), getName($_GET['profile']), getTrooperSquad($_GET['profile']), getTrooperForum($_GET['profile']), getPhone($_GET['profile']));
+			echo profileTop($profile, getTKNumber($profile), getName($profile), getTrooperSquad($profile), getTrooperForum($profile), getPhone($profile));
 		}
 		else
 		{
 			// Get count for awards
-			$troops_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE status = '3' AND trooperid = '".cleanInput($_GET['profile'])."'") or die($conn->error);
+			$troops_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE status = '3' AND trooperid = '".$profile."'") or die($conn->error);
 			$count = $troops_get->fetch_row();
 
 			// Set up award count
@@ -541,7 +544,7 @@ if(isset($_GET['profile']))
 			<h2 class="tm-section-header">Awards</h2>';
 			
 			// Check if supporter
-			if(isSupporter(cleanInput($_GET['profile'])))
+			if(isSupporter($profile))
 			{
 				echo '<img src="images/flgdonate.png" />';
 			}
@@ -616,8 +619,7 @@ if(isset($_GET['profile']))
 			}
 
 			// Get data from custom awards - load award user data
-			//$query2 = "SELECT * FROM awards_troopers WHERE trooperid = '".cleanInput($_GET['profile'])."'";
-			$query2 = "SELECT award_troopers.awardid, award_troopers.trooperid, awards.id, awards.title, awards.icon FROM award_troopers LEFT JOIN awards ON awards.id = award_troopers.awardid WHERE award_troopers.trooperid = '".cleanInput($_GET['profile'])."'";
+			$query2 = "SELECT award_troopers.awardid, award_troopers.trooperid, awards.id, awards.title, awards.icon FROM award_troopers LEFT JOIN awards ON awards.id = award_troopers.awardid WHERE award_troopers.trooperid = '".$profile."'";
 			if ($result2 = mysqli_query($conn, $query2))
 			{
 				while ($db2 = mysqli_fetch_object($result2))
@@ -648,19 +650,19 @@ if(isset($_GET['profile']))
 		<h2 class="tm-section-header">Costumes</h2>';
 		
 		// Show 501st costumes
-		showCostumes(getTKNumber($_GET['profile']), getTrooperSquad($_GET['profile']));
+		showCostumes(getTKNumber($profile), getTrooperSquad($profile));
 		
 		// Show Rebel Legion costumes
-		showRebelCostumes(getRebelInfo(getRebelLegionUser($_GET['profile']))['id']);
+		showRebelCostumes(getRebelInfo(getRebelLegionUser($profile))['id']);
 		
 		// Show Mando Mercs costumes
-		showMandoCostumes(getMandoLegionUser($_GET['profile']));
+		showMandoCostumes(getMandoLegionUser($profile));
 
 		// Show Saber Guild costumes
-		showSGCostumes(getSGUser($_GET['profile']));
+		showSGCostumes(getSGUser($profile));
 		
 		// Show Droid Builder costumes
-		showDroids(getTrooperForum($_GET['profile']));
+		showDroids(getTrooperForum($profile));
 	}
 }
 
