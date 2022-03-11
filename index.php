@@ -4486,6 +4486,16 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 	{
 		// Get TKID
 		$tkid = cleanInput($_POST['tkid']);
+		
+		// Login with forum
+		$forumLogin = loginWithForum($tkid, $_POST['password']);
+		
+		// Check credentials
+		if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
+		{
+			// Update username if changed
+			$conn->query("UPDATE troopers SET forum_id = '".$forumLogin['user']['username']."' WHERE user_id = '".$forumLogin['user']['user_id']."'");
+		}
 
 		// Get data
 		$query = "SELECT * FROM troopers WHERE forum_id = '".cleanInput($_POST['tkid'])."' LIMIT 1";
@@ -4499,9 +4509,6 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 			{
 				// Increment trooper count
 				$i++;
-
-				// Login with forum
-				$forumLogin = loginWithForum($tkid, $_POST['password']);
 
 				// Check credentials
 				if(isset($forumLogin['success']) && $forumLogin['success'] == 1 || password_verify($_POST['password'], $db->password))
@@ -4518,7 +4525,7 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 							if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
 							{
 								// Update password, e-mail, and user ID
-								$conn->query("UPDATE troopers SET password = '".password_hash($_POST['password'], PASSWORD_DEFAULT)."', email = '".$forumLogin['user']['email']."', user_id = '".$forumLogin['user']['user_id']."', forum_id = '".$forumLogin['user']['username']."' WHERE id = '".$db->id."'");
+								$conn->query("UPDATE troopers SET password = '".password_hash($_POST['password'], PASSWORD_DEFAULT)."', email = '".$forumLogin['user']['email']."', user_id = '".$forumLogin['user']['user_id']."' WHERE id = '".$db->id."'");
 							}
 							
 							// Set log in cookie, if set to keep logged in
