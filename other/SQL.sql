@@ -2,7 +2,7 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Generation Time: Mar 11, 2022 at 02:10 AM
+-- Generation Time: Mar 11, 2022 at 08:44 AM
 -- Server version: 8.0.23
 -- PHP Version: 7.4.7
 
@@ -210,6 +210,17 @@ CREATE TABLE `event_sign_up` (
   `note` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
   `signuptime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `favorite_costumes`
+--
+
+CREATE TABLE `favorite_costumes` (
+  `trooperid` int NOT NULL,
+  `costumeid` int NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
