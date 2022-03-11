@@ -490,7 +490,7 @@ function costume_restrict_query($addWhere = false, $friendID = 0)
 	$friendQuery = "";
 
 	// Check if friend ID
-	if($friendID != $_SESSION['id'])
+	if($friendID != $_SESSION['id'] && $friendID != 0)
 	{
 		$friendQuery = " OR (costumes.club >= 0)";
 	}
