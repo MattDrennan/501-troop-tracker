@@ -4908,7 +4908,7 @@ if(isset($_GET['event']))
 					if($db->thread_id > 0)
 					{
 						echo '
-						<p><b>View post on forum:</b> <a href="https://www.fl501st.com/forums/index.php?threads/'.$db->thread_id.'" target="_blank">https://www.fl501st.com/forums/index.php?threads/'.$db->thread_id.'</a></p>';
+						<p><b>View post on forum:</b> <a href="https://www.fl501st.com/boards/index.php?threads/'.$db->thread_id.'" target="_blank">https://www.fl501st.com/forums/index.php?threads/'.$db->thread_id.'</a></p>';
 					}
 				
 					// Get number of events with link
