@@ -1103,6 +1103,9 @@ $(document).ready(function()
 					if(json.spTrooper == 1) { $("[name=spTrooper]").prop("checked", true); $("[name=spTrooper]").val(1); }
 					if(json.spCostume == 1) { $("[name=spCostume]").prop("checked", true); $("[name=spCostume]").val(1); }
 					if(json.spAward == 1) { $("[name=spAward]").prop("checked", true); $("[name=spAward]").val(1); }
+					
+					// Set 501st
+					$("#p501").val(json.p501);
 
 					// Loop through clubs
 					for(var i = 0; i <= (clubArray.length - 1); i++)
