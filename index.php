@@ -4498,7 +4498,7 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 		}
 
 		// Get data
-		$query = "SELECT * FROM troopers WHERE forum_id = '".cleanInput($_POST['tkid'])."' LIMIT 1";
+		$query = "SELECT * FROM troopers WHERE forum_id = '".filter_var($_POST['tkid'], FILTER_SANITIZE_ADD_SLASHES)."' LIMIT 1";
 		
 		// Trooper count
 		$i = 0;
