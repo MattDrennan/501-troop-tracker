@@ -1898,189 +1898,176 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 	if($_POST['submitRequest'])
 	{
 		// Check we have all the data we need server side. JQuery should do this, but this is a backup
-		if($_POST['tkid'] != "" && $_POST['name'] != "" && $_POST['forum_id'] != "" && $_POST['password'] != "" && $_POST['squad'] >= 0)
+		$failed = false;
+
+		echo '<ul>';
+
+		// If name empty
+		if(cleanInput($_POST['name']) == "")
 		{
-			$failed = false;
+			$failed = true;
+			echo '<li>Please enter your name.</li>';
+		}
 
-			echo '<ul>';
-			
-			// Check to see if a forum username exists
-			$forum_name_exists = getUserForum(cleanInput($_POST['forumid']));
-			
-			// Check forum name
-			if(isset($forum_name_exists['exact']))
-			{
-				$failed = true;
-				echo '<li>An account was not found on the FL 501st Boards. <a href="https://www.fl501st.com/boards/">Register here</a>.</li>';
-			}
+		// Set TKID
+		$tkid = cleanInput($_POST['tkid']);
+		
+		// If Forum ID empty
+		if(cleanInput($_POST['forumid']) == "")
+		{
+			$failed = true;
+			echo '<li>Please enter your FL 501st Forum Username.</li>';
+		}
+		
+		// If TKID is greather than 11 characters
+		if(strlen($tkid) > 11)
+		{
+			$failed = true;
+			echo '<li>TKID must be less than eleven (11) characters.</li>';
+		}
 
-			// If name empty
-			if(cleanInput($_POST['name']) == "")
+		// If TKID is not numeric
+		if(!is_numeric($tkid))
+		{
+			$failed = true;
+			echo '<li>TKID must be an integer.</li>';
+		}
+		
+		// Set squad variable
+		$squad = cleanInput($_POST['squad']);
+		
+		// Check if 501st
+		if($squad <= count($squadArray))
+		{
+			// Query ID database
+			$idcheck = $conn->query("SELECT id FROM troopers WHERE tkid = '".$tkid."' AND squad <= ".count($squadArray)."") or die($conn->error);
+		}
+		else
+		{
+			// In a club - query by club
+			$idcheck = $conn->query("SELECT id FROM troopers WHERE tkid = '".$tkid."' AND squad = ".$squad."") or die($conn->error);
+		}
+		
+		// Query 501st forum
+		$forumcheck = $conn->query("SELECT forum_id FROM troopers WHERE forum_id = '".cleanInput($_POST['forumid'])."'") or die($conn->error);
+		
+		// Check if 501st forum exists
+		if($forumcheck->num_rows > 0)
+		{
+			$failed = true;
+			echo '<li>FL Garrison Forum Name is already taken. Please contact the '.garrison.' Webmaster for further assistance.</li>';
+		}
+		
+		// Loop through clubs
+		foreach($clubArray as $club => $club_value)
+		{
+			// If DB3 defined
+			if($club_value['db3Name'] != "")
 			{
-				$failed = true;
-				echo '<li>Please enter your name.</li>';
+				// Query Club - if specified
+				if(cleanInput($_POST[$club_value['db3']]) != "")
+				{
+					$clubid = $conn->query("SELECT ".$club_value['db3']." FROM troopers WHERE ".$club_value['db3']." = '".cleanInput($_POST[$club_value['db3']])."'") or die($conn->error);
+					
+					// Check if club ID exists
+					if($clubid->num_rows > 0)
+					{
+						$failed = true;
+						echo '<li>'.$club_value['name'].' ID is already taken. Please contact the '.garrison.' Webmaster for further assistance.</li>';
+					}
+				}
 			}
+		}
 
-			// Set TKID
-			$tkid = cleanInput($_POST['tkid']);
-			
-			// If Forum ID empty
-			if(cleanInput($_POST['forumid']) == "")
-			{
-				$failed = true;
-				echo '<li>Please enter your FL 501st Forum Username.</li>';
-			}
-			
-			// If TKID is greather than 11 characters
-			if(strlen($tkid) > 11)
-			{
-				$failed = true;
-				echo '<li>TKID must be less than eleven (11) characters.</li>';
-			}
+		// Check if ID exists
+		if($idcheck->num_rows > 0)
+		{
+			$failed = true;
+			echo '<li>TKID is taken. If you have troops on the old troop tracker, <a href="index.php?action=setup">click here to request access</a>.</li>';
+		}
 
-			// If TKID is not numeric
-			if(!is_numeric($tkid))
-			{
-				$failed = true;
-				echo '<li>TKID must be an integer.</li>';
-			}
-			
-			// Set squad variable
-			$squad = cleanInput($_POST['squad']);
-			
-			// Check if 501st
-			if($squad <= count($squadArray))
-			{
-				// Query ID database
-				$idcheck = $conn->query("SELECT id FROM troopers WHERE tkid = '".$tkid."' AND squad <= ".count($squadArray)."") or die($conn->error);
-			}
-			else
-			{
-				// In a club - query by club
-				$idcheck = $conn->query("SELECT id FROM troopers WHERE tkid = '".$tkid."' AND squad = ".$squad."") or die($conn->error);
-			}
-			
-			// Query 501st forum
-			$forumcheck = $conn->query("SELECT forum_id FROM troopers WHERE forum_id = '".cleanInput($_POST['forumid'])."'") or die($conn->error);
-			
-			// Check if 501st forum exists
-			if($forumcheck->num_rows > 0)
-			{
-				$failed = true;
-				echo '<li>FL Garrison Forum Name is already taken. Please contact the '.garrison.' Webmaster for further assistance.</li>';
-			}
-			
+		// Login with forum
+		$forumLogin = loginWithForum($_POST['forumid'], $_POST['forumpassword']);
+
+		// Verify forum and password
+		if(!isset($forumLogin['success']))
+		{
+			$failed = true;
+			echo '<li>Incorrect '.garrison.' Board username and password.</li>';
+		}
+
+		if(strlen(cleanInput($_POST['phone'])) < 10 && cleanInput($_POST['phone']) != "")
+		{
+			$failed = true;
+			echo '<li>Enter a valid phone number.</li>';
+		}
+
+		// If failed
+		if(!$failed)
+		{
+			// Set up permission vars
+			$p501 = 0;
+
 			// Loop through clubs
 			foreach($clubArray as $club => $club_value)
 			{
-				// If DB3 defined
-				if($club_value['db3Name'] != "")
+				// Add permission vars
+				${$club_value['db']} = 0;
+			}
+			
+			// Set permissions
+			// 501
+			if(cleanInput($_POST['squad']) <= count($squadArray))
+			{
+				$p501 = 1;
+			}
+
+			// Add to query set up
+			$addToQuery1 = "";
+			$addToQuery2 = "";
+			$addToQuery3 = "";
+			$addToQuery4 = "";
+
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
+			{
+				// If has value
+				if(isset($_POST[$club_value['db3']]) && (cleanInput($_POST[$club_value['db3']]) != "" || cleanInput($_POST[$club_value['db3']]) > 0))
 				{
-					// Query Club - if specified
-					if(cleanInput($_POST[$club_value['db3']]) != "")
+					// Change value
+					${$club_value['db']} = 1;
+				}
+				else
+				{
+					// If contains ID
+					if (isset($_POST[$club_value['db3']]) && strpos($club_value['db3'], "id") !== false)
 					{
-						$clubid = $conn->query("SELECT ".$club_value['db3']." FROM troopers WHERE ".$club_value['db3']." = '".cleanInput($_POST[$club_value['db3']])."'") or die($conn->error);
-						
-						// Check if club ID exists
-						if($clubid->num_rows > 0)
-						{
-							$failed = true;
-							echo '<li>'.$club_value['name'].' ID is already taken. Please contact the '.garrison.' Webmaster for further assistance.</li>';
-						}
+						// Set as int
+						$_POST[$club_value['db3']] = 0;
 					}
 				}
-			}
 
-			// Check if ID exists
-			if($idcheck->num_rows > 0)
-			{
-				$failed = true;
-				echo '<li>TKID is taken. If you have troops on the old troop tracker, <a href="index.php?action=setup">click here to request access</a>.</li>';
-			}
-
-			// Login with forum
-			$forumLogin = loginWithForum(cleanInput($_POST['forumid']), $_POST['password']);
-
-			// Verify forum and password
-			if(isset($forumLogin['success']) && $forumLogin['success'] != 1)
-			{
-				$failed = true;
-				echo '<li>Incorrect '.garrison.' Board username and password.</li>';
-			}
-
-			if(strlen(cleanInput($_POST['phone'])) < 10 && cleanInput($_POST['phone']) != "")
-			{
-				$failed = true;
-				echo '<li>Enter a valid phone number.</li>';
-			}
-
-			// If failed
-			if(!$failed)
-			{
-				// Set up permission vars
-				$p501 = 0;
-
-				// Loop through clubs
-				foreach($clubArray as $club => $club_value)
+				// If database 3 set
+				if($club_value['db3'] != "")
 				{
-					// Add permission vars
-					${$club_value['db']} = 0;
+					// Add to query
+					$addToQuery1 .= "".$club_value['db3'].", ";
+					$addToQuery2 .= "'".cleanInput($_POST[$club_value['db3']])."', ";
+					$addToQuery3 .= "".$club_value['db'].", ";
+					$addToQuery4 .= "'".${$club_value['db']}."', ";
 				}
-				
-				// Set permissions
-				// 501
-				if(cleanInput($_POST['squad']) <= count($squadArray))
-				{
-					$p501 = 1;
-				}
-
-				// Add to query set up
-				$addToQuery1 = "";
-				$addToQuery2 = "";
-				$addToQuery3 = "";
-				$addToQuery4 = "";
-
-				// Loop through clubs
-				foreach($clubArray as $club => $club_value)
-				{
-					// If has value
-					if(isset($_POST[$club_value['db3']]) && (cleanInput($_POST[$club_value['db3']]) != "" || cleanInput($_POST[$club_value['db3']]) > 0))
-					{
-						// Change value
-						${$club_value['db']} = 1;
-					}
-					else
-					{
-						// If contains ID
-						if (isset($_POST[$club_value['db3']]) && strpos($club_value['db3'], "id") !== false)
-						{
-							// Set as int
-							$_POST[$club_value['db3']] = 0;
-						}
-					}
-
-					// If database 3 set
-					if($club_value['db3'] != "")
-					{
-						// Add to query
-						$addToQuery1 .= "".$club_value['db3'].", ";
-						$addToQuery2 .= "'".cleanInput($_POST[$club_value['db3']])."', ";
-						$addToQuery3 .= "".$club_value['db'].", ";
-						$addToQuery4 .= "'".${$club_value['db']}."', ";
-					}
-				}
-				
-				// Insert
-				$conn->query("INSERT INTO troopers (name, tkid, email, forum_id, ".$addToQuery1."p501,".$addToQuery3."phone, squad, password) VALUES ('".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".$forumLogin['user']['email']."', '".cleanInput($_POST['forumid'])."',".$addToQuery2."'".$p501."',".$addToQuery4."'".cleanInput($_POST['phone'])."', '".$squad."', '".password_hash($_POST['password'], PASSWORD_DEFAULT)."')") or die($conn->error);
-				
-				// Last ID
-				$last_id = $conn->insert_id;
-				
-				echo '<li>Request submitted! You will receive an e-mail when your request is approved or denied.</li>';
 			}
-
-			echo '</ul>';
+			
+			// Insert
+			$conn->query("INSERT INTO troopers (user_id, name, tkid, email, forum_id, ".$addToQuery1."p501,".$addToQuery3."phone, squad, password) VALUES ('".$forumLogin['user']['user_id']."', '".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".$forumLogin['user']['email']."', '".cleanInput($_POST['forumid'])."',".$addToQuery2."'".$p501."',".$addToQuery4."'".cleanInput($_POST['phone'])."', '".$squad."', '".password_hash($_POST['forumpassword'], PASSWORD_DEFAULT)."')") or die($conn->error);
+			
+			// Last ID
+			$last_id = $conn->insert_id;
+			
+			echo '<li>Request submitted! You will receive an e-mail when your request is approved or denied.</li>';
 		}
+
+		echo '</ul>';
 	}
 }
 

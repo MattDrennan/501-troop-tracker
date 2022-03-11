@@ -2,6 +2,8 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
+-- Generation Time: Mar 11, 2022 at 02:10 AM
+-- Server version: 8.0.23
 -- PHP Version: 7.4.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -205,6 +207,7 @@ CREATE TABLE `event_sign_up` (
   `costume_backup` varchar(50) NOT NULL DEFAULT '0',
   `status` int NOT NULL DEFAULT '0',
   `addedby` int NOT NULL DEFAULT '0',
+  `note` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
   `signuptime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

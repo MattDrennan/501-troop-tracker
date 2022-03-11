@@ -424,14 +424,14 @@ $(function()
                 maxlength: 11
             },
             forumid: "required",
-            password: "required",
+            forumpassword: "required",
             name: "required"
         },
         messages:
         {
             tkid: "Please enter your TKID and make sure it is no more than eleven (11) characters.",
             forumid: "Please enter your FL 501st Forum Username.",
-            password: "Please enter your password.",
+            forumpassword: "Please enter your password.",
             name: "Please enter your name.",
 			rebelforum: "Please enter your Rebel Legion forum username.",
 			mandoid: "Please enter your Mando Mercs CAT #."

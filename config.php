@@ -3143,7 +3143,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 		<p style="text-align: center;">Boards Name: '.$forum.'</p>';
 	}
 
-	if($is501Member && !is_null(get501Info($tkid, $squad)['joindate']))
+	if(isset(get501Info($tkid, $squad)['joindate']) && $is501Member && !is_null(get501Info($tkid, $squad)['joindate']))
 	{
 		echo '
 		<p style="text-align: center;">
@@ -4014,6 +4014,10 @@ function sendEmail($SendTo, $Name, $Subject, $Message)
 
 	/* Tells PHPMailer to use SMTP. */
 	$mail->isSMTP();
+	
+	/* Debug */
+	//$mail->SMTPDebug = true;
+	//$mail->Debugoutput = 'echo';
 
 	/* SMTP server address. */
 	$mail->Host = emailServer;
