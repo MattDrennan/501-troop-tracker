@@ -3689,6 +3689,29 @@ function addHttp($url)
 }
 
 /**
+ * Returns a string of costumes that were favorited by the trooper
+ *
+ * @return string Returns a query string
+*/
+function mainCostumesBuild()
+{
+	global $conn;
+	
+	$returnQuery = "";
+	
+	$query = "SELECT * FROM favorite_costumes WHERE trooperid = '".cleanInput($_SESSION['id'])."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			$returnQuery .= ", '".getCostume($db->costumeid)."'";
+		}
+	}
+	
+	return $returnQuery;
+}
+
+/**
  * Returns if trooper is an admin or moderator
  * 
  * 1 = Super Admin / 2 = Moderator

@@ -9,6 +9,20 @@
 
 include 'config.php';
 
+/******************** SAVE FAVORITE COSTUMES *******************************/
+
+if(isset($_GET['do']) && $_GET['do'] == "savefavoritecostumes" && loggedIn())
+{
+	// Delete all from database
+	$conn->query("DELETE FROM favorite_costumes WHERE trooperid = '".cleanInput($_SESSION['id'])."'");
+	
+	// Insert into database
+	foreach(explode(",", $_POST['costumes']) as $value)
+	{
+		$conn->query("INSERT INTO favorite_costumes (trooperid, costumeid) VALUES ('".cleanInput($_SESSION['id'])."', '".cleanInput($value)."')") or die($conn->error);
+	}
+}
+
 /******************** SAVE PLACEHOLDER *******************************/
 
 if(isset($_GET['do']) && $_GET['do'] == "saveplaceholder" && loggedIn())
@@ -2592,7 +2606,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			$query2 .= " WHERE era = '".$limitToGetVal[0]."' OR era = '4'";
 		}
 		
-		$query2 .= " ORDER BY FIELD(costume, ".$mainCostumes.") DESC, costume";
+		$query2 .= " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild().") DESC, costume";
 		
 		if ($result2 = mysqli_query($conn, $query2))
 		{
@@ -3336,7 +3350,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 										$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
 									}
 									
-									$query3 .= costume_restrict_query(false, $db2->trooperId) . " ORDER BY FIELD(costume, ".$mainCostumes."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
+									$query3 .= costume_restrict_query(false, $db2->trooperId) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild()."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
 									
 									if ($result3 = mysqli_query($conn, $query3))
 									{
@@ -3373,7 +3387,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 										$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
 									}
 									
-									$query3 .= costume_restrict_query(false, $db2->trooperId) . " ORDER BY FIELD(costume, ".$mainCostumes."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
+									$query3 .= costume_restrict_query(false, $db2->trooperId) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild()."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
 									
 									// Count results
 									$c = 0;

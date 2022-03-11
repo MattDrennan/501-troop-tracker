@@ -308,6 +308,21 @@ $(document).ready(function()
 	{
 		$.LoadingOverlay("hide");
 	});
+	
+	// Favorite Costume - Save favorite costumes
+	$("body").on("change", "#favoriteCostumeSelect", function(e)
+	{
+		$.ajax({
+			type: "POST",
+			url: "process.php?do=savefavoritecostumes",
+			data: "costumes=" + $("#favoriteCostumeSelect").val(),
+			success: function(data)
+			{
+				console.log(data);
+				// Save
+			}
+		});
+	})
 
 	// Limit Change - Total Troopers (Prevent admin from adding a total limit for a club and a total limit)
 	$("body").on("input", "#limitTotalTroopers", function(e)
@@ -1645,6 +1660,7 @@ $(document).ready(function()
 		$("#changename").hide();
 		$("#unsubscribe").hide();
 		$("#changetheme").hide();
+		$("#favoriteCostumesArea").hide();
 	});
 	
 	$("#changethemeLink").click(function(e)
@@ -1654,6 +1670,7 @@ $(document).ready(function()
 		$("#changename").hide();
 		$("#unsubscribe").hide();
 		$("#changetheme").show();
+		$("#favoriteCostumesArea").hide();
 	});
 
 	$("#changenameLink").click(function(e)
@@ -1663,6 +1680,7 @@ $(document).ready(function()
 		$("#changename").show();
 		$("#unsubscribe").hide();
 		$("#changetheme").hide();
+		$("#favoriteCostumesArea").hide();
 	});
 
 
@@ -1673,6 +1691,17 @@ $(document).ready(function()
 		$("#changename").hide();
 		$("#unsubscribe").show();
 		$("#changetheme").hide();
+		$("#favoriteCostumesArea").hide();
+	});
+	
+	$("#favoriteCostumes").click(function(e)
+	{
+		e.preventDefault();
+		$("#changephone").hide();
+		$("#changename").hide();
+		$("#unsubscribe").hide();
+		$("#changetheme").hide();
+		$("#favoriteCostumesArea").show();
 	});
 
 	$("#submitDelete").button().click(function(e)
