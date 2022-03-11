@@ -44,6 +44,12 @@ define('dbPassword2', 'DB_PASSWORD_HERE');
 define('dbName2', 'DB_NAME_HERE');
 
 /**
+ * forumURL: The forum endpoint for the API
+*/
+
+$forumURL = "index.php?api";
+
+/**
  * placeholder: This variable is used for assigning a user account to be a placeholder account. A placeholder account can be signed up multiple times for the same event, and is used to sign up non-members.
 */
 

@@ -910,10 +910,12 @@ function resetTrooperStatus($eventID, $link = 0)
 */
 function getAuthForum($user_id)
 {
+	global $forumURL;
+	
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/auth/login-token",
+	  CURLOPT_URL => $forumURL . "/auth/login-token",
 	  CURLOPT_POST => 1,
 	  CURLOPT_POSTFIELDS => "user_id=" . $user_id,
 	  CURLOPT_CUSTOMREQUEST => "POST",
@@ -942,10 +944,12 @@ function getAuthForum($user_id)
 */
 function loginWithForum($username, $password)
 {
+	global $forumURL;
+	
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/auth",
+	  CURLOPT_URL => $forumURL . "api/auth",
 	  CURLOPT_POST => 1,
 	  CURLOPT_POSTFIELDS => "login=" . $username . "&password=" . $password . "",
 	  CURLOPT_CUSTOMREQUEST => "POST",
@@ -975,11 +979,13 @@ function loginWithForum($username, $password)
 */
 function createThread($id, $title, $message)
 {
+	global $forumURL;
+	
 	// Create Thread
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/threads",
+	  CURLOPT_URL => $forumURL . "api/threads",
 	  CURLOPT_POST => 1,
 	  CURLOPT_POSTFIELDS => "node_id=" . $id . "&title=" . urlencode($title) . "&message=" . urlencode($message) . "&api_bypass_permissions=1",
 	  CURLOPT_CUSTOMREQUEST => "POST",
@@ -1007,11 +1013,13 @@ function createThread($id, $title, $message)
 */
 function lockThread($id)
 {
+	global $forumURL;
+	
 	// Edit Thread
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/threads/" . $id,
+	  CURLOPT_URL => $forumURL . "api/threads/" . $id,
 	  CURLOPT_POST => 1,
 	  CURLOPT_POSTFIELDS => "discussion_open=" . false . "&api_bypass_permissions=1",
 	  CURLOPT_CUSTOMREQUEST => "POST",
@@ -1041,11 +1049,13 @@ function lockThread($id)
 */
 function createPost($id, $message, $userID = xenforoAPI_userID)
 {
+	global $forumURL;
+	
 	// Create Post
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/posts",
+	  CURLOPT_URL => $forumURL . "api/posts",
 	  CURLOPT_POST => 1,
 	  CURLOPT_POSTFIELDS => "thread_id=" . $id . "&message=" . urlencode($message) . "&api_bypass_permissions=1",
 	  CURLOPT_CUSTOMREQUEST => "POST",
@@ -1074,11 +1084,13 @@ function createPost($id, $message, $userID = xenforoAPI_userID)
 */
 function editPost($id, $message)
 {
+	global $forumURL;
+	
 	// Edit Post
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/posts/" . $id,
+	  CURLOPT_URL => $forumURL . "api/posts/" . $id,
 	  CURLOPT_POST => 1,
 	  CURLOPT_POSTFIELDS => "message=" . urlencode($message) . "&api_bypass_permissions=1",
 	  CURLOPT_CUSTOMREQUEST => "POST",
@@ -1107,11 +1119,13 @@ function editPost($id, $message)
 */
 function moveThread($id, $forum)
 {
+	global $forumURL;
+	
 	// Edit Post
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/threads/" . $id . "/move",
+	  CURLOPT_URL => $forumURL . "api/threads/" . $id . "/move",
 	  CURLOPT_POST => 1,
 	  CURLOPT_POSTFIELDS => "target_node_id=" . $forum . "&api_bypass_permissions=1",
 	  CURLOPT_CUSTOMREQUEST => "POST",
@@ -1139,11 +1153,13 @@ function moveThread($id, $forum)
 */
 function getUserForum($username)
 {
+	global $forumURL;
+	
 	// Get user forum info by forum name
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/users/find-name&username=" . $username,
+	  CURLOPT_URL => $forumURL . "api/users/find-name&username=" . $username,
 	  CURLOPT_CUSTOMREQUEST => "GET",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
@@ -1169,11 +1185,13 @@ function getUserForum($username)
 */
 function getUserForumID($id)
 {
+	global $forumURL;
+	
 	// Get user forum info by forum ID
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/users/" . $id,
+	  CURLOPT_URL => $forumURL . "api/users/" . $id,
 	  CURLOPT_CUSTOMREQUEST => "GET",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
@@ -1201,11 +1219,13 @@ function getUserForumID($id)
 */
 function updateUserCustom($id, $custom, $value)
 {
+	global $forumURL;
+	
 	// Update user by forum groups by ID
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/users/" . $id,
+	  CURLOPT_URL => $forumURL . "api/users/" . $id,
 	  CURLOPT_POST => 1,
 	  CURLOPT_POSTFIELDS => "custom_fields[".$custom."]=" . $value,
 	  CURLOPT_CUSTOMREQUEST => "POST",
@@ -1235,6 +1255,8 @@ function updateUserCustom($id, $custom, $value)
 */
 function updateUserForumGroup($id, $groupid, $group_ids)
 {
+	global $forumURL;
+	
 	// Update user by forum groups by ID
 	$curl = curl_init();
 
@@ -1250,7 +1272,7 @@ function updateUserForumGroup($id, $groupid, $group_ids)
 	$groupString = substr($groupString, 0, -1);
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/users/" . $id,
+	  CURLOPT_URL => $forumURL . "api/users/" . $id,
 	  CURLOPT_POST => 1,
 	  CURLOPT_POSTFIELDS => "user_group_id=" . $groupid . "&" . $groupString,
 	  CURLOPT_CUSTOMREQUEST => "POST",
@@ -1279,11 +1301,13 @@ function updateUserForumGroup($id, $groupid, $group_ids)
 */
 function deletePost($id, $hard_delete = false)
 {
+	global $forumURL;
+	
 	// Delete Post
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/posts/" . $id,
+	  CURLOPT_URL => $forumURL . "api/posts/" . $id,
 	  CURLOPT_CUSTOMREQUEST => "DELETE",
 	  CURLOPT_POSTFIELDS => "hard_delete=" . $hard_delete . "&api_bypass_permissions=1",
 	  CURLOPT_RETURNTRANSFER => true,
@@ -1311,11 +1335,13 @@ function deletePost($id, $hard_delete = false)
 */
 function deleteThread($id, $hard_delete = false)
 {
+	global $forumURL;
+	
 	// Delete Thread
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/threads/" . $id,
+	  CURLOPT_URL => $forumURL . "api/threads/" . $id,
 	  CURLOPT_CUSTOMREQUEST => "DELETE",
 	  CURLOPT_POSTFIELDS => "hard_delete=" . $hard_delete . "&api_bypass_permissions=1",
 	  CURLOPT_RETURNTRANSFER => true,
@@ -4646,7 +4672,7 @@ if(!loggedIn() && !isset($_POST['loginWithTK']))
 				}
 
 				// Check credentials and make sure trooper still has access
-				if((isset($forumLogin['success']) && $forumLogin['success'] == 1 || password_verify($_POST['password'], $db->password)) && canAccess($db->id))
+				if((isset($forumLogin['success']) && $forumLogin['success'] == 1 || password_verify($_COOKIE['TroopTrackerPassword'], $db->password)) && canAccess($db->id))
 				{
 					// Set session
 					$_SESSION['id'] = $db->id;
