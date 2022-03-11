@@ -127,7 +127,13 @@ if(isset($_GET['do']) && isset($_POST['trooperid']) && isset($_POST['permission'
 	// Which club to get
 	if($_POST['club'] <= count($squadArray))
 	{
-		$queryAdd = "p501";
+		// If set to not a member, remove squad
+		if($_POST['permission'] == 0)
+		{
+			$queryAdd .= "squad = 0, ";
+		}
+		
+		$queryAdd .= "p501";
 	}
 	
 	// Set up count
