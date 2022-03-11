@@ -620,8 +620,11 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 		// Set up query string
 		$troops = "";
 		
+		// Check if link
+		$link = isLink(cleanInput($_POST['eventId']));
+		
 		// Make sure this is a linked event
-		if(isset($link))
+		if($link > 0)
 		{
 			// Query database for shifts to display all comments for linked events
 			$query = "SELECT * FROM events WHERE link = '".$link."'";
