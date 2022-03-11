@@ -2773,8 +2773,16 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					}
 					else
 					{
+						// Set up preference
+						$s = "";
+						
+						// Add preference to search if set
+						if(isset($_GET['s']))
+						{
+							$s = "&s=" . cleanInput($_GET['s']);
+						}
 						echo '
-						<a href="index.php?action=commandstaff&do=notifications&page='.$j.'">'.$j.'</a>';
+						<a href="index.php?action=commandstaff&do=notifications&page='.$j.''.$s.'">'.$j.'</a>';
 					}
 					
 					// If not that last page, add a comma
