@@ -3,7 +3,7 @@
 /**
  * This file is used for updating forum data such as custom variables and user groups from Troop Tracker data.
  * 
- * This should be run every two minutes by a cronjob.
+ * This should be run every 30 minutes to an hour by a cronjob.
  *
  * @author  Matthew Drennan
  *
@@ -12,7 +12,11 @@
 // Include config
 include(dirname(__DIR__) . '/../../config.php');
 
-// Set up all titles into an array
+/**
+ * Used to store all Troop Tracker titles that correspond with Xenforo forum user groups
+ * 
+ * @var array
+*/
 $groupTitles = array();
 
 // Loop through all titles with Xenforo set up
@@ -38,10 +42,18 @@ if ($result = mysqli_query($conn, $query))
 			updateUserCustom($db->user_id, "tkid", $db->tkid);
 		}
 
-		// Set up group array
+		/**
+		 * Used to store Xenforo forum user group values
+		 * 
+		 * @var array
+		*/
 		$groupArray = array();
 
-		// Set up another array to check differences later
+		/**
+		 * Used to store applicable Troop Tracker titles to user
+		 * 
+		 * @var array
+		*/
 		$groupArray2 = array();
 
 		// Get user info
@@ -51,6 +63,94 @@ if ($result = mysqli_query($conn, $query))
 		{
 			// Set group array
 			$groupArray = $userInfo['user']['secondary_group_ids'];
+
+			// Check if 501st member with squad
+			if($db->p501 > 0 && $db->p501 < 3 && $db->squad > 0)
+			{
+				if (!in_array($squadArray[($db->squad - 1)]['userGroup'], $groupArray))
+				{
+					// Not listed on forum, update
+					array_push($groupArray, $squadArray[($db->squad - 1)]['userGroup']);
+				}
+
+				array_push($groupArray2, $squadArray[($db->squad - 1)]['userGroup']);
+
+				// Check if Florida Garrison member set
+				if (!in_array($userGroupGarrison, $groupArray))
+				{
+					// Not listed on forum, update
+					array_push($groupArray, $userGroupGarrison);
+				}
+
+				array_push($groupArray2, $userGroupGarrison);
+			}
+			// 501st member, no squad
+			else if($db->p501 > 0 && $db->p501 < 3 && $db->squad == 0)
+			{
+				if (!in_array($userGroupGarrison, $groupArray))
+				{
+					// Not listed on forum, update
+					array_push($groupArray, $userGroupGarrison);
+				}
+
+				array_push($groupArray2, $userGroupGarrison);
+			}
+			// 501st member, retired
+			else if($db->p501 == 3)
+			{
+				if (!in_array($userGroupRetired, $groupArray))
+				{
+					// Not listed on forum, update
+					array_push($groupArray, $userGroupRetired);
+				}
+
+				array_push($groupArray2, $userGroupRetired);
+			}
+
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
+			{
+				// Check if club member
+				if($db->{$club_value['db']} > 0 && $db->{$club_value['db']} < 3)
+				{
+					if (!in_array($club_value['userGroup'], $groupArray))
+					{
+						// Not listed on forum, update
+						array_push($groupArray, $club_value['userGroup']);
+					}
+
+					array_push($groupArray2, $club_value['userGroup']);	
+				}
+				// 501st member, retired
+				else if($db->{$club_value['db']} == 3)
+				{
+					if (!in_array($userGroupRetired, $groupArray))
+					{
+						// Not listed on forum, update
+						array_push($groupArray, $userGroupRetired);
+					}
+
+					array_push($groupArray2, $userGroupRetired);	
+				}
+
+				// Add to check array
+				array_push($groupTitles, $club_value['userGroup']);
+			}
+
+			// Loop through squads to add to check array
+			foreach($squadArray as $squad => $squad_value)
+			{
+				// Add to check array
+				array_push($groupTitles, $squad_value['userGroup']);
+			}
+
+			/**
+			 * Add $userGroupGarrison, $userGroup501st, $userGroupRetired to the $groupTitles array
+			 * so the code knows they exist in Troop Tracker DB.
+			*/
+			array_push($groupTitles, $userGroupGarrison);
+			array_push($groupTitles, $userGroup501st);
+			array_push($groupTitles, $userGroupRetired);
 
 			// Update user groups so they match troop tracker
 			$query2 = "SELECT titles.forum_id, title_troopers.trooperid FROM titles LEFT JOIN title_troopers ON titles.id = title_troopers.titleid WHERE titles.forum_id != 0 AND title_troopers.trooperid = ".$db->id." GROUP BY titles.id";
@@ -69,8 +169,17 @@ if ($result = mysqli_query($conn, $query))
 				}
 			}
 
-			// Check differences - Intersect titles in database with all titles with users, check difference with titles from database assigned to trooper
+			/**
+			 * Check differences - Intersect titles in Troop Tracker DB ($groupTitles) with forum titles ($groupArray), return values that are the same. Check difference between assigned Troop Tracker DB titles and Forum titles. Will return the values to remove.
+			 * 
+			 * @var array
+			*/
+			
 			$remove = array_diff(array_intersect($groupArray, $groupTitles), $groupArray2);
+
+			/**
+			 * Check difference between forum DB titles and values to remove. Will return forum titles without removed titles.
+			*/
 
 			$groupArray = array_diff($groupArray, $remove);
 
