@@ -138,6 +138,24 @@ $dualCostume = 5;
 $dualNA = 721;
 
 /**
+ * userGroupGarrison: The Xenforo user group ID for the garrison
+*/
+
+$userGroupGarrison = 18;
+
+/**
+ * userGroup501st: The Xenforo user group ID for the 501st or other group
+*/
+
+$userGroup501st = 1415;
+
+/**
+ * userGroupRetired: The Xenforo user group ID for retired members
+*/
+
+$userGroupRetired = 1429;
+
+/**
  * squadArray
  * name: Name of the squad
  * logo: Image of the squad logo located in images folder
@@ -148,6 +166,7 @@ $dualNA = 721;
  * rankReserve: An image file that will show on troopers profiles of this squad (Reserve Members)
  * rankRetired: An image file that will show on troopers profiles of this squad (Inactive Retired Members)
  * eventForum: The forum ID in Xenforo that corresponds to the event forum for this squad
+ * userGroup: The Xenforo user group ID assigned to this squad
  */
 
 
@@ -162,7 +181,8 @@ $squadArray = array(
 		"rankRegular" => "everglades_sm.png",
 		"rankReserve" => "",
 		"rankRetired" => "",
-		"eventForum" => 9),
+		"eventForum" => 9,
+		"userGroup" => 44),
 	array(
 		"name" => "Makaze Squad",
 		"logo" => "makaze_emblem.png",
@@ -172,7 +192,8 @@ $squadArray = array(
 		"rankRegular" => "makaze_sm.png",
 		"rankReserve" => "",
 		"rankRetired" => "",
-		"eventForum" => 8),
+		"eventForum" => 8,
+		"userGroup" => 45),
 	array(
 		"name" => "Parjai Squad",
 		"logo" => "parjai_emblem.png",
@@ -182,7 +203,8 @@ $squadArray = array(
 		"rankRegular" => "parjai_sm.png",
 		"rankReserve" => "",
 		"rankRetired" => "",
-		"eventForum" => 186),
+		"eventForum" => 186,
+		"userGroup" => 250),
 	array(
 		"name" => "Squad 7",
 		"logo" => "squad7_emblem.png",
@@ -192,7 +214,8 @@ $squadArray = array(
 		"rankRegular" => "s7_sm.png",
 		"rankReserve" => "",
 		"rankRetired" => "",
-		"eventForum" => 7),
+		"eventForum" => 7,
+		"userGroup" => 683),
 	array(
 		"name" => "Tampa Bay Squad",
 		"logo" => "tampabay_emblem.png",
@@ -202,7 +225,8 @@ $squadArray = array(
 		"rankRegular" => "tampa_sm.png",
 		"rankReserve" => "",
 		"rankRetired" => "",
-		"eventForum" => 73)
+		"eventForum" => 73,
+		"userGroup" => 43)
 );
 
 /**
@@ -220,6 +244,7 @@ $squadArray = array(
  * rankReserve: An image file that will show on troopers profiles of this club (Reserve Members)
  * rankRetired: An image file that will show on troopers profiles of this club (Inactive Retired Members)
  * naCostume: The ID of the costume that is the clubs other or N/A
+ * userGroup: The Xenforo user group ID assigned to this club
  */
 
 // Clubs
@@ -237,7 +262,8 @@ $clubArray = array(
 		"rankRegular" => "rebel.png",
 		"rankReserve" => "rebel_reserve.png",
 		"rankRetired" => "rebel_retired.png",
-		"naCostume" => 720),
+		"naCostume" => 720,
+		"userGroup" => 1438),
 	array(
 		"name" => "Droid Builders",
 		"logo" => "test", "costumes" => array(3),
@@ -250,7 +276,8 @@ $clubArray = array(
 		"rankRegular" => "r2.png",
 		"rankReserve" => "r2_reserve.png",
 		"rankRetired" => "r2_retired.png",
-		"naCostume" => 716),
+		"naCostume" => 716,
+		"userGroup" => 1415),
 	array(
 		"name" => "Mando Mercs",
 		"logo" => "test",
@@ -265,7 +292,8 @@ $clubArray = array(
 		"rankRegular" => "mercs.png",
 		"rankReserve" => "mercs_reserve.png",
 		"rankRetired" => "mercs_retired.png",
-		"naCostume" => 715), 
+		"naCostume" => 715,
+		"userGroup" => 1415),
 	array(
 		"name" => "Other",
 		"logo" => "test",
@@ -280,7 +308,8 @@ $clubArray = array(
 		"rankRegular" => "saberguildmember.png",
 		"rankReserve" => "",
 		"rankRetired" => "",
-		"naCostume" => 717)
+		"naCostume" => 717,
+		"userGroup" => 1415)
 );
 
 ?>
