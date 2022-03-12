@@ -1,5 +1,5 @@
 # 501st Legion Troop Tracker
-A troop tracker for the 501st Legion developed for the Florida Garrison.
+A troop tracker for the 501st Legion developed for the Florida Garrison. Xenforo is required to use Troop Tracker.
 
 ## Use
 You are free to download, modify, and use freely for non-commerical purposes.
