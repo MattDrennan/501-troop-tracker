@@ -853,7 +853,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 	if($_POST['searchType'] == "regular")
 	{
 		// Query for search
-		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE";
+		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id != ".placeholder." AND ";
 		
 		if(strlen($_POST['tkID']) > 0)
 		{
@@ -917,7 +917,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		$dateE = date('Y-m-d H:i:s', $date);
 
 		// Query for search
-		$query = "SELECT * FROM troopers";
+		$query = "SELECT * FROM troopers WHERE troopers.id != ".placeholder."";
 		
 		// Get the squad search type
 		// If All
@@ -1001,7 +1001,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		$dateE = date('Y-m-d H:i:s', $date);
 
 		// Query for search
-		$query = "SELECT events.id AS id, events.dateStart, events.dateEnd, events.name, events.charityDirectFunds, events.charityAddHours, events.charityDirectFunds, events.charityIndirectFunds, events.charityName, events.charityNote FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."'";
+		$query = "SELECT events.id AS id, events.dateStart, events.dateEnd, events.name, events.charityDirectFunds, events.charityAddHours, events.charityDirectFunds, events.charityIndirectFunds, events.charityName, events.charityNote FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE troopers.id != ".placeholder." AND dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."'";
 		
 		// Get the squad search type
 		// If All
