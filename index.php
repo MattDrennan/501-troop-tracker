@@ -1374,7 +1374,69 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 			<a href="#/" class="button" id="showstats" name="showstats">Show My Stats</a> 
 			<a href="index.php?profile='.$_SESSION['id'].'" class="button">View My Profile</a>
 		</p>
-		
+
+		<p style="text-align: center;">
+			<a href="#/" class="button" id="show-top-troops">Top Troopers</a> 
+		</p>
+
+		<div class="top-troops" id="top-troops">
+			<h2 class="tm-section-header">Top Troopers</h2>
+
+			<h4><u>All Time</u></h4>
+
+			<ol>';
+
+			$query = "SELECT trooperid, COUNT(trooperid) AS total FROM event_sign_up WHERE event_sign_up.trooperid != ".placeholder." GROUP BY trooperid ORDER BY total DESC LIMIT 25";
+
+			$i = 0;
+
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					echo '<li><a href="index.php?profile='.$db->trooperid.'">' . getName($db->trooperid) . ' - '.$db->total.'</a></li>';
+
+					$i++;
+				}
+			}
+
+			// If none to display
+			if($i == 0)
+			{
+				echo '<li>Nothing to display.</li>';
+			}
+			
+			echo '
+			</ol>
+
+			<h4><u>Last 30 Days</u></h4>
+
+			<ol>';
+
+			$query = "SELECT trooperid, COUNT(trooperid) AS total FROM event_sign_up LEFT JOIN events ON event_sign_up.troopid = events.id WHERE events.dateEnd > NOW() - INTERVAL 30 DAY AND event_sign_up.trooperid != ".placeholder." GROUP BY trooperid ORDER BY total DESC LIMIT 25";
+
+			$i = 0;
+
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					echo '<li><a href="index.php?profile='.$db->trooperid.'">' . getName($db->trooperid) . ' - '.$db->total.'</a></li>';
+
+					$i++;
+				}
+			}
+
+			// If none to display
+			if($i == 0)
+			{
+				echo '<li>Nothing to display.</li>';
+			}
+			
+			echo '
+			</ol>
+		</div>
+
 		<div id="mystats" name="mystats" style="display: none;">';
 
 		// Get data

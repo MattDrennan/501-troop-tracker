@@ -492,6 +492,21 @@ $(document).ready(function()
 		});
 	})
 
+	// Top Troops Button
+	$("body").on("click", "#show-top-troops", function(e)
+	{
+		if($("#top-troops").is(":hidden"))
+		{
+			$(this).text("Hide");
+			$("#top-troops").show();
+		}
+		else
+		{
+			$(this).text("Top Troopers");
+			$("#top-troops").hide();
+		}
+	})
+
 	// Change Limits - Shows / Hide Change Limits
 	$("body").on("click", "#limitChange", function(e)
 	{
