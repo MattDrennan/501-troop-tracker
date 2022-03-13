@@ -4949,25 +4949,12 @@ if(isset($_GET['event']))
 						<p><b>View post on forum:</b> <a href="https://www.fl501st.com/boards/index.php?threads/'.$db->thread_id.'" target="_blank">https://www.fl501st.com/forums/index.php?threads/'.$db->thread_id.'</a></p>';
 					}
 				
-					// Get number of events with link
-					$getNumOfLinks = $conn->query("SELECT id FROM events WHERE link = '".$db->id."'");
+					// Get linked event
+					$link = isLink($db->id);
 					
 					// If has links to event, or is linked, show shift data
-					if($getNumOfLinks->num_rows > 0 || $db->link != 0)
-					{
-						// Set link
-						$link = -1;
-						
-						// If this event is the link
-						if($getNumOfLinks->num_rows > 0)
-						{
-							$link = $db->id;
-						}
-						else if($db->link != 0)
-						{
-							$link = $db->link;
-						}
-						
+					if($link > 0)
+					{						
 						echo '
 						<h2 class="tm-section-header">Shifts</h2>';
 						
@@ -4993,9 +4980,9 @@ if(isset($_GET['event']))
 					$add = "";
 
 					// Add to query if this is a linked event
-					if(isLink(cleanInput($_GET['event'])) > 0)
+					if($link > 0)
 					{
-						$add = " OR troopid = '".isLink(cleanInput($_GET['event']))."'";
+						$add = " OR troopid = '".$link."'";
 					}
 					
 					// Don't show photos, if merged data
