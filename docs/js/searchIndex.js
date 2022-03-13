@@ -471,6 +471,11 @@ Search.appendIndex(
             "summary": "Adds\u0020http\u0020to\u0020url\u0020string\u0020if\u0020it\u0020does\u0020not\u0020exist",
             "url": "namespaces/default.html#function_addHttp"
         },                {
+            "fqsen": "\\mainCostumesBuild\u0028\u0029",
+            "name": "mainCostumesBuild",
+            "summary": "Returns\u0020a\u0020string\u0020of\u0020costumes\u0020that\u0020were\u0020favorited\u0020by\u0020the\u0020trooper",
+            "url": "namespaces/default.html#function_mainCostumesBuild"
+        },                {
             "fqsen": "\\isAdmin\u0028\u0029",
             "name": "isAdmin",
             "summary": "Returns\u0020if\u0020trooper\u0020is\u0020an\u0020admin\u0020or\u0020moderator",

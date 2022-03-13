@@ -3246,26 +3246,37 @@ function profileExist($id)
  * @param string $comments Additional information on the troop - BB Code supported
  * @param string $referred Who referred the event
  * @param int $eventId ID for the event
+ * @param int $eventType The ID of the event type for the event
  * @param string $roster A string of the troopers attending the troop
  * @return string
 */
-function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $website, $numberOfAttend, $requestedNumber, $requestedCharacter, $secure, $blasters, $lightsabers, $parking, $mobility, $amenities, $comments, $referred, $eventId, $roster = "")
+function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $website, $numberOfAttend, $requestedNumber, $requestedCharacter, $secure, $blasters, $lightsabers, $parking, $mobility, $amenities, $comments, $referred, $eventId, $eventType = 0, $roster = "")
 {
-	return '
+	$returnString = '';
+
+	$returnString .= '
 	[b]Event Name:[/b] '.$eventName.'
 	[b]Venue:[/b] '.$eventVenue.'
 	[b]Venue address:[/b] '.$location.'
 	[b]Event Start:[/b] '.date("m/d/y h:i A", strtotime($date1)).'
-	[b]Event End:[/b] '.date("m/d/y h:i A", strtotime($date2)).'
-	[b]Event Website:[/b] '.$website.'
-	[b]Expected number of attendees:[/b] '.$numberOfAttend.'
-	[b]Requested number of characters:[/b] '.$requestedNumber.'
-	[b]Requested character types:[/b] '.$requestedCharacter.'
-	[b]Secure changing/staging area:[/b] '.yesNo($secure).'
-	[b]Can troopers carry blasters:[/b] '.yesNo($blasters).'
-	[b]Can troopers carry/bring props like lightsabers and staffs:[/b] '.yesNo($lightsabers).'
-	[b]Is parking available:[/b] '.yesNo($parking).'
-	[b]Is venue accessible to those with limited mobility:[/b] '.yesNo($mobility).'
+	[b]Event End:[/b] '.date("m/d/y h:i A", strtotime($date2)).'';
+
+	// Exclude unimportant information from armor party events
+	if($eventType != 10)
+	{
+		$returnString .= '
+		[b]Event Website:[/b] '.$website.'
+		[b]Expected number of attendees:[/b] '.$numberOfAttend.'
+		[b]Requested number of characters:[/b] '.$requestedNumber.'
+		[b]Requested character types:[/b] '.$requestedCharacter.'
+		[b]Secure changing/staging area:[/b] '.yesNo($secure).'
+		[b]Can troopers carry blasters:[/b] '.yesNo($blasters).'
+		[b]Can troopers carry/bring props like lightsabers and staffs:[/b] '.yesNo($lightsabers).'
+		[b]Is parking available:[/b] '.yesNo($parking).'
+		[b]Is venue accessible to those with limited mobility:[/b] '.yesNo($mobility).'';
+	}
+
+	$returnString .= '
 	[b]Amenities available at venue:[/b] '.ifEmpty($amenities, "No amenities for this event.").'
 	[b]Comments:[/b] '.ifEmpty($comments, "No comments for this event.").'
 	[b]Referred by:[/b] '.ifEmpty($referred, "Not available").'
@@ -3275,6 +3286,8 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 	[b][u]Sign Up / Event Roster:[/u][/b]
 
 	[url]https://fl501st.com/troop-tracker/index.php?event=' . $eventId . '[/url]';
+
+	return $returnString;
 }
 
 /**
