@@ -177,7 +177,7 @@ function didAttend(value)
 	return returnValue;
 }
 
-// getStatus: gets status of trooper - 0 = Going, 1 = Stand by, 2 = Tentative, 3 = Attended, 4 = Canceled, 5 = Pending, 6 = Not Picked
+// getStatus: gets status of trooper - 0 = Going, 1 = Stand by, 2 = Tentative, 3 = Attended, 4 = Canceled, 5 = Pending, 6 = Not Picked, 7 = No Show
 function getStatus(value)
 {
 	var returnValue = "";
@@ -209,6 +209,10 @@ function getStatus(value)
 	else if(value == 6)
 	{
 		returnValue = "Not Picked";
+	}
+	else if(value == 7)
+	{
+		returnValue = "No Show";
 	}
 
 	return returnValue;

@@ -3523,7 +3523,7 @@ function inEvent($id, $event)
 /**
  * Returns the status of the trooper
  * 
- * 0 = Going / 1 = Stand By / 2 = Tentative / 3 = Attended / 4 = Canceled / 5 = Pending / 6 = Not Picked
+ * 0 = Going / 1 = Stand By / 2 = Tentative / 3 = Attended / 4 = Canceled / 5 = Pending / 6 = Not Picked / 7 = No Show
  * 
  * @param int $value The ID of the status
  * @return string Returns string of the status
@@ -3559,6 +3559,10 @@ function getStatus($value)
 	else if($value == 6)
 	{
 		$returnValue = "Not Picked";
+	}
+	else if($value == 7)
+	{
+		$returnValue = "No Show";
 	}
 
 	return $returnValue;

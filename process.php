@@ -2751,6 +2751,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 								<option value="4" '.echoSelect(4, $db->status).'>Canceled</option>
 								<option value="5" '.echoSelect(5, $db->status).'>Pending</option>
 								<option value="6" '.echoSelect(6, $db->status).'>Not Picked</option>
+								<option value="7" '.echoSelect(7, $db->status).'>No Show</option>
 							</select>
 						</div>
 					</td>
