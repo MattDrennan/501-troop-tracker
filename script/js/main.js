@@ -2287,7 +2287,7 @@ $(document).ready(function()
 					var json = JSON.parse(data);
 					$("#nameTable").html('<a href="index.php?action=commandstaff&do=managetroopers&uid=' + $("#userID2").val() + '">' + ifEmpty(json.name) + '</a>');
 					$("#emailTable").html(ifEmpty(json.email));
-					$("#forumTable").html('<a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un=' + json.forum + '" target="_blank">' + json.forum + '</a>');
+					$("#forumTable").html('<a href="https://www.fl501st.com/boards/index.php?members/' + json.forum + '.' + json.user_id + '" target="_blank">' + json.forum + '</a>');
 
 					// Loop through clubs
 					for(var i = 0; i <= (clubDB3Array.length - 1); i++)

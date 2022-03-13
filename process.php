@@ -1650,7 +1650,7 @@ if(isset($_GET['do']) && $_GET['do'] == "getuser" && loggedIn())
 				}
 				
 				// Array variables
-				$array = array('name' => $db->name, 'email' => $db->email, 'forum' => $db->forum_id, 'phone' => $db->phone, 'squad' => getSquadName($db->squad), 'tkid' => readTKNumber($db->tkid, $db->squad), 'link' => $link);
+				$array = array('name' => $db->name, 'email' => $db->email, 'forum' => $db->forum_id, 'phone' => $db->phone, 'squad' => getSquadName($db->squad), 'tkid' => readTKNumber($db->tkid, $db->squad), 'link' => $link, 'user_id' => $db->user_id);
 
 				// Loop through clubs
 				foreach($clubArray as $club => $club_value)
