@@ -1386,7 +1386,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 
 			<ol>';
 
-			$query = "SELECT trooperid, COUNT(trooperid) AS total FROM event_sign_up WHERE event_sign_up.trooperid != ".placeholder." GROUP BY trooperid ORDER BY total DESC LIMIT 25";
+			$query = "SELECT trooperid, COUNT(trooperid) AS total FROM event_sign_up LEFT JOIN events ON event_sign_up.trooperid = events.id WHERE event_sign_up.trooperid != ".placeholder." AND events.closed = '1' AND event_sign_up.status = '3' GROUP BY trooperid ORDER BY total DESC LIMIT 25";
 
 			$i = 0;
 
@@ -1413,7 +1413,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 
 			<ol>';
 
-			$query = "SELECT trooperid, COUNT(trooperid) AS total FROM event_sign_up LEFT JOIN events ON event_sign_up.troopid = events.id WHERE events.dateEnd > NOW() - INTERVAL 30 DAY AND event_sign_up.trooperid != ".placeholder." GROUP BY trooperid ORDER BY total DESC LIMIT 25";
+			$query = "SELECT trooperid, COUNT(trooperid) AS total FROM event_sign_up LEFT JOIN events ON event_sign_up.troopid = events.id WHERE events.dateEnd > NOW() - INTERVAL 30 DAY AND event_sign_up.trooperid != ".placeholder." AND events.closed = '1' AND event_sign_up.status = '3' GROUP BY trooperid ORDER BY total DESC LIMIT 25";
 
 			$i = 0;
 
