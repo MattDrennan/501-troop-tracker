@@ -6161,7 +6161,7 @@ if(isset($_GET['event']))
 				$troops = "";
 				
 				// Make sure this is a linked event
-				if(isset($link))
+				if($link > 0)
 				{
 					// Query database for shifts to display all comments for linked events
 					$query = "SELECT * FROM events WHERE link = '".$link."'";
