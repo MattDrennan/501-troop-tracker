@@ -1565,7 +1565,21 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		{
 			if($i == 0)
 			{
+				// Get squad for squadLink function
+				if(isset($_GET['squad']))
+				{
+					$squadLink = $_GET['squad'];
+				}
+				else
+				{
+					$squadLink = -1;
+				}
+
 				echo '
+				<p style="text-align: center;">
+					'.displaySquadLinks($squadLink).'
+				</p>
+
 				<div style="overflow-x: auto;">
 				<table border="1">
 				<tr>
@@ -1652,24 +1666,10 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		$countMoney = $money_get->fetch_row();
 		$money_get2 = $conn->query("SELECT SUM(charityIndirectFunds) FROM events WHERE closed = '1'") or die($conn->error);
 		$countMoney2 = $money_get2->fetch_row();
-		
-		// Get squad for squadLink function
-		if(isset($_GET['squad']))
-		{
-			$squadLink = $_GET['squad'];
-		}
-		else
-		{
-			$squadLink = -1;
-		}
  
 		echo '
 		</table>
-		</div>
-		
-		<p style="text-align: right;">
-			'.displaySquadLinks($squadLink).'
-		</p>';
+		</div>';
 		
 		// If squad is set
 		if(isset($_GET['squad']))
