@@ -4642,7 +4642,9 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 		if($i == 0)
 		{
 			echo '
-			<p>Account not found. <a href="index.php?action=login">Try again?</a></p>';
+			<p>Account not found. <a href="index.php?action=login">Try again?</a></p>
+			
+			<p>Please contact the Garrison Webmaster if you continue to have issues. Your FL Garrison boards name may not match the Troop Tracker records.</p>';
 		}
 	}
 	else

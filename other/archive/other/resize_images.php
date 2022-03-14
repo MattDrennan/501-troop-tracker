@@ -17,13 +17,16 @@ $uploadedFiles = scandir($directory);
 foreach ($uploadedFiles as $file => $value)
 {
 	// Don't allow certain files / directories
-	if ('.' !== $value && '..' !== $value && 'resize' !== $value && '.DS_Store' !== $value)
+	if('.' !== $value && '..' !== $value && 'resize' !== $value && '.DS_Store' !== $value)
 	{
 		// Get file
 		$fileName = $directory . $value;
 
 		// Get path info
 		$info = pathinfo($fileName);
+		
+		// If already exists in resize directory, skip
+		if(file_exists($directory . "resize/" . $info['filename'] . ".jpg")) { continue; }
 
 		// Get file type
 		$fileType = mime_content_type($fileName);
