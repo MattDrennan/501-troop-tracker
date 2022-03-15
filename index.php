@@ -182,8 +182,7 @@ echo '
 
 <div class="tm-container">
 <div class="tm-text-white tm-page-header-container">
-<!--<h1 class="tm-page-header">501st '.garrison.' - Troop Tracker</h1>-->
-<img src="images/logo.png" />
+	<img src="images/logo.png" />
 </div>
 <div class="tm-main-content">
 <section class="tm-section">
