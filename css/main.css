@@ -77,7 +77,6 @@ body {
 }
 
 .tm-container {
-	max-width: 900px;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -267,6 +266,18 @@ a.button{
 /* Background for chosen squad */
 .squadlink {
 	background-color: var(--squad-link-color);
+}
+
+@media (min-width: 901px) {
+	.tm-container {
+		width: 70%;
+	}
+}
+
+@media (max-width: 900px) {
+	.tm-container {
+		max-width: 900px;
+	}
 }
 
 @media (max-width: 550px) {

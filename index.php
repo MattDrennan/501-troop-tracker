@@ -182,7 +182,8 @@ echo '
 
 <div class="tm-container">
 <div class="tm-text-white tm-page-header-container">
-<h1 class="tm-page-header">501st '.garrison.' - Troop Tracker</h1>
+<!--<h1 class="tm-page-header">501st '.garrison.' - Troop Tracker</h1>-->
+<img src="images/logo.png" />
 </div>
 <div class="tm-main-content">
 <section class="tm-section">
@@ -6294,9 +6295,8 @@ else
 			{
 				echo '
 				<h2 class="tm-section-header">Troops</h2>
-				<div aria-label="Press an image to sort by squad / garrison." data-balloon-pos="down" data-balloon-length="fit">'
-				
-				. showSquadButtons() . '
+				<div style="text-align: center;" aria-label="Press an image to sort by squad / garrison." data-balloon-pos="down" data-balloon-length="fit">'
+					. showSquadButtons() . '
 				</div>
 				
 				<p style="text-align: center;">
