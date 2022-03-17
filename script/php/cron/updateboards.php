@@ -27,8 +27,17 @@ if ($result = mysqli_query($conn, $query))
 		{
 			while ($db2 = mysqli_fetch_object($result2))
 			{
+				// Set trooper name
+				$name = getName($db2->trooperid);
+
+				// Check if placeholder
+				if($db2->note != "")
+				{
+					$name = $db2->note;
+				}
+
 				$roster .= '
-				-[i]'.getStatus($db2->status).'[/i]: '.getName($db2->trooperid).' ('.getCostume($db2->costume).')
+				-[i]'.getStatus($db2->status).'[/i]: '.$name.' ('.getCostume($db2->costume).')
 				';
 			}
 		}
