@@ -189,7 +189,7 @@ echo '
 
 <div class="topnav" id="myTopnav">
 <a href="index.php" '.isPageActive("home").'>Home</a>
-<a href="https://fl501st.com/boards/">Forum</a>';
+<a href="https://fl501st.com/boards/">Forums</a>';
 
 if(!isWebsiteClosed() || isAdmin())
 {
