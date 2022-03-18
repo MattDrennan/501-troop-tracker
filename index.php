@@ -6729,17 +6729,6 @@ echo '
 
 if(!isWebsiteClosed())
 {
-	// Discord link - logged in only
-	if(loggedIn())
-	{
-		echo '
-		<p style="text-align: center;">
-			<a href="https://discord.gg/C6bCB33gp3" target="_blank">Join '.garrison.' on Discord for event notifications and more! Click here to join.</a>
-			<br /><br />
-			<a href="https://twitter.com/FLTroopUpdates" target="_blank">Follow @FLTroopUpdates on Twitter for event notifications and updates!</a>
-		</p>';
-	}
-
 	// User's online
 	echo '
 	<hr />
@@ -6787,8 +6776,16 @@ Website created by <a href="index.php?profile=644">Matthew Drennan (TK52233)</a>
 If you are missing troops or notice incorrect data, please refer to your squad leader.
 </p>
 
-<p style="text-align: center;">
-<a href="https://github.com/MattDrennan/501-troop-tracker" target="_blank">Help contribute on GitHub.com!</a>
+<p class="footer-icons">
+	<a href="https://github.com/MattDrennan/501-troop-tracker" target="_blank"><img src="images/github.png" alt="GitHub" title="Help contribute to the Troop Tracker project!" /></a> ';
+	// Discord / Twitter
+	if(loggedIn())
+	{
+		echo '
+		<a href="https://discord.gg/C6bCB33gp3" target="_blank"><img src="images/discord.png" alt="Discord" title="Get event notifications and more on Discord!" /></a> 
+		<a href="https://twitter.com/FLTroopUpdates" target="_blank"><img src="images/twitter.png" alt="Twitter" title="Get event notifications and more on Twitter!" /></a>';
+	}
+echo '
 </p>
 </section>
 

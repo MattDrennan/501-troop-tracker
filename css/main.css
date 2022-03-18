@@ -541,6 +541,16 @@ span.select2-selection__rendered
 	color:  gray;
 }
 
+/********** FOOTER ICONS *******************/
+
+.footer-icons {
+	text-align: center;
+}
+
+.footer-icons a:not(:first-child) {
+	margin-left: 15px;
+}
+
 /************ BOX AROUND CHARITY DATA ON EVENT PAGE *******************/
 
 .charitybox {
