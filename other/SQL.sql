@@ -2,7 +2,7 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Generation Time: Mar 11, 2022 at 08:44 AM
+-- Generation Time: Mar 19, 2022 at 12:23 PM
 -- Server version: 8.0.23
 -- PHP Version: 7.4.7
 
@@ -118,6 +118,7 @@ CREATE TABLE `donations` (
   `trooperid` int NOT NULL,
   `amount` decimal(11,2) NOT NULL,
   `txn_id` varchar(255) NOT NULL,
+  `txn_type` varchar(255) NOT NULL DEFAULT '',
   `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 

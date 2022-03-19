@@ -141,7 +141,7 @@ else
 				if($payment_status == "Completed")
 				{
 					// Update donations
-					$conn->query("INSERT INTO donations (trooperid, amount, txn_id) VALUES ('".$custom."', '".$mc_gross."', '".$txn_id."')");
+					$conn->query("INSERT INTO donations (trooperid, amount, txn_id, txn_type) VALUES ('".$custom."', '".$mc_gross."', '".$txn_id."', '".$txn_type."')");
 					sendNotification(getName($custom) . " donated $" . $mc_gross . ".", $custom);
 				}
 			}
