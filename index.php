@@ -5179,10 +5179,10 @@ if(isset($_GET['event']))
 							<hr />
 							<br />
 							
-							<div name="troopersRemainingDisplay" style="justify-content: center; text-align: center;">
+							<div name="troopersRemainingDisplay">
 								<h3>Admin Trooper Counts</h3>
 
-								<ul style="display:inline-table;">
+								<ul>
 									<li>501st troopers: '.eventClubCount($db->id, 0).' </li>
 									<li>Rebel Legion: '.eventClubCount($db->id, 1).' </li>
 									<li>Mando Mercs: '.eventClubCount($db->id, 2).' </li>

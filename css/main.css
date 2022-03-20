@@ -664,6 +664,20 @@ table[name*="comment_"] textarea {
 	text-decoration: line-through;
 }
 
+/* Trooper count list */
+
+div[name="troopersRemainingDisplay"] {
+	justify-content: center;
+	text-align: center;
+	list-style-position: inside;
+}
+
+/* Trooper Roster Data */
+
+div[name="rosterTableNoData"], div[name="signeduparea"] {
+	text-align: center;
+}
+
 /* JQUERY Validator */
 
 label.error {
