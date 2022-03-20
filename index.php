@@ -6428,7 +6428,9 @@ else
 						}
 						
 						echo '
-						' . $db->name . '</a>';
+						' . $db->name . '</a>
+						<br />
+						<span style="font-size: 11px;"><a href="https://www.google.com/maps/search/?api=1&query='.$db->location.'" target="_blank">'.$db->location.'</a></span>';
 
 						// Prevent on canceled events
 						if($db->closed != 2)
