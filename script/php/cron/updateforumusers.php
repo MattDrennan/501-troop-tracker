@@ -41,6 +41,9 @@ if ($result = mysqli_query($conn, $query))
 			// Update TKID on forum
 			updateUserCustom($db->user_id, "tkid", $db->tkid);
 		}
+		
+		// Update full name
+		updateUserCustom($db->user_id, "fullname", $db->name);
 
 		/**
 		 * Used to store Xenforo forum user group values
