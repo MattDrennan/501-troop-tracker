@@ -158,7 +158,7 @@ echo '
 	<!-- Addons -->
 	<script src="script/lib/jquery-ui-timepicker-addon.js"></script>
 	<script src="script/js/validate/jquery.validate.min.js"></script>
-	<script src="script/js/validate/validate.js"></script>
+	<script src="script/js/validate/validate.js?version='.time().'"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
 	
@@ -6892,7 +6892,7 @@ echo '
 
 echo '
 <!-- External JS File -->
-<script type="text/javascript" src="script/js/main.js"></script>
+<script type="text/javascript" src="script/js/main.js?version='.time().'"></script>
 </body>
 </html>';
 
