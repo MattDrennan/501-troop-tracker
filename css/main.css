@@ -653,6 +653,13 @@ table[name*="comment_"] textarea {
 	margin-left: 20px;
 }
 
+/* Canceled Troop */
+
+.canceled-troop, .canceled-troop a {
+	color: red;
+	text-decoration: line-through;
+}
+
 /* JQUERY Validator */
 
 label.error {

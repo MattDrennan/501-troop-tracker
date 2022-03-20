@@ -5248,280 +5248,193 @@ if(isset($_GET['event']))
 							<th>Trooper Name</th>	<th>TKID</th>	<th>Costume</th>	<th>Backup Costume</th>	<th>Status</th>
 						</tr>';
 					}
+					
+					// Create row, change based on status
+					if($db2->status == 4)
+					{
+						echo '
+						<tr class="canceled-troop">';
+					}
+					else
+					{
+						echo '
+						<tr>';
+					}
 
 					// Allow for users to edit their status from the event, and make sure the event is not closed
 					if(loggedIn() && ($db2->trooperId == $_SESSION['id'] || $_SESSION['id'] == $db2->addedby) && ($db->closed == 0 || $db->closed == 3))
 					{
 						echo '
-						<tr>
-							<td>
-								'.drawSupportBadge($db2->trooperId).'
+						<td>
+							'.drawSupportBadge($db2->trooperId).'
 
-								<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
+							<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
 
-								// If a placeholder account, allow edit name
-								if($db2->trooperId == placeholder)
-								{
-									echo '
-									<input type="text" name="placeholdertext" signid="'.$db2->signId.'" value="'.$db2->note.'" />';
-								}
-
-								// Show who added the trooper
-								if($db2->addedby != 0)
-								{
-									echo '
-									<br /><small>Added by:<br />' . getName($db2->addedby) . '</small>';
-								}
-
-							echo '
-							</td>
-								
-							<td>
-								'.readTKNumber($db2->tkid, $db2->squad).'
-							</td>';
-							
-							// If not a limited event, show select boxes to change costumes
-							if($db->limitedEvent != 1)
+							// If a placeholder account, allow edit name
+							if($db2->trooperId == placeholder)
 							{
 								echo '
-								<td name="'.$db2->trooperId.'trooperRosterCostume" id="'.$db2->trooperId.'trooperRosterCostume">
-									<select name="modifysignupFormCostume" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
+								<input type="text" name="placeholdertext" signid="'.$db2->signId.'" value="'.$db2->note.'" />';
+							}
 
-									$query3 = "SELECT * FROM costumes WHERE ";
+							// Show who added the trooper
+							if($db2->addedby != 0)
+							{
+								echo '
+								<br /><small>Added by:<br />' . getName($db2->addedby) . '</small>';
+							}
 
-									// If limited to certain costumes, only show certain costumes...
-									if($db->limitTo < 4)
-									{
-										$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
-									}
-									
-									$query3 .= costume_restrict_query(false, $db2->trooperId) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild()."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
-									
-									if ($result3 = mysqli_query($conn, $query3))
-									{
-										while ($db3 = mysqli_fetch_object($result3))
-										{
-											if($db2->costume == $db3->id)
-											{
-												// If this is the selected costume, make it selected
-												echo '
-												<option value="'. $db3->id .'" club="'. $db3->club .'" SELECTED>'.$db3->costume.'</option>';
-											}
-											else
-											{
-												// Default
-												echo '
-												<option value="'. $db3->id .'" club="'. $db3->club .'">'.$db3->costume.'</option>';
-											}
-										}
-									}
+						echo '
+						</td>
+							
+						<td>
+							'.readTKNumber($db2->tkid, $db2->squad).'
+						</td>';
+						
+						// If not a limited event, show select boxes to change costumes
+						if($db->limitedEvent != 1)
+						{
+							echo '
+							<td name="'.$db2->trooperId.'trooperRosterCostume" id="'.$db2->trooperId.'trooperRosterCostume">
+								<select name="modifysignupFormCostume" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
 
-									echo '
-									</select>
-								</td>
+								$query3 = "SELECT * FROM costumes WHERE ";
+
+								// If limited to certain costumes, only show certain costumes...
+								if($db->limitTo < 4)
+								{
+									$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
+								}
 								
-								<td name="'.$db2->trooperId.'trooperRosterBackup" id="'.$db2->trooperId.'trooperRosterBackup">
-									<select name="modiftybackupcostumeForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
-
-									// Display costumes
-									$query3 = "SELECT * FROM costumes WHERE ";
-									
-									// If limited to certain costumes, only show certain costumes...
-									if($db->limitTo < 4)
+								$query3 .= costume_restrict_query(false, $db2->trooperId) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild()."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
+								
+								if ($result3 = mysqli_query($conn, $query3))
+								{
+									while ($db3 = mysqli_fetch_object($result3))
 									{
-										$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
-									}
-									
-									$query3 .= costume_restrict_query(false, $db2->trooperId) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild()."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
-									
-									// Count results
-									$c = 0;
-									
-									// Amount of costumes
-									if ($result3 = mysqli_query($conn, $query3))
-									{
-										while ($db3 = mysqli_fetch_object($result3))
+										if($db2->costume == $db3->id)
 										{
-											// If costume set to backup and first result
-											if($db2->costume_backup == 0 && $c == 0)
-											{
-												echo '
-												<option value="0" SELECTED>N/A</option>';
-											}
-											// Make sure this is a first result otherwise
-											else if($c == 0)
-											{
-												echo '
-												<option value="0">N/A</option>';
-											}
-											
-											// If a costume matches
-											if($db2->costume_backup == $db3->id)
-											{
-												echo '
-												<option value="'.$db3->id.'" SELECTED>'.$db3->costume.'</option>';
-											}
-											// Start showing costumes
-											else
-											{
-												echo '
-												<option value="'.$db3->id.'">'.$db3->costume.'</option>';
-											}
-											
-											// Increment
-											$c++;
+											// If this is the selected costume, make it selected
+											echo '
+											<option value="'. $db3->id .'" club="'. $db3->club .'" SELECTED>'.$db3->costume.'</option>';
+										}
+										else
+										{
+											// Default
+											echo '
+											<option value="'. $db3->id .'" club="'. $db3->club .'">'.$db3->costume.'</option>';
 										}
 									}
+								}
 
+								echo '
+								</select>
+							</td>
+							
+							<td name="'.$db2->trooperId.'trooperRosterBackup" id="'.$db2->trooperId.'trooperRosterBackup">
+								<select name="modiftybackupcostumeForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
+
+								// Display costumes
+								$query3 = "SELECT * FROM costumes WHERE ";
+								
+								// If limited to certain costumes, only show certain costumes...
+								if($db->limitTo < 4)
+								{
+									$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
+								}
+								
+								$query3 .= costume_restrict_query(false, $db2->trooperId) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild()."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
+								
+								// Count results
+								$c = 0;
+								
+								// Amount of costumes
+								if ($result3 = mysqli_query($conn, $query3))
+								{
+									while ($db3 = mysqli_fetch_object($result3))
+									{
+										// If costume set to backup and first result
+										if($db2->costume_backup == 0 && $c == 0)
+										{
+											echo '
+											<option value="0" SELECTED>N/A</option>';
+										}
+										// Make sure this is a first result otherwise
+										else if($c == 0)
+										{
+											echo '
+											<option value="0">N/A</option>';
+										}
+										
+										// If a costume matches
+										if($db2->costume_backup == $db3->id)
+										{
+											echo '
+											<option value="'.$db3->id.'" SELECTED>'.$db3->costume.'</option>';
+										}
+										// Start showing costumes
+										else
+										{
+											echo '
+											<option value="'.$db3->id.'">'.$db3->costume.'</option>';
+										}
+										
+										// Increment
+										$c++;
+									}
+								}
+
+								echo '
+								</select>
+							</td>';
+						}
+						else
+						{
+							// This is a limited event, show costume without ability to edit
+							echo '
+							<td name="'.$db2->trooperId.'trooperRosterCostume" id="'.$db2->trooperId.'trooperRosterCostume">
+								'.getCostume($db2->costume).'
+							</td>
+							
+							<td name="'.$db2->trooperId.'trooperRosterBackup" id="'.$db2->trooperId.'trooperRosterBackup">
+								'.ifEmpty(getCostume($db2->costume_backup), "N/A").'
+							</td>';
+						}
+						
+						echo '
+						<td id="'.$db2->trooperId.'Status" aria-label="'.date("F j, Y, g:i:s a", strtotime($db2->signuptime)).'" data-balloon-pos="up" data-balloon-length="fit">
+						<div name="'.$db2->trooperId.'trooperRosterStatus" id="'.$db2->trooperId.'trooperRosterStatus">';
+						
+							// If not a limited event
+							if($db->limitedEvent != 1)
+							{
+								// If on stand by
+								if($db2->status == 1)
+								{
 									echo '
-									</select>
-								</td>';
+									<select name="modifysignupStatusForm" id="modifysignupStatusForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
+										<option value="0" '.echoSelect(1, $db2->status).'>Stand By</option>
+										<option value="4" '.echoSelect(4, $db2->status).'>Cancel</option>
+									</select>';
+								}
+								// Regular
+								else
+								{
+									echo '
+									<select name="modifysignupStatusForm" id="modifysignupStatusForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
+										<option value="0" '.echoSelect(0, $db2->status).'>I\'ll be there!</option>
+										<option value="2" '.echoSelect(2, $db2->status).'>Tentative</option>
+										<option value="4" '.echoSelect(4, $db2->status).'>Cancel</option>
+									</select>';
+								}
 							}
 							else
 							{
-								// This is a limited event, show costume without ability to edit
-								echo '
-								<td name="'.$db2->trooperId.'trooperRosterCostume" id="'.$db2->trooperId.'trooperRosterCostume">
-									'.getCostume($db2->costume).'
-								</td>
-								
-								<td name="'.$db2->trooperId.'trooperRosterBackup" id="'.$db2->trooperId.'trooperRosterBackup">
-									'.ifEmpty(getCostume($db2->costume_backup), "N/A").'
-								</td>';
-							}
-							
-							echo '
-							<td id="'.$db2->trooperId.'Status" aria-label="'.date("F j, Y, g:i:s a", strtotime($db2->signuptime)).'" data-balloon-pos="up" data-balloon-length="fit">
-							<div name="'.$db2->trooperId.'trooperRosterStatus" id="'.$db2->trooperId.'trooperRosterStatus">';
-							
-								// If not a limited event
-								if($db->limitedEvent != 1)
-								{
-									// If on stand by
-									if($db2->status == 1)
-									{
-										echo '
-										<select name="modifysignupStatusForm" id="modifysignupStatusForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
-											<option value="0" '.echoSelect(1, $db2->status).'>Stand By</option>
-											<option value="4" '.echoSelect(4, $db2->status).'>Cancel</option>
-										</select>';
-									}
-									// Regular
-									else
-									{
-										echo '
-										<select name="modifysignupStatusForm" id="modifysignupStatusForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
-											<option value="0" '.echoSelect(0, $db2->status).'>I\'ll be there!</option>
-											<option value="2" '.echoSelect(2, $db2->status).'>Tentative</option>
-											<option value="4" '.echoSelect(4, $db2->status).'>Cancel</option>
-										</select>';
-									}
-								}
-								else
-								{
-									// Limited event - If pending approval
-									if($db2->status == 5)
-									{
-										echo '
-										<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
-										(Pending Command Staff Approval)';
-
-										// If is admin and limited event
-										if(isAdmin() && $db->limitedEvent == 1 && $db->closed == 0)
-										{
-											// Set status
-											echo '
-											<br />
-											<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>
-											<br />
-											<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
-										}
-
-										echo '</div>';
-									}
-									else
-									{
-										echo '
-										<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
-
-										echo getStatus($db2->status);
-
-										// If is admin and limited event
-										if(isAdmin() && $db->limitedEvent == 1 && $db->closed == 0)
-										{
-											// If set to going
-											if($db2->status == 0)
-											{
-												// Set status
-												echo '
-												<br />
-												<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
-											}
-											// If set to not picked
-											else if($db2->status == 6)
-											{
-												// Set status
-												echo '
-												<br />
-												<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>';
-											}
-										}
-
-										echo '</div>';
-									}
-								}
-
-							echo '
-							</div>
-							</td>
-						</tr>';
-					}
-					else
-					{
-						// If a user other than the current user
-						echo '
-						<tr>
-							<td>
-								'.drawSupportBadge($db2->trooperId).'
-								<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
-
-								// If a placeholder account, allow edit name
-								if($db2->trooperId == placeholder)
-								{
-									echo '
-									<b>'.$db2->note.'</b>';
-								}
-
-								// Show who added the trooper
-								if($db2->addedby != 0)
-								{
-									echo '
-									<br /><small>Added by:<br />' . getName($db2->addedby) . '</small>';
-								}
-
-							echo '
-							</td>
-								
-							<td>
-								'.readTKNumber($db2->tkid, $db2->squad).'
-							</td>
-							
-							<td>
-								'.ifEmpty(getCostume($db2->costume), "N/A").'
-							</td>
-							
-							<td>
-								'.ifEmpty(getCostume($db2->costume_backup), "N/A").'
-							</td>
-							
-							<td id="'.$db2->trooperId.'Status" aria-label="'.date("F j, Y, g:i:s a", strtotime($db2->signuptime)).'" data-balloon-pos="up" data-balloon-length="fit">';
-								echo '
-								<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
-
 								// Limited event - If pending approval
 								if($db2->status == 5)
 								{
 									echo '
+									<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
 									(Pending Command Staff Approval)';
 
 									// If is admin and limited event
@@ -5534,9 +5447,14 @@ if(isset($_GET['event']))
 										<br />
 										<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
 									}
+
+									echo '</div>';
 								}
 								else
 								{
+									echo '
+									<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
+
 									echo getStatus($db2->status);
 
 									// If is admin and limited event
@@ -5559,13 +5477,106 @@ if(isset($_GET['event']))
 											<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>';
 										}
 									}
-								}
 
-							echo '
-							</div>
-							</td>
-						</tr>';
+									echo '</div>';
+								}
+							}
+
+						echo '
+						</div>
+						</td>';
 					}
+					else
+					{
+						// If a user other than the current user
+						echo '
+						<td>
+							'.drawSupportBadge($db2->trooperId).'
+							<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
+
+							// If a placeholder account, allow edit name
+							if($db2->trooperId == placeholder)
+							{
+								echo '
+								<b>'.$db2->note.'</b>';
+							}
+
+							// Show who added the trooper
+							if($db2->addedby != 0)
+							{
+								echo '
+								<br /><small>Added by:<br />' . getName($db2->addedby) . '</small>';
+							}
+
+						echo '
+						</td>
+							
+						<td>
+							'.readTKNumber($db2->tkid, $db2->squad).'
+						</td>
+						
+						<td>
+							'.ifEmpty(getCostume($db2->costume), "N/A").'
+						</td>
+						
+						<td>
+							'.ifEmpty(getCostume($db2->costume_backup), "N/A").'
+						</td>
+						
+						<td id="'.$db2->trooperId.'Status" aria-label="'.date("F j, Y, g:i:s a", strtotime($db2->signuptime)).'" data-balloon-pos="up" data-balloon-length="fit">';
+							echo '
+							<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
+
+							// Limited event - If pending approval
+							if($db2->status == 5)
+							{
+								echo '
+								(Pending Command Staff Approval)';
+
+								// If is admin and limited event
+								if(isAdmin() && $db->limitedEvent == 1 && $db->closed == 0)
+								{
+									// Set status
+									echo '
+									<br />
+									<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>
+									<br />
+									<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
+								}
+							}
+							else
+							{
+								echo getStatus($db2->status);
+
+								// If is admin and limited event
+								if(isAdmin() && $db->limitedEvent == 1 && $db->closed == 0)
+								{
+									// If set to going
+									if($db2->status == 0)
+									{
+										// Set status
+										echo '
+										<br />
+										<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
+									}
+									// If set to not picked
+									else if($db2->status == 6)
+									{
+										// Set status
+										echo '
+										<br />
+										<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>';
+									}
+								}
+							}
+
+						echo '
+						</div>
+						</td>';
+					}
+					
+					echo '
+					</tr>';
 
 					$i++;
 				}
