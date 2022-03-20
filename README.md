@@ -263,7 +263,7 @@ $clubArray = array(
 		"rankReserve" => "rebel_reserve.png",
 		"rankRetired" => "rebel_retired.png",
 		"naCostume" => 720,
-		"userGroup" => 1438),
+		"userGroup" => 1486),
 	array(
 		"name" => "Droid Builders",
 		"logo" => "test", "costumes" => array(3),
@@ -277,7 +277,7 @@ $clubArray = array(
 		"rankReserve" => "r2_reserve.png",
 		"rankRetired" => "r2_retired.png",
 		"naCostume" => 716,
-		"userGroup" => 1415),
+		"userGroup" => 1487),
 	array(
 		"name" => "Mando Mercs",
 		"logo" => "test",
@@ -293,7 +293,7 @@ $clubArray = array(
 		"rankReserve" => "mercs_reserve.png",
 		"rankRetired" => "mercs_retired.png",
 		"naCostume" => 715,
-		"userGroup" => 1415),
+		"userGroup" => 1488),
 	array(
 		"name" => "Other",
 		"logo" => "test",

@@ -124,7 +124,7 @@ if ($result = mysqli_query($conn, $query))
 
 					array_push($groupArray2, $club_value['userGroup']);	
 				}
-				// 501st member, retired
+				// Member, retired
 				else if($db->{$club_value['db']} == 3)
 				{
 					if (!in_array($userGroupRetired, $groupArray))
