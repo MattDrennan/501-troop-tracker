@@ -643,6 +643,16 @@ table[name*="comment_"] textarea {
 	}
 }
 
+/* Add to calendar links */
+
+.calendar-links {
+	text-align: center;
+}
+
+.calendar-links a:not(:first-child) {
+	margin-left: 20px;
+}
+
 /* JQUERY Validator */
 
 label.error {

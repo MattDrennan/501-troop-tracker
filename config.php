@@ -206,7 +206,7 @@ function showCalendarLinks($name, $location, $description, $date1, $date2)
 	
 	// Show link
 	return '
-	<p style="text-align: center;">
+	<p class="calendar-links">
 		<b>Add to calendar:</b>
 		<br />
 		<a href="'.$link->google().'" target="_blank"><img src="images/google.png" alt="Google Calendar" /></a> <a href="'.$link->yahoo().'" target="_blank"><img src="images/yahoo.png" alt="Yahoo Calendar" /></a> <a href="'.$link->webOutlook().'" target="_blank"><img src="images/outlook.png" alt="Outlook Calendar" /></a> <a href="'.$link->ics().'" target="_blank"><img src="images/ics.png" alt="ICS Calendar" /></a>
