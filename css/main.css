@@ -66,6 +66,10 @@
 	--nav-active-link-color: #1c262f;
 }
 
+html, body {
+	overflow-x: hidden;
+}
+
 body {
 	background-color: var(--primary-bg-color);
 	color: var(--primary-text-color);
