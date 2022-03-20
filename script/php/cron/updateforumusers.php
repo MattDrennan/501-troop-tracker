@@ -68,7 +68,7 @@ if ($result = mysqli_query($conn, $query))
 			$groupArray = $userInfo['user']['secondary_group_ids'];
 
 			// Check if 501st member with squad
-			if($db->p501 > 0 && $db->p501 < 3 && $db->squad > 0)
+			if($db->p501 > 0 && $db->p501 < 3 && $db->squad > 0 && $db->squad <= count($squadArray))
 			{
 				if (!in_array($squadArray[($db->squad - 1)]['userGroup'], $groupArray))
 				{
@@ -130,10 +130,10 @@ if ($result = mysqli_query($conn, $query))
 					if (!in_array($userGroupRetired, $groupArray))
 					{
 						// Not listed on forum, update
-						array_push($groupArray, $userGroupRetired);
+						// array_push($groupArray, $userGroupRetired);
 					}
 
-					array_push($groupArray2, $userGroupRetired);	
+					// array_push($groupArray2, $userGroupRetired);	
 				}
 
 				// Add to check array
