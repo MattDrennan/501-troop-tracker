@@ -22,7 +22,7 @@ if ($result = mysqli_query($conn, $query))
 		$roster = '[b]Roster:[/b]';
 
 		// Loop through all events to update threads
-		$query2 = "SELECT * FROM event_sign_up WHERE troopid = '".$db->id."' ORDER BY signuptime DESC";
+		$query2 = "SELECT * FROM event_sign_up WHERE troopid = '".$db->id."' ORDER BY signuptime ASC";
 		if ($result2 = mysqli_query($conn, $query2))
 		{
 			while ($db2 = mysqli_fetch_object($result2))
