@@ -5624,9 +5624,9 @@ if(isset($_GET['event']))
 				if(strtotime($db->dateEnd) < strtotime("NOW"))
 				{
 					echo '
-					<br />
-					<b>This event is closed for editing.</b>
-					<br /><br />';
+					<p style="text-align: center;">
+						<b>This event is closed for editing.</b>
+					</p>';
 				}
 				else
 				{
