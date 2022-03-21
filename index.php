@@ -6224,7 +6224,6 @@ if(isset($_GET['event']))
 					while ($db = mysqli_fetch_object($result))
 					{
 						echo '
-						<div style="overflow-x: auto;" style="text-align: center;">
 						<table border="1" name="comment_'.$db->id.'" id="comment_'.$db->id.'">';
 						
 						// Set up admin variable
@@ -6255,7 +6254,6 @@ if(isset($_GET['event']))
 						</tr>
 
 						</table>
-						</div>
 
 						<br />';
 

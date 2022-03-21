@@ -698,7 +698,6 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 			while ($db = mysqli_fetch_object($result))
 			{
 				$data .= '
-				<div style="overflow-x: auto;" style="text-align: center;">
 				<table border="1" name="comment_'.$db->id.'" id="comment_'.$db->id.'">';
 				
 				// Set up admin variable
@@ -733,7 +732,6 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 				</tr>
 
 				</table>
-				</div>
 
 				<br />';
 

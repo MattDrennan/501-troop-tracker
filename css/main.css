@@ -678,6 +678,12 @@ div[name="rosterTableNoData"], div[name="signeduparea"] {
 	text-align: center;
 }
 
+/* Trooper Comment Area */
+
+div[name="commentArea"] {
+	text-align: center;
+}
+
 /* JQUERY Validator */
 
 label.error {
