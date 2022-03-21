@@ -30,7 +30,7 @@ if ($result = mysqli_query($conn, $query))
 }
 
 // Loop through all troopers with Xenforo set up
-$query = "SELECT * FROM troopers WHERE user_id != 0";
+$query = "SELECT * FROM troopers WHERE user_id != 0 AND approved = 1";
 if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))
