@@ -564,6 +564,8 @@ if(isset($_GET['profile']))
 			</table>
 			</div>
 			
+			<div class="profile-awards">
+			
 			<h2 class="tm-section-header">Awards</h2>';
 			
 			// Check if supporter
@@ -654,7 +656,7 @@ if(isset($_GET['profile']))
 					}
 					else
 					{
-						echo '<li><img src="images/icons/'.$db2->icon.'" alt="'.$db2->title.'" /> '.$db2->title.'</li>';
+						echo '<li style="list-style-image: url(\'images/icons/'.$db2->icon.'\');">'.$db2->title.'</li>';
 					}
 
 					$j++;
@@ -670,6 +672,8 @@ if(isset($_GET['profile']))
 		}
 		
 		echo '
+		</div>
+		
 		<h2 class="tm-section-header">Costumes</h2>';
 		
 		// Show 501st costumes

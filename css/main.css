@@ -684,6 +684,20 @@ div[name="commentArea"] {
 	text-align: center;
 }
 
+/* Profile */
+
+.profile-awards {
+	text-align: center;
+}
+
+.profile-awards ul {
+	list-style-position: inside;
+}
+
+.profile-awards ul li {
+	list-style-image: url("../images/icons/501.png");
+}
+
 /* JQUERY Validator */
 
 label.error {
