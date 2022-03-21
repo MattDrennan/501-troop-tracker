@@ -122,8 +122,11 @@ define('discordWeb1', 'WEBHOOK_HERE');
 define('garrison', 'Florida Garrison');
 define('garrisonImage', 'garrison_emblem.png');
 
-// Please note: Do not change the order of squads and clubs after your set up your troop tracker, otherwise you will mess up the squad IDs
-// Make sure you run queries on your database if you need to change the order after installation.
+/**
+ * virtualTroop: This variable is used to determine which forum to post virtual troops
+*/
+
+$virtualTroop = 445;
 
 /**
  * dualCostume: This variable is used to determine which costume club ID should be counted as a dual costume.
@@ -154,6 +157,9 @@ $userGroup501st = 1415;
 */
 
 $userGroupRetired = 1429;
+
+// Please note: Do not change the order of squads and clubs after your set up your troop tracker, otherwise you will mess up the squad IDs
+// Make sure you run queries on your database if you need to change the order after installation.
 
 /**
  * squadArray

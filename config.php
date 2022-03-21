@@ -975,9 +975,10 @@ function loginWithForum($username, $password)
  * @param int $id The forum ID to be posted in
  * @param string $title The title of the thread
  * @param string $message The body of the thread
+ * @param int $userID (optional) The user ID of the user you want to post
  * @return json Return's the thread data if success
 */
-function createThread($id, $title, $message)
+function createThread($id, $title, $message, $userID = xenforoAPI_userID)
 {
 	global $forumURL;
 	
@@ -994,7 +995,7 @@ function createThread($id, $title, $message)
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
-	    "XF-Api-User: " . xenforoAPI_userID,
+	    "XF-Api-User: " . $userID,
 	  ],
 	]);
 
@@ -3262,7 +3263,7 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 	[b]Event End:[/b] '.date("m/d/y h:i A", strtotime($date2)).'';
 
 	// Exclude unimportant information from armor party events
-	if($eventType != 10)
+	if($eventType != 10 && $eventType != 7)
 	{
 		$returnString .= '
 		[b]Event Website:[/b] '.$website.'
@@ -3276,8 +3277,15 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 		[b]Is venue accessible to those with limited mobility:[/b] '.yesNo($mobility).'';
 	}
 
+	// Exclude unimportant information from virtual troops
+	if($eventType != 7)
+	{
+		$returnString .= '
+		[b]Amenities available at venue:[/b] '.ifEmpty($amenities, "No amenities for this event.").'';
+	}
+
+
 	$returnString .= '
-	[b]Amenities available at venue:[/b] '.ifEmpty($amenities, "No amenities for this event.").'
 	[b]Comments:[/b] '.ifEmpty($comments, "No comments for this event.").'
 	[b]Referred by:[/b] '.ifEmpty($referred, "Not available").'
 
