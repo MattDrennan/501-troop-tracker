@@ -1976,7 +1976,7 @@ function squadToDiscord($squad)
 {
 	if($squad == 0)
 	{
-		return '<@948046239956627506>';
+		return '<@&948046239956627506>';
 	}
 	else if($squad == 1)
 	{
