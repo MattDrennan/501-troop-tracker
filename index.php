@@ -672,8 +672,6 @@ if(isset($_GET['profile']))
 		}
 		
 		echo '
-		</div>
-		
 		<h2 class="tm-section-header">Costumes</h2>';
 		
 		// Show 501st costumes
