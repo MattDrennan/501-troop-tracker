@@ -2630,7 +2630,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			$query2 .= " WHERE era = '".$limitToGetVal[0]."' OR era = '4'";
 		}
 		
-		$query2 .= " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild().") DESC, costume";
+		$query2 .= " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id']).") DESC, costume";
 		
 		if ($result2 = mysqli_query($conn, $query2))
 		{
@@ -3386,7 +3386,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 									$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
 								}
 								
-								$query3 .= costume_restrict_query(false, $db2->trooperId) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild()."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
+								$query3 .= costume_restrict_query(false, $db2->trooperId) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
 								
 								if ($result3 = mysqli_query($conn, $query3))
 								{
@@ -3423,7 +3423,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 									$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
 								}
 								
-								$query3 .= costume_restrict_query(false, $db2->trooperId) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild()."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
+								$query3 .= costume_restrict_query(false, $db2->trooperId) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
 								
 								// Count results
 								$c = 0;

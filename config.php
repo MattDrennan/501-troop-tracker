@@ -495,11 +495,8 @@ function costume_restrict_query($addWhere = false, $friendID = 0)
 		$friendQuery = " OR (costumes.club >= 0)";
 	}
 
-	// Club detected
+	// 501 member, prepare to add or statement if a dual member
 	$hit = false;
-
-	// Count dual costume hit
-	$dualHit = 0;
 	
 	$query = "SELECT * FROM troopers WHERE id = '".cleanInput($_SESSION['id'])."'";
 	if ($result = mysqli_query($conn, $query))
@@ -510,13 +507,13 @@ function costume_restrict_query($addWhere = false, $friendID = 0)
 			if($db->p501 == 1 || $db->p501 == 2)
 			{
 				$returnQuery .= "costumes.club = 0";
-				
-				// Set
-				$hit = true;
 
-				// Add to dual count
-				$dualHit++;
+				// 501 member
+				$hit = true;
 			}
+
+			// Set up step count
+			$i = 0;
 
 			// Loop through clubs
 			foreach($clubArray as $club => $club_value)
@@ -524,57 +521,25 @@ function costume_restrict_query($addWhere = false, $friendID = 0)
 				// Check club member status
 				if($db->{$club_value['db']} == 1 || $db->{$club_value['db']} == 2)
 				{
-					// If club from previous hit, add OR
-					if($hit)
+					// First step and a 501 member, add the OR to prevent issues
+					if($i == 0 && $hit)
 					{
 						$returnQuery .= " OR ";
-						$hit = false;
 					}
-
-					// Set even check
-					$i = 1;
 
 					foreach($club_value['costumes'] as $costume)
 					{
-						// Don't add dual costume yet
-						if($costume != $dualCostume)
+						// Passed first step, keep adding OR
+						if($i > 0)
 						{
-							// Add costome to query
-							$returnQuery .= "costumes.club = ".$costume."";
-
-							// Increment even count
-							$i++;
-
-							if($i % 2 == 0)
-							{
-								$returnQuery .= " OR ";
-							}
+							$returnQuery .= " OR ";
 						}
-						else
-						{
-							$dualHit++;
-						}
+
+						$returnQuery .= "costumes.club = ".$costume."";
+
+						// Increment step
+						$i++;
 					}
-
-					// Set hit
-					$hit = true;
-				}
-			}
-			
-			// Check if dual hit has been hit at least twice
-			if($dualHit >= 2)
-			{	
-				$returnQuery .= "costumes.club = ".$dualCostume."";
-			}
-			else
-			{
-				// Trim query
-				$returnQueryCheck = substr($returnQuery, -3);
-
-				// If ends with OR, trim off
-				if($returnQueryCheck == "OR ")
-				{
-					$returnQuery = substr($returnQuery, 0, -3);
 				}
 			}
 		}
@@ -3716,15 +3681,16 @@ function addHttp($url)
 /**
  * Returns a string of costumes that were favorited by the trooper
  *
+ * @param int $trooperid The trooper ID of the trooper to query
  * @return string Returns a query string
 */
-function mainCostumesBuild()
+function mainCostumesBuild($trooperid)
 {
 	global $conn;
 	
 	$returnQuery = "";
 	
-	$query = "SELECT * FROM favorite_costumes WHERE trooperid = '".cleanInput($_SESSION['id'])."'";
+	$query = "SELECT * FROM favorite_costumes WHERE trooperid = '".$trooperid."'";
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
