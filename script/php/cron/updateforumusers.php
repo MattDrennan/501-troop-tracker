@@ -67,6 +67,10 @@ if ($result = mysqli_query($conn, $query))
 			// Set group array
 			$groupArray = $userInfo['user']['secondary_group_ids'];
 
+			// Add Troop Tracker user group
+			array_push($groupArray, $troopTrackerUserGroup);
+			array_push($groupArray2, $troopTrackerUserGroup);
+
 			// Check if 501st member with squad
 			if($db->p501 > 0 && $db->p501 < 3 && $db->squad > 0 && $db->squad <= count($squadArray))
 			{
