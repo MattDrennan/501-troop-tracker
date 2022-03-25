@@ -350,6 +350,10 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 			}
 			
 			echo '
+				<p style="font-size: 12px;">
+					<i>Note: Events are categorized by 501st squad territory. To receive event notifications for a particular area, ensure you subscribed to the appropriate squad(s). Club notifications are used in command staff e-mails, to send command staff information on trooper milestones based on squad or club.</i>
+				</p>
+
 				<h3>Website</h3>
 				<input type="checkbox" name="efast" id="efast" ' . emailSettingStatus("efast", true) . ' />Instant Event Notification<br />
 				<input type="checkbox" name="ecomments" id="ecomments" ' . emailSettingStatus("ecomments", true) . ' />Comments<br />
