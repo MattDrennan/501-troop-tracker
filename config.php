@@ -3221,9 +3221,9 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 	$returnString = '';
 
 	$returnString .= '
-	[b]Event Name:[/b] '.$eventName.'
-	[b]Venue:[/b] '.$eventVenue.'
-	[b]Venue address:[/b] '.$location.'
+	[b]Event Name:[/b] '.html_entity_decode($eventName).'
+	[b]Venue:[/b] '.html_entity_decode($eventVenue).'
+	[b]Venue address:[/b] '.html_entity_decode($location).'
 	[b]Event Start:[/b] '.date("m/d/y h:i A", strtotime($date1)).'
 	[b]Event End:[/b] '.date("m/d/y h:i A", strtotime($date2)).'';
 
@@ -3231,10 +3231,10 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 	if($eventType != 10 && $eventType != 7)
 	{
 		$returnString .= '
-		[b]Event Website:[/b] '.$website.'
+		[b]Event Website:[/b] '.html_entity_decode($website).'
 		[b]Expected number of attendees:[/b] '.$numberOfAttend.'
 		[b]Requested number of characters:[/b] '.$requestedNumber.'
-		[b]Requested character types:[/b] '.$requestedCharacter.'
+		[b]Requested character types:[/b] '.html_entity_decode($requestedCharacter).'
 		[b]Secure changing/staging area:[/b] '.yesNo($secure).'
 		[b]Can troopers carry blasters:[/b] '.yesNo($blasters).'
 		[b]Can troopers carry/bring props like lightsabers and staffs:[/b] '.yesNo($lightsabers).'
@@ -3246,13 +3246,14 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 	if($eventType != 7)
 	{
 		$returnString .= '
-		[b]Amenities available at venue:[/b] '.ifEmpty($amenities, "No amenities for this event.").'';
+		[b]Amenities available at venue:[/b] '.ifEmpty(html_entity_decode($amenities), "No amenities for this event.").'';
 	}
 
 
 	$returnString .= '
-	[b]Comments:[/b] '.ifEmpty($comments, "No comments for this event.").'
-	[b]Referred by:[/b] '.ifEmpty($referred, "Not available").'
+	[b]Comments:[/b]
+	'.ifEmpty(html_entity_decode($comments), "No comments for this event.").'
+	[b]Referred by:[/b] '.ifEmpty(html_entity_decode($referred), "Not available").'
 
 	'.$roster.'
 
