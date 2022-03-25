@@ -5025,7 +5025,7 @@ if(isset($_GET['event']))
 					if($link > 0)
 					{						
 						echo '
-						<h2 class="tm-section-header">Shifts</h2>';
+						<h2 class="tm-section-header">Other Shifts</h2>';
 						
 						// Query database for photos
 						$query2 = "SELECT * FROM events WHERE (id = '".$link."' OR link = '".$link."') AND id != '".$db->id."' ORDER BY dateStart DESC";
