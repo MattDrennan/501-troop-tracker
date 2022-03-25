@@ -43,7 +43,7 @@ if ($result = mysqli_query($conn, $query))
 		}
 
 		// Make thread body
-		$thread_body = threadTemplate($db->name, $db->venue, $db->location, $db->dateStart, $db->dateEnd, $db->website, $db->numberOfAttend, $db->requestedNumber, $db->requestedCharacter, $db->secureChanging, $db->blasters, $db->lightsabers, $db->parking, $db->mobility, $db->amenities, $db->comments, $db->referred, $db->id, $db->label, $roster);
+		$thread_body = threadTemplate(html_entity_decode($db->name), html_entity_decode($db->venue), html_entity_decode($db->location), $db->dateStart, $db->dateEnd, $db->website, $db->numberOfAttend, $db->requestedNumber, $db->requestedCharacter, $db->secureChanging, $db->blasters, $db->lightsabers, $db->parking, $db->mobility, html_entity_decode($db->amenities), html_entity_decode($db->comments), html_entity_decode($db->referred), $db->id, $db->label, $roster);
 
 		// Update thread
 		editPost($db->post_id, $thread_body);
