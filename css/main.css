@@ -698,12 +698,19 @@ div[name="commentArea"] {
 	list-style-image: url("../images/icons/501.png");
 }
 
+/* Trooper Confirmation Box */
+
+.trooper-confirmation-box {
+	border: 1px solid var(--primary-text-color);
+	text-align: center;
+}
+
 /* JQUERY Validator */
 
 label.error {
-    display: block;
-    width: 100%;
-    background-color: #ff0000;
+	display: block;
+	width: 100%;
+	background-color: #ff0000;
 	color: #fff;
 	font-weight: bold;
 }

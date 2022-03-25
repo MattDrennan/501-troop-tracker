@@ -9,6 +9,17 @@
 
 include 'config.php';
 
+/******************** ROSTER TROOPER CONFIRMATION *******************************/
+
+if(isset($_GET['do']) && $_GET['do'] == "roster-trooper-confirmation" && loggedIn() && isAdmin())
+{
+	// Prevent changing status
+	if(cleanInput($_POST['status']) != 3 && cleanInput($_POST['status']) != 4) { return false; }
+
+	// Update trooper sign up
+	$conn->query("UPDATE event_sign_up SET status = '".cleanInput($_POST['status'])."' WHERE id = '".cleanInput($_POST['signid'])."'");
+}
+
 /******************** ROSTER SAVE TROOPER TKID *******************************/
 
 if(isset($_GET['do']) && $_GET['do'] == "roster-edit-tkid" && loggedIn() && isAdmin())

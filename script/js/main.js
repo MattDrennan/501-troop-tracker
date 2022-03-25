@@ -313,6 +313,25 @@ $(document).ready(function()
 		$.LoadingOverlay("hide");
 	});
 
+	// Roster - Trooper Confirmation - Y / N Button
+	$("body").on("click", "[name=attend-button]", function(e)
+	{
+		var signid = $(this).attr("signid");
+		var status = $(this).attr("status");
+
+		// Save
+		$.ajax({
+			type: "POST",
+			url: "process.php?do=roster-trooper-confirmation",
+			data: "signid=" + signid + "&status=" + status,
+			success: function(data)
+			{
+				// Delete HTML
+				$("p[class=trooper-confirmation-box][signid=" + signid + "]").remove();
+			}
+		});
+	})
+
 	// Roster - Edit TKID
 	$("body").on("click", "[name=roster-edit-tkid]", function(e)
 	{

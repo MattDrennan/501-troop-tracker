@@ -2181,6 +2181,151 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			}
 		}
 
+		/**************************** Roster - Trooper Confirmation *********************************/
+		
+		if(isset($_GET['do']) && $_GET['do'] == "trooperconfirmation" && isAdmin())
+		{
+			echo '
+			<h3>Trooper Confirmation</h3>
+			
+			<p>
+				<i>The following troopers have not confirmed a troop.</i>
+			</p>';
+			
+			// Squad count
+			$i = 1;
+			
+			echo '
+			<a href="index.php?action=commandstaff&do=trooperconfirmation" class="button">All</a>';
+
+			foreach($squadArray as $squad => $squad_value)
+			{
+				if(getSquadID($_SESSION['id']) == $i || hasPermission(1))
+				{
+					echo '<a href="index.php?action=commandstaff&do=trooperconfirmation&squad='.$i.'" class="button">' . $squad_value['name'] . '</a> ';
+				}
+
+				$i++;
+			}
+			
+			foreach($clubArray as $club => $club_value)
+			{
+				if(isClubMember($club_value['db']) > 0 || hasPermission(1))
+				{
+					echo '<a href="index.php?action=commandstaff&do=trooperconfirmation&squad='.$i.'" class="button">' . $club_value['name'] . '</a> ';
+				}
+
+				$i++;
+			}
+			
+			echo '<br /><hr />';
+			
+			// Set up
+			$queryAdd = "";
+			
+			// Check if squad is requested
+			if(isset($_GET['squad']))
+			{
+				// Which club to get
+				if($_GET['squad'] <= count($squadArray))
+				{
+					$queryAdd .= "troopers.squad = '".cleanInput($_GET['squad'])."' AND";
+
+					// Check if a member of club
+					if(getSquadID($_SESSION['id']) != cleanInput($_GET['squad']) && hasPermission(2))
+					{
+						die("<p>Not a member of this squad / club.</p>");
+					}
+				}
+				
+				// Set up count
+				$clubCount = count($squadArray) + 1;
+				
+				// Loop through clubs
+				foreach($clubArray as $club => $club_value)
+				{
+					// Match
+					if($_GET['squad'] == $clubCount)
+					{
+						$queryAdd .= "(troopers.".$club_value['db']." > 0) AND";
+
+						// Check if a member of club
+						if(isClubMember($club_value['db']) == 0 && hasPermission(2))
+						{
+							die("<p>Not a member of this squad / club.</p>");
+						}
+					}
+					
+					// Increment
+					$clubCount++;
+				}
+			}
+			
+			// Query database
+			$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, event_sign_up.costume, troopers.name AS trooperName FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE ".$queryAdd." events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 ORDER BY troopers.name";
+			
+			// Query count
+			$i = 0;
+
+			// Set trooper name
+			$trooperName = "";
+			
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					// Set up string to add to title if a linked event
+					$add = "";
+					
+					// If this a linked event?
+					if(isLink($db->eventId) > 0)
+					{
+						$add .= "[<b>" . date("l", strtotime($db->dateStart)) . "</b> : <i>" . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "</i>] ";
+					}
+
+					// Check if this is a different trooper
+					if($trooperName != $db->trooperName)
+					{
+						// If not first
+						if($i != 0)
+						{
+							echo '<hr />';
+						}
+
+						echo '
+						<h3>'.$db->trooperName.'</h3>';
+
+						// Reset
+						$trooperName = $db->trooperName;
+					}
+
+					echo '
+					<p class="trooper-confirmation-box" signid="'.$db->signupId.'">
+						<a href="index.php?event='.$db->eventId.'" target="_blank">'.$add.''.$db->name.'</a>
+						<br />
+						<b>Attended As:</b> '.getCostume($db->costume).'
+						<br /><br />
+						<a href="#/" class="button" name="attend-button" status="3" signid="'.$db->signupId.'">Y</a>	<a href="#/" class="button" name="attend-button" status="4" signid="'.$db->signupId.'">N</a>
+					</p>';
+
+					// Increment
+					$i++;
+				}
+			}
+			
+			// If data exists
+			if($i > 0)
+			{
+				echo '
+				</table>';
+			}
+			else
+			{
+				echo '
+				<p style="text-align: center;">Nothing to display for this squad / club.</p>';
+			}
+		}
+
 		/**************************** Roster *********************************/
 		
 		if(isset($_GET['do']) && $_GET['do'] == "roster" && isAdmin())
@@ -2216,7 +2361,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			}
 			
 			echo '
-			<a href="index.php?action=commandstaff&do=troopercheck" class="button">Trooper Check</a>';
+			<a href="index.php?action=commandstaff&do=troopercheck" class="button">Trooper Check</a>
+			<a href="index.php?action=commandstaff&do=trooperconfirmation" class="button">Trooper Confirmation</a>';
 			
 			echo '
 			<br /><hr />';
