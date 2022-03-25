@@ -2262,7 +2262,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			}
 			
 			// Query database
-			$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, event_sign_up.costume, troopers.name AS trooperName FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE ".$queryAdd." events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 ORDER BY troopers.name";
+			$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, event_sign_up.costume, troopers.name AS trooperName FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE ".$queryAdd." events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 AND troopers.id != 0 ORDER BY troopers.name";
 			
 			// Query count
 			$i = 0;
@@ -2293,7 +2293,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						}
 
 						echo '
-						<h3>'.$db->trooperName.'</h3>';
+						<h2 class="tm-section-header">'.$db->trooperName.'</h2>';
 
 						// Reset
 						$trooperName = $db->trooperName;
@@ -2301,7 +2301,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 					echo '
 					<p class="trooper-confirmation-box" signid="'.$db->signupId.'">
-						<a href="index.php?event='.$db->eventId.'" target="_blank">'.$add.''.$db->name.'</a>
+						<a href="index.php?event='.$db->eventId.'" target="_blank">'.$add.''.$db->name.' '.$db->trooperName.'</a>
 						<br />
 						<b>Attended As:</b> '.getCostume($db->costume).'
 						<br /><br />
