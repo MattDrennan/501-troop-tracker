@@ -312,6 +312,63 @@ $(document).ready(function()
 	{
 		$.LoadingOverlay("hide");
 	});
+
+	// Roster - Edit TKID
+	$("body").on("click", "[name=roster-edit-tkid]", function(e)
+	{
+		// TKID Roster span HTML - Displays below TKID
+		var span = $("#roster-" + $(this).attr("tkid"));
+
+		if(span.html() == "")
+		{
+			// Show
+			span.html("<br /><input type='text' value='" + $(this).attr("tkid") + "' id='roster-" + $(this).attr("tkid") + "-edit' /><input type='submit' value='Save' name='roster-edit-tkid-save' tkid='" + $(this).attr("tkid") + "' />");
+		}
+		else
+		{
+			// Hide
+			span.html("");
+		}
+	})
+
+	// Roster - Edit TKID (Save Button)
+	$("body").on("click", "[name=roster-edit-tkid-save]", function(e)
+	{
+		// TKID Roster span HTML - Displays below TKID
+		var span = $("#roster-" + $(this).attr("tkid"));
+		var trooperid = $("#roster-" + $(this).attr("tkid") + " ").attr("trooperid");
+		var old_tkid = $("a[tkid=" + $(this).attr("tkid") + "]").text();
+		var new_tkid = $("#roster-" + $(this).attr("tkid") + " input").val();
+		var prefix = old_tkid.replace(/[0-9]/g, "");
+
+		// Save
+		$.ajax({
+			type: "POST",
+			url: "process.php?do=roster-edit-tkid",
+			data: "trooperid=" + trooperid + "&new_tkid=" + new_tkid,
+			success: function(data)
+			{
+				// Get JSON
+				var json = JSON.parse(data);
+
+				// Check success
+				if(json.success)
+				{
+					alert("Trooper TKID updated!");
+
+					// Set new TKID with prefix on screen
+					$("a[tkid=" + $(this).attr("tkid") + "]").text(prefix + new_tkid);
+
+					// Clear
+					span.html("");
+				}
+				else
+				{
+					alert("This TKID already exists.");
+				}
+			}
+		});
+	})
 	
 	// Favorite Costume - Save favorite costumes
 	$("body").on("change", "#favoriteCostumeSelect", function(e)
@@ -322,7 +379,6 @@ $(document).ready(function()
 			data: "costumes=" + $("#favoriteCostumeSelect").val(),
 			success: function(data)
 			{
-				console.log(data);
 				// Save
 			}
 		});

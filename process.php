@@ -9,6 +9,28 @@
 
 include 'config.php';
 
+/******************** ROSTER SAVE TROOPER TKID *******************************/
+
+if(isset($_GET['do']) && $_GET['do'] == "roster-edit-tkid" && loggedIn() && isAdmin())
+{
+	// Check if TKID already exists
+	if(!doesTKExist(cleanInput($_POST['new_tkid']), getSquadID(cleanInput($_POST['trooperid']))))
+	{
+		// Update trooper TKID
+		$conn->query("UPDATE troopers SET tkid = '".cleanInput($_POST['new_tkid'])."' WHERE id = '".cleanInput($_POST['trooperid'])."'");
+
+		// Send JSON
+		$array = array('success' => true);
+		echo json_encode($array);
+	}
+	else
+	{
+		// Send JSON
+		$array = array('success' => false);
+		echo json_encode($array);
+	}
+}
+
 /******************** SAVE FAVORITE COSTUMES *******************************/
 
 if(isset($_GET['do']) && $_GET['do'] == "savefavoritecostumes" && loggedIn())

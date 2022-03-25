@@ -2320,7 +2320,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						</td>
 						
 						<td>
-							'.readTKNumber($db->tkid, $db->squad).'
+							<a href="#/" name="roster-edit-tkid" tkid="'.$db->tkid.'">'.readTKNumber($db->tkid, $db->squad).'</a>
+							<span id="roster-'.$db->tkid.'" trooperid="'.$db->id.'"></span>
 						</td>';
 						
 						// Only show if squad set
