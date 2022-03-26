@@ -41,6 +41,16 @@ a {
 h1 {
 	text-align: center;
 }
+
+.thumbnail {
+	width: 75px;
+	height 101px;
+}
+
+.rank {
+	width: 150px;
+	height: 30px;
+}
 </style>
 
 <h1>Member Titles</h1>
@@ -74,13 +84,13 @@ if ($result = mysqli_query($conn, $query))
 			// No thumbnail
 			if(!isset($thumbnail[0]))
 			{
-				echo '<img src="images/tk_head.jpg" />';
+				echo '<img src="images/tk_head.jpg" class="thumbnail" />';
 			}
 			else
 			{
 				// Thumbnail exists
 				echo '
-				<img src="'.$thumbnail[0].'" />';
+				<img src="'.$thumbnail[0].'" class="thumbnail" />';
 			}
 			echo '
 			<br />
@@ -90,7 +100,7 @@ if ($result = mysqli_query($conn, $query))
 			if($db->title != "" && !is_null($db->title))
 			{
 				echo '
-				<p><img src="images/ranks/'.$db->icon.'" /></p>';
+				<p><img src="images/ranks/'.$db->icon.'" class="rank" /></p>';
 			}
 			
 			echo '
@@ -141,13 +151,13 @@ if ($result = mysqli_query($conn, $query))
 				// No thumbnail
 				if(!isset($thumbnail[0]))
 				{
-					echo '<img src="images/tk_head.jpg" />';
+					echo '<img src="images/tk_head.jpg" class="thumbnail" />';
 				}
 				else
 				{
 					// Thumbnail exists
 					echo '
-					<img src="'.$thumbnail[0].'" />';
+					<img src="'.$thumbnail[0].'" class="thumbnail" />';
 				}
 				echo '
 				<br />
