@@ -17,11 +17,21 @@ echo '
   flex-wrap: wrap;
   align-items: center;
 }
+
+.container .title {
+	max-width: 150px;
+	flex: 1;
+	text-align: center;
+	border: 1px dashed #000;
+	margin: 20px;
+}
+
 .container div {
-   flex: 1;
-   text-align: center;
-   border: 1px dashed #000;
-   margin: 20px;
+	max-width: 75px;
+	flex: 1;
+	text-align: center;
+	border: 1px dashed #000;
+	margin: 20px;
 }
 
 a {
@@ -53,7 +63,7 @@ if ($result = mysqli_query($conn, $query))
 		if(!in_array($db->id, $added))
 		{
 			echo '
-			<div>';
+			<div class="title">';
 			// Show 501 thumbnail
 			if(getTrooperSquad($db->tkid) <= count($squadArray))
 			{
