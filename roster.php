@@ -128,7 +128,7 @@ echo '
 <div class="container">';
 
 // Show all super admins
-$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.squad, titles.title, titles.icon FROM troopers LEFT JOIN title_troopers ON troopers.id = title_troopers.trooperid LEFT JOIN titles ON title_troopers.titleid = titles.id WHERE p501 = '1' ORDER BY name";
+$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.squad, titles.title, titles.icon FROM troopers LEFT JOIN title_troopers ON troopers.id = title_troopers.trooperid LEFT JOIN titles ON title_troopers.titleid = titles.id WHERE p501 = '1' AND troopers.id != ".placeholder." ORDER BY name";
 
 // Trooper count set up
 $i = 0;
