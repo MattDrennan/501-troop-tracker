@@ -657,7 +657,7 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 			if($thread_id > 0)
 			{
 				// Post to forum
-				$post = createPost($thread_id, cleanInput($_POST['comment']), getUserID($_SESSION['id']));
+				$post = createPost($thread_id, $_POST['comment'], getUserID($_SESSION['id']));
 
 				// Update comment
 				$conn->query("UPDATE comments SET post_id = '".$post['post']['post_id']."' WHERE id = '".$last_id."'");
