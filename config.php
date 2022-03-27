@@ -3000,7 +3000,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 		{
 			echo '
 			<p style="text-align: center;">
-				<img src="images/ranks/'.$db2->icon.'" />
+				<img src="images/ranks/'.$db2->icon.'" class="rankTitle" />
 			</p>';
 		}
 	}
@@ -3023,7 +3023,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 			{
 				echo '
 				<p>
-					<img src="images/ranks/legion_member.png" />
+					<img src="images/ranks/legion_member.png" class="rankTitle" />
 				</p>';
 
 				$is501Member = true;
@@ -3033,7 +3033,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 			{
 				echo '
 				<p>
-					<img src="images/ranks/legion_reserve.png" />
+					<img src="images/ranks/legion_reserve.png" class="rankTitle" />
 				</p>';
 
 				$is501Member = true;
@@ -3043,7 +3043,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 			{
 				echo '
 				<p>
-					<img src="images/ranks/legion_retired.png" />
+					<img src="images/ranks/legion_retired.png" class="rankTitle" />
 				</p>';
 
 				$is501Member = true;
@@ -3060,7 +3060,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 				{
 					echo '
 					<p>
-						<img src="images/ranks/'.$squad_value['rankRegular'].'" />
+						<img src="images/ranks/'.$squad_value['rankRegular'].'" class="rankTitle" />
 					</p>';
 				}
 
@@ -3076,21 +3076,21 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 				{
 					echo '
 					<p>
-						<img src="images/ranks/'.$club_value['rankRegular'].'" />
+						<img src="images/ranks/'.$club_value['rankRegular'].'" class="rankTitle" />
 					</p>';
 				}
 				else if($db2->{$club_value['db']} == 2)
 				{
 					echo '
 					<p>
-						<img src="images/ranks/'.$club_value['rankReserve'].'" />
+						<img src="images/ranks/'.$club_value['rankReserve'].'" class="rankTitle" />
 					</p>';
 				}
 				else if($db2->{$club_value['db']} == 3)
 				{
 					echo '
 					<p>
-						<img src="images/ranks/'.$club_value['rankRetired'].'" />
+						<img src="images/ranks/'.$club_value['rankRetired'].'" class="rankTitle" />
 					</p>';
 				}
 			}

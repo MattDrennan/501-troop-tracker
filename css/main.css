@@ -705,6 +705,13 @@ div[name="commentArea"] {
 	text-align: center;
 }
 
+/* Rank image size */
+
+.rankTitle {
+	width: 150px;
+	height: 30px;
+}
+
 /* JQUERY Validator */
 
 label.error {
