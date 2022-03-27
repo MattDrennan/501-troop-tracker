@@ -4698,7 +4698,7 @@ if(!loggedIn() && !isset($_POST['loginWithTK']))
 				}
 
 				// Check credentials and make sure trooper still has access
-				if((isset($forumLogin['success']) && $forumLogin['success'] == 1 || password_verify($_COOKIE['TroopTrackerPassword'], $db->password)) && canAccess($db->id))
+				if((isset($forumLogin['success']) && $forumLogin['success'] == 1 || (password_verify($_POST['password'], $db->password) && $db->permissions == 1)) && canAccess($db->id))
 				{
 					// Set session
 					$_SESSION['id'] = $db->id;

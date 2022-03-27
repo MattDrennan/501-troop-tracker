@@ -4731,7 +4731,7 @@ if(isset($_GET['action']) && $_GET['action'] == "login" && !loggedIn())
 				$i++;
 
 				// Check credentials
-				if(isset($forumLogin['success']) && $forumLogin['success'] == 1 || password_verify($_POST['password'], $db->password))
+				if(isset($forumLogin['success']) && $forumLogin['success'] == 1 || (password_verify($_POST['password'], $db->password) && $db->permissions == 1))
 				{
 					if($db->approved != 0)
 					{
