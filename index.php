@@ -436,8 +436,10 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 		<form action="process.php?do=requestaccess" name="requestAccessForm" id="requestAccessForm" method="POST">
 			First & Last Name: <input type="text" name="name" id="name" />
 			<br /><br />
-			TKID (numbers only): <input type="text" name="tkid" id="tkid" />
+			TKID (numbers only): <input type="number" min="0" name="tkid" id="tkid" />
 			<p><i>Non-501st clubs, please enter an ID number of your choosing.</i></p>
+			<input type="radio" name="accountType" value="1" CHECKED> Regular <input type="radio" name="accountType" value="4"> Handler 
+			<br /><br />
 			Phone (Optional): <input type="text" name="phone" id="phone" />
 			<br /><br />
 			FL Garrison Forum Username: <input type="text" name="forumid" id="forumid" />

@@ -313,6 +313,19 @@ $(document).ready(function()
 		$.LoadingOverlay("hide");
 	});
 
+	// Request Account - Account Type
+	$("body").on("click", "[name=accountType]", function(e)
+	{
+		if($(this).val() == "4") {
+			$("#tkid").val(0);
+			$("#tkid").prop("readonly", true);
+		}
+		else
+		{
+			$("#tkid").prop("readonly", false);
+		}
+	})
+
 	// Roster - Trooper Confirmation - Y / N Button
 	$("body").on("click", "[name=attend-button]", function(e)
 	{

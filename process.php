@@ -2033,8 +2033,8 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			}
 		}
 
-		// Check if ID exists
-		if($idcheck->num_rows > 0)
+		// Check if ID exists, if not set to 0
+		if($_POST["accountType"] == 1 && $idcheck->num_rows > 0)
 		{
 			$failed = true;
 			echo '<li>TKID is taken. If you have troops on the old troop tracker, <a href="index.php?action=setup">click here to request access</a>.</li>';
@@ -2073,7 +2073,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			// 501
 			if(cleanInput($_POST['squad']) <= count($squadArray))
 			{
-				$p501 = 1;
+				$p501 = cleanInput($_POST['accountType']);
 			}
 
 			// Add to query set up
@@ -2089,7 +2089,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 				if(isset($_POST[$club_value['db3']]) && (cleanInput($_POST[$club_value['db3']]) != "" || cleanInput($_POST[$club_value['db3']]) > 0))
 				{
 					// Change value
-					${$club_value['db']} = 1;
+					${$club_value['db']} = cleanInput($_POST['accountType']);
 				}
 				else
 				{
