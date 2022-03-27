@@ -327,7 +327,23 @@ $clubArray = array(
 		"rankReserve" => "",
 		"rankRetired" => "",
 		"naCostume" => 717,
-		"userGroup" => 1415)
+		"userGroup" => 1415),
+	array(
+		"name" => "Saber Guild",
+		"logo" => "test",
+		"costumes" => array(6),
+		"db" => "pSG",
+		"db2" => "",
+		"db3" => "sgid",
+		"db3Name" => "Saber Guild SG #",
+		"db3Require" => "0,digits,0",
+		"db3Link" => "",
+		"dbLimit" => "limitSG",
+		"rankRegular" => "saberguildmember.png",
+		"rankReserve" => "",
+		"rankRetired" => "",
+		"naCostume" => 724,
+		"userGroup" => 1491)
 );
 
 ?>
