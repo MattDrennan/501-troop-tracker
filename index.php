@@ -4696,7 +4696,7 @@ if(isset($_GET['action']) && $_GET['action'] == "editphoto")
 }
 
 // Show the login page
-if(isset($_GET['action']) && $_GET['action'] == "login")
+if(isset($_GET['action']) && $_GET['action'] == "login" && !loggedIn())
 {
 	echo '
 	<h2 class="tm-section-header">Login</h2>';
