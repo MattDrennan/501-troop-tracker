@@ -164,6 +164,12 @@ $userGroupRetired = 1429;
 
 $troopTrackerUserGroup = 1489;
 
+/**
+ * handlerUserGroup: The Xenforo user group ID for Troop Tracker handler
+*/
+
+$handlerUserGroup = 1490;
+
 // Please note: Do not change the order of squads and clubs after your set up your troop tracker, otherwise you will mess up the squad IDs
 // Make sure you run queries on your database if you need to change the order after installation.
 

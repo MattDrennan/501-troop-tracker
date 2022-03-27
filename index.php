@@ -425,7 +425,7 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 }
 
 // Show the request access page
-if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClosed())
+if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClosed() && !loggedIn())
 {
 	echo '
 	<h2 class="tm-section-header">Request Access</h2>
@@ -4830,7 +4830,7 @@ if(isset($_GET['action']) && $_GET['action'] == "login")
 }
 
 // Show the setup page
-if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed())
+if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed() && !loggedIn())
 {
 	echo '
 	<h2 class="tm-section-header">Set Up Your Account</h2>';
