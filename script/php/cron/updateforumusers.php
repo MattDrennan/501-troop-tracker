@@ -113,6 +113,17 @@ if ($result = mysqli_query($conn, $query))
 
 				array_push($groupArray2, $userGroupRetired);
 			}
+			// 501st member, handler
+			else if($db->p501 == 4)
+			{
+				if (!in_array($handlerUserGroup, $groupArray))
+				{
+					// Not listed on forum, update
+					array_push($groupArray, $handlerUserGroup);
+				}
+
+				array_push($groupArray2, $handlerUserGroup);
+			}
 
 			// Loop through clubs
 			foreach($clubArray as $club => $club_value)
@@ -134,10 +145,21 @@ if ($result = mysqli_query($conn, $query))
 					if (!in_array($userGroupRetired, $groupArray))
 					{
 						// Not listed on forum, update
-						// array_push($groupArray, $userGroupRetired);
+						array_push($groupArray, $userGroupRetired);
 					}
 
-					// array_push($groupArray2, $userGroupRetired);	
+					array_push($groupArray2, $userGroupRetired);	
+				}
+				// Member, handler
+				else if($db->{$club_value['db']} == 4)
+				{
+					if (!in_array($handlerUserGroup, $groupArray))
+					{
+						// Not listed on forum, update
+						array_push($groupArray, $handlerUserGroup);
+					}
+
+					array_push($groupArray2, $handlerUserGroup);
 				}
 
 				// Add to check array
