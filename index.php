@@ -4029,7 +4029,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<select name="userID" id="userID">';
 					}
 
-					echo '<option value="'.$db->id.'" '.echoSelect($db->id, $uid).'>'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</option>';
+					echo '<option value="'.$db->id.'" '.echoSelect($db->id, $uid).'>'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).' - '.$db->forum_id.'</option>';
 
 					// Increment
 					$i++;
