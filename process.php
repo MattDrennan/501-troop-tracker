@@ -2344,8 +2344,12 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 				// Create thread on forum
 				$thread = createThread($forumCat, date("m/d/y", strtotime($date1)) . " " . $_POST['eventName'], $thread_body, getUserID($_SESSION['id']));
 
-				// Update event with thread and post IDs
-				$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."', post_id = '".$thread['thread']['last_post_id']."' WHERE id = '".$eventId."'");
+				// Make sure value is set from createThread
+				if(isset($thread['thread']['thread_id']))
+				{
+					// Update event with thread and post IDs
+					$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."', post_id = '".$thread['thread']['last_post_id']."' WHERE id = '".$eventId."'");
+				}
 			}
 
 			// Only notify if event is in the future
