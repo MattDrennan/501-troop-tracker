@@ -2131,7 +2131,6 @@ $(document).ready(function()
 						data: form.serialize() + "&submitEditRoster=1&signid=" + signid,
 						success: function(data)
 						{
-							console.log(data);
 							// Change submit button
 							$("#edittrooper").val("Edit Trooper");
 
