@@ -129,6 +129,24 @@ define('garrisonImage', 'garrison_emblem.png');
 $virtualTroop = 445;
 
 /**
+ * conventionTroop: This variable is used to determine which forum to post convention troops
+*/
+
+$conventionTroop = 213;
+
+/**
+ * lflTroop: This variable is used to determine which forum to post LFL troops
+*/
+
+$lflTroop = 212;
+
+/**
+ * disneyTroop: This variable is used to determine which forum to post Disney troops
+*/
+
+$disneyTroop = 211;
+
+/**
  * dualCostume: This variable is used to determine which costume club ID should be counted as a dual costume.
 */
 

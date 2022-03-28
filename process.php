@@ -2323,7 +2323,7 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 			$eventId = $conn->insert_id;
 
 			// Only create thread if we can and admin allows
-			if($_POST['postToBoards'] == 1 && ($_POST['squadm'] != 0 || $_POST['label'] == 7))
+			if($_POST['postToBoards'] == 1 && ($_POST['squadm'] != 0 || $_POST['label'] == 7 || $_POST['label'] == 4 || $_POST['label'] == 3))
 			{
 				// Make thread body
 				$thread_body = threadTemplate($_POST['eventName'], $_POST['eventVenue'], $_POST['location'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['comments'], $_POST['referred'], $eventId);
@@ -2335,6 +2335,14 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 				if($_POST['label'] == 7)
 				{
 					$forumCat = $virtualTroop;
+				}
+				else if($_POST['label'] == 4)
+				{
+					$forumCat = $conventionTroop;
+				}
+				else if($_POST['label'] == 3)
+				{
+					$forumCat = $disneyTroop;
 				}
 				else
 				{
@@ -2394,7 +2402,7 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 						$last_id = $conn->insert_id;
 
 						// Only create thread if we can and admin allows
-						if($_POST['postToBoards'] == 1 && ($_POST['squadm'] != 0 || $_POST['label'] == 7))
+						if($_POST['postToBoards'] == 1 && ($_POST['squadm'] != 0 || $_POST['label'] == 7 || $_POST['label'] == 4 || $_POST['label'] == 3))
 						{
 							// Make thread body
 							$thread_body = threadTemplate($_POST['eventName'], $_POST['eventVenue'], $_POST['location'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['comments'], $_POST['referred'], $last_id);
@@ -2406,6 +2414,14 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 							if($_POST['label'] == 7)
 							{
 								$forumCat = $virtualTroop;
+							}
+							else if($_POST['label'] == 4)
+							{
+								$forumCat = $conventionTroop;
+							}
+							else if($_POST['label'] == 3)
+							{
+								$forumCat = $disneyTroop;
 							}
 							else
 							{
