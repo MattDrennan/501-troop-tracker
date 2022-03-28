@@ -3261,7 +3261,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<select name="userIDTitle" id="userIDTitle">';
 					}
 
-					echo '<option value="'.$db->id.'">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).' - '.$db->forum_id.'</option>';
+					echo '<option value="'.$db->id.'">'.readInput($db->name).' - '.readTKNumber($db->tkid, $db->squad).' - '.$db->forum_id.'</option>';
 
 					// Increment
 					$i++;
@@ -3298,7 +3298,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							echo '<select id="titleIDAssign" name="titleIDAssign">';
 						}
 
-						echo '<option value="'.$db->id.'">'.$db->title.'</option>';
+						echo '<option value="'.$db->id.'">'.readInput($db->title).'</option>';
 
 						// Increment $j
 						$j++;
@@ -3366,7 +3366,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<option value="0" SELECTED>Please select a title...</option>';
 					}
 
-					echo '<option value="'.$db->id.'" title="'.$db->title.'" titleID="'.$db->id.'" titleImage="'.$db->icon.'" titleForumID="'.$db->forum_id.'">'.$db->title.'</option>';
+					echo '<option value="'.$db->id.'" title="'.readInput($db->title).'" titleID="'.$db->id.'" titleImage="'.$db->icon.'" titleForumID="'.$db->forum_id.'">'.readInput($db->title).'</option>';
 
 					// Increment
 					$i++;
@@ -3425,7 +3425,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<select name="titleID" id="titleID">';
 					}
 
-					echo '<option value="'.$db->id.'">'.$db->title.'</option>';
+					echo '<option value="'.$db->id.'">'.readInput($db->title).'</option>';
 
 					// Increment
 					$i++;
@@ -3480,7 +3480,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<select name="userIDAward" id="userIDAward">';
 					}
 
-					echo '<option value="'.$db->id.'">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).' - '.$db->forum_id.'</option>';
+					echo '<option value="'.$db->id.'">'.readInput($db->name).' - '.readTKNumber($db->tkid, $db->squad).' - '.$db->forum_id.'</option>';
 
 					// Increment
 					$i++;
@@ -3517,7 +3517,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							echo '<select id="awardIDAssign" name="awardIDAssign">';
 						}
 
-						echo '<option value="'.$db->id.'">'.$db->title.'</option>';
+						echo '<option value="'.$db->id.'">'.readInput($db->title).'</option>';
 
 						// Increment $j
 						$j++;
@@ -3579,7 +3579,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<option value="0" SELECTED>Please select an award...</option>';
 					}
 
-					echo '<option value="'.$db->id.'" awardTitle="'.$db->title.'" awardID="'.$db->id.'" awardImage="'.$db->icon.'">'.$db->title.'</option>';
+					echo '<option value="'.$db->id.'" awardTitle="'.readInput($db->title).'" awardID="'.$db->id.'" awardImage="'.$db->icon.'">'.readInput($db->title).'</option>';
 
 					// Increment
 					$i++;
@@ -3633,7 +3633,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<select name="awardID" id="awardID">';
 					}
 
-					echo '<option value="'.$db->id.'">'.$db->title.'</option>';
+					echo '<option value="'.$db->id.'">'.readInput($db->title).'</option>';
 
 					// Increment
 					$i++;

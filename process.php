@@ -109,7 +109,7 @@ if(isset($_GET['do']) && isset($_POST['commentid']) && isset($_POST['comment']) 
 				editPost(getCommentPostID(cleanInput($_POST['commentid'])), cleanInput($_POST['comment']));
 
 				// Set up return data
-				$data = nl2br(isImportant($db->important, showBBcodes(cleanInput($_POST['comment']))));
+				$data = nl2br(readInput(isImportant($db->important, showBBcodes(cleanInput($_POST['comment'])))));
 			}
 		}
 	}
@@ -1101,7 +1101,7 @@ if(isset($_GET['do']) && $_GET['do'] == "assigntitles" && loggedIn() && isAdmin(
 						<option value="0" SELECTED>Please select a title...</option>';
 				}
 
-				$returnMessage .= '<option value="'.$db->id.'" title="'.$db->title.'" titleID="'.$db->id.'" titleImage="'.$db->icon.'">'.$db->title.'</option>';
+				$returnMessage .= '<option value="'.$db->id.'" title="'.readInput($db->title).'" titleID="'.$db->id.'" titleImage="'.$db->icon.'">'.readInput($db->title).'</option>';
 
 				// Increment
 				$i++;
@@ -1154,7 +1154,7 @@ if(isset($_GET['do']) && $_GET['do'] == "assigntitles" && loggedIn() && isAdmin(
 					<select name="titleID" id="titleID">';
 				}
 
-				$returnMessage .= '<option value="'.$db->id.'">'.$db->title.'</option>';
+				$returnMessage .= '<option value="'.$db->id.'">'.readInput($db->title).'</option>';
 
 				// Increment
 				$i++;
@@ -1198,7 +1198,7 @@ if(isset($_GET['do']) && $_GET['do'] == "assigntitles" && loggedIn() && isAdmin(
 					<select name="userIDTitle" id="userIDTitle">';
 				}
 
-					$returnMessage2 .= '<option value="'.$db->id.'">'.$db->name.'</option>';
+					$returnMessage2 .= '<option value="'.$db->id.'">'.readInput($db->name).'</option>';
 
 				// Increment
 				$i++;
@@ -1234,7 +1234,7 @@ if(isset($_GET['do']) && $_GET['do'] == "assigntitles" && loggedIn() && isAdmin(
 						$returnMessage2 .= '<select id="titleIDAssign" name="titleIDAssign">';
 					}
 
-					$returnMessage2 .= '<option value="'.$db->id.'">'.$db->title.'</option>';
+					$returnMessage2 .= '<option value="'.$db->id.'">'.readInput($db->title).'</option>';
 
 					// Increment $j
 					$j++;
@@ -1421,7 +1421,7 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 						<option value="0" SELECTED>Please select an award...</option>';
 				}
 
-				$returnMessage .= '<option value="'.$db->id.'" awardTitle="'.$db->title.'" awardID="'.$db->id.'" awardImage="'.$db->icon.'">'.$db->title.'</option>';
+				$returnMessage .= '<option value="'.$db->id.'" awardTitle="'.readInput($db->title).'" awardID="'.$db->id.'" awardImage="'.$db->icon.'">'.readInput($db->title).'</option>';
 
 				// Increment
 				$i++;
@@ -1472,7 +1472,7 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 					<select name="awardID" id="awardID">';
 				}
 
-				$returnMessage .= '<option value="'.$db->id.'">'.$db->title.'</option>';
+				$returnMessage .= '<option value="'.$db->id.'">'.readInput($db->title).'</option>';
 
 				// Increment
 				$i++;
@@ -1516,7 +1516,7 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 					<select name="userIDAward" id="userIDAward">';
 				}
 
-					$returnMessage2 .= '<option value="'.$db->id.'">'.$db->name.'</option>';
+					$returnMessage2 .= '<option value="'.$db->id.'">'.readInput($db->name).'</option>';
 
 				// Increment
 				$i++;
@@ -1552,7 +1552,7 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 						$returnMessage2 .= '<select id="awardIDAssign" name="awardIDAssign">';
 					}
 					
-					$returnMessage2 .= '<option value="'.$db->id.'">'.$db->title.'</option>';
+					$returnMessage2 .= '<option value="'.$db->id.'">'.readInput($db->title).'</option>';
 
 					// Increment $j
 					$j++;
@@ -1681,7 +1681,7 @@ if(isset($_GET['do']) && $_GET['do'] == "getuser" && loggedIn())
 				}
 				
 				// Array variables
-				$array = array('name' => $db->name, 'email' => $db->email, 'forum' => $db->forum_id, 'phone' => $db->phone, 'squad' => getSquadName($db->squad), 'tkid' => readTKNumber($db->tkid, $db->squad), 'link' => $link, 'user_id' => $db->user_id);
+				$array = array('name' => readInput($db->name), 'email' => $db->email, 'forum' => $db->forum_id, 'phone' => $db->phone, 'squad' => getSquadName($db->squad), 'tkid' => readTKNumber($db->tkid, $db->squad), 'link' => $link, 'user_id' => $db->user_id);
 
 				// Loop through clubs
 				foreach($clubArray as $club => $club_value)
@@ -2955,7 +2955,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$array = array('id' => $db->id, 'name' => $db->name, 'venue' => $db->venue, 'dateStart' => $db->dateStart, 'dateEnd' => $db->dateEnd, 'website' => $db->website, 'numberOfAttend' => $db->numberOfAttend, 'requestedNumber' => $db->requestedNumber, 'requestedCharacter' => $db->requestedCharacter, 'secureChanging' => $db->secureChanging, 'blasters' => $db->blasters, 'lightsabers' => $db->lightsabers, 'parking' => $db->parking, 'mobility' => $db->mobility, 'amenities' => $db->amenities, 'referred' => $db->referred, 'comments' => $db->comments, 'location' => $db->location, 'squad' => $db->squad, 'label' => $db->label, 'postComment' => $db->postComment, 'notes' => $db->notes, 'limitedEvent' => $db->limitedEvent, 'limitTo' => $db->limitTo, 'limit501st' => $db->limit501st, 'limitTotalTroopers' => $db->limitTotalTroopers, 'closed' => $db->closed, 'charityDirectFunds' => $db->charityDirectFunds, 'charityIndirectFunds' => $db->charityIndirectFunds, 'charityName' => $db->charityName, 'charityAddHours' => $db->charityAddHours,'charityNote' => $db->charityNote, 'eventLink' => $db->link, 'thread_id' => $db->thread_id, 'post_id' => $db->post_id);
+				$array = array('id' => $db->id, 'name' => readInput($db->name), 'venue' => readInput($db->venue), 'dateStart' => $db->dateStart, 'dateEnd' => $db->dateEnd, 'website' => readInput($db->website), 'numberOfAttend' => $db->numberOfAttend, 'requestedNumber' => $db->requestedNumber, 'requestedCharacter' => readInput($db->requestedCharacter), 'secureChanging' => $db->secureChanging, 'blasters' => $db->blasters, 'lightsabers' => $db->lightsabers, 'parking' => $db->parking, 'mobility' => $db->mobility, 'amenities' => readInput($db->amenities), 'referred' => readInput($db->referred), 'comments' => readInput($db->comments), 'location' => readInput($db->location), 'squad' => $db->squad, 'label' => $db->label, 'postComment' => $db->postComment, 'notes' => readInput($db->notes), 'limitedEvent' => $db->limitedEvent, 'limitTo' => $db->limitTo, 'limit501st' => $db->limit501st, 'limitTotalTroopers' => $db->limitTotalTroopers, 'closed' => $db->closed, 'charityDirectFunds' => $db->charityDirectFunds, 'charityIndirectFunds' => $db->charityIndirectFunds, 'charityName' => readInput($db->charityName), 'charityAddHours' => $db->charityAddHours,'charityNote' => readInput($db->charityNote), 'eventLink' => $db->link, 'thread_id' => $db->thread_id, 'post_id' => $db->post_id);
 
 				// Loop through clubs
 				foreach($clubArray as $club => $club_value)

@@ -20,7 +20,7 @@ if ($result = mysqli_query($conn, $query))
 	{
 		// Build e-mail
 		$emailBody = "";
-		$emailBody .= $db->name . " has been added in " . getSquadName($db->squad) . "\n\nhttps://www.fl501st.com/troop-tracker/index.php?event=".$db->id."\n\n\n\n";
+		$emailBody .= readInput($db->name) . " has been added in " . getSquadName($db->squad) . "\n\nhttps://www.fl501st.com/troop-tracker/index.php?event=".$db->id."\n\n\n\n";
 		$emailBody .= "You can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com";
 
 		// Loop through all troopers
@@ -30,17 +30,17 @@ if ($result = mysqli_query($conn, $query))
 			while ($db2 = mysqli_fetch_object($result2))
 			{
 				// Send e-mail
-				sendEmail($db2->email, $db2->name, "Troop Tracker: " . $db->name . " posted!", $emailBody);
+				sendEmail($db2->email, readInput($db2->name), "Troop Tracker: " . readInput($db->name) . " posted!", $emailBody);
 			}
 		}
 
 		// Send notification to Discord
-		sendEventNotify($db->id, $db->name, $db->comments, $db->squad);
+		sendEventNotify($db->id, readInput($db->name), readInput($db->comments), $db->squad);
 		
 		try
 		{
 			// Post to Twitter
-			postTweet("".$db->name." has been added in ".getSquadName($db->squad).".");
+			postTweet("".readInput($db->name)." has been added in ".getSquadName($db->squad).".");
 		}
 		catch(Exception $e)
 		{
@@ -68,7 +68,7 @@ if ($result = mysqli_query($conn, $query))
 			{
 				$commentTrooperID = $db2->trooperid;
 				$commentName = getName($db2->trooperid);
-				$commentMessage = $db2->comment;
+				$commentMessage = readInput($db2->comment);
 			}
 		}
 
@@ -79,7 +79,7 @@ if ($result = mysqli_query($conn, $query))
 			while ($db2 = mysqli_fetch_object($result2))
 			{
 				// Send E-mail
-				@sendEmail($db2->email, $db2->name, "Troop Tracker: A comment has posted on ".$db->name."!", $commentName . ": " . $commentMessage . "\n\nhttps://www.fl501st.com/troop-tracker/index.php?event=".$db->id."\n\n\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com");
+				@sendEmail($db2->email, readInput($db2->name), "Troop Tracker: A comment has posted on ".readInput($db->name)."!", $commentName . ": " . $commentMessage . "\n\nhttps://www.fl501st.com/troop-tracker/index.php?event=".$db->id."\n\n\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com");
 			}
 		}
 	}
@@ -95,13 +95,13 @@ if ($result = mysqli_query($conn, $query))
 		if($db->trooperstatus == 1)
 		{
 			// Send update
-			sendEventUpdate($db->troopid, $db->trooperid, "Troop Tracker: Trooper Signed Up On " . $db->name, getName($db->trooperid) . " signed up on " . $db->name . ".");
+			sendEventUpdate($db->troopid, $db->trooperid, "Troop Tracker: Trooper Signed Up On " . readInput($db->name), getName($db->trooperid) . " signed up on " . readInput($db->name) . ".");
 		}
 		// Check status
 		if($db->trooperstatus == 2)
 		{
 			// Send update
-			sendEventUpdate($db->troopid, $db->trooperid, "Troop Tracker: Trooper Canceled Sign Up On " . $db->name, getName($db->trooperid) . " canceled on " . $db->name . ".");
+			sendEventUpdate($db->troopid, $db->trooperid, "Troop Tracker: Trooper Canceled Sign Up On " . readInput($db->name), getName($db->trooperid) . " canceled on " . readInput($db->name) . ".");
 		}
 	}
 }

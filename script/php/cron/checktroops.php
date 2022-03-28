@@ -26,7 +26,7 @@ if ($result = mysqli_query($conn, $query))
 		$message = "Hello!\n\nYou have ".$count[0]." troops that need to be confirmed in order to give you troop credit. Please login to the troop tracker and confirm these troops.\n\nConfirm troops here: https://fl501st.com/troop-tracker/index.php#confirmtroops\n\nIf you need assistance, please contact your squad leader.\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com";
 		
 		// Send E-mail
-		sendEmail($db->email, $db->name, "Troop Tracker: Troops need your attention!", $message);
+		sendEmail($db->email, readInput($db->name), "Troop Tracker: Troops need your attention!", readInput($message));
 	}
 }
 
@@ -278,7 +278,7 @@ if ($result = mysqli_query($conn, $query))
 		// Send e-mail if something to send
 		if($mC > 0 || $cC > 0)
 		{
-			sendEmail($db->email, $db->name, "Troop Tracker: Command Staff Notifications", $message);
+			sendEmail($db->email, readInput($db->name), "Troop Tracker: Command Staff Notifications", readInput($message));
 		}
 	}
 }
@@ -389,7 +389,7 @@ if($i > 0)
 			if($k > 0)
 			{
 				// Send E-mail
-				sendEmail($db->email, $db->name, "Troop Tracker: New events posted!", $emailBody);
+				sendEmail($db->email, readInput($db->name), "Troop Tracker: New events posted!", readInput($emailBody));
 			}
 		}
 	}

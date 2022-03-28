@@ -2581,11 +2581,11 @@ function getEventTitle($id, $link = false)
 		{
 			if($link)
 			{
-				return '<a href=\'index.php?event='. $db->id .'\'>' . $db->name . '</a>';
+				return '<a href=\'index.php?event='. $db->id .'\'>' . readInput($db->name) . '</a>';
 			}
 			else
 			{
-				return $db->name;
+				return readInput($db->name);
 			}
 		}
 	}
@@ -3221,9 +3221,9 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 	$returnString = '';
 
 	$returnString .= '
-	[b]Event Name:[/b] '.html_entity_decode($eventName).'
-	[b]Venue:[/b] '.html_entity_decode($eventVenue).'
-	[b]Venue address:[/b] '.html_entity_decode($location).'
+	[b]Event Name:[/b] '.readInput($eventName).'
+	[b]Venue:[/b] '.readInput($eventVenue).'
+	[b]Venue address:[/b] '.readInput($location).'
 	[b]Event Start:[/b] '.date("m/d/y h:i A", strtotime($date1)).'
 	[b]Event End:[/b] '.date("m/d/y h:i A", strtotime($date2)).'';
 
@@ -3231,10 +3231,10 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 	if($eventType != 10 && $eventType != 7)
 	{
 		$returnString .= '
-		[b]Event Website:[/b] '.html_entity_decode($website).'
+		[b]Event Website:[/b] '.readInput($website).'
 		[b]Expected number of attendees:[/b] '.$numberOfAttend.'
 		[b]Requested number of characters:[/b] '.$requestedNumber.'
-		[b]Requested character types:[/b] '.html_entity_decode($requestedCharacter).'
+		[b]Requested character types:[/b] '.readInput($requestedCharacter).'
 		[b]Secure changing/staging area:[/b] '.yesNo($secure).'
 		[b]Can troopers carry blasters:[/b] '.yesNo($blasters).'
 		[b]Can troopers carry/bring props like lightsabers and staffs:[/b] '.yesNo($lightsabers).'
@@ -3246,14 +3246,14 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 	if($eventType != 7)
 	{
 		$returnString .= '
-		[b]Amenities available at venue:[/b] '.ifEmpty(html_entity_decode($amenities), "No amenities for this event.").'';
+		[b]Amenities available at venue:[/b] '.ifEmpty(readInput($amenities), "No amenities for this event.").'';
 	}
 
 
 	$returnString .= '
 	[b]Comments:[/b]
-	'.ifEmpty(html_entity_decode($comments), "No comments for this event.").'
-	[b]Referred by:[/b] '.ifEmpty(html_entity_decode($referred), "Not available").'
+	'.ifEmpty(readInput($comments), "No comments for this event.").'
+	[b]Referred by:[/b] '.ifEmpty(readInput($referred), "Not available").'
 
 	'.$roster.'
 
@@ -3977,6 +3977,22 @@ function isTKRegistered($tk, $squad = 0)
 function cleanInput($value)
 {
 	$value = filter_var($value, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+	return $value;
+}
+
+/**
+ * Converts cleanInput into readable text
+ * 
+ * @param string $value The input to be read
+ * @return string Returns the readable data
+*/
+function readInput($value)
+{
+	$value = html_entity_decode(htmlspecialchars_decode($value), ENT_QUOTES);
+
+	error_log($value);
+
 	return $value;
 }
 

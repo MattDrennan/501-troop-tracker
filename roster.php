@@ -94,7 +94,7 @@ if ($result = mysqli_query($conn, $query))
 			}
 			echo '
 			<br />
-			<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</a>';
+			<a href="index.php?profile='.$db->id.'" target="_blank">'.readInput($db->name).' - '.readTKNumber($db->tkid, $db->squad).'</a>';
 			array_push($added, $db->id);
 			
 			if($db->title != "" && !is_null($db->title))
@@ -161,7 +161,7 @@ if ($result = mysqli_query($conn, $query))
 				}
 				echo '
 				<br />
-				<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</a>
+				<a href="index.php?profile='.$db->id.'" target="_blank">'.readInput($db->name).' - '.readTKNumber($db->tkid, $db->squad).'</a>
 			</div>';
 		}
 		
