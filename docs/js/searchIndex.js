@@ -521,6 +521,11 @@ Search.appendIndex(
             "summary": "Prevents\u0020hacks\u0020by\u0020sanitizing\u0020input",
             "url": "namespaces/default.html#function_cleanInput"
         },                {
+            "fqsen": "\\readInput\u0028\u0029",
+            "name": "readInput",
+            "summary": "Converts\u0020cleanInput\u0020into\u0020readable\u0020text",
+            "url": "namespaces/default.html#function_readInput"
+        },                {
             "fqsen": "\\sendEventUpdate\u0028\u0029",
             "name": "sendEventUpdate",
             "summary": "Send\u0027s\u0020an\u0020e\u002Dmail\u0020if\u0020trooper\u0020is\u0020subscribed\u0020to\u0020an\u0020event",
