@@ -273,14 +273,16 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 		
 		<select multiple style="height: 500px;" id="favoriteCostumeSelect" name="favoriteCostumeSelect">';
 		
-		$query = "SELECT costumes.id AS id, costumes.costume, favorite_costumes.costumeid FROM costumes LEFT JOIN favorite_costumes ON favorite_costumes.costumeid = costumes.id ORDER BY costume";
+		$query = "SELECT costumes.id AS id, costumes.costume, favorite_costumes.costumeid, favorite_costumes.trooperid FROM costumes LEFT JOIN favorite_costumes ON favorite_costumes.costumeid = costumes.id ORDER BY costume";
 
 		if ($result = mysqli_query($conn, $query) or die($conn->error))
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
+				$isFavorite = ($db->trooperid == $_SESSION['id']) ? echoSelect($db->id, $db->costumeid) : "";
+
 				echo '
-				<option value="'.$db->id.'" '.echoSelect($db->id, $db->costumeid).'>'.$db->costume.'</option>';
+				<option value="'.$db->id.'" '. $isFavorite .'>'.$db->costume .'</option>';
 			}
 		}
 		
