@@ -712,6 +712,31 @@ div[name="commentArea"] {
 	height: 30px;
 }
 
+/* Statistics Roster */
+
+.stat-container {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.stat-container .title {
+	max-width: 150px;
+	flex: 1;
+	text-align: center;
+	border: 1px dashed #000;
+	margin: 20px;
+}
+
+.stat-container div {
+	max-width: 75px;
+	flex: 1;
+	text-align: center;
+	border: 1px dashed #000;
+	margin: 20px;
+}
+
 /* JQUERY Validator */
 
 label.error {

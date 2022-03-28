@@ -1971,13 +1971,10 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			echo '
 			<h2>Important People</h2>
 			<h3>Super Admin</h3>
-			<ul>';
+			<div class="stat-container">';
 
 			// Show all super admins
-			$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.squad, titles.title FROM troopers LEFT JOIN title_troopers ON troopers.id = title_troopers.trooperid LEFT JOIN titles ON title_troopers.titleid = titles.id WHERE (permissions = '1') ORDER BY name";
-
-			// Set up added array
-			$added = array();
+			$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.squad FROM troopers WHERE (permissions = '1') ORDER BY name";
 
 			// Trooper count set up
 			$i = 0;
@@ -1986,22 +1983,25 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
-					if(!in_array($db->id, $added))
+					echo '
+					<div class="title">
+
+					<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</a>';
+
+					// Show titles
+					$query2 = "SELECT titles.title FROM title_troopers LEFT JOIN titles ON title_troopers.titleid = titles.id WHERE title_troopers.trooperid = '".$db->id."'";
+
+					if ($result2 = mysqli_query($conn, $query2))
 					{
-						echo '<li><a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</a></li>';
-						array_push($added, $db->id);
-						
-						if($db->title != "" && !is_null($db->title))
+						while ($db2 = mysqli_fetch_object($result2))
 						{
 							echo '
-							<p>'.$db->title.'</p>';
+							<p>'.$db2->title.'</p>';
 						}
 					}
-					else
-					{
-						echo '
-						<p>'.$db->title.'</p>';
-					}
+
+					echo '
+					</div>';
 					
 					// Increment
 					$i++;
@@ -2011,17 +2011,17 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			// No troopers
 			if($i == 0)
 			{
-				echo '<li>No troopers to display.</li>';
+				echo '<p>No troopers to display.</p>';
 			}
-
-			echo '</ul>';
 
 			echo '
-			<h3>Moderator</h3>
-			<ul>';
+			</div>
 
-			// Show all moderators
-			$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.squad, titles.title FROM troopers LEFT JOIN title_troopers ON troopers.id = title_troopers.trooperid LEFT JOIN titles ON title_troopers.titleid = titles.id WHERE (permissions = '2') ORDER BY name";
+			<h3>Moderator</h3>
+			<div class="stat-container">';
+
+			// Show all super admins
+			$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.squad FROM troopers WHERE (permissions = '2') ORDER BY name";
 
 			// Trooper count set up
 			$i = 0;
@@ -2030,22 +2030,25 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
-					if(!in_array($db->id, $added))
+					echo '
+					<div class="title">
+
+					<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</a>';
+
+					// Show titles
+					$query2 = "SELECT titles.title FROM title_troopers LEFT JOIN titles ON title_troopers.titleid = titles.id WHERE title_troopers.trooperid = '".$db->id."'";
+
+					if ($result2 = mysqli_query($conn, $query2))
 					{
-						echo '<li><a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</a></li>';
-						array_push($added, $db->id);
-						
-						if($db->title != "" && !is_null($db->title))
+						while ($db2 = mysqli_fetch_object($result2))
 						{
 							echo '
-							<p>'.$db->title.'</p>';
+							<p>'.$db2->title.'</p>';
 						}
 					}
-					else
-					{
-						echo '
-						<p>'.$db->title.'</p>';
-					}
+
+					echo '
+					</div>';
 					
 					// Increment
 					$i++;
@@ -2055,16 +2058,17 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			// No troopers
 			if($i == 0)
 			{
-				echo '<li>No troopers to display.</li>';
+				echo '<p>No troopers to display.</p>';
 			}
 
-			echo '</ul>
+			echo '
+			</div>
 			
 			<h3>Other</h3>
-			<ul>';
+			<div class="stat-container">';
 
-			// Show all troopers with titles
-			$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.squad, titles.title FROM troopers LEFT JOIN title_troopers ON troopers.id = title_troopers.trooperid LEFT JOIN titles ON title_troopers.titleid = titles.id WHERE (troopers.permissions != 1 AND troopers.permissions != 2) AND titles.title != '' ORDER BY name";
+			// Show all super admins
+			$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.squad FROM troopers LEFT JOIN title_troopers ON troopers.id = title_troopers.trooperid WHERE (troopers.permissions != 1 AND troopers.permissions != 2) AND title_troopers.trooperid = troopers.id ORDER BY name";
 
 			// Trooper count set up
 			$i = 0;
@@ -2073,22 +2077,25 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
-					if(!in_array($db->id, $added))
+					echo '
+					<div class="title">
+
+					<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</a>';
+
+					// Show titles
+					$query2 = "SELECT titles.title FROM title_troopers LEFT JOIN titles ON title_troopers.titleid = titles.id WHERE title_troopers.trooperid = '".$db->id."'";
+
+					if ($result2 = mysqli_query($conn, $query2))
 					{
-						echo '<li><a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</a></li>';
-						array_push($added, $db->id);
-						
-						if($db->title != "" && !is_null($db->title))
+						while ($db2 = mysqli_fetch_object($result2))
 						{
 							echo '
-							<p>'.$db->title.'</p>';
+							<p>'.$db2->title.'</p>';
 						}
 					}
-					else
-					{
-						echo '
-						<p>'.$db->title.'</p>';
-					}
+
+					echo '
+					</div>';
 					
 					// Increment
 					$i++;
@@ -2098,10 +2105,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			// No troopers
 			if($i == 0)
 			{
-				echo '<li>No troopers to display.</li>';
+				echo '<p>No troopers to display.</p>';
 			}
 
-			echo '</ul>
+			echo '
+			</div>
 			
 			<h2>Statistics</h2>';
 
