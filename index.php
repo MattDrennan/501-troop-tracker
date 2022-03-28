@@ -4714,11 +4714,8 @@ if(isset($_GET['action']) && $_GET['action'] == "login" && !loggedIn())
 	// Display submission for register account, otherwise show the form
 	if(isset($_POST['loginWithTK']))
 	{
-		// Get TKID
-		$tkid = cleanInput($_POST['tkid']);
-		
 		// Login with forum
-		$forumLogin = loginWithForum($tkid, $_POST['password']);
+		$forumLogin = loginWithForum($_POST['tkid'], $_POST['password']);
 		
 		// Check credentials
 		if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
