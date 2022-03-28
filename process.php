@@ -1987,6 +1987,20 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			echo '<li>TKID must be an integer.</li>';
 		}
 		
+		// Check if TKID can be 0
+		if($_POST['accountType'] == 1 && $tkid == 0)
+		{
+			$failed = true;
+			echo '<li>TKID cannot be zero.</li>';
+		}
+		
+		// Check if TKID cannot be 0
+		if($_POST['accountType'] == 4 && $tkid > 0)
+		{
+			$failed = true;
+			echo '<li>TKID must be zero for a handler account.</li>';
+		}
+		
 		// Set squad variable
 		$squad = cleanInput($_POST['squad']);
 		

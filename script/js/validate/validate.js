@@ -418,9 +418,34 @@ $(function()
         {
             tkid:
             {
-                required: true,
+				required: function()
+				{
+					// Handler account - check if TKID is required
+					if($("[name=accountType]:checked").val() == 1)
+					{
+						console.log("aa");
+						return true;
+					}
+					else
+					{
+						console.log("bb");
+						return false;
+					}
+				},
                 digits: true,
-                maxlength: 11
+                maxlength: 11,
+				min: function()
+				{
+					// Handler account - prevent TKID 0 for regular accounts
+					if($("[name=accountType]:checked").val() == 1)
+					{
+						return 1;
+					}
+					else
+					{
+						return 0;
+					}
+				}
             },
             forumid: "required",
             forumpassword: "required",
