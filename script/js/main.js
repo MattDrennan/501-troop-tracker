@@ -1188,6 +1188,8 @@ $(document).ready(function()
 				{
 					$("#submitEditUser").val("Close");
 					$("#editUserInfo").show();
+					$("[name=trooperInformation]").hide();
+					$("#trooperInformationButton").text("Show Trooper Information");
 
 					var json = JSON.parse(data);
 					$("#userIDE").val(json.id);

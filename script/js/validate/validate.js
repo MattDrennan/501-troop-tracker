@@ -154,8 +154,7 @@ $(function()
             forumid: "required",
             squad:
             {
-                required: true,
-                range: [0, 9]
+                required: true
             },
             permissions:
             {
