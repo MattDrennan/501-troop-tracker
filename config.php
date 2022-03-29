@@ -1642,7 +1642,7 @@ function getMyCostumes($id, $squad)
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$costume .= ", '501st: " . $db->costumename . "'";
+				$costume .= ", '501st: " . addslashes($db->costumename) . "'";
 			}
 		}
 	}
@@ -3696,7 +3696,7 @@ function mainCostumesBuild($trooperid)
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
-			$returnQuery .= ", '".getCostume($db->costumeid)."'";
+			$returnQuery .= ", '".addslashes(getCostume($db->costumeid))."'";
 		}
 	}
 	
