@@ -35,12 +35,11 @@ if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))
 	{
-		// Check if 501 member
-		if($db->p501 > 0)
-		{
-			// Update TKID on forum
-			updateUserCustom($db->user_id, "tkid", $db->tkid);
-		}
+		// Update TKID on forum
+		updateUserCustom($db->user_id, "tkid", getTKNumber($db->id, true));
+
+		// Update Tracker ID on forum
+		updateUserCustom($db->user_id, "trackerid", $db->id);
 		
 		// Update full name
 		updateUserCustom($db->user_id, "fullname", $db->name);
