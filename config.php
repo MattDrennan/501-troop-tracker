@@ -3989,9 +3989,7 @@ function cleanInput($value)
 */
 function readInput($value)
 {
-	$value = html_entity_decode(htmlspecialchars_decode($value), ENT_QUOTES);
-
-	error_log($value);
+	$value = strip_tags(html_entity_decode(htmlspecialchars_decode($value), ENT_QUOTES));
 
 	return $value;
 }

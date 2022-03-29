@@ -1867,7 +1867,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 				$conn->query("UPDATE troopers SET spTrooper = '".cleanInput($_POST['spTrooper'])."', spCostume = '".cleanInput($_POST['spCostume'])."', spAward = '".cleanInput($_POST['spAward'])."', permissions = '".cleanInput($_POST['permissions'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'") or die($conn->error);
 			}
 
-			$array = array('success' => 'true', 'newname' => cleanInput($_POST['user']) . " - " . readTKNumber($tkid, getTrooperSquad(cleanInput($_POST['userIDE']))), 'data' => $message);
+			$array = array('success' => 'true', 'newname' => readInput(cleanInput($_POST['user'])) . " - " . readTKNumber($tkid, getTrooperSquad(cleanInput($_POST['userIDE']))) . " - " . readInput(cleanInput($_POST['forumid'])), 'data' => $message);
 			echo json_encode($array);
 		}
 		else
