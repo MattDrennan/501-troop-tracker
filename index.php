@@ -675,8 +675,41 @@ if(isset($_GET['profile']))
 			{
 				echo '<li>No awards yet!</li>';
 			}
+			
 			echo '
-			</ul>';
+			</ul>
+			</div>
+			
+			<div class="profile-donations">
+			
+			<h2 class="tm-section-header">Donations</h2>
+			
+			<ul>';
+			
+			// Reset for donations
+			$j = 0;
+		
+			// Get data from custom awards - load award user data
+			$query2 = "SELECT * FROM donations WHERE trooperid = '".cleanInput($_GET['profile'])."' ORDER BY datetime DESC";
+			if ($result2 = mysqli_query($conn, $query2))
+			{
+				while ($db2 = mysqli_fetch_object($result2))
+				{
+					$formatter = new NumberFormatter('en_US', NumberFormatter::CURRENCY);
+					
+					echo '<li>' . $formatter->formatCurrency($db2->amount, 'USD') . ' on '.date("m/d/Y", strtotime($db2->datetime)).'</li>';
+					$j++;
+				}
+			}
+
+			if($j == 0)
+			{
+				echo '<li>No donations yet!</li>';
+			}
+			echo '
+			</ul>
+			
+			</div>';
 		}
 		
 		echo '

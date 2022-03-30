@@ -684,7 +684,7 @@ div[name="commentArea"] {
 	text-align: center;
 }
 
-/* Profile */
+/* Profile - Awards */
 
 .profile-awards {
 	text-align: center;
@@ -696,6 +696,20 @@ div[name="commentArea"] {
 
 .profile-awards ul li {
 	list-style-image: url("../images/icons/501.png");
+}
+
+/* Profile - Donations */
+
+.profile-donations {
+	text-align: center;
+}
+
+.profile-donations ul {
+	list-style-position: inside;
+}
+
+.profile-donations ul li {
+	list-style-image: url("../images/icons/bluestar.png");
 }
 
 /* Trooper Confirmation Box */

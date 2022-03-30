@@ -131,6 +131,8 @@ else
 			// If custom is not set
 			if($custom == 0 || $custom == "")
 			{
+				if(!isset($_GET['trooperid'])) { die(""); }
+				
 				$custom = cleanInput($_GET['trooperid']);
 			}
 			
@@ -157,4 +159,3 @@ else
 	fclose ($fp);
 }
 ?>
-
