@@ -4882,10 +4882,10 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed() && 
 		if(doesTKExist(cleanInput($_POST['tkid']), cleanInput($_POST['squad'])))
 		{
 			// Is this TK ID registered?
-			if(!isTKRegistered(cleanInput($_POST['tkid']), cleanInput($_POST['squad'])))
+			if(!isTKRegistered(cleanInput($_POST['forum_id']), cleanInput($_POST['squad'])))
 			{
 				// Login with forum
-				$forumLogin = loginWithForum($_POST['tkid'], $_POST['password']);
+				$forumLogin = loginWithForum($_POST['forum_id'], $_POST['password']);
 
 				// Verify forum login
 				if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
@@ -4894,7 +4894,7 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed() && 
 					if(cleanInput($_POST['squad']) <= count($squadArray))
 					{
 						// Query the database
-						$conn->query("UPDATE troopers SET email = '".$forumLogin['user']['email']."', password = '".password_hash($_POST['password'], PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE tkid = '".cleanInput($_POST['tkid'])."'");
+						$conn->query("UPDATE troopers SET user_id = '".$forumLogin['user']['user_id']."', email = '".$forumLogin['user']['email']."', password = '".password_hash($_POST['password'], PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE forum_id = '".filter_var($_POST['forum_id'], FILTER_SANITIZE_ADD_SLASHES)."'");
 						
 						// Display output
 						echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';
@@ -4909,7 +4909,7 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed() && 
 							{
 								// If a club
 								// Query the database
-								$conn->query("UPDATE troopers SET email = '".$forumLogin['user']['email']."', tkid = '".cleanInput($_POST['tkid2'])."', password = '".password_hash($_POST['password'], PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE rebelforum = '".cleanInput($_POST['tkid'])."'");
+								$conn->query("UPDATE troopers SET user_id = '".$forumLogin['user']['user_id']."', email = '".$forumLogin['user']['email']."', tkid = '".cleanInput($_POST['tkid2'])."', password = '".password_hash($_POST['password'], PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE rebelforum = '".filter_var($_POST['tkid'], FILTER_SANITIZE_ADD_SLASHES)."'");
 								
 								// Display output
 								echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';
