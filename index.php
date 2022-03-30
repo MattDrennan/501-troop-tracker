@@ -4852,7 +4852,7 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed() && 
 			if(!isTKRegistered(cleanInput($_POST['tkid']), cleanInput($_POST['squad'])))
 			{
 				// Login with forum
-				$forumLogin = loginWithForum($tkid, cleanInput($_POST['password']));
+				$forumLogin = loginWithForum($_POST['tkid'], cleanInput($_POST['password']));
 
 				// Verify forum login
 				if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
@@ -4894,7 +4894,7 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed() && 
 				}
 				else
 				{
-					echo 'Your passwords do not match.';
+					echo 'Incorrect username or password.';
 				}
 			}
 			else
