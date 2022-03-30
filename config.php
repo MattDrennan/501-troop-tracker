@@ -916,7 +916,7 @@ function loginWithForum($username, $password)
 	curl_setopt_array($curl, [
 	  CURLOPT_URL => $forumURL . "api/auth",
 	  CURLOPT_POST => 1,
-	  CURLOPT_POSTFIELDS => "login=" . $username . "&password=" . $password . "",
+	  CURLOPT_POSTFIELDS => "login=" . urlencode($username) . "&password=" . urlencode($password) . "",
 	  CURLOPT_CUSTOMREQUEST => "POST",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
