@@ -3074,6 +3074,9 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 				// Check rank
 				if($db2->{$club_value['db']} == 1)
 				{
+					// If blank, don't show
+					if($club_value['rankRegular'] == "") { continue; }
+					
 					echo '
 					<p>
 						<img src="images/ranks/'.$club_value['rankRegular'].'" class="rankTitle" />
@@ -3081,6 +3084,9 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 				}
 				else if($db2->{$club_value['db']} == 2)
 				{
+					// If blank, don't show
+					if($club_value['rankReserve'] == "") { continue; }
+					
 					echo '
 					<p>
 						<img src="images/ranks/'.$club_value['rankReserve'].'" class="rankTitle" />
@@ -3088,6 +3094,9 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 				}
 				else if($db2->{$club_value['db']} == 3)
 				{
+					// If blank, don't show
+					if($club_value['rankRetired'] == "") { continue; }
+					
 					echo '
 					<p>
 						<img src="images/ranks/'.$club_value['rankRetired'].'" class="rankTitle" />
