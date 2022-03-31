@@ -57,6 +57,13 @@ if ($result = mysqli_query($conn, $query))
 		 * @var array
 		*/
 		$groupArray2 = array();
+		
+		/**
+		 * Used to determine if a user has an active club / squad
+		 *
+		 * @var int
+		*/
+		$activeClubs = 0;
 
 		// Get user info
 		$userInfo = getUserForumID($db->user_id);
@@ -88,6 +95,7 @@ if ($result = mysqli_query($conn, $query))
 					array_push($groupArray, $userGroupGarrison);
 				}
 
+				$activeClubs++;
 				array_push($groupArray2, $userGroupGarrison);
 			}
 			// 501st member, no squad
@@ -99,18 +107,8 @@ if ($result = mysqli_query($conn, $query))
 					array_push($groupArray, $userGroupGarrison);
 				}
 
+				$activeClubs++;
 				array_push($groupArray2, $userGroupGarrison);
-			}
-			// 501st member, retired
-			else if($db->p501 == 3)
-			{
-				if (!in_array($userGroupRetired, $groupArray))
-				{
-					// Not listed on forum, update
-					array_push($groupArray, $userGroupRetired);
-				}
-
-				array_push($groupArray2, $userGroupRetired);
 			}
 			// 501st member, handler
 			else if($db->p501 == 4)
@@ -121,6 +119,7 @@ if ($result = mysqli_query($conn, $query))
 					array_push($groupArray, $handlerUserGroup);
 				}
 
+				$activeClubs++;
 				array_push($groupArray2, $handlerUserGroup);
 			}
 
@@ -136,18 +135,8 @@ if ($result = mysqli_query($conn, $query))
 						array_push($groupArray, $club_value['userGroup']);
 					}
 
+					$activeClubs++;
 					array_push($groupArray2, $club_value['userGroup']);	
-				}
-				// Member, retired
-				else if($db->{$club_value['db']} == 3)
-				{
-					if (!in_array($userGroupRetired, $groupArray))
-					{
-						// Not listed on forum, update
-						array_push($groupArray, $userGroupRetired);
-					}
-
-					array_push($groupArray2, $userGroupRetired);	
 				}
 				// Member, handler
 				else if($db->{$club_value['db']} == 4)
@@ -158,11 +147,24 @@ if ($result = mysqli_query($conn, $query))
 						array_push($groupArray, $handlerUserGroup);
 					}
 
+					$activeClubs++;
 					array_push($groupArray2, $handlerUserGroup);
 				}
 
 				// Add to check array
 				array_push($groupTitles, $club_value['userGroup']);
+			}
+			
+			// Add retired status if no active clubs
+			if($activeClubs == 0)
+			{
+				if (!in_array($userGroupRetired, $groupArray))
+				{
+					// Not listed on forum, update
+					array_push($groupArray, $userGroupRetired);
+				}
+
+				array_push($groupArray2, $userGroupRetired);
 			}
 
 			// Loop through squads to add to check array
