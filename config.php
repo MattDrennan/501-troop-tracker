@@ -3989,7 +3989,7 @@ function isTKRegistered($tk, $squad = 0)
 */
 function cleanInput($value)
 {
-	$value = filter_var($value, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+	$value = $conn->real_escape_string(filter_var($value, FILTER_SANITIZE_FULL_SPECIAL_CHARS));
 
 	return $value;
 }
@@ -4002,7 +4002,7 @@ function cleanInput($value)
 */
 function readInput($value)
 {
-	$value = strip_tags(html_entity_decode(htmlspecialchars_decode($value), ENT_QUOTES));
+	$value = strip_tags(stripslashes(html_entity_decode(htmlspecialchars_decode($value), ENT_QUOTES)));
 
 	return $value;
 }
