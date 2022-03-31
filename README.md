@@ -373,19 +373,7 @@ $clubArray = array(
 <li>Set up a Google Cloud API for Google Sheets, then create a service account under "Credentials"</li>
 <li>Download the JSON file from the service account, rename it to "sheets_api_secret.json", and upload it the root directory"</li>
 <li>On a live server, set up cron jobs located in other/cron.txt</li>
-<li>To use 'nodescraper', create a '.env' file in same directory. Add the following:</li>
 </ol>
-
-```
-USERNAME_FORUM=
-PASSWORD_FORUM=
-MYSQL_HOST=
-MYSQL_USER=
-MYSQL_PASSWORD=
-MYSQL_TABLE=
-GOOGLE_SHEET_KEY=
-```
-
 
 ## Please contact me with any questions, comments, or concerns
 drennanmattheww@gmail.com
