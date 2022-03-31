@@ -259,6 +259,9 @@ function getTroopCounts($id)
 	// Set up string
 	$troopCountString = "";
 
+	// Get troop counts - All - Last 30 days
+	$countAll = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '644' and events.dateStart > NOW() - INTERVAL 1 YEAR GROUP BY events.id, event_sign_up.id") or die($conn->error);
+
 	// Get troop counts - 501st
 	$count = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '".$dualCostume."' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
 
@@ -306,6 +309,7 @@ function getTroopCounts($id)
 	// Add to string
 	$troopCountString .= '
 	<p><b>Total Finished Troops:</b> ' . number_format($count_total->num_rows) . '</p>
+	<p><b>Total Troops Last 365 Days:</b> '.number_format($countAll->num_rows).'</p>
 	<p><b>Favorite Costume:</b> '.ifEmpty(getCostume($favoriteCostume['costume']), "N/A").'</p>
 	<p><b>Direct Donations Raised:</b> $'.number_format($charityDirectFunds[0]).'</p>
 	<p><b>Indirect Donations Raised:</b> $'.number_format($charityIndirectFunds[0]).'</p>';
