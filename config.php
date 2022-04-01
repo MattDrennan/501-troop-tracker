@@ -3018,6 +3018,9 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 			// Is a 501 member?
 			$is501Member = false;
 
+			// Is a handler
+			$isHandler = false;
+
 			echo '
 			<div style="text-align: center;">';
 			
@@ -3051,6 +3054,11 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 				</p>';
 
 				$is501Member = true;
+			}
+			// Handler
+			else if($db2->p501 == 4)
+			{
+				$isHandler = true;
 			}
 
 			// Set up squad count
@@ -3106,6 +3114,20 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 						<img src="images/ranks/'.$club_value['rankRetired'].'" class="rankTitle" />
 					</p>';
 				}
+				// Handler
+				else if($db2->{$club_value['db']} == 4)
+				{
+					$isHandler = true;
+				}
+			}
+
+			// Handler set
+			if($isHandler)
+			{
+				echo '
+				<p>
+					<img src="images/ranks/handler.png" class="rankTitle" />
+				</p>';
 			}
 			
 			echo '
