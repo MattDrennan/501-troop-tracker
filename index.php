@@ -4646,7 +4646,7 @@ if(isset($_GET['action']) && $_GET['action'] == "faq")
 	
 	<h3>I cannot login / I forgot my password</h3>
 	<p>
-		The Troop Tracker has been integrated with the boards. You must use your Florida Garrison boards username and password to login to Troop Tracker. To recover your password, use password recovery on the Florida Garrison forum.
+		The Troop Tracker has been integrated with the boards. You must use your Florida Garrison boards username and password to login to Troop Tracker. To recover your password, use password recovery on the Florida Garrison forum. If you continue to have issues logging into your account, your '.garrison.' forum username, may not match the Troop Tracker records. Contact the '.garrison.' Webmaster or post a help thread on the forums to get this corrected.
 	</p>
 
 
@@ -4676,7 +4676,7 @@ if(isset($_GET['action']) && $_GET['action'] == "faq")
 	</p>
 
 	<h3>Contact Garrison Web Master</h3>
-	<p>If you have read and reviewed all the material above and are still experiencing issues, or have noticed a bug on the website, please <a href="mailto: drennanmattheww@gmail.com">send an e-mail here</a>. <b>If you ask a question that is listed above or is answered on a video on this page, you will receive an e-mail advising to review the FAQ page.</b></p>';
+	<p>If you have read and reviewed all the material above and are still experiencing issues, or have noticed a bug on the website, please <a href="mailto: gwm@fl501st.com">send an e-mail here</a>.</p>';
 }
 
 /**************************** Edit Photo *********************************/
@@ -4828,7 +4828,13 @@ if(isset($_GET['action']) && $_GET['action'] == "login" && !loggedIn())
 				else
 				{
 					echo '
-					<p>Incorrect username or password. <a href="index.php?action=login">Try again?</a></p>';
+					<p>
+						Incorrect username or password. <a href="index.php?action=login">Try again?</a>
+					</p>
+
+					<p>
+						If you are unable to access your account, please contact the '.garrison.' Webmaster, or post a help request on the forums. Your FL Garrison boards name may not match the Troop Tracker records.
+					</p>';
 				}
 			}
 		}
@@ -4839,7 +4845,7 @@ if(isset($_GET['action']) && $_GET['action'] == "login" && !loggedIn())
 			echo '
 			<p>Account not found. <a href="index.php?action=login">Try again?</a></p>
 			
-			<p>Please contact the Garrison Webmaster if you continue to have issues. Your FL Garrison boards name may not match the Troop Tracker records.</p>';
+			<p>Please contact the Garrison Webmaster or post a help request on the forums, if you continue to have issues. Your FL Garrison boards name may not match the Troop Tracker records.</p>';
 		}
 	}
 	else
