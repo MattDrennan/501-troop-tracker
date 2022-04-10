@@ -300,6 +300,9 @@ function getTroopCounts($id)
 	$charityIndirectFunds_get = $conn->query("SELECT SUM(charityIndirectFunds) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$id."'") or die($conn->error);
 	$charityIndirectFunds = mysqli_fetch_array($charityIndirectFunds_get);
 
+	$charityHours_get = $conn->query("SELECT SUM(TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$id."'") or die($conn->error);
+	$chairtyHours = mysqli_fetch_array($charityHours_get);
+
 	// Prevent notice error
 	if($favoriteCostume == "")
 	{
@@ -311,6 +314,7 @@ function getTroopCounts($id)
 	<p><b>Total Finished Troops:</b> ' . number_format($count_total->num_rows) . '</p>
 	<p><b>Total Troops Last 365 Days:</b> '.number_format($countAll->num_rows).'</p>
 	<p><b>Favorite Costume:</b> '.ifEmpty(getCostume($favoriteCostume['costume']), "N/A").'</p>
+	<p><b>Volunteer Hours:</b> '.number_format($chairtyHours[0]).'</p>
 	<p><b>Direct Donations Raised:</b> $'.number_format($charityDirectFunds[0]).'</p>
 	<p><b>Indirect Donations Raised:</b> $'.number_format($charityIndirectFunds[0]).'</p>';
 
@@ -872,7 +876,31 @@ function resetTrooperStatus($eventID, $link = 0)
 /*********************** XENFORO ***********************/
 
 /**
- * getAuthForum: Get's auth data from Xenforo for logging in
+ * Return's the forum profile of the trooper, if available
+ * 
+ * @param int $id The Troop Tracker ID of the trooper
+ * @return string Returns the HTML needed to display the trooper avatar
+*/
+function getForumAvatar($id)
+{
+	// Xenforo
+	$xenforo = @getUserForumID(getUserID($id))['user']['avatar_urls']['m'];
+
+	if($xenforo != "")
+	{
+		return '
+		<p style="text-align: center;">
+			<img src="'.$xenforo.'" />
+		</p>';
+	}
+	else
+	{
+		return '<br />';
+	}
+}
+
+/**
+ * Get's auth data from Xenforo for logging in
  * 
  * @param int $user_id The Xenforo user ID
  * @return json Returns JSON data of login token

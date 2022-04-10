@@ -760,3 +760,10 @@ label.error {
 	color: #fff;
 	font-weight: bold;
 }
+
+/* Prevent comments going too wide */
+
+td[name=insideComment] {
+	word-break: break-all;
+}
+

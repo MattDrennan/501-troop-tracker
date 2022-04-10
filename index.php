@@ -1047,7 +1047,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		$dateE = date('Y-m-d H:i:s', $date);
 
 		// Query for search
-		$query = "SELECT events.id AS id, events.dateStart, events.dateEnd, events.name, events.charityDirectFunds, events.charityAddHours, events.charityDirectFunds, events.charityIndirectFunds, events.charityName, events.charityNote FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE troopers.id != ".placeholder." AND dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."'";
+		$query = "SELECT events.id AS id, events.dateStart, events.dateEnd, events.name, events.charityDirectFunds, events.charityAddHours, events.charityDirectFunds, events.charityIndirectFunds, events.charityName, events.charityNote FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."'";
 		
 		// Get the squad search type
 		// If All
@@ -1455,6 +1455,33 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 			echo '
 			</ol>
 
+			<h4><u>Last 365 Days</u></h4>
+
+			<ol>';
+
+			$query = "SELECT trooperid, COUNT(trooperid) AS total FROM event_sign_up LEFT JOIN events ON event_sign_up.troopid = events.id WHERE events.dateEnd > NOW() - INTERVAL 365 DAY AND event_sign_up.trooperid != ".placeholder." AND events.closed = '1' AND event_sign_up.status = '3' GROUP BY trooperid ORDER BY total DESC LIMIT 25";
+
+			$i = 0;
+
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					echo '<li><a href="index.php?profile='.$db->trooperid.'">' . getName($db->trooperid) . ' - '.$db->total.'</a></li>';
+
+					$i++;
+				}
+			}
+
+			// If none to display
+			if($i == 0)
+			{
+				echo '<li>Nothing to display.</li>';
+			}
+			
+			echo '
+			</ol>
+
 			<h4><u>Last 30 Days</u></h4>
 
 			<ol>';
@@ -1486,7 +1513,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		<div id="mystats" name="mystats" style="display: none;">';
 
 		// Get data
-		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND status = 3 AND events.closed = '1' ORDER BY events.dateEnd DESC";
+		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, (TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) AS charityHours FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND status = 3 AND events.closed = '1' ORDER BY events.dateEnd DESC";
 
 		// Troop count
 		$i = 0;
@@ -1501,7 +1528,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 					<div style="overflow-x: auto;">
 					<table border="1">
 					<tr>
-						<th>Troop</th>	<th>Costume</th>	<th>Money Raised</th>
+						<th>Troop</th>	<th>Costume</th>	<th>Charity</th>
 					</tr>';
 				}
 				
@@ -1516,7 +1543,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 
 				echo '
 				<tr>
-					<td><a href="index.php?event='.$db->eventId.'">'.$add.''.$db->eventName.'</a></td>	<td>'.ifEmpty(getCostume($db->costume), "N/A").'</td>	<td>Direct: $'.number_format($db->charityDirectFunds).'<br />Indirect: $'.number_format($db->charityIndirectFunds).'</td>
+					<td><a href="index.php?event='.$db->eventId.'">'.$add.''.$db->eventName.'</a></td>	<td>'.ifEmpty(getCostume($db->costume), "N/A").'</td>	<td>Direct: $'.number_format($db->charityDirectFunds).'<br />Indirect: $'.number_format($db->charityIndirectFunds).'<br />Hours: '.$db->charityHours.'</td>
 				</tr>';
 
 				// Increment troop count
@@ -1549,7 +1576,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 	if(!isset($_GET['squad']))
 	{
 		// Get data
-		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND events.dateEnd > CURRENT_DATE - INTERVAL 60 DAY GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT 20";
+		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, (TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) AS charityHours FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND events.dateEnd > CURRENT_DATE - INTERVAL 60 DAY GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT 20";
 	}
 	else
 	{
@@ -1595,7 +1622,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		}
 		
 		// Squad is set, show only that data
-		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' ".$add2." GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT ".$startFrom.", ".$results."";
+		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, (TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) AS charityHours FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' ".$add2." GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT ".$startFrom.", ".$results."";
 	}
 
 	// Query count
@@ -1629,7 +1656,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 				<div style="overflow-x: auto;">
 				<table border="1">
 				<tr>
-					<th>Troop</th>	<th>Troopers Attended</th>	<th>Money Raised</th>
+					<th>Troop</th>	<th>Troopers Attended</th>	<th>Charity</th>
 				</tr>';
 			}
 
@@ -1649,7 +1676,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 
 			echo '
 			<tr>
-				<td><a href="index.php?event='.$db->eventId.'">'.$add.''.$db->eventName.'</a></td>	<td>'.$count[0].'</td>	<td>Direct: $'.number_format($db->charityDirectFunds).'<br />Indirect: $'.number_format($db->charityIndirectFunds).'</td>
+				<td><a href="index.php?event='.$db->eventId.'">'.$add.''.$db->eventName.'</a></td>	<td>'.$count[0].'</td>	<td>Direct: $'.number_format($db->charityDirectFunds).'<br />Indirect: $'.number_format($db->charityIndirectFunds).'<br />Hours: '.number_format($db->charityHours).'</td>
 			</tr>';
 
 			$i++;
@@ -1836,14 +1863,14 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<a href="index.php?action=commandstaff&do=createevent" class="button">Create an Event</a> 
 			<a href="index.php?action=commandstaff&do=editevent" class="button">Edit an Event</a> 
 			<a href="index.php?action=commandstaff&do=roster" class="button">Roster</a> 
-			<a href="index.php?action=commandstaff&do=notifications" class="button">Notifications</a> ';
+			<a href="index.php?action=commandstaff&do=notifications" class="button">Notifications</a> 
+			<a href="index.php?action=commandstaff&do=approvetroopers" class="button" id="trooperRequestButton" name="trooperRequestButton">Approve Trooper Requests - ('.$getTrooperNotifications->num_rows.')</a> ';
 			
 			if(hasPermission(1))
 			{
 				echo ' 
 				<a href="index.php?action=commandstaff&do=managecostumes" class="button">Costume Management</a> 
 				<a href="index.php?action=commandstaff&do=managetroopers" class="button">Trooper Management</a> 
-				<a href="index.php?action=commandstaff&do=approvetroopers" class="button" id="trooperRequestButton" name="trooperRequestButton">Approve Trooper Requests - ('.$getTrooperNotifications->num_rows.')</a> 
 				<a href="index.php?action=commandstaff&do=assignawards" class="button">Award Management</a>
 				<a href="index.php?action=commandstaff&do=assigntitles" class="button">Title Management</a>
 				<a href="index.php?action=commandstaff&do=stats" class="button">Statistics</a>
@@ -3266,7 +3293,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		/**************************** TITLES *********************************/
 
 		// Assign a title to troopers
-		if(isset($_GET['do']) && $_GET['do'] == "assigntitles")
+		if(isset($_GET['do']) && $_GET['do'] == "assigntitles" && hasPermission(1))
 		{
 			echo '<h3>Assign Titles</h3>
 			
@@ -3976,7 +4003,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		}
 
 		// Approve troopers
-		if(isset($_GET['do']) && $_GET['do'] == "approvetroopers")
+		if(isset($_GET['do']) && $_GET['do'] == "approvetroopers" && hasPermission(1, 2))
 		{
 			echo '
 			<h3>Approve Trooper Requests</h3>';
@@ -5603,7 +5630,7 @@ if(isset($_GET['event']))
 						}
 						
 						echo '
-						<td id="'.$db2->trooperId.'Status" aria-label="'.date("F j, Y, g:i:s a", strtotime($db2->signuptime)).'" data-balloon-pos="up" data-balloon-length="fit">
+						<td id="'.$db2->trooperId.'Status" aria-label="'.formatTime($db2->signuptime, 'F j, Y, g:i a').'" data-balloon-pos="up" data-balloon-length="fit">
 						<div name="'.$db2->trooperId.'trooperRosterStatus" id="'.$db2->trooperId.'trooperRosterStatus">';
 						
 							// If not a limited event
@@ -5724,7 +5751,7 @@ if(isset($_GET['event']))
 							'.ifEmpty(getCostume($db2->costume_backup), "N/A").'
 						</td>
 						
-						<td id="'.$db2->trooperId.'Status" aria-label="'.date("F j, Y, g:i:s a", strtotime($db2->signuptime)).'" data-balloon-pos="up" data-balloon-length="fit">';
+						<td id="'.$db2->trooperId.'Status" aria-label="'.formatTime($db2->signuptime, 'F j, Y, g:i a').'" data-balloon-pos="up" data-balloon-length="fit">';
 							echo '
 							<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
 
@@ -5904,7 +5931,7 @@ if(isset($_GET['event']))
 										<select name="costume" id="costume">
 											<option value="null" SELECTED>Please choose an option...</option>';
 
-										$query3 = "SELECT * FROM costumes WHERE ";
+										$query3 = "SELECT * FROM costumes WHERE club != ".$dualCostume." AND";
 										
 										// If limited to certain costumes, only show certain costumes...
 										if($db->limitTo < 4)
@@ -5955,7 +5982,7 @@ if(isset($_GET['event']))
 										<select name="backupcostume" id="backupcostume">';
 
 										// Display costumes
-										$query2 = "SELECT * FROM costumes WHERE ";
+										$query2 = "SELECT * FROM costumes WHERE club != ".$dualCostume." AND ";
 										
 										// If limited to certain costumes, only show certain costumes...
 										if($db->limitTo < 4)
@@ -6234,12 +6261,12 @@ if(isset($_GET['event']))
 						<select name="costume" id="costume">
 							<option value="null" SELECTED>Please choose an option...</option>';
 
-						$query3 = "SELECT * FROM costumes";
+						$query3 = "SELECT * FROM costumes WHERE club != ".$dualCostume."";
 						
 						// If limited to certain costumes, only show certain costumes...
 						if($limitTo < 4)
 						{
-							$query3 .= " WHERE era = '".$limitTo."' OR era = '4'";
+							$query3 .= " AND era = '".$limitTo."' OR era = '4'";
 						}
 						
 						$query3 .= " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id']).") DESC, costume";
@@ -6283,7 +6310,7 @@ if(isset($_GET['event']))
 						<select name="backupcostume" id="backupcostume">';
 
 						// Display costumes
-						$query2 = "SELECT * FROM costumes WHERE ";
+						$query2 = "SELECT * FROM costumes WHERE club != ".$dualCostume." AND ";
 						
 						// If limited to certain costumes, only show certain costumes...
 						if($limitTo < 4)
@@ -6447,7 +6474,7 @@ if(isset($_GET['event']))
 
 						echo '
 						<tr>
-							<td><span style="float: left;">'.$admin.'<a href="#/" id="quoteComment_'.$db->id.'" name="'.$db->id.'" troopername="'.getName($db->trooperid).'" tkid="'.getTKNumber($db->trooperid, true).'" trooperid="'.$db->trooperid.'"><img src="images/quote.png" alt="Quote Comment"></a></span> <a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.readTKNumber(getTKNumber($db->trooperid), getTrooperSquad($db->trooperid)).'</a><br />'.$newdate.'</td>
+							<td><span style="float: left;">'.$admin.'<a href="#/" id="quoteComment_'.$db->id.'" name="'.$db->id.'" troopername="'.getName($db->trooperid).'" tkid="'.getTKNumber($db->trooperid, true).'" trooperid="'.$db->trooperid.'"><img src="images/quote.png" alt="Quote Comment"></a></span> <a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.readTKNumber(getTKNumber($db->trooperid), getTrooperSquad($db->trooperid)).'</a>'.getForumAvatar($db->trooperid).''.$newdate.'</td>
 						</tr>
 						
 						<tr>

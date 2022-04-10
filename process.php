@@ -757,7 +757,7 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 
 				$data .= '
 				<tr>
-					<td><span style="float: left;">'.$admin.'<a href="#/" id="quoteComment_'.$db->id.'" name="'.$db->id.'" troopername="'.getName($db->trooperid).'" tkid="'.getTKNumber($db->trooperid, true).'" trooperid="'.$db->trooperid.'"><img src="images/quote.png" alt="Quote Comment"></a></span> <a href="index.php?profile='.$db->trooperid.'">'.$name.' - '.readTKNumber(getTKNumber($db->trooperid), getTrooperSquad($db->trooperid)).'</a><br />'.$newdate.'</td>
+					<td><span style="float: left;">'.$admin.'<a href="#/" id="quoteComment_'.$db->id.'" name="'.$db->id.'" troopername="'.getName($db->trooperid).'" tkid="'.getTKNumber($db->trooperid, true).'" trooperid="'.$db->trooperid.'"><img src="images/quote.png" alt="Quote Comment"></a></span> <a href="index.php?profile='.$db->trooperid.'">'.$name.' - '.readTKNumber(getTKNumber($db->trooperid), getTrooperSquad($db->trooperid)).'</a>'.getForumAvatar($db->trooperid).''.$newdate.'</td>
 				</tr>
 				
 				<tr>
@@ -3530,7 +3530,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 								</select>
 							</td>
 							
-							<td id="'.$db2->trooperId.'Status" aria-label="'.date("F j, Y, g:i:s a", strtotime($db2->signuptime)).'" data-balloon-pos="up">
+							<td id="'.$db2->trooperId.'Status" aria-label="'.formatTime($db2->signuptime, 'F j, Y, g:i a').'" data-balloon-pos="up">
 							<div name="trooperRosterStatus">';
 							
 								if($db->limitedEvent != 1)
@@ -3617,7 +3617,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 								'.ifEmpty(getCostume($db2->costume_backup), "N/A").'
 							</td>
 							
-							<td id="'.$db2->trooperId.'Status" aria-label="'.date("F j, Y, g:i:s a", strtotime($db2->signuptime)).'" data-balloon-pos="up">
+							<td id="'.$db2->trooperId.'Status" aria-label="'.formatTime($db2->signuptime, 'F j, Y, g:i a').'" data-balloon-pos="up">
 							<div name="trooperRosterStatus">
 							<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
 								'.getStatus($db2->status);
@@ -3685,7 +3685,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 								'.ifEmpty(getCostume($db2->costume_backup), "N/A").'
 							</td>
 							
-							<td id="'.$db2->trooperId.'Status" aria-label="'.date("F j, Y, g:i:s a", strtotime($db2->signuptime)).'" data-balloon-pos="up">
+							<td id="'.$db2->trooperId.'Status" aria-label="'.formatTime($db2->signuptime, 'F j, Y, g:i a').'" data-balloon-pos="up">
 								<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
 								'.getStatus($db2->status);
 
