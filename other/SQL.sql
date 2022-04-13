@@ -2,7 +2,7 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Generation Time: Mar 19, 2022 at 12:23 PM
+-- Generation Time: Apr 13, 2022 at 04:40 AM
 -- Server version: 8.0.23
 -- PHP Version: 7.4.7
 
@@ -142,7 +142,6 @@ CREATE TABLE `droid_troopers` (
 
 CREATE TABLE `events` (
   `id` int UNSIGNED NOT NULL,
-  `oldid` int NOT NULL DEFAULT '0',
   `thread_id` int NOT NULL DEFAULT '0',
   `post_id` int NOT NULL DEFAULT '0',
   `name` varchar(255) NOT NULL,
@@ -172,6 +171,7 @@ CREATE TABLE `events` (
   `limitMando` int NOT NULL DEFAULT '500',
   `limitDroid` int NOT NULL DEFAULT '500',
   `limitOther` int NOT NULL DEFAULT '500',
+  `limitSG` int NOT NULL DEFAULT '500',
   `limitTotalTroopers` int NOT NULL DEFAULT '500',
   `closed` tinyint(1) NOT NULL DEFAULT '0',
   `charityDirectFunds` int NOT NULL DEFAULT '0',
@@ -368,7 +368,6 @@ CREATE TABLE `title_troopers` (
 
 CREATE TABLE `troopers` (
   `id` int UNSIGNED NOT NULL,
-  `oldid` int NOT NULL,
   `user_id` int NOT NULL DEFAULT '0',
   `name` varchar(255) NOT NULL,
   `email` varchar(240) DEFAULT NULL,
@@ -383,6 +382,7 @@ CREATE TABLE `troopers` (
   `pDroid` int NOT NULL DEFAULT '0',
   `pMando` int NOT NULL DEFAULT '0',
   `pOther` int NOT NULL DEFAULT '0',
+  `pSG` int DEFAULT '0',
   `tkid` varchar(20) NOT NULL,
   `forum_id` varchar(255) NOT NULL,
   `rebelforum` varchar(255) NOT NULL,
@@ -404,6 +404,7 @@ CREATE TABLE `troopers` (
   `esquad7` int NOT NULL DEFAULT '1',
   `esquad8` int NOT NULL DEFAULT '1',
   `esquad9` int NOT NULL DEFAULT '1',
+  `esquad10` int NOT NULL DEFAULT '1',
   `ecomments` tinyint(1) DEFAULT '1',
   `efast` tinyint(1) DEFAULT '0',
   `ecommandnotify` tinyint(1) DEFAULT '1',
@@ -476,7 +477,9 @@ ALTER TABLE `events`
 -- Indexes for table `event_sign_up`
 --
 ALTER TABLE `event_sign_up`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `troopid` (`troopid`),
+  ADD KEY `trooperid` (`trooperid`);
 
 --
 -- Indexes for table `mando_troopers`
@@ -506,7 +509,8 @@ ALTER TABLE `title_troopers`
 -- Indexes for table `troopers`
 --
 ALTER TABLE `troopers`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `id` (`id`);
 
 --
 -- Indexes for table `uploads`
