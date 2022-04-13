@@ -2999,7 +2999,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						$add = "";
 
 						// Does not contain now has
-						if(strpos($db->message, "now has") === false)
+						if(strpos($db->message, "now has") === false && strpos($db->message, "donated") === false)
 						{
 							$add = "Staff ";
 						}
