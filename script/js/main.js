@@ -431,6 +431,27 @@ $(document).ready(function()
 			}
 		}
 	})
+	
+	// Limit Change - Total Troopers (Prevent admin from adding a total limit for a club and a total limit)
+	$("body").on("input", "#limit501st", function(e)
+	{
+		if($("#limitTotalTroopers").val() != 500)
+		{
+			$("#limitTotalTroopers").val(500);
+		}
+	})
+
+	// Limit Change - Total Troopers (Prevent admin from adding a total limit for a club and a total limit) (Loop through clubs)
+	for(var i = 0; i <= (clubArray.length - 1); i++)
+	{
+		$("body").on("input", "#" + clubDBLimitArray[i], function(e)
+		{
+			if($("#limitTotalTroopers").val() != 500)
+			{
+				$("#limitTotalTroopers").val(500);
+			}
+		})
+	}
 
 	// Image Upload - Change Upload Type
 	$("body").on("click", "#trooperInformationButton", function(e)
@@ -622,6 +643,7 @@ $(document).ready(function()
 		$("#era").val(4);
 		$("#limit501st").val(500);
 		$("#limitedEvent").val(0);
+		$("#limitHandlers").val(500);
 		$("#limitTotalTroopers").val(500);
 
 		// On index.php, clear all fields
@@ -635,7 +657,7 @@ $(document).ready(function()
 		
 		// Load data from form
 		var trooperid = $(this).attr("trooperid");
-		var eventid = $("#troopidC").val();
+		var eventid = $("#troopid").val();
 		var signid = $(this).attr("signid");
 		var buttonid = $(this).attr("buttonid");
 		
@@ -1322,6 +1344,7 @@ $(document).ready(function()
 					$("#era").val(json.limitTo);
 					$("#limitRebels").val(json.limitRebels);
 					$("#limit501st").val(json.limit501st);
+					$("#limitHandlers").val(json.limitHandlers);
 					$("#limitTotalTroopers").val(json.limitTotalTroopers);
 
 					// Loop through clubs
@@ -2196,67 +2219,6 @@ $(document).ready(function()
 				// If JSON did not fail
 				if(json.success != "failed")
 				{
-					// Adjust options based on costume - 501
-					if(($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 0 && (json.limit501st - json.limit501stTotal) > 0) && json.staus != 4)
-					{
-							// Empty select
-							signupForm3.empty();
-
-							// Refill
-							signupForm3.append("<option value='0'>I'll be there</option> <option value='2'>Tentative</option> <option value='4'>Cancel</option>");
-
-							// Set selected value
-							signupForm3.val(json.status);
-
-							// Set
-							shouldElse = false;
-					}
-
-					// Loop through clubs
-					for(var i = 0; i <= (clubArray.length - 1); i++)
-					{
-						// Adjust options based on costumes - other clubs
-						if(($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 1 && (json[clubArray[i]] - json[clubArray[i] + "Total"]) > 0) && json.staus != 4)
-						{
-							// Empty select
-							signupForm3.empty();
-
-							// Refill
-							signupForm3.append("<option value='0'>I'll be there</option> <option value='2'>Tentative</option> <option value='4'>Cancel</option>");
-
-							// Set selected value
-							signupForm3.val(json.status);
-
-							// Set
-							shouldElse = false;
-						}
-					}
-
-					if(shouldElse)
-					{
-						// Empty select
-						signupForm3.empty();
-
-						// If not stand by
-						if(json.status != 1)
-						{
-							// Refill
-							signupForm3.append("<option value='0'>I'll be there</option> <option value='2'>Tentative</option> <option value='4'>Cancel</option>");
-						}
-						// Troop is full, show stand by
-						else
-						{
-							// Refill
-							signupForm3.append("<option value='1'>Stand By</option> <option value='4'>Cancel</option>");
-						}
-
-						// Set selected value
-						signupForm3.val(json.status);
-					}
-
-					// Update troopers remaining on the page
-					$("div[name=troopersRemainingDisplay]").html(json.troopersRemaining);
-
 					// Change text on page
 					if(signupForm3.val() == 4)
 					{
@@ -2266,6 +2228,12 @@ $(document).ready(function()
 					{
 						$("#signeduparea").html("<p><b>You are signed up for this troop!</b></p>");
 					}
+					
+					// Put data in html
+					$("#signuparea1").html(json.rosterData);
+					
+					// Update troopers remaining on the page
+					$("div[name=troopersRemainingDisplay]").html(json.troopersRemaining);
 					
 					alert("Status Updated!");
 				}

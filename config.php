@@ -824,7 +824,7 @@ function resetTrooperStatus($eventID, $link = 0)
 	global $conn, $clubArray;
 
 	// Get data
-	$query = "SELECT * FROM events WHERE id = '".$eventID."'";
+	$query = "SELECT * FROM events WHERE closed = '0' AND id = '".$eventID."'";
 
 	// If link added, query link event as well
 	if($link > 0)
@@ -841,10 +841,10 @@ function resetTrooperStatus($eventID, $link = 0)
 			if($db->limit501st > 500 || $db->limit501st < 500)
 			{
 				// Reset event sign up
-				$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume)");
+				$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume) AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE '%handler%'");
 
 				// Update statuses to going if room
-				$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ORDER BY signuptime ASC LIMIT " . $db->limit501st);
+				$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume) AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE '%handler%' ORDER BY signuptime ASC LIMIT " . $db->limit501st);
 			}
 
 			// Loop through clubs to check limits
@@ -853,10 +853,10 @@ function resetTrooperStatus($eventID, $link = 0)
 				if($db->{$club_value['dbLimit']} > 500 || $db->{$club_value['dbLimit']} < 500)
 				{
 					// Reset event sign up
-					$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume)");
+					$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE '%handler%'");
 
 					// Update statuses to going if room
-					$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ORDER BY signuptime ASC LIMIT " . $db->{$club_value['dbLimit']});
+					$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE '%handler%' ORDER BY signuptime ASC LIMIT " . $db->{$club_value['dbLimit']});
 				}
 			}
 
@@ -864,10 +864,20 @@ function resetTrooperStatus($eventID, $link = 0)
 			if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
 			{
 				// Reset event sign up
-				$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."'");
+				$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE '%handler%'");
 
 				// Update statuses to going if room
-				$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' ORDER BY signuptime ASC LIMIT " . $db->limitTotalTroopers);
+				$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE '%handler%' ORDER BY signuptime ASC LIMIT " . $db->limitTotalTroopers);
+			}
+			
+			// Check handler limit
+			if($db->limitHandlers > 500 || $db->limitHandlers < 500)
+			{
+				// Reset event sign up
+				$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) LIKE '%handler%'");
+
+				// Update statuses to going if room
+				$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) LIKE '%handler%' ORDER BY signuptime ASC LIMIT " . $db->limitHandlers);
 			}
 		}
 	}
@@ -3571,6 +3581,382 @@ function inEvent($id, $event)
 }
 
 /**
+* Returns an updated roster
+*
+* @param int $eventID The event ID to fetch
+* @param int $limitTotal The limit total for the event
+* @param boolean $totalTrooperEvent If the event is an event that checks the total limit
+* @param boolean $signedUp If the trooper is signed up for this event. Default: false
+* @array Returns an HTML string of the updated roster and HTML string of the current trooper counts remaining
+*/
+function getRoster($eventID, $limitTotal, $totalTrooperEvent, $signedUp = false)
+{
+	global $conn, $mainCostumes, $clubArray;
+	
+	// Define data variable for below code
+	$data = "";
+	$data2 = "";
+
+	// Get data to send back - query the event data for the information
+
+	// Query database for event info
+	$query = "SELECT * FROM events WHERE id = '".$eventID."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+
+			// Query database for roster info
+			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.note, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, event_sign_up.status, event_sign_up.signuptime, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".$eventID."' ORDER BY event_sign_up.id ASC";
+			$i = 0;
+
+			if ($result2 = mysqli_query($conn, $query2))
+			{
+				while ($db2 = mysqli_fetch_object($result2))
+				{
+					// Use this for later to determine which select box to show...
+					$status = $db2->status;
+
+					// If no events to show...
+					if($i == 0)
+					{
+						$data .= '
+						<form action="process.php?do=modifysignup" method="POST" name="modifysignupForm" id="modifysignupForm">
+						
+						<!-- Hidden variables -->
+						<input type="hidden" name="modifysignupTroopIdForm" id="modifysignupTroopIdForm" value="'.$db->id.'" />
+						<input type="hidden" name="limitedEventCancel" id="limitedEventCancel" value="'.$db->limitedEvent.'" />
+						<input type="hidden" name="troopid" id="troopid" value="'.$eventID.'" />
+						<input type="hidden" name="myId" id="myId" value="'.$_SESSION['id'].'" />
+
+						<div style="overflow-x: auto;">
+						<table border="1">
+						<tr>
+							<th>Trooper Name</th>	<th>TKID</th>	<th>Costume</th>	<th>Backup Costume</th>	<th>Status</th>
+						</tr>';
+					}
+					
+					// Create row, change based on status
+					if($db2->status == 4)
+					{
+						$data .= '
+						<tr class="canceled-troop">';
+					}
+					else
+					{
+						$data .= '
+						<tr>';
+					}
+
+					// Allow for users to edit their status from the event, and make sure the event is not closed, and the user did not cancel
+					if(loggedIn() && ($db2->trooperId == $_SESSION['id'] || $_SESSION['id'] == $db2->addedby) && $db->closed == 0)
+					{
+						$data .= '
+						<td>
+							'.drawSupportBadge($db2->trooperId).'
+							<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
+
+							// If a placeholder account, allow edit name
+							if($db2->trooperId == placeholder)
+							{
+								$data .= '
+								<input type="text" name="placeholdertext" signid="'.$db2->signId.'" value="'.$db2->note.'" />';
+							}
+
+							// Show who added the trooper
+							if($db2->addedby != 0)
+							{
+								$data .= '
+								<br /><small>Added by:<br />' . getName($db2->addedby) . '</small>';
+							}
+
+						$data .= '
+						</td>
+							
+						<td>
+							'.readTKNumber($db2->tkid, $db2->squad).'
+						</td>
+						
+						<td name="trooperRosterCostume" id="trooperRosterCostume">
+							<select name="modifysignupFormCostume" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
+
+							// Display costumes
+							$query3 = "SELECT * FROM costumes WHERE ";
+							
+							// If limited to certain costumes, only show certain costumes...
+							if($db->limitTo < 4)
+							{
+								$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
+							}
+							
+							$query3 .= costume_restrict_query(false, $db2->trooperId) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
+							
+							if ($result3 = mysqli_query($conn, $query3))
+							{
+								while ($db3 = mysqli_fetch_object($result3))
+								{
+									if($db2->costume == $db3->id)
+									{
+										// If this is the selected costume, make it selected
+										$data .= '
+										<option value="'. $db3->id .'" SELECTED>'.$db3->costume.'</option>';
+									}
+									else
+									{
+										// Default
+										$data .= '
+										<option value="'. $db3->id .'">'.$db3->costume.'</option>';
+									}
+								}
+							}
+
+							$data .= '
+							</select>
+						</td>
+						
+						<td name="trooperRosterBackup" id="trooperRosterBackup">
+							<select name="modiftybackupcostumeForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
+
+							// Display costumes
+							$query3 = "SELECT * FROM costumes WHERE ";
+							
+							// If limited to certain costumes, only show certain costumes...
+							if($db->limitTo < 4)
+							{
+								$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
+							}
+							
+							$query3 .= costume_restrict_query(false, $db2->trooperId) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
+							
+							// Count results
+							$c = 0;
+							
+							// Amount of costumes
+							if ($result3 = mysqli_query($conn, $query3))
+							{
+								while ($db3 = mysqli_fetch_object($result3))
+								{
+									// If costume set to backup and first result
+									if($db2->costume_backup == 0 && $c == 0)
+									{
+										$data .= '
+										<option value="0" SELECTED>N/A</option>';
+									}
+									// Make sure this is a first result otherwise
+									else if($c == 0)
+									{
+										$data .= '
+										<option value="0">N/A</option>';
+									}
+									
+									
+									// If a costume matches
+									if($db2->costume_backup == $db3->id)
+									{
+										$data .= '
+										<option value="'.$db3->id.'" SELECTED>'.$db3->costume.'</option>';
+									}
+									// Start showing costumes
+									else
+									{
+										$data .= '
+										<option value="'.$db3->id.'">'.$db3->costume.'</option>';
+									}
+									
+									// Increment
+									$c++;
+								}
+							}
+
+							$data .= '
+							</select>
+						</td>
+						
+						<td id="'.$db2->trooperId.'Status" aria-label="'.formatTime($db2->signuptime, 'F j, Y, g:i a').'" data-balloon-pos="up">
+						<div name="trooperRosterStatus">';
+						
+							if($db->limitedEvent != 1)
+							{
+								// If on stand by
+								if($db2->status == 1)
+								{
+									$data .= '
+									<select name="modifysignupStatusForm" id="modifysignupStatusForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
+										<option value="0" '.echoSelect(1, $db2->status).'>Stand By</option>
+										<option value="4" '.echoSelect(4, $db2->status).'>Cancel</option>
+									</select>';
+								}
+								// Regular
+								else
+								{
+									$data .= '
+									<select name="modifysignupStatusForm" id="modifysignupStatusForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
+										<option value="0" '.echoSelect(0, $db2->status).'>I\'ll be there!</option>
+										<option value="2" '.echoSelect(2, $db2->status).'>Tentative</option>
+										<option value="4" '.echoSelect(4, $db2->status).'>Cancel</option>
+									</select>';
+								}
+							}
+							else
+							{
+								$data .= '
+								<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
+								(Pending Command Staff Approval)';
+
+								// If is admin and limited event
+								if(isAdmin() && $db->limitedEvent == 1)
+								{
+									// Set status
+									$data .= '
+									<br />
+									<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>
+									<br />
+									<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
+								}
+
+								$data .= '
+								</div>';								
+							}
+
+						$data .= '
+						</div>
+						</td>';
+					}
+					else
+					{
+						// If a user other than the current user
+						$data .= '
+						<td>
+							'.drawSupportBadge($db2->trooperId).'
+							<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
+
+							// If a placeholder account, allow edit name
+							if($db2->trooperId == placeholder)
+							{
+								$data .= '
+								<b>'.$db2->note.'</b>';
+							}
+
+							// Show who added the trooper
+							if($db2->addedby != 0)
+							{
+								$data .= '
+								<br /><small>Added by:<br />' . getName($db2->addedby) . '</small>';
+							}
+
+						$data .= '
+						</td>
+							
+						<td>
+							'.readTKNumber($db2->tkid, $db2->squad).'
+						</td>
+						
+						<td>
+							'.getCostume($db2->costume).'
+						</td>
+						
+						<td>
+							'.ifEmpty(getCostume($db2->costume_backup), "N/A").'
+						</td>
+						
+						<td id="'.$db2->trooperId.'Status" aria-label="'.formatTime($db2->signuptime, 'F j, Y, g:i a').'" data-balloon-pos="up">
+							<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
+							'.getStatus($db2->status);
+
+							// If is admin and limited event
+							if(isAdmin() && $db->limitedEvent == 1)
+							{
+								// If set to going
+								if($db2->status == 0)
+								{
+									// Set status
+									$data .= '
+									<br />
+									<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
+								}
+								// If set to not picked
+								else if($db2->status == 6)
+								{
+									// Set status
+									$data .= '
+									<br />
+									<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>';
+								}
+							}
+
+						$data .= '
+						</div>
+						</td>';
+					}
+					
+					$data .= '
+					</tr>';
+
+					// Increment trooper count
+					$i++;
+				}
+			}
+
+			if($i == 0)
+			{
+				$data .= '
+				<b>No troopers have signed up for this event!</b>
+				<br />
+				<br />';
+			}
+			else
+			{
+				$data .= '</table>
+				</div>
+				</form>';
+			}
+
+			// Update troopers remaining
+			$data2 = '
+			<ul>
+				<li>This event is limited to '.$limitTotal.' troopers. ';
+
+				// Check for total limit set, if it is, add remaining troopers
+				if($totalTrooperEvent)
+				{
+					$data2 .= '
+					' . troopersRemaining($limitTotal, eventClubCount($db->id, "all")) . '</li>';
+				}
+				else
+				{
+					$data2 .= '
+					<li>This event is limited to '.$db->limit501st.' 501st troopers. '.troopersRemaining($db->limit501st, eventClubCount($db->id, 0)).' </li>';
+
+					// Set up club count
+					$clubCount = 1;
+
+					// Loop through clubs
+					foreach($clubArray as $club => $club_value)
+					{
+						$data2 .= '
+						<li>This event is limited to '.$db->{$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining($db->{$club_value['dbLimit']}, eventClubCount($db->id, $clubCount)).'</li>';
+
+						// Increment club count
+						$clubCount++;
+					}
+				}
+				
+				// Check for total limit set, if it is, set event as limited
+				if($db->limitHandlers > 500 || $db->limitHandlers < 500)
+				{
+					$data2 .= '
+					<li>This event is limited to '.$db->limitHandlers.' handlers. <b>'.($db->limitHandlers - handlerEventCount($db->id)).' handlers remaining.</b></li>';
+				}
+
+			$data2 .= '
+			</ul>';
+		}
+	}
+	
+	return [$data, $data2];
+}
+
+/**
  * Returns the status of the trooper
  * 
  * 0 = Going / 1 = Stand By / 2 = Tentative / 3 = Attended / 4 = Canceled / 5 = Pending / 6 = Not Picked / 7 = No Show
@@ -4275,7 +4661,7 @@ function eventClubCount($eventID, $clubID)
 		while ($db = mysqli_fetch_object($result))
 		{
 			// Query costume database to add to club counts
-			$query2 = "SELECT * FROM costumes WHERE id = '".$db->costume."'";
+			$query2 = "SELECT * FROM costumes WHERE id = '".$db->costume."' AND costume NOT LIKE '%handler%'";
 			if ($result2 = mysqli_query($conn, $query2))
 			{
 				while ($db2 = mysqli_fetch_object($result2))
@@ -4305,17 +4691,7 @@ function eventClubCount($eventID, $clubID)
 								$totalAll++;
 							}
 						}
-					}
-					
-					// Dual costume
-					if($db2->club == $dualCostume)
-					{
-						// Just 501 because it will be added in the loop above as well
-						$c501++;
-						
-						// Add to total
-						$total++;
-					}							
+					}						
 				}
 			}
 		}
@@ -4344,12 +4720,6 @@ function eventClubCount($eventID, $clubID)
 			}
 		}
 	}
-	
-	// Dual costume
-	if($clubID == $dualCostume)
-	{
-		$returnVal = $total;
-	}
 
 	// If want total
 	if($clubID == "all")
@@ -4359,6 +4729,43 @@ function eventClubCount($eventID, $clubID)
 
 	// Return
 	return $returnVal;
+}
+
+/**
+ * Returns number of handlers signed up for this event
+ *
+ * @param int $eventID ID of the event
+ * @param int $clubID ID of the club
+ * @return string Returns count of club in the event
+*/
+function handlerEventCount($eventID)
+{
+	global $conn;
+	
+	// Set total number to return
+	$total = 0;
+
+	// Query database for roster info
+	$query = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid LEFT JOIN costumes ON costumes.id = event_sign_up.costume WHERE troopid = '".$eventID."' AND status != '1' AND status != '4' AND status != '6' AND costumes.costume LIKE '%handler%'";
+
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Query costume database to add to club counts
+			$query2 = "SELECT * FROM costumes WHERE id = '".$db->costume."'";
+			if ($result2 = mysqli_query($conn, $query2))
+			{
+				while ($db2 = mysqli_fetch_object($result2))
+				{
+					$total++;
+				}
+			}
+		}
+	}
+
+	// Return
+	return $total;
 }
 
 /**

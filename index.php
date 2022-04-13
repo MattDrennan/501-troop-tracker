@@ -3984,6 +3984,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						}
 
 						echo '
+						<p>Limit of Total Handlers:</p>
+						<input type="number" name="limitHandlers" value="500" id="limitHandlers" class="limitClass" />
+						
 						<p>Limit of Total Troopers:</p>
 						<input type="number" name="limitTotalTroopers" value="500" id="limitTotalTroopers" class="limitClass" />
 
@@ -4281,6 +4284,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			$limitTo = "";
 			$limit501st = "";
 			$limitTotalTroopers = "";
+			$limitHandlers = "";
 
 			// Loop through clubs
 			foreach($clubArray as $club => $club_value)
@@ -4332,6 +4336,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						$limitTo = $db->limitTo;
 						$limit501st = $db->limit501st;
 						$limitTotalTroopers = $db->limitTotalTroopers;
+						$limitHandlers = $db->limitHandlers;
 
 						// Loop through clubs
 						foreach($clubArray as $club => $club_value)
@@ -4529,6 +4534,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				}
 
 				echo '
+				<p>Limit of Total Handlers:</p>
+				<input type="number" name="limitHandlers" id="limitHandlers" class="limitClass" value="'.copyEvent($eid, $limitHandlers, 500).'" />
+				
 				<p>Limit of Total Troopers:</p>
 				<input type="number" name="limitTotalTroopers" id="limitTotalTroopers" class="limitClass" value="'.copyEvent($eid, $limitTotalTroopers, 500).'" />
 
@@ -5028,12 +5036,6 @@ if(isset($_GET['action']) && $_GET['action'] == "logout")
 	</div>';
 }
 
-if(isset($_POST['submitCancelTroop']))
-{
-	// Query the database
-	$conn->query("UPDATE event_sign_up SET status = '4' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($_POST['troopidC'])."'") or die($conn->error);
-}
-
 // If we are viewing an event, hide all other info
 if(isset($_GET['event']))
 {
@@ -5353,6 +5355,12 @@ if(isset($_GET['event']))
 					{
 						$isLimited = true;
 					}
+					
+					// Check for total limit set, if it is, set event as limited
+					if($db->limitHandlers > 500 || $db->limitHandlers < 500)
+					{
+						$isLimited = true;
+					}
 				
 					// If this event is limited in troopers
 					if($db->limit501st < 500 || $isLimited)
@@ -5391,6 +5399,13 @@ if(isset($_GET['event']))
 										// Increment club count
 										$clubCount++;
 									}
+								}
+								
+								// Check for total limit set, if it is, set event as limited
+								if($db->limitHandlers > 500 || $db->limitHandlers < 500)
+								{
+									echo '
+									<li>This event is limited to '.$db->limitHandlers.' handlers. <b>'.($db->limitHandlers - handlerEventCount($db->id)).' handlers remaining.</b></li>';
 								}
 						echo '
 							</ul>
@@ -5460,7 +5475,7 @@ if(isset($_GET['event']))
 						<!-- Hidden variables -->
 						<input type="hidden" name="modifysignupTroopIdForm" id="modifysignupTroopIdForm" value="'.$db->id.'" />
 						<input type="hidden" name="limitedEventCancel" id="limitedEventCancel" value="'.$db->limitedEvent.'" />
-						<input type="hidden" name="troopidC" id="troopidC" value="'.cleanInput($_GET['event']).'" />';
+						<input type="hidden" name="troopid" id="troopid" value="'.cleanInput($_GET['event']).'" />';
 						
 						// If user logged in
 						if(loggedIn())
@@ -6571,7 +6586,7 @@ else
 				if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
 				{
 					// Query
-					$query = "SELECT events.id AS id, events.name, events.location, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, ".$addToQuery."events.limitTotalTroopers, events.closed FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() - INTERVAL 1 DAY AND event_sign_up.status < 3 AND (events.closed = 0 OR events.closed = 3) ORDER BY events.dateStart";
+					$query = "SELECT events.id AS id, events.name, events.location, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, ".$addToQuery."events.limitTotalTroopers, events.limitHandlers, events.closed FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() - INTERVAL 1 DAY AND event_sign_up.status < 3 AND (events.closed = 0 OR events.closed = 3) ORDER BY events.dateStart";
 				}
 				else if(isset($_GET['squad']) && $_GET['squad'] == "canceledtroops")
 				{
