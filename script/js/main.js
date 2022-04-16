@@ -645,6 +645,8 @@ $(document).ready(function()
 		$("#limitedEvent").val(0);
 		$("#limitHandlers").val(500);
 		$("#limitTotalTroopers").val(500);
+		$("#friendLimit").val(4);
+		$("#allowTentative").val(1);
 
 		// On index.php, clear all fields
 		clearLimit();
@@ -1346,6 +1348,8 @@ $(document).ready(function()
 					$("#limit501st").val(json.limit501st);
 					$("#limitHandlers").val(json.limitHandlers);
 					$("#limitTotalTroopers").val(json.limitTotalTroopers);
+					$("#friendLimit").val(json.friendLimit);
+					$("#allowTentative").val(json.allowTentative);
 
 					// Loop through clubs
 					for(var i = 0; i <= (clubArray.length - 1); i++)

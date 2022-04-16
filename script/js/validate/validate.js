@@ -612,11 +612,7 @@ $(function()
                     // Get JSON Data
                     var json = JSON.parse(data);
 
-                    if (json.success == "failed")
-                    {
-                        alert(json.data);
-                    }
-                    else
+                    if (json.success == "success")
                     {
                         // Put data in html
                         $("#signuparea1").html(json.data);
@@ -642,6 +638,16 @@ $(function()
                         // Update troopers remaining on the page
                         $("div[name=troopersRemainingDisplay]").html(json.troopersRemaining);
                     }
+					else
+					{
+						alert(json.success_message);
+					}
+					
+					// Check number of friends
+					if(json.numFriends <= 0)
+					{
+						$("#addfriend").hide();
+					}
                 }
             });
         }

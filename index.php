@@ -3956,6 +3956,15 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						</p>
 						
 						<div id="limitChangeArea" style="display: none;">
+						
+						<p>How many friends can a trooper add?</p>
+						<input type="text" name="friendLimit" id="friendLimit" />
+						
+						<p>Allow tentative troopers?</p>
+						<select name="allowTentative" id="allowTentative">
+							<option value="1">Yes</option>
+							<option value="0">No</option>
+						</select>
 
 						<p>Is this a manual selection event?</p>
 						<select name="limitedEvent" id="limitedEvent">
@@ -4285,6 +4294,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			$limit501st = "";
 			$limitTotalTroopers = "";
 			$limitHandlers = "";
+			$friendLimit = "";
+			$allowTentative = "";
 
 			// Loop through clubs
 			foreach($clubArray as $club => $club_value)
@@ -4337,6 +4348,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						$limit501st = $db->limit501st;
 						$limitTotalTroopers = $db->limitTotalTroopers;
 						$limitHandlers = $db->limitHandlers;
+						$friendLimit = $db->friendLimit;
+						$allowTentative = $db->allowTentative;
 
 						// Loop through clubs
 						foreach($clubArray as $club => $club_value)
@@ -4505,6 +4518,15 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<select name="postToBoards" id="postToBoards">
 					<option value="1">Yes</option>
 					<option value="0">No</option>
+				</select>
+				
+				<p>How many friends can a trooper add?</p>
+				<input type="text" name="friendLimit" id="friendLimit" value="'.copyEvent($eid, $friendLimit, 4).'" />
+				
+				<p>Allow tentative troopers?</p>
+				<select name="allowTentative" id="allowTentative">
+					<option value="1" '.copyEventSelect($eid, $allowTentative, 1).'>Yes</option>
+					<option value="0" '.copyEventSelect($eid, $allowTentative, 0).'>No</option>
 				</select>
 
 				<p>Is this a manual selection event?</p>
@@ -5059,6 +5081,8 @@ if(isset($_GET['event']))
 	$eventClosed = 0;
 	$limitedEvent = 0;
 	$limitTotal = 0;
+	$friendLimit = 0;
+	$allowTentative = 0;
 	
 	// Merged troop
 	$isMerged = false;
@@ -5076,6 +5100,8 @@ if(isset($_GET['event']))
 			$eventClosed = $db->closed;
 			$limitedEvent = $db->limitedEvent;
 			$limitTo = $db->limitTo;
+			$friendLimit = $db->friendLimit;
+			$allowTentative = $db->allowTentative;
 			
 			// Set total
 			$limitTotal = $db->limit501st;
@@ -5956,8 +5982,6 @@ if(isset($_GET['event']))
 										
 										$query3 .= costume_restrict_query() . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
 										
-										echo $query3;
-										
 										if ($result3 = mysqli_query($conn, $query3))
 										{
 											while ($db3 = mysqli_fetch_object($result3))
@@ -5980,8 +6004,14 @@ if(isset($_GET['event']))
 										if($db->limitedEvent != 1)
 										{
 											echo '
-												<option value="0">I\'ll be there!</option>
+												<option value="0">I\'ll be there!</option>';
+												
+											// Check if tentative allowed
+											if($db->allowTentative == 1)
+											{
+												echo '
 												<option value="2">Tentative</option>';
+											}
 										}
 										else
 										{
@@ -6205,8 +6235,11 @@ if(isset($_GET['event']))
 				{
 					if(hasPermission(0, 1, 2, 3))
 					{
+						// Get number of troopers that trooper signed up for event
+						$numFriends = $conn->query("SELECT id FROM event_sign_up WHERE addedby = '".$_SESSION['id']."' AND troopid = '".cleanInput($_GET['event'])."'");
+						
 						// Only show add a friend if main user is in event
-						if(inEvent($_SESSION['id'], cleanInput($_GET['event']))["inTroop"] == 1)
+						if(inEvent($_SESSION['id'], cleanInput($_GET['event']))["inTroop"] == 1 && $numFriends->num_rows < $friendLimit)
 						{
 							echo '
 							<div id="addfriend" name="addfriend">';
@@ -6308,8 +6341,14 @@ if(isset($_GET['event']))
 						if($limitedEvent != 1)
 						{
 							echo '
-							<option value="0">I\'ll be there!</option>
-							<option value="2">Tentative</option>';
+								<option value="0">I\'ll be there!</option>';
+								
+							// Check if tentative allowed
+							if($allowTentative == 1)
+							{
+								echo '
+								<option value="2">Tentative</option>';
+							}
 						}
 						else
 						{
