@@ -84,7 +84,7 @@ function formatTime($date, $format)
 function dailyTip()
 {
 	// Get a random number
-	$randomNumber = rand(0, 14);
+	$randomNumber = rand(0, 15);
 
 	// Set tip
 	$tip = '';
@@ -164,9 +164,14 @@ function dailyTip()
 			$tip = 'Did you know you can type when selecting a costume to find it easier?';
 			$link = 'https://youtu.be/YLjiVGgqe-Y';
 
+		case 14:
+			$tip = 'Did you know you can type when selecting a costume to find it easier?';
+			$link = 'https://youtu.be/YLjiVGgqe-Y';
+		break;
+
 		default:
-			$tip = 'Did you know you can add a shortcut on your phone? <a href="https://www.youtube.com/watch?v=_UhtyHbL8uY" target="_blank">IOS</a> / <a href="https://www.youtube.com/watch?v=S4Xu_N4ByBs" target="_blank">Android</a>';
-			$link = '';
+			$tip = 'Did you know you can add someone to the tracker that does not have an account?';
+			$link = 'https://www.youtube.com/watch?v=mDeJaANqLIk';
 		break;
 	}
 
