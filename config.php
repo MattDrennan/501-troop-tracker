@@ -451,6 +451,63 @@ function squadSelectList($clubs = true, $insideElement = "", $eid = 0, $squadP =
 }
 
 /**
+ * Returns an HTML results of pending troops
+ * 
+ * @param int $trooperid The trooper ID of the trooper to get pending troops
+ * @return string Returns an HTML results of pending troops
+*/
+function pendingTroopsDisplay($trooperid)
+{
+	global $conn;
+
+	// Set up return string
+	$returnString = "";
+
+	// Set up increment
+	$i = 0;
+
+	// Get data
+	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.dateStart, events.dateEnd, troopers.id, troopers.name FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = '".$trooperid."' AND troopers.id != ".placeholder." AND events.closed = '0' AND event_sign_up.status = '0' ORDER BY events.dateEnd ASC";
+	
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Format date
+			$dateFormat = date('m-d-Y', strtotime($db->dateEnd));
+
+			if($i == 0)
+			{
+				$returnString .= '
+				<h2 class="tm-section-header">Upcoming Troops</h2>
+				<table border="1" class="space-content">
+				<tr>
+					<th>Event Name</th>	<th>Date</th>	<th>Pending Costume</th>
+				</tr>';
+			}
+
+			$returnString .= '
+			<tr>
+				<td>'.$db->eventName.'</td>	<td>'.$dateFormat.'</td>	<td>'.getCostume($db->costume).'</td>
+			</tr>';
+
+			// Increment
+			$i++;
+		}
+	}
+
+	// If results
+	if($i > 0)
+	{
+		$returnString .= '
+		</table>
+		<br />';
+	}
+
+	return $returnString;
+}
+
+/**
  * Returns a link for a squad based on selection
  * 
  * @param int $squad The squad that is to be linked

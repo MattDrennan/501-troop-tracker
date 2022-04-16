@@ -767,3 +767,13 @@ td[name=insideComment] {
 	word-break: break-all;
 }
 
+/* Center content / Margins */
+
+.center-content {
+	text-align: center;
+}
+
+.space-content {
+	margin-bottom: 10px;
+}
+

@@ -506,6 +506,9 @@ if(isset($_GET['profile']))
 				echo  '
 				<span style="text-align: center;">' . getTroopCounts($profile) . '</span>
 				<div style="overflow-x: auto;">
+				'.pendingTroopsDisplay($profile).'
+
+				<h2 class="tm-section-header">Troop History</h2>
 				<table border="1">
 				<tr>
 					<th>Event Name</th>	<th>Date</th>	<th>Attended Costume</th>
