@@ -288,6 +288,13 @@ Acknowledge: Jose Solorzano (https://sourceforge.net/projects/php-html/)</dd>
 <dd>Returns squads and clubs, and converts them to options to display back to trooper.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_pendingTroopsDisplay">pendingTroopsDisplay()</a>
+    <span>
+                                &nbsp;: string    </span>
+</dt>
+<dd>Returns an HTML results of pending troops</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_addSquadLink">addSquadLink()</a>
     <span>
                                 &nbsp;: string    </span>
@@ -855,6 +862,13 @@ Acknowledge: Jose Solorzano (https://sourceforge.net/projects/php-html/)</dd>
 <dd>Search for trooper in event, and return if in event</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_getRoster">getRoster()</a>
+    <span>
+                                &nbsp;: mixed    </span>
+</dt>
+<dd>Returns an updated roster</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_getStatus">getStatus()</a>
     <span>
                                 &nbsp;: string    </span>
@@ -1021,6 +1035,13 @@ Acknowledge: Jose Solorzano (https://sourceforge.net/projects/php-html/)</dd>
                                 &nbsp;: string    </span>
 </dt>
 <dd>Returns number of troopers signed up for this event based on costume</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_handlerEventCount">handlerEventCount()</a>
+    <span>
+                                &nbsp;: string    </span>
+</dt>
+<dd>Returns number of handlers signed up for this event</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_isEventFull">isEventFull()</a>
@@ -1831,7 +1852,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">194</span>
+    <span class="phpdocumentor-element-found-in__line">199</span>
 
     </aside>
 
@@ -1909,7 +1930,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">222</span>
+    <span class="phpdocumentor-element-found-in__line">227</span>
 
     </aside>
 
@@ -1951,7 +1972,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">255</span>
+    <span class="phpdocumentor-element-found-in__line">260</span>
 
     </aside>
 
@@ -1993,7 +2014,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">330</span>
+    <span class="phpdocumentor-element-found-in__line">335</span>
 
     </aside>
 
@@ -2023,7 +2044,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">367</span>
+    <span class="phpdocumentor-element-found-in__line">372</span>
 
     </aside>
 
@@ -2094,6 +2115,48 @@ Antcs</p>
     
 </article>
                     <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_pendingTroopsDisplay">
+        pendingTroopsDisplay()
+        <a href="namespaces/default.html#function_pendingTroopsDisplay" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">459</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Returns an HTML results of pending troops</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">pendingTroopsDisplay</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$trooperid</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$trooperid</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The trooper ID of the trooper to get pending troops</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">string</span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>Returns an HTML results of pending troops</p>
+</section>
+
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_addSquadLink">
         addSquadLink()
         <a href="namespaces/default.html#function_addSquadLink" class="headerlink"><i class="fas fa-link"></i></a>
@@ -2101,7 +2164,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">456</span>
+    <span class="phpdocumentor-element-found-in__line">518</span>
 
     </aside>
 
@@ -2161,7 +2224,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">482</span>
+    <span class="phpdocumentor-element-found-in__line">544</span>
 
     </aside>
 
@@ -2212,7 +2275,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">566</span>
+    <span class="phpdocumentor-element-found-in__line">628</span>
 
     </aside>
 
@@ -2242,7 +2305,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">590</span>
+    <span class="phpdocumentor-element-found-in__line">652</span>
 
     </aside>
 
@@ -2284,7 +2347,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">636</span>
+    <span class="phpdocumentor-element-found-in__line">698</span>
 
     </aside>
 
@@ -2344,7 +2407,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">662</span>
+    <span class="phpdocumentor-element-found-in__line">724</span>
 
     </aside>
 
@@ -2386,7 +2449,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">691</span>
+    <span class="phpdocumentor-element-found-in__line">753</span>
 
     </aside>
 
@@ -2416,7 +2479,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">822</span>
+    <span class="phpdocumentor-element-found-in__line">884</span>
 
     </aside>
 
@@ -2465,7 +2528,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">884</span>
+    <span class="phpdocumentor-element-found-in__line">956</span>
 
     </aside>
 
@@ -2507,7 +2570,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">908</span>
+    <span class="phpdocumentor-element-found-in__line">980</span>
 
     </aside>
 
@@ -2549,7 +2612,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">942</span>
+    <span class="phpdocumentor-element-found-in__line">1014</span>
 
     </aside>
 
@@ -2600,7 +2663,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">978</span>
+    <span class="phpdocumentor-element-found-in__line">1050</span>
 
     </aside>
 
@@ -2669,7 +2732,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1012</span>
+    <span class="phpdocumentor-element-found-in__line">1084</span>
 
     </aside>
 
@@ -2711,7 +2774,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1048</span>
+    <span class="phpdocumentor-element-found-in__line">1120</span>
 
     </aside>
 
@@ -2771,7 +2834,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1083</span>
+    <span class="phpdocumentor-element-found-in__line">1155</span>
 
     </aside>
 
@@ -2822,7 +2885,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1118</span>
+    <span class="phpdocumentor-element-found-in__line">1190</span>
 
     </aside>
 
@@ -2873,7 +2936,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1152</span>
+    <span class="phpdocumentor-element-found-in__line">1224</span>
 
     </aside>
 
@@ -2915,7 +2978,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1184</span>
+    <span class="phpdocumentor-element-found-in__line">1256</span>
 
     </aside>
 
@@ -2957,7 +3020,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1218</span>
+    <span class="phpdocumentor-element-found-in__line">1290</span>
 
     </aside>
 
@@ -3017,7 +3080,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1254</span>
+    <span class="phpdocumentor-element-found-in__line">1326</span>
 
     </aside>
 
@@ -3077,7 +3140,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1300</span>
+    <span class="phpdocumentor-element-found-in__line">1372</span>
 
     </aside>
 
@@ -3128,7 +3191,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1334</span>
+    <span class="phpdocumentor-element-found-in__line">1406</span>
 
     </aside>
 
@@ -3179,7 +3242,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1369</span>
+    <span class="phpdocumentor-element-found-in__line">1441</span>
 
     </aside>
 
@@ -3221,7 +3284,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1399</span>
+    <span class="phpdocumentor-element-found-in__line">1471</span>
 
     </aside>
 
@@ -3263,7 +3326,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1429</span>
+    <span class="phpdocumentor-element-found-in__line">1501</span>
 
     </aside>
 
@@ -3305,7 +3368,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1461</span>
+    <span class="phpdocumentor-element-found-in__line">1533</span>
 
     </aside>
 
@@ -3347,7 +3410,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1491</span>
+    <span class="phpdocumentor-element-found-in__line">1563</span>
 
     </aside>
 
@@ -3389,7 +3452,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1524</span>
+    <span class="phpdocumentor-element-found-in__line">1596</span>
 
     </aside>
 
@@ -3431,7 +3494,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1554</span>
+    <span class="phpdocumentor-element-found-in__line">1626</span>
 
     </aside>
 
@@ -3473,7 +3536,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1595</span>
+    <span class="phpdocumentor-element-found-in__line">1667</span>
 
     </aside>
 
@@ -3524,7 +3587,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1630</span>
+    <span class="phpdocumentor-element-found-in__line">1702</span>
 
     </aside>
 
@@ -3566,7 +3629,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1659</span>
+    <span class="phpdocumentor-element-found-in__line">1731</span>
 
     </aside>
 
@@ -3616,7 +3679,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1692</span>
+    <span class="phpdocumentor-element-found-in__line">1764</span>
 
     </aside>
 
@@ -3658,7 +3721,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1736</span>
+    <span class="phpdocumentor-element-found-in__line">1808</span>
 
     </aside>
 
@@ -3700,7 +3763,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1779</span>
+    <span class="phpdocumentor-element-found-in__line">1851</span>
 
     </aside>
 
@@ -3742,7 +3805,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1825</span>
+    <span class="phpdocumentor-element-found-in__line">1897</span>
 
     </aside>
 
@@ -3783,7 +3846,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1872</span>
+    <span class="phpdocumentor-element-found-in__line">1944</span>
 
     </aside>
 
@@ -3833,7 +3896,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1949</span>
+    <span class="phpdocumentor-element-found-in__line">2021</span>
 
     </aside>
 
@@ -3873,7 +3936,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1972</span>
+    <span class="phpdocumentor-element-found-in__line">2044</span>
 
     </aside>
 
@@ -3915,7 +3978,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2013</span>
+    <span class="phpdocumentor-element-found-in__line">2085</span>
 
     </aside>
 
@@ -3982,7 +4045,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2080</span>
+    <span class="phpdocumentor-element-found-in__line">2152</span>
 
     </aside>
 
@@ -4024,7 +4087,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2138</span>
+    <span class="phpdocumentor-element-found-in__line">2210</span>
 
     </aside>
 
@@ -4066,7 +4129,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2185</span>
+    <span class="phpdocumentor-element-found-in__line">2257</span>
 
     </aside>
 
@@ -4108,7 +4171,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2246</span>
+    <span class="phpdocumentor-element-found-in__line">2318</span>
 
     </aside>
 
@@ -4159,7 +4222,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2263</span>
+    <span class="phpdocumentor-element-found-in__line">2335</span>
 
     </aside>
 
@@ -4187,7 +4250,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2278</span>
+    <span class="phpdocumentor-element-found-in__line">2350</span>
 
     </aside>
 
@@ -4229,7 +4292,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2313</span>
+    <span class="phpdocumentor-element-found-in__line">2385</span>
 
     </aside>
 
@@ -4298,7 +4361,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2364</span>
+    <span class="phpdocumentor-element-found-in__line">2436</span>
 
     </aside>
 
@@ -4367,7 +4430,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2444</span>
+    <span class="phpdocumentor-element-found-in__line">2516</span>
 
     </aside>
 
@@ -4463,7 +4526,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2457</span>
+    <span class="phpdocumentor-element-found-in__line">2529</span>
 
     </aside>
 
@@ -4503,7 +4566,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2495</span>
+    <span class="phpdocumentor-element-found-in__line">2567</span>
 
     </aside>
 
@@ -4570,7 +4633,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2541</span>
+    <span class="phpdocumentor-element-found-in__line">2613</span>
 
     </aside>
 
@@ -4600,7 +4663,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2560</span>
+    <span class="phpdocumentor-element-found-in__line">2632</span>
 
     </aside>
 
@@ -4630,7 +4693,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2605</span>
+    <span class="phpdocumentor-element-found-in__line">2677</span>
 
     </aside>
 
@@ -4681,7 +4744,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2632</span>
+    <span class="phpdocumentor-element-found-in__line">2704</span>
 
     </aside>
 
@@ -4723,7 +4786,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2652</span>
+    <span class="phpdocumentor-element-found-in__line">2724</span>
 
     </aside>
 
@@ -4765,7 +4828,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2672</span>
+    <span class="phpdocumentor-element-found-in__line">2744</span>
 
     </aside>
 
@@ -4807,7 +4870,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2692</span>
+    <span class="phpdocumentor-element-found-in__line">2764</span>
 
     </aside>
 
@@ -4849,7 +4912,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2704</span>
+    <span class="phpdocumentor-element-found-in__line">2776</span>
 
     </aside>
 
@@ -4900,7 +4963,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2751</span>
+    <span class="phpdocumentor-element-found-in__line">2823</span>
 
     </aside>
 
@@ -4942,7 +5005,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2775</span>
+    <span class="phpdocumentor-element-found-in__line">2847</span>
 
     </aside>
 
@@ -4984,7 +5047,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2802</span>
+    <span class="phpdocumentor-element-found-in__line">2874</span>
 
     </aside>
 
@@ -5035,7 +5098,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2830</span>
+    <span class="phpdocumentor-element-found-in__line">2902</span>
 
     </aside>
 
@@ -5077,7 +5140,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2854</span>
+    <span class="phpdocumentor-element-found-in__line">2926</span>
 
     </aside>
 
@@ -5119,7 +5182,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2874</span>
+    <span class="phpdocumentor-element-found-in__line">2946</span>
 
     </aside>
 
@@ -5161,7 +5224,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2894</span>
+    <span class="phpdocumentor-element-found-in__line">2966</span>
 
     </aside>
 
@@ -5203,7 +5266,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2914</span>
+    <span class="phpdocumentor-element-found-in__line">2986</span>
 
     </aside>
 
@@ -5245,7 +5308,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2932</span>
+    <span class="phpdocumentor-element-found-in__line">3004</span>
 
     </aside>
 
@@ -5287,7 +5350,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2948</span>
+    <span class="phpdocumentor-element-found-in__line">3020</span>
 
     </aside>
 
@@ -5371,7 +5434,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3198</span>
+    <span class="phpdocumentor-element-found-in__line">3270</span>
 
     </aside>
 
@@ -5413,7 +5476,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3236</span>
+    <span class="phpdocumentor-element-found-in__line">3308</span>
 
     </aside>
 
@@ -5455,7 +5518,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3282</span>
+    <span class="phpdocumentor-element-found-in__line">3354</span>
 
     </aside>
 
@@ -5666,7 +5729,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3336</span>
+    <span class="phpdocumentor-element-found-in__line">3408</span>
 
     </aside>
 
@@ -5715,7 +5778,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3352</span>
+    <span class="phpdocumentor-element-found-in__line">3424</span>
 
     </aside>
 
@@ -5757,7 +5820,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3372</span>
+    <span class="phpdocumentor-element-found-in__line">3444</span>
 
     </aside>
 
@@ -5799,7 +5862,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3392</span>
+    <span class="phpdocumentor-element-found-in__line">3464</span>
 
     </aside>
 
@@ -5841,7 +5904,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3412</span>
+    <span class="phpdocumentor-element-found-in__line">3484</span>
 
     </aside>
 
@@ -5883,7 +5946,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3432</span>
+    <span class="phpdocumentor-element-found-in__line">3504</span>
 
     </aside>
 
@@ -5925,7 +5988,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3454</span>
+    <span class="phpdocumentor-element-found-in__line">3526</span>
 
     </aside>
 
@@ -5985,7 +6048,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3486</span>
+    <span class="phpdocumentor-element-found-in__line">3558</span>
 
     </aside>
 
@@ -6054,7 +6117,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3546</span>
+    <span class="phpdocumentor-element-found-in__line">3618</span>
 
     </aside>
 
@@ -6097,6 +6160,88 @@ Antcs</p>
     
 </article>
                     <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_getRoster">
+        getRoster()
+        <a href="namespaces/default.html#function_getRoster" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">3654</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Returns an updated roster</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">getRoster</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$eventID</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$limitTotal</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">bool&nbsp;</span><span class="phpdocumentor-signature__argument__name">$totalTrooperEvent</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__return-type">bool&nbsp;</span><span class="phpdocumentor-signature__argument__name">$signedUp</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">false</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$eventID</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The event ID to fetch</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$limitTotal</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The limit total for the event</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$totalTrooperEvent</span>
+                : <span class="phpdocumentor-signature__argument__return-type">bool</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>If the event is an event that checks the total limit</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$signedUp</span>
+                : <span class="phpdocumentor-signature__argument__return-type">bool</span>
+                 = <span class="phpdocumentor-signature__argument__default-value">false</span>            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>If the trooper is signed up for this event. Default: false</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">array</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                
+                                                 <section class="phpdocumentor-description"><p>Returns an HTML string of the updated roster and HTML string of the current trooper counts remaining</p>
+</section>
+
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">mixed</span>
+            &mdash;
+        
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_getStatus">
         getStatus()
         <a href="namespaces/default.html#function_getStatus" class="headerlink"><i class="fas fa-link"></i></a>
@@ -6104,7 +6249,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3581</span>
+    <span class="phpdocumentor-element-found-in__line">4029</span>
 
     </aside>
 
@@ -6148,7 +6293,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3627</span>
+    <span class="phpdocumentor-element-found-in__line">4075</span>
 
     </aside>
 
@@ -6190,7 +6335,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3653</span>
+    <span class="phpdocumentor-element-found-in__line">4101</span>
 
     </aside>
 
@@ -6243,7 +6388,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3675</span>
+    <span class="phpdocumentor-element-found-in__line">4123</span>
 
     </aside>
 
@@ -6285,7 +6430,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3696</span>
+    <span class="phpdocumentor-element-found-in__line">4144</span>
 
     </aside>
 
@@ -6336,7 +6481,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3714</span>
+    <span class="phpdocumentor-element-found-in__line">4162</span>
 
     </aside>
 
@@ -6378,7 +6523,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3736</span>
+    <span class="phpdocumentor-element-found-in__line">4184</span>
 
     </aside>
 
@@ -6420,7 +6565,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3751</span>
+    <span class="phpdocumentor-element-found-in__line">4199</span>
 
     </aside>
 
@@ -6462,7 +6607,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3776</span>
+    <span class="phpdocumentor-element-found-in__line">4224</span>
 
     </aside>
 
@@ -6494,7 +6639,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3810</span>
+    <span class="phpdocumentor-element-found-in__line">4258</span>
 
     </aside>
 
@@ -6556,7 +6701,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3853</span>
+    <span class="phpdocumentor-element-found-in__line">4301</span>
 
     </aside>
 
@@ -6600,7 +6745,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3882</span>
+    <span class="phpdocumentor-element-found-in__line">4330</span>
 
     </aside>
 
@@ -6642,7 +6787,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3907</span>
+    <span class="phpdocumentor-element-found-in__line">4355</span>
 
     </aside>
 
@@ -6672,7 +6817,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3938</span>
+    <span class="phpdocumentor-element-found-in__line">4386</span>
 
     </aside>
 
@@ -6702,7 +6847,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3966</span>
+    <span class="phpdocumentor-element-found-in__line">4414</span>
 
     </aside>
 
@@ -6753,7 +6898,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4002</span>
+    <span class="phpdocumentor-element-found-in__line">4450</span>
 
     </aside>
 
@@ -6804,7 +6949,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4040</span>
+    <span class="phpdocumentor-element-found-in__line">4488</span>
 
     </aside>
 
@@ -6846,7 +6991,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4053</span>
+    <span class="phpdocumentor-element-found-in__line">4501</span>
 
     </aside>
 
@@ -6888,7 +7033,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4069</span>
+    <span class="phpdocumentor-element-found-in__line">4517</span>
 
     </aside>
 
@@ -6955,7 +7100,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4096</span>
+    <span class="phpdocumentor-element-found-in__line">4544</span>
 
     </aside>
 
@@ -7020,7 +7165,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4153</span>
+    <span class="phpdocumentor-element-found-in__line">4601</span>
 
     </aside>
 
@@ -7062,7 +7207,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4190</span>
+    <span class="phpdocumentor-element-found-in__line">4638</span>
 
     </aside>
 
@@ -7113,7 +7258,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4231</span>
+    <span class="phpdocumentor-element-found-in__line">4679</span>
 
     </aside>
 
@@ -7164,7 +7309,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4247</span>
+    <span class="phpdocumentor-element-found-in__line">4695</span>
 
     </aside>
 
@@ -7208,6 +7353,48 @@ Antcs</p>
     
 </article>
                     <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_handlerEventCount">
+        handlerEventCount()
+        <a href="namespaces/default.html#function_handlerEventCount" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">4803</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Returns number of handlers signed up for this event</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">handlerEventCount</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$eventID</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$eventID</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>ID of the event</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">string</span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>Returns count of club in the event</p>
+</section>
+
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_isEventFull">
         isEventFull()
         <a href="namespaces/default.html#function_isEventFull" class="headerlink"><i class="fas fa-link"></i></a>
@@ -7215,7 +7402,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4371</span>
+    <span class="phpdocumentor-element-found-in__line">4840</span>
 
     </aside>
 
@@ -7266,7 +7453,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4451</span>
+    <span class="phpdocumentor-element-found-in__line">4920</span>
 
     </aside>
 
@@ -7308,7 +7495,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4477</span>
+    <span class="phpdocumentor-element-found-in__line">4946</span>
 
     </aside>
 
@@ -7350,7 +7537,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4513</span>
+    <span class="phpdocumentor-element-found-in__line">4982</span>
 
     </aside>
 
@@ -7394,7 +7581,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4553</span>
+    <span class="phpdocumentor-element-found-in__line">5022</span>
 
     </aside>
 
@@ -7444,7 +7631,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4588</span>
+    <span class="phpdocumentor-element-found-in__line">5057</span>
 
     </aside>
 
@@ -7486,7 +7673,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4626</span>
+    <span class="phpdocumentor-element-found-in__line">5095</span>
 
     </aside>
 
@@ -7537,7 +7724,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4650</span>
+    <span class="phpdocumentor-element-found-in__line">5119</span>
 
     </aside>
 
@@ -7612,7 +7799,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4680</span>
+    <span class="phpdocumentor-element-found-in__line">5149</span>
 
     </aside>
 
@@ -7670,7 +7857,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4707</span>
+    <span class="phpdocumentor-element-found-in__line">5176</span>
 
     </aside>
 
@@ -7737,7 +7924,7 @@ Antcs</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4739</span>
+    <span class="phpdocumentor-element-found-in__line">5208</span>
 
     </aside>
 

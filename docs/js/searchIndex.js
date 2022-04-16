@@ -36,6 +36,11 @@ Search.appendIndex(
             "summary": "Returns\u0020squads\u0020and\u0020clubs,\u0020and\u0020converts\u0020them\u0020to\u0020options\u0020to\u0020display\u0020back\u0020to\u0020trooper.",
             "url": "namespaces/default.html#function_squadSelectList"
         },                {
+            "fqsen": "\\pendingTroopsDisplay\u0028\u0029",
+            "name": "pendingTroopsDisplay",
+            "summary": "Returns\u0020an\u0020HTML\u0020results\u0020of\u0020pending\u0020troops",
+            "url": "namespaces/default.html#function_pendingTroopsDisplay"
+        },                {
             "fqsen": "\\addSquadLink\u0028\u0029",
             "name": "addSquadLink",
             "summary": "Returns\u0020a\u0020link\u0020for\u0020a\u0020squad\u0020based\u0020on\u0020selection",
@@ -441,6 +446,11 @@ Search.appendIndex(
             "summary": "Search\u0020for\u0020trooper\u0020in\u0020event,\u0020and\u0020return\u0020if\u0020in\u0020event",
             "url": "namespaces/default.html#function_inEvent"
         },                {
+            "fqsen": "\\getRoster\u0028\u0029",
+            "name": "getRoster",
+            "summary": "Returns\u0020an\u0020updated\u0020roster",
+            "url": "namespaces/default.html#function_getRoster"
+        },                {
             "fqsen": "\\getStatus\u0028\u0029",
             "name": "getStatus",
             "summary": "Returns\u0020the\u0020status\u0020of\u0020the\u0020trooper",
@@ -560,6 +570,11 @@ Search.appendIndex(
             "name": "eventClubCount",
             "summary": "Returns\u0020number\u0020of\u0020troopers\u0020signed\u0020up\u0020for\u0020this\u0020event\u0020based\u0020on\u0020costume",
             "url": "namespaces/default.html#function_eventClubCount"
+        },                {
+            "fqsen": "\\handlerEventCount\u0028\u0029",
+            "name": "handlerEventCount",
+            "summary": "Returns\u0020number\u0020of\u0020handlers\u0020signed\u0020up\u0020for\u0020this\u0020event",
+            "url": "namespaces/default.html#function_handlerEventCount"
         },                {
             "fqsen": "\\isEventFull\u0028\u0029",
             "name": "isEventFull",
