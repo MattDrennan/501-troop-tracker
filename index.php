@@ -3801,9 +3801,22 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				}
 				
 				echo '
-				<input type="submit" name="submitCancel" id="submitCancel" value="Mark Canceled" /> <input type="submit" name="submitFinish" id="submitFinish" value="Mark Finished" /> <input type="submit" name="submitOpen" id="submitOpen" value="Mark Open" /> <input type="submit" name="submitLock" id="submitLock" value="Mark Locked" /> <input type="submit" name="submitEdit" id="submitEdit" value="Edit" /> <input type="submit" name="submitRoster" id="submitRoster" value="Roster" /> <input type="submit" name="submitCharity" id="submitCharity" value="Charity" /> <input type="submit" name="submitAdvanced" id="submitAdvanced" value="Advanced Options" /> <input type="submit" name="viewEvent" id="viewEvent" value="View Event" />
-
+				<input type="submit" name="submitEventStatus" id="submitEventStatus" value="Event Status" /> <input type="submit" name="submitEdit" id="submitEdit" value="Edit" /> <input type="submit" name="submitRoster" id="submitRoster" value="Roster" /> <input type="submit" name="submitCharity" id="submitCharity" value="Charity" /> <input type="submit" name="submitAdvanced" id="submitAdvanced" value="Advanced Options" /> <input type="submit" name="viewEvent" id="viewEvent" value="View Event" />
 				</form>
+
+				<div name="editEventStatus" id="editEventStatus" style="display:none;">
+					<br />
+					<form action="process.php?do=editeventstatus" method="POST">
+						<select name="eventStatus">
+							<option value="0">Open</option>
+							<option value="3">Lock</option>
+							<option value="2">Cancel</option>
+							<option value="1">Finish</option>
+						</select>
+						<br />
+						<input type="submit" id="editEventStatusSave" value="Set" />
+					</form>
+				</div>
 
 				<div name="advancedOptions" id="advancedOptions" style="display:none;">
 					<br />

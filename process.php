@@ -2577,59 +2577,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		}
 	}
 	
-	// Event submitted for lock...
-	if(isset($_POST['submitLock']))
-	{
-		// Query the database
-		$conn->query("UPDATE events SET closed = '3' WHERE id = '".cleanInput($_POST['eventId'])."'");
-		
-		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has locked event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
-	}
 
-	// Event submitted for cancelation...
-	if(isset($_POST['submitCancel']))
-	{
-		// Query the database
-		$conn->query("UPDATE events SET closed = '2' WHERE id = '".cleanInput($_POST['eventId'])."'");
-		
-		// Prepare notification
-		$query = "SELECT * FROM event_sign_up WHERE troopid = '".cleanInput($_POST['eventId'])."'";
-		if ($result = mysqli_query($conn, $query))
-		{
-			while ($db = mysqli_fetch_object($result))
-			{
-				// Insert into notification_check
-				$conn->query("INSERT INTO notification_check (troopid, trooperid, troopstatus) VALUES ('".$db->troopid."', '".$db->trooperid."', 2)");
-			}
-		}
-
-		// Delete from sign ups - event_sign_up
-		$conn->query("DELETE FROM event_sign_up WHERE troopid = '".cleanInput($_POST['eventId'])."'");
-		
-		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has canceled event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
-	}
-
-	// Event submitted for completion...
-	if(isset($_POST['submitFinish']))
-	{
-		// Query the database
-		$conn->query("UPDATE events SET closed = '1' WHERE id = '".cleanInput($_POST['eventId'])."'");
-		
-		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has finished event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
-	}
-	
-	// Event submitted for open...
-	if(isset($_POST['submitOpen']))
-	{
-		// Query the database
-		$conn->query("UPDATE events SET closed = '0' WHERE id = '".cleanInput($_POST['eventId'])."'");
-		
-		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has reopened event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
-	}
 	
 	// Charity submitted for event...
 	if(isset($_POST['submitCharity']))
@@ -2644,6 +2592,61 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		
 		// Send notification to command staff
 		sendNotification(getName($_SESSION['id']) . " has updated charity on event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']), 17, json_encode(array("id" => cleanInput($_POST['eventId']), "charityDirectFunds" => cleanInput($_POST['charityDirectFunds']), "charityIndirectFunds" => cleanInput($_POST['charityIndirectFunds']), "charityName" => cleanInput($_POST['charityName']), "charityAddHours" => cleanInput($_POST['charityAddHours']), "charityNote" => cleanInput($_POST['charityNote']))));
+	}
+
+	// Event status set...
+	if(isset($_POST['eventStatus']))
+	{
+		// Event submitted for lock...
+		if($_POST['eventStatus'] == 3)
+		{
+			// Query the database
+			$conn->query("UPDATE events SET closed = '3' WHERE id = '".cleanInput($_POST['eventId'])."'");
+			
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has locked event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
+		}
+		// Event submitted for cancelation...
+		else if($_POST['eventStatus'] == 2)
+		{
+			// Query the database
+			$conn->query("UPDATE events SET closed = '2' WHERE id = '".cleanInput($_POST['eventId'])."'");
+			
+			// Prepare notification
+			$query = "SELECT * FROM event_sign_up WHERE troopid = '".cleanInput($_POST['eventId'])."'";
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					// Insert into notification_check
+					$conn->query("INSERT INTO notification_check (troopid, trooperid, troopstatus) VALUES ('".$db->troopid."', '".$db->trooperid."', 2)");
+				}
+			}
+
+			// Delete from sign ups - event_sign_up
+			$conn->query("DELETE FROM event_sign_up WHERE troopid = '".cleanInput($_POST['eventId'])."'");
+			
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has canceled event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
+		}
+		// Event submitted for completion...
+		else if($_POST['eventStatus'] == 1)
+		{
+			// Query the database
+			$conn->query("UPDATE events SET closed = '1' WHERE id = '".cleanInput($_POST['eventId'])."'");
+			
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has finished event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
+		}
+		// Event submitted for open...
+		else if($_POST['eventStatus'] == 0)
+		{
+			// Query the database
+			$conn->query("UPDATE events SET closed = '0' WHERE id = '".cleanInput($_POST['eventId'])."'");
+			
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has reopened event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
+		}
 	}
 
 	// Advanced options set...

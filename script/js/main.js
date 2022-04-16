@@ -1195,6 +1195,8 @@ $(document).ready(function()
 		});
 	})
 
+	/************************* EDIT EVENT OPTIONS *******************************/
+
 	$("#submitEditUser").button().click(function(e)
 	{
 		e.preventDefault();
@@ -1313,6 +1315,13 @@ $(document).ready(function()
 					$("#submitCharity").val("Advanced Options");
 				}
 
+				// Hide event status info
+				if($("#editEventStatus").is(":visible"))
+				{
+					$("#submitEventStatus").val("Event Status");
+					$("#editEventStatus").hide();
+				}
+
 				// If edit event is hidden
 				if($("#editEventInfo").is(":hidden"))
 				{
@@ -1386,6 +1395,103 @@ $(document).ready(function()
 		});
 	})
 
+	/************************* EDIT EVENT STATUS *******************************/
+
+	// Event Status Button
+	$("#submitEventStatus").button().click(function(e)
+	{
+		e.preventDefault();
+			
+		// Hide event info
+		if($("#editEventInfo").is(":visible"))
+		{
+			$("#editEventInfo").hide();
+			$("#submitEdit").val("Edit");
+		}
+
+		// Hide roster info
+		if($("#rosterInfo").is(":visible"))
+		{
+			$("#submitRoster").val("Roster");
+			$("#rosterInfo").html("");
+			$("#rosterInfo").hide();
+		}
+
+		// Hide charity info
+		if($("#charityAmount").is(":visible"))
+		{
+			$("#submitCharity").val("Charity");
+			$("#charityAmount").hide();
+		}
+
+		// Hide advanced info
+		if($("#advancedOptions").is(":visible"))
+		{
+			$("#submitAdvanced").val("Advanced Options");
+			$("#advancedOptions").hide();
+		}
+		
+		// Show advanced options button, when pressed
+		if($("#editEventStatus").is(":hidden"))
+		{
+			// Show advanced options
+			$("#editEventStatus").show();
+			
+			// Change button to close
+			$("#submitEventStatus").val("Close");
+			
+			// Get form info
+			var form = $("#editEvents");
+			var url = form.attr("action");
+
+			// Request event data
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitEdit=1",
+				success: function(data)
+				{
+					var json = JSON.parse(data);
+					
+					// Set advanced fields
+					$("#editEventStatus select[name=eventStatus]").val(json.closed);
+				}
+			});
+		}
+		else
+		{
+			// Hide status form
+			$("#editEventStatus").hide();
+			$("#submitEventStatus").val("Event Status");
+		}
+	})
+
+	// Set Event Status Save button
+	$("#editEventStatusSave").button().click(function(e)
+	{
+		e.preventDefault();
+		
+		// Get form info
+		var form = $("#editEvents");
+		var url = form.attr("action");
+
+		// Save
+		$.ajax({
+			type: "POST",
+			url: url,
+			data: form.serialize() + "&eventStatus=" + $("#editEventStatus select[name=eventStatus]").val(),
+			success: function(data)
+			{
+				// Hide edit event status form
+				$("#editEventStatus").hide();
+				$("#submitEventStatus").val("Event Status");
+		
+				// Send success message
+				alert("Success!");
+			}
+		});
+	})
+
 	/************************* ADVANCED OPTIONS *******************************/
 	
 	// Advanced options button
@@ -1413,6 +1519,13 @@ $(document).ready(function()
 		{
 			$("#submitCharity").val("Charity");
 			$("#charityAmount").hide();
+		}
+
+		// Hide event status info
+		if($("#editEventStatus").is(":visible"))
+		{
+			$("#submitEventStatus").val("Event Status");
+			$("#editEventStatus").hide();
 		}
 		
 		// Show advanced options button, when pressed
@@ -1445,7 +1558,7 @@ $(document).ready(function()
 		}
 		else
 		{
-			// Hide charity form
+			// Hide advanced form
 			$("#advancedOptions").hide();
 			$("#submitAdvanced").val("Advanced Options");
 		}
@@ -1513,6 +1626,13 @@ $(document).ready(function()
 		{
 			$("#submitAdvanced").val("Advanced Options");
 			$("#advancedOptions").hide();
+		}
+
+		// Hide event status info
+		if($("#editEventStatus").is(":visible"))
+		{
+			$("#submitEventStatus").val("Event Status");
+			$("#editEventStatus").hide();
 		}
 		
 		// Show charity button, when pressed
@@ -1589,6 +1709,13 @@ $(document).ready(function()
 				{
 					$("#submitAdvanced").val("Advanced Options");
 					$("#advancedOptions").hide();
+				}
+
+				// Hide event status info
+				if($("#editEventStatus").is(":visible"))
+				{
+					$("#submitEventStatus").val("Event Status");
+					$("#editEventStatus").hide();
 				}
 
 				if($("#rosterInfo").is(":hidden"))
