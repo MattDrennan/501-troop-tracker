@@ -2,7 +2,7 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Generation Time: Apr 13, 2022 at 09:33 AM
+-- Generation Time: Apr 16, 2022 at 04:13 AM
 -- Server version: 8.0.23
 -- PHP Version: 7.4.7
 
@@ -174,6 +174,8 @@ CREATE TABLE `events` (
   `limitSG` int NOT NULL DEFAULT '500',
   `limitTotalTroopers` int NOT NULL DEFAULT '500',
   `limitHandlers` int NOT NULL DEFAULT '500',
+  `friendLimit` int NOT NULL DEFAULT '4',
+  `allowTentative` tinyint NOT NULL DEFAULT '1',
   `closed` tinyint(1) NOT NULL DEFAULT '0',
   `charityDirectFunds` int NOT NULL DEFAULT '0',
   `charityIndirectFunds` int NOT NULL,
