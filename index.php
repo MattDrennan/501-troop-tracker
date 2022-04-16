@@ -6604,11 +6604,13 @@ else
 				if($numberOfConfirmTroops->num_rows > 0)
 				{
 					echo '
-					<p>
-						<a href="#confirmtroops">You have '.$numberOfConfirmTroops->num_rows.' troops to confirm. Click to confirm.</a>
-					</p>
-					<br />
-					<hr />';
+					<span id="confirmTroopNotification">
+						<p>
+							<a href="#confirmtroops">You have '.$numberOfConfirmTroops->num_rows.' troops to confirm. Click to confirm.</a>
+						</p>
+						<br />
+						<hr />
+					</span>';
 				}
 
 				// Set up add to query

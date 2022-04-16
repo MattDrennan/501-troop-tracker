@@ -3199,6 +3199,9 @@ $(document).ready(function()
 				            {
 				            	// Hide whole area
 				            	$("#confirmArea").html("");
+
+	 				            // Top notification
+								$("#confirmTroopNotification").hide();
 				            }
 				            else
 				            {
@@ -3249,6 +3252,9 @@ $(document).ready(function()
 			            {
 			            	// Hide whole area
 			            	$("#confirmArea").html("");
+
+				            // Top notification
+							$("#confirmTroopNotification").hide();
 			            }
 			            else
 			            {
