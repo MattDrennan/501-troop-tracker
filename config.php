@@ -488,7 +488,7 @@ function pendingTroopsDisplay($trooperid)
 
 			$returnString .= '
 			<tr>
-				<td>'.$db->eventName.'</td>	<td>'.$dateFormat.'</td>	<td>'.getCostume($db->costume).'</td>
+				<td><a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.$dateFormat.'</td>	<td>'.getCostume($db->costume).'</td>
 			</tr>';
 
 			// Increment
