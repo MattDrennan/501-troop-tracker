@@ -5803,6 +5803,15 @@ if(isset($_GET['event']))
 						
 						$i++;
 					}
+
+					// If photos
+					if($i > 0)
+					{
+						echo '
+						<p class="center-content">
+							<i>Press photos for full resolution version.</i>
+						</p>';
+					}
 				}
 				
 				// If photos
@@ -5847,6 +5856,18 @@ if(isset($_GET['event']))
 							<input type="hidden" name="troopid" value="'.cleanInput($_GET['event']).'" />
 							<input type="hidden" name="trooperid" value="'.$_SESSION['id'].'" />
 						</form>
+
+						<!-- Image Uploader JS -->
+						<script type="text/javascript">
+						  
+						    Dropzone.autoDiscover = false;
+						  
+						    var myDropzone = new Dropzone(".dropzone", { 
+						       maxFilesize: 10,
+						       acceptedFiles: ".jpeg,.jpg,.png,.gif"
+						    });
+						      
+						</script>
 					</p>';
 				}
 			}
@@ -6634,6 +6655,8 @@ else
 			{
 				echo '
 				<p style="text-align: center;">
+					<i>Press photos for full resolution version.</i>
+					<br />
 					<a href="index.php?action=photos" class="button">Recent events with photos</a>
 				</p>';
 			}
@@ -6714,18 +6737,6 @@ If you are missing troops or notice incorrect data, please refer to your squad l
 echo '
 </p>
 </section>
-
-<!-- Image Uploader JS -->
-<script type="text/javascript">
-  
-    Dropzone.autoDiscover = false;
-  
-    var myDropzone = new Dropzone(".dropzone", { 
-       maxFilesize: 10,
-       acceptedFiles: ".jpeg,.jpg,.png,.gif"
-    });
-      
-</script>
 
 <script>
 $(document).ready(function()
