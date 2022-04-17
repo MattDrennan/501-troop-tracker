@@ -3651,7 +3651,7 @@ function inEvent($id, $event)
 * @param boolean $signedUp If the trooper is signed up for this event. Default: false
 * @array Returns an HTML string of the updated roster and HTML string of the current trooper counts remaining
 */
-function getRoster($eventID, $limitTotal, $totalTrooperEvent, $signedUp = false)
+function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp = false)
 {
 	global $conn, $mainCostumes, $clubArray;
 	
@@ -3699,7 +3699,7 @@ function getRoster($eventID, $limitTotal, $totalTrooperEvent, $signedUp = false)
 					}
 					
 					// Create row, change based on status
-					if($db2->status == 4)
+					if($db2->status == 4 || $db2->status == 6 || $db2->status == 7)
 					{
 						$data .= '
 						<tr class="canceled-troop">';

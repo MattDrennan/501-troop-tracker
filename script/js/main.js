@@ -662,6 +662,16 @@ $(document).ready(function()
 		var eventid = $("#troopid").val();
 		var signid = $(this).attr("signid");
 		var buttonid = $(this).attr("buttonid");
+
+		// Set class based on button press
+		if(buttonid == 0)
+		{
+			$(this).closest("tr").addClass("canceled-troop");
+		}
+		else
+		{
+			$(this).closest("tr").removeClass("canceled-troop");
+		}
 		
 		// Get AJAX data
 		$.ajax({
