@@ -2527,7 +2527,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 								if(isset($_GET['squad']))
 								{
 									echo '
-									<th>Status</th>';
+									<th><a href="#/" id="sort-roster">Status</a></th>';
 								}
 								
 							echo '
@@ -2579,7 +2579,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							{
 								// Don't allow to edit
 								echo '
-								<td>
+								<td name="permission-box">
 									'.getPermissionName($db->permissions).'
 								</td>';
 							}
@@ -2587,7 +2587,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							{
 								// Not moderator - allow edit
 								echo '
-								<td>
+								<td name="permission-box">
 									<select name="changepermission" trooperid="'.$db->id.'">
 										<option value="0" '.echoSelect(0, $permission).'>Not A Member</option>
 										<option value="1" '.echoSelect(1, $permission).'>Regular Member</option>

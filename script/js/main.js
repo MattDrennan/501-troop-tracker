@@ -896,6 +896,48 @@ $(document).ready(function()
 			$("[name=activeRadios]").hide();
 		}
 	})
+
+	// For sort-roster to determine member type
+	var rosterMemberType = 0;
+
+	// Roster - Sort
+	$("#sort-roster").click(function(e)
+	{
+		e.preventDefault();
+
+		if(rosterMemberType < 4) {
+			rosterMemberType++;
+		} else {
+			rosterMemberType = 0;
+		}
+		
+		$("td[name=permission-box] select").each(function() {
+			if(rosterMemberType == 0) {
+				// Show all
+				$(this).closest("tr").show();
+			} else {
+				if($("option:selected", this).val() == rosterMemberType) {
+					$(this).closest("tr").show();
+				} else {
+					$(this).closest("tr").hide();
+				}
+			}
+		});
+
+		$("td[name=permission-box]").each(function() {
+			if(rosterMemberType != 0 && rosterMemberType != 4) {
+				if($(this).text().includes("Super Admin") || $(this).text().includes("Moderator")) {
+					$(this).closest("tr").hide();
+				}
+			}
+			else
+			{
+				if($(this).text().includes("Super Admin") || $(this).text().includes("Moderator")) {
+					$(this).closest("tr").show();
+				}
+			}
+		});
+	})
 	
 	// Trooper Check - Reserve Member Button
 	$("#submitTroopCheckReserve").click(function(e)
