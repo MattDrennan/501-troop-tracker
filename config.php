@@ -3689,7 +3689,7 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 						<input type="hidden" name="modifysignupTroopIdForm" id="modifysignupTroopIdForm" value="'.$db->id.'" />
 						<input type="hidden" name="limitedEventCancel" id="limitedEventCancel" value="'.$db->limitedEvent.'" />
 						<input type="hidden" name="troopid" id="troopid" value="'.$eventID.'" />
-						<input type="hidden" name="myId" id="myId" value="'.$_SESSION['id'].'" />
+						<input type="hidden" name="myId" id="myId" value="'.(isset($_SESSION['id']) ? $_SESSION['id'] : '0').'" />
 
 						<div style="overflow-x: auto;">
 						<table border="1">

@@ -6184,7 +6184,7 @@ if(isset($_GET['event']))
 						</tr>
 						
 						<tr>
-							<td name="insideComment">'.nl2br(isImportant($db->important, showBBcodes($db->comment))).'</td>
+							<td name="insideComment">'.nl2br(readInput(isImportant($db->important, showBBcodes($db->comment)))).'</td>
 						</tr>
 
 						</table>
