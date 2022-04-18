@@ -3861,23 +3861,56 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 							}
 							else
 							{
-								$data .= '
-								<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
-								(Pending Command Staff Approval)';
-
-								// If is admin and limited event
-								if(isAdmin() && $db->limitedEvent == 1)
+								// Limited event - If pending approval
+								if($db2->status == 5)
 								{
-									// Set status
 									$data .= '
-									<br />
-									<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>
-									<br />
-									<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
-								}
+									<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
+									(Pending Command Staff Approval)';
 
-								$data .= '
-								</div>';								
+									// If is admin and limited event
+									if(isAdmin() && $db->limitedEvent == 1 && $db->closed == 0)
+									{
+										// Set status
+										$data .= '
+										<br />
+										<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>
+										<br />
+										<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
+									}
+
+									$data .= '</div>';
+								}
+								else
+								{
+									$data .= '
+									<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
+
+									$data .= getStatus($db2->status);
+
+									// If is admin and limited event
+									if(isAdmin() && $db->limitedEvent == 1 && $db->closed == 0)
+									{
+										// If set to going
+										if($db2->status == 0)
+										{
+											// Set status
+											$data .= '
+											<br />
+											<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
+										}
+										// If set to not picked
+										else if($db2->status == 6)
+										{
+											// Set status
+											$data .= '
+											<br />
+											<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>';
+										}
+									}
+
+									$data .= '</div>';
+								}							
 							}
 
 						$data .= '
