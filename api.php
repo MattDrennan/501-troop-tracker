@@ -29,7 +29,7 @@ if(isset($_GET['trooperid']) || isset($_GET['tkid']))
 	$troopCount = 0;
 	$eventArray = array();
 
-	if ($result = mysqli_query($conn, $query) or die($conn->error))
+	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -67,7 +67,7 @@ else if(isset($_GET['photos']) && isset($_GET['amount']))
 	// Set variables
 	$uploadArray = array();
 
-	if ($result = mysqli_query($conn, $query) or die($conn->error))
+	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
 		{

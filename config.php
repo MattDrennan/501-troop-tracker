@@ -265,10 +265,10 @@ function getTroopCounts($id)
 	$troopCountString = "";
 
 	// Get troop counts - All - 1 Year
-	$countAll = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' and events.dateStart > NOW() - INTERVAL 1 YEAR GROUP BY events.id, event_sign_up.id") or die($conn->error);
+	$countAll = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' and events.dateStart > NOW() - INTERVAL 1 YEAR GROUP BY events.id, event_sign_up.id");
 
 	// Get troop counts - 501st
-	$count = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '".$dualCostume."' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
+	$count = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '".$dualCostume."' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY events.id, event_sign_up.id");
 
 	// Add to string
 	$troopCountString .= '
@@ -281,7 +281,7 @@ function getTroopCounts($id)
 	foreach($clubArray as $club => $club_value)
 	{
 		// Count query
-		$count = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ".getCostumeQueryValues($clubID)." GROUP BY events.id, event_sign_up.id") or die($conn->error);
+		$count = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ".getCostumeQueryValues($clubID)." GROUP BY events.id, event_sign_up.id");
 
 		// Add to string
 		$troopCountString .= '
@@ -295,17 +295,17 @@ function getTroopCounts($id)
 	$count_total = $conn->query("SELECT id FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3'");
 
 	// Get favorite costume
-	$favoriteCostume_get = $conn->query("SELECT costume, COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND costume != 706 AND costume != 720 AND costume != 721 GROUP BY costume ORDER BY COUNT(costume) DESC LIMIT 1") or die($conn->error);
+	$favoriteCostume_get = $conn->query("SELECT costume, COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND costume != 706 AND costume != 720 AND costume != 721 GROUP BY costume ORDER BY COUNT(costume) DESC LIMIT 1");
 	$favoriteCostume = mysqli_fetch_array($favoriteCostume_get);
 
 	// Get total money raised
-	$charityDirectFunds_get = $conn->query("SELECT SUM(charityDirectFunds) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$id."'") or die($conn->error);
+	$charityDirectFunds_get = $conn->query("SELECT SUM(charityDirectFunds) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$id."'");
 	$charityDirectFunds = mysqli_fetch_array($charityDirectFunds_get);
 
-	$charityIndirectFunds_get = $conn->query("SELECT SUM(charityIndirectFunds) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$id."'") or die($conn->error);
+	$charityIndirectFunds_get = $conn->query("SELECT SUM(charityIndirectFunds) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$id."'");
 	$charityIndirectFunds = mysqli_fetch_array($charityIndirectFunds_get);
 
-	$charityHours_get = $conn->query("SELECT SUM(TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$id."'") or die($conn->error);
+	$charityHours_get = $conn->query("SELECT SUM(TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$id."'");
 	$chairtyHours = mysqli_fetch_array($charityHours_get);
 
 	// Prevent notice error
@@ -2531,7 +2531,7 @@ function troopCheck($id)
 	global $conn, $clubArray, $squadArray;
 	
 	// Notify how many troops did a trooper attend - 501st
-	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume))") or die($conn->error);
+	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume))");
 	$count = $trooperCount_get->fetch_row();
 	
 	// 501st
@@ -2544,7 +2544,7 @@ function troopCheck($id)
 	foreach($clubArray as $club => $club_value)
 	{
 		// Notify how many troops did a trooper attend of club
-		$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ".getCostumeQueryValues($clubID)."") or die($conn->error);
+		$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ".getCostumeQueryValues($clubID)."");
 		$count = $trooperCount_get->fetch_row();
 		
 		// Check troop count of club
@@ -5305,7 +5305,7 @@ ob_start();
 // If logged in, update active status
 if(loggedIn())
 {
-	$conn->query("UPDATE troopers SET last_active = NOW() WHERE id='".$_SESSION['id']."'") or die($conn->error);
+	$conn->query("UPDATE troopers SET last_active = NOW() WHERE id='".$_SESSION['id']."'");
 }
 
 // Check for events that need to be closed

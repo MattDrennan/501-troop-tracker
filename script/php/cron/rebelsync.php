@@ -17,7 +17,7 @@ include(dirname(__DIR__) . '/../../tool/dom/simple_html_dom.php');
 
 // Check date time for sync
 $query = "SELECT syncdaterebels FROM settings";
-if ($result = mysqli_query($conn, $query) or die($conn->error))
+if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))
 	{
@@ -31,10 +31,10 @@ if ($result = mysqli_query($conn, $query) or die($conn->error))
 }
 
 // Purge rebel troopers
-$conn->query("DELETE FROM rebel_troopers") or die($conn->error);
+$conn->query("DELETE FROM rebel_troopers");
 
 // Purge rebel costumes
-$conn->query("DELETE FROM rebel_costumes") or die($conn->error);
+$conn->query("DELETE FROM rebel_costumes");
 
 // Costume image array (duplicate check)
 $costumeImagesG = array();
@@ -156,7 +156,7 @@ for($i = 0; $i <= 1000; $i += 10)
 							foreach($costumeNames as $c)
 							{
 								// Query
-								$conn->query("INSERT INTO rebel_costumes (rebelid, costumename, costumeimage) VALUES ('".cleanInput($innerArray[0])."', '".cleanInput($costumeNames[$cc])."', '".cleanInput($costumeImages[$cc])."')") or die($conn->error);
+								$conn->query("INSERT INTO rebel_costumes (rebelid, costumename, costumeimage) VALUES ('".cleanInput($innerArray[0])."', '".cleanInput($costumeNames[$cc])."', '".cleanInput($costumeImages[$cc])."')");
 								
 								echo $innerArray[0] . ' - ' . $costumeNames[$cc] . ' - ' . $costumeImages[$cc] . ' <br />';
 								
@@ -178,7 +178,7 @@ for($i = 0; $i <= 1000; $i += 10)
 					}
 					
 					// Query
-					$conn->query("INSERT INTO rebel_troopers (rebelid, name, rebelforum) VALUES ('".cleanInput($rebelID)."', '".cleanInput($rebelName)."', '".cleanInput($rebelForum)."')") or die($conn->error);
+					$conn->query("INSERT INTO rebel_troopers (rebelid, name, rebelforum) VALUES ('".cleanInput($rebelID)."', '".cleanInput($rebelName)."', '".cleanInput($rebelForum)."')");
 				}
 			}
 			
@@ -207,7 +207,7 @@ foreach($values as $value)
 	if($i != 0)
 	{
 		// Query
-		$conn->query("INSERT INTO rebel_troopers (rebelid, name, rebelforum) VALUES ('".$value[0]."', '".$value[1]."', '".$value[2]."')") or die($conn->error);
+		$conn->query("INSERT INTO rebel_troopers (rebelid, name, rebelforum) VALUES ('".$value[0]."', '".$value[1]."', '".$value[2]."')");
 	}
 
 	// Increment
@@ -226,7 +226,7 @@ foreach($values as $value)
 	if($i != 0)
 	{
 		// Insert into database
-		$conn->query("INSERT INTO rebel_costumes (rebelid, costumename, costumeimage) VALUES ('".$value[0]."', '".$value[1]."', '".$value[2]."')") or die($conn->error);
+		$conn->query("INSERT INTO rebel_costumes (rebelid, costumename, costumeimage) VALUES ('".$value[0]."', '".$value[1]."', '".$value[2]."')");
 	}
 
 	// Increment

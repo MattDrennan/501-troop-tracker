@@ -14,7 +14,7 @@ include(dirname(__DIR__) . '/../../config.php');
 
 // Check date time for sync
 $query = "SELECT syncdate FROM settings";
-if ($result = mysqli_query($conn, $query) or die($conn->error))
+if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))
 	{
