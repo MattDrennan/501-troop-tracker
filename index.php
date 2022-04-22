@@ -4722,10 +4722,14 @@ if(isset($_GET['action']) && $_GET['action'] == "faq")
 		The Troop Tracker has been integrated with the boards. You must use your Florida Garrison boards username and password to login to Troop Tracker. To recover your password, use password recovery on the Florida Garrison forum. If you continue to have issues logging into your account, your '.garrison.' forum username, may not match the Troop Tracker records. Contact the '.garrison.' Webmaster or post a help thread on the forums to get this corrected.
 	</p>
 
-
 	<h3>I am missing troop data / My troop data is incorrect</h3>
 	<p>
 		Please refer to your squad leader to get this corrected.
+	</p>
+	
+	<h3>I am now a member of another club and need access to their costumes.</h3>
+	<p>
+		Please refer to your squad / club leader to get added to the roster.
 	</p>
 
 	<h3>My costumes are not showing on my profile / I am missing a costume on my profile</h3>
