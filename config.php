@@ -574,7 +574,7 @@ function costume_restrict_query($addWhere = false, $friendID = 0)
 		while ($db = mysqli_fetch_object($result))
 		{
 			// 501
-			if($db->p501 == 1 || $db->p501 == 2)
+			if($db->p501 == 1 || $db->p501 == 2 || $db->p501 == 4)
 			{
 				$returnQuery .= "costumes.club = 0";
 
@@ -589,7 +589,7 @@ function costume_restrict_query($addWhere = false, $friendID = 0)
 			foreach($clubArray as $club => $club_value)
 			{
 				// Check club member status
-				if($db->{$club_value['db']} == 1 || $db->{$club_value['db']} == 2)
+				if($db->{$club_value['db']} == 1 || $db->{$club_value['db']} == 2 || $db->{$club_value['db']} == 4)
 				{
 					// First step and a 501 member, add the OR to prevent issues
 					if($i == 0 && $hit)
