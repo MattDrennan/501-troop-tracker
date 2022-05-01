@@ -2350,50 +2350,15 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 			// Event ID - Last insert from database
 			$eventId = $conn->insert_id;
 
-			// Only create thread if we can and admin allows
-			if($_POST['postToBoards'] == 1 && ($_POST['squadm'] != 0 || $_POST['label'] == 7 || $_POST['label'] == 4 || $_POST['label'] == 3))
-			{
-				// Make thread body
-				$thread_body = threadTemplate($_POST['eventName'], $_POST['eventVenue'], $_POST['location'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['comments'], $_POST['referred'], $eventId);
-
-				// ID of forum category
-				$forumCat = 0;
-				
-				// If a virtual troop, send to distance category
-				if($_POST['label'] == 7)
-				{
-					$forumCat = $virtualTroop;
-				}
-				else if($_POST['label'] == 4)
-				{
-					$forumCat = $conventionTroop;
-				}
-				else if($_POST['label'] == 3)
-				{
-					$forumCat = $disneyTroop;
-				}
-				else
-				{
-					$forumCat = $squadArray[intval($_POST['squadm'] - 1)]['eventForum'];
-				}
-
-				// Create thread on forum
-				$thread = createThread($forumCat, date("m/d/y", strtotime($date1)) . " " . $_POST['eventName'], $thread_body, getUserID($_SESSION['id']));
-
-				// Make sure value is set from createThread
-				if(isset($thread['thread']['thread_id']))
-				{
-					// Update event with thread and post IDs
-					$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."', post_id = '".$thread['thread']['last_post_id']."' WHERE id = '".$eventId."'");
-				}
-			}
-
 			// Only notify if event is in the future
 			if(strtotime($date1) > strtotime("now"))
 			{
 				// Send to database to send out notifictions later
 				$conn->query("INSERT INTO notification_check (troopid) VALUES ($eventId)");
 			}
+
+			// Check if is shift event
+			$isShift = false;
 			
 			// Loop through shifts
 			foreach($_POST as $key => $value)
@@ -2403,6 +2368,9 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 				{
 					// Get pair value from shiftpost
 					$pair = $value;
+
+					// Set shift event
+					$isShift = true;
 					
 					// Verify there is a value in both dates before inserting data
 					if(cleanInput($_POST['adddateStart' . $pair]) != "" && cleanInput($_POST['adddateEnd' . $pair]) != "")
@@ -2457,7 +2425,7 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 							}
 
 							// Create thread on forum
-							$thread = createThread($forumCat, date("m/d/y", strtotime($date1)) . " " . $_POST['eventName'], $thread_body, getUserID($_SESSION['id']));
+							$thread = createThread($forumCat, date("m/d/y h:i A", strtotime($date1)) . " - " . date("h:i A", strtotime($date2)) . " " . $_POST['eventName'], $thread_body, getUserID($_SESSION['id']));
 
 							// Update event
 							$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."', post_id = '".$thread['thread']['last_post_id']."' WHERE id = '".$last_id."'");
@@ -2466,6 +2434,52 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 						// Send notification to command staff
 						sendNotification(getName($_SESSION['id']) . " has added an event: [" . $last_id . "][" . cleanInput($_POST['eventName']) . "]", cleanInput($_SESSION['id']), 13, convertDataToJSON("SELECT * FROM events WHERE id = '".$last_id."'"));
 					}
+				}
+			}
+
+			// Only create thread if we can and admin allows
+			if($_POST['postToBoards'] == 1 && ($_POST['squadm'] != 0 || $_POST['label'] == 7 || $_POST['label'] == 4 || $_POST['label'] == 3))
+			{
+				// Make thread body
+				$thread_body = threadTemplate($_POST['eventName'], $_POST['eventVenue'], $_POST['location'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['comments'], $_POST['referred'], $eventId);
+
+				// ID of forum category
+				$forumCat = 0;
+				
+				// If a virtual troop, send to distance category
+				if($_POST['label'] == 7)
+				{
+					$forumCat = $virtualTroop;
+				}
+				else if($_POST['label'] == 4)
+				{
+					$forumCat = $conventionTroop;
+				}
+				else if($_POST['label'] == 3)
+				{
+					$forumCat = $disneyTroop;
+				}
+				else
+				{
+					$forumCat = $squadArray[intval($_POST['squadm'] - 1)]['eventForum'];
+				}
+
+				// Set title
+				$title = date("m/d/y", strtotime($date1)) . " " . $_POST['eventName'];
+
+				// Change date based on event type
+				if($isShift) {
+					$title = date("m/d/y h:i A", strtotime($date1)) . " - " . date("h:i A", strtotime($date2)) . " " . $_POST['eventName'];
+				}
+
+				// Create thread on forum
+				$thread = createThread($forumCat, $title, $thread_body, getUserID($_SESSION['id']));
+
+				// Make sure value is set from createThread
+				if(isset($thread['thread']['thread_id']))
+				{
+					// Update event with thread and post IDs
+					$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."', post_id = '".$thread['thread']['last_post_id']."' WHERE id = '".$eventId."'");
 				}
 			}
 
