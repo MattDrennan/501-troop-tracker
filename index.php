@@ -4171,6 +4171,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<p>General Permissions:</p>
 							<select name="permissions" id="permissions">
 								<option value="0">Regular Member</option>
+								<option value="3">RIP Member</option>
 								<option value="2">Moderator</option>
 								<option value="1">Super Admin</option>
 							</select>';

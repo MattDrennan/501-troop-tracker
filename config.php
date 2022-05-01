@@ -3041,8 +3041,20 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	$thumbnail_get_rebel = $conn->query("SELECT costumeimage FROM rebel_costumes WHERE rebelid = '".getRebelInfo(getRebelLegionUser(cleanInput($id)))['id']."' LIMIT 1");
 	$thumbnail_rebel = $thumbnail_get_rebel->fetch_row();
 	
+	// Get permission type
+	$get_permission = $conn->query("SELECT permissions FROM troopers WHERE id = '".$id."'");
+	$permission = $get_permission->fetch_row();
+	
 	echo '
-	<h2 class="tm-section-header">'.$name.' - '.readTKNumber($tkid, $squad).'</h2>';
+	<h2 class="tm-section-header">'.($permission[0] == 3 ? 'In Memoriam...<br />' : '').''.$name.' - '.readTKNumber($tkid, $squad).'</h2>';
+	
+	// RIP Member
+	if($permission[0] == 3) {
+		echo '
+		<p style="text-align: center;">
+			<b>No one\'s ever really gone - Thank you for your service. The Force will be with you. Always.</b>
+		</p>';
+	}
 	
 	// Avatar
 	
@@ -3114,7 +3126,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	if ($result2 = mysqli_query($conn, $query2))
 	{
 		while ($db2 = mysqli_fetch_object($result2))
-		{
+		{			
 			// Is a 501 member?
 			$is501Member = false;
 
@@ -4281,7 +4293,7 @@ function isAdmin()
 /**
  * Determines if trooper has permission to access
  * 
- * 0 = Regular Member, 1 = Super Admin, 2 = Moderator
+ * 0 = Regular Member, 1 = Super Admin, 2 = Moderator, 3 = RIP Member
  * 
  * @param int $permissionLevel1 First permission to check
  * @param int $permissionLevel2 Optional. Second permission to check

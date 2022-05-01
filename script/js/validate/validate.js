@@ -159,7 +159,7 @@ $(function()
             permissions:
             {
                 required: true,
-                range: [0, 2]
+                range: [0, 3]
             },
             p501:
             {
