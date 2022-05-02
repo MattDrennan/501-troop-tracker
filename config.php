@@ -5288,6 +5288,9 @@ if(!loggedIn() && !isset($_POST['loginWithTK']))
 					$conn->query("UPDATE troopers SET password = '".password_hash($_COOKIE['TroopTrackerPassword'], PASSWORD_DEFAULT)."', email = '".$forumLogin['user']['email']."', user_id = '".$forumLogin['user']['user_id']."' WHERE id = '".$db->id."'");
 				}
 
+				// Check if banned
+				if(isset($forumLogin['success']) && $forumLogin['user']['is_banned'] == 1) { break; }
+
 				// Check credentials and make sure trooper still has access
 				if((isset($forumLogin['success']) && $forumLogin['success'] == 1 || (password_verify($_POST['password'], $db->password) && $db->permissions == 1)) && canAccess($db->id))
 				{

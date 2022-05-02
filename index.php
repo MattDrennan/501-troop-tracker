@@ -4848,6 +4848,16 @@ if(isset($_GET['action']) && $_GET['action'] == "login" && !loggedIn())
 				// Increment trooper count
 				$i++;
 
+				// Check if banned
+				if(isset($forumLogin['success']) && $forumLogin['user']['is_banned'] == 1) {
+					echo '
+					<p>
+						You are banned.
+					</p>';
+
+					break;
+				}
+
 				// Check credentials
 				if(isset($forumLogin['success']) && $forumLogin['success'] == 1 || (password_verify($_POST['password'], $db->password) && $db->permissions == 1))
 				{
