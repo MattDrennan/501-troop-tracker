@@ -188,6 +188,12 @@ $troopTrackerUserGroup = 1489;
 
 $handlerUserGroup = 1490;
 
+/**
+ * userGroupRIP: The Xenforo user group ID for RIP members
+*/
+
+$userGroupRIP = 1496;
+
 // Please note: Do not change the order of squads and clubs after your set up your troop tracker, otherwise you will mess up the squad IDs
 // Make sure you run queries on your database if you need to change the order after installation.
 

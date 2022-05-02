@@ -167,6 +167,18 @@ if ($result = mysqli_query($conn, $query))
 				array_push($groupArray2, $userGroupRetired);
 			}
 
+			// Check if RIP member
+			if($db->permissions == 3)
+			{
+				if (!in_array($userGroupRIP, $groupArray))
+				{
+					// Not listed on forum, update
+					array_push($groupArray, $userGroupRIP);
+				}
+
+				array_push($groupArray2, $userGroupRIP);
+			}
+
 			// Loop through squads to add to check array
 			foreach($squadArray as $squad => $squad_value)
 			{
