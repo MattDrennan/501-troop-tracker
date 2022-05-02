@@ -2521,7 +2521,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<div style="overflow-x: auto;">
 						<table id="masterRosterTable">
 							<tr>
-								<th>Name</th>	<th>TKID</th>';
+								<th>Name</th>	<th>Board Name</th>	<th>TKID</th>';
 								
 								// Only show if squad set
 								if(isset($_GET['squad']))
@@ -2538,6 +2538,10 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<tr name="row_'.$db->id.'">
 						<td>
 							<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.'</a>
+						</td>
+
+						<td>
+							'.$db->forum_id.'
 						</td>
 						
 						<td>
@@ -2667,7 +2671,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<select name="userID" id="userID">';
 						}
 
-						echo '<option value="'.$db->id.'" tkid="'.readTKNumber($db->tkid, $db->squad).'" troopername="'.$db->name.'">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</option>';
+						echo '<option value="'.$db->id.'" tkid="'.readTKNumber($db->tkid, $db->squad).'" troopername="'.$db->name.'" forum_id="'.$db->forum_id.'">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</option>';
 
 						// Increment
 						$i++;
@@ -2806,7 +2810,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 								}
 								
 								echo '
-								<th>Name</th>	<th>TKID</th>';
+								<th>Name</th>	<th>Board Name</th>	<th>TKID</th>';
 								
 								// If squad set
 								if(isset($_GET['squad']))
@@ -2834,6 +2838,10 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						echo '
 						<td>
 							<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.'</a>
+						</td>
+
+						<td>
+							'.$db->forum_id.'
 						</td>
 						
 						<td>
