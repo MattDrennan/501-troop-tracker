@@ -6527,7 +6527,7 @@ else
 						}
 
 						// Query
-						$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, ".$addToQuery."events.limit501st FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.closed = 1 ORDER BY dateEnd DESC LIMIT 20";
+						$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, events.link, ".$addToQuery."events.limit501st FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.closed = 1 ORDER BY dateEnd DESC LIMIT 20";
 					}
 					// If on squad
 					else if(isset($_GET['squad']))
@@ -6555,9 +6555,16 @@ else
 							{
 								$add .= "[<b>" . date("l", strtotime($db->dateStart)) . "</b> : <i>" . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "</i>] ";
 							}
+
+							// Show strikethrough if troop is canceled
+							$add2 = "";
+
+							if(isset($db->status) && $db->status == 4) {
+								$add2 = 'class = "canceled-troop"';
+							}
 							
 							echo '
-							<li><a href="index.php?event='.$db->id.'">'.$add.''.$db->name.'</a></li>';
+							<li><a href="index.php?event='.$db->id.'" '.$add2.'>'.$add.''.$db->name.'</a></li>';
 						}
 					}
 					
