@@ -2368,13 +2368,13 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 				{
 					// Get pair value from shiftpost
 					$pair = $value;
-
-					// Set shift event
-					$isShift = true;
 					
 					// Verify there is a value in both dates before inserting data
 					if(cleanInput($_POST['adddateStart' . $pair]) != "" && cleanInput($_POST['adddateEnd' . $pair]) != "")
 					{
+						// Set shift event
+						$isShift = true;
+					
 						// Clean date input
 						$date1 = date('Y-m-d H:i:s', strtotime(cleanInput($_POST['adddateStart' . $pair])));
 						$date2 = date('Y-m-d H:i:s', strtotime(cleanInput($_POST['adddateEnd' . $pair])));
