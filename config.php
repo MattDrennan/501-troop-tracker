@@ -4777,7 +4777,7 @@ function eventClubCount($eventID, $clubID)
 	$returnVal = 0;
 
 	// Query database for roster info
-	$query = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".$eventID."' AND status != '1' AND status != '4' AND status != '6'";
+	$query = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".$eventID."' AND status != '1' AND status != '4' AND status != '5' AND status != '6'";
 
 	if ($result = mysqli_query($conn, $query))
 	{
