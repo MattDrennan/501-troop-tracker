@@ -3981,6 +3981,22 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 									<br />
 									<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
 								}
+								else if($db2->status == 5) {
+									$data .= '
+									<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
+									(Pending Command Staff Approval)';
+
+									// If is admin and limited event
+									if(isAdmin() && $db->limitedEvent == 1 && $db->closed == 0)
+									{
+										// Set status
+										$data .= '
+										<br />
+										<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>
+										<br />
+										<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
+									}
+								}
 								// If set to not picked
 								else if($db2->status == 6)
 								{
