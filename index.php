@@ -4852,7 +4852,7 @@ if(isset($_GET['action']) && $_GET['action'] == "login" && !loggedIn())
 				if(isset($forumLogin['success']) && $forumLogin['user']['is_banned'] == 1) {
 					echo '
 					<p>
-						You are banned.
+						You are currently banned. Please refer to command staff for additional information.
 					</p>';
 
 					break;
