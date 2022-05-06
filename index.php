@@ -5520,7 +5520,11 @@ if(isset($_GET['event']))
 
 			<div style="overflow-x: auto;" id="signuparea1" name="signuparea1">
 				'.getRoster($db->id)[0].'
-			</div>';
+			</div>
+
+			<p>
+				<a href="script/php/gencsv.php?troopid='.cleanInput($_GET['event']).'" class="button">Generate CSV</a>
+			</p>';
 
 			// HR Fix for formatting
 			if(loggedIn())
