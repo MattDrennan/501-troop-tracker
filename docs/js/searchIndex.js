@@ -1381,6 +1381,11 @@ Search.appendIndex(
             "summary": "",
             "url": "classes/simple-html-dom.html#property_optional_closing_tags"
         },                {
+            "fqsen": "\\array_to_csv_download\u0028\u0029",
+            "name": "array_to_csv_download",
+            "summary": "Generate\u0020CSV\u0020file\u0020from\u0020array",
+            "url": "namespaces/default.html#function_array_to_csv_download"
+        },                {
             "fqsen": "\\",
             "name": "\\",
             "summary": "",
