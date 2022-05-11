@@ -6463,6 +6463,11 @@ else
 										echo '
 										<br />
 										<span style="color:green;"><b>THIS TROOP IS FULL!</b></span>';
+									} else {
+										// Show troopers attending
+										echo '
+										<br />
+										<span>'.$getNumOfTroopers->num_rows.' Troopers Attending</span>';
 									}
 								}
 							}
