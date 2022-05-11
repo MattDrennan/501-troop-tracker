@@ -6430,12 +6430,24 @@ else
 								<br />
 								<span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
 							}
-							// If full
+							// If full (trooper count)
 							else if($getNumOfTroopers->num_rows >= $limitTotal)
 							{
-								echo '
-								<br />
-								<span style="color:green;"><b>THIS TROOP IS FULL!</b></span>';
+								// Check handler count
+								if($db->limitHandlers == 500) {
+									echo '
+									<br />
+									<span style="color:green;"><b>THIS TROOP IS FULL!</b></span>';
+								} else {
+									$getNumOfHandlers = $conn->query("SELECT id FROM event_sign_up WHERE status = 0 AND troopid = '".$db->id."' AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) LIKE '%handler%'");
+
+									// Check if handlers full
+									if($getNumOfHandlers->num_rows >= $db->limitHandlers) {
+										echo '
+										<br />
+										<span style="color:green;"><b>THIS TROOP IS FULL!</b></span>';
+									}
+								}
 							}
 							// Everything else
 							else
