@@ -3819,6 +3819,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<option value="0">Open</option>
 							<option value="3">Lock</option>
 							<option value="2">Cancel</option>
+							<option value="4">Full</option>
 							<option value="1">Finish</option>
 						</select>
 						<br />
@@ -5250,6 +5251,16 @@ if(isset($_GET['event']))
 						<i>You will be unable to sign up at this time.</i>
 					</div>';
 				}
+				// If full, show trooper
+				else if($db->closed == 4)
+				{
+					echo '
+					<div style="text-align:center; color: red; margin-top: 25px;">
+						<b>This event was marked FULL by Command Staff.</b>
+						<br />
+						<i>You will be unable to sign up at this time.</i>
+					</div>';
+				}
 				
 				// Set add to title
 				$add = "";
@@ -6306,7 +6317,7 @@ else
 				if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
 				{
 					// Query
-					$query = "SELECT events.id AS id, events.name, events.location, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, ".$addToQuery."events.limitTotalTroopers, events.limitHandlers, events.closed FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() - INTERVAL 1 DAY AND event_sign_up.status < 3 AND (events.closed = 0 OR events.closed = 3) ORDER BY events.dateStart";
+					$query = "SELECT events.id AS id, events.name, events.location, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, ".$addToQuery."events.limitTotalTroopers, events.limitHandlers, events.closed FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() - INTERVAL 1 DAY AND event_sign_up.status < 3 AND (events.closed = 0 OR events.closed = 3 OR events.closed = 4) ORDER BY events.dateStart";
 				}
 				else if(isset($_GET['squad']) && $_GET['squad'] == "canceledtroops")
 				{
@@ -6316,12 +6327,12 @@ else
 				else if(isset($_GET['squad']))
 				{
 					// Query
-					$query = "SELECT * FROM events WHERE dateStart >= CURDATE() AND squad = '".cleanInput($_GET['squad'])."' AND (closed = '0' OR closed = '3') ORDER BY dateStart";
+					$query = "SELECT * FROM events WHERE dateStart >= CURDATE() AND squad = '".cleanInput($_GET['squad'])."' AND (closed = '0' OR closed = '3' OR closed = '4') ORDER BY dateStart";
 				}
 				else
 				{
 					// Query
-					$query = "SELECT * FROM events WHERE dateStart >= CURDATE() AND (closed = '0' OR closed = '3') ORDER BY dateStart";
+					$query = "SELECT * FROM events WHERE dateStart >= CURDATE() AND (closed = '0' OR closed = '3' OR closed = '4') ORDER BY dateStart";
 				}
 
 				// Number of events loaded
@@ -6423,8 +6434,14 @@ else
 								$limitTotal = $db->limitTotalTroopers;
 							}
 
+							// Troop set to full
+							if($db->closed == 4) {
+								echo '
+								<br />
+								<span style="color:green;"><b>THIS TROOP IS FULL!</b></span>';		
+							}
 							// If not enough troopers
-							if($getNumOfTroopers->num_rows <= 1)
+							else if($getNumOfTroopers->num_rows <= 1)
 							{
 								echo '
 								<br />

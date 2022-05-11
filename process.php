@@ -2671,6 +2671,15 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			// Send notification to command staff
 			sendNotification(getName($_SESSION['id']) . " has reopened event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
 		}
+		// Event submitted for set full...
+		else if($_POST['eventStatus'] == 4)
+		{
+			// Query the database
+			$conn->query("UPDATE events SET closed = '4' WHERE id = '".cleanInput($_POST['eventId'])."'");
+			
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has set event ID: [" . cleanInput($_POST['eventId']) . "] to full.", cleanInput($_SESSION['id']));
+		}
 	}
 
 	// Advanced options set...

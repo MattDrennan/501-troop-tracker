@@ -3723,7 +3723,7 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 					}
 
 					// Allow for users to edit their status from the event, and make sure the event is not closed, and the user did not cancel
-					if(loggedIn() && ($db2->trooperId == $_SESSION['id'] || $_SESSION['id'] == $db2->addedby) && $db->closed == 0)
+					if(loggedIn() && ($db2->trooperId == $_SESSION['id'] || $_SESSION['id'] == $db2->addedby) && ($db->closed == 0 || $db->closed == 4))
 					{
 						$data .= '
 						<td>
