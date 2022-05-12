@@ -6456,7 +6456,7 @@ else
 									<br />
 									<span style="color:green;"><b>THIS TROOP IS FULL!</b></span>';
 								} else {
-									$getNumOfHandlers = $conn->query("SELECT id FROM event_sign_up WHERE status = 0 AND troopid = '".$db->id."' AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) LIKE '%handler%'");
+									$getNumOfHandlers = $conn->query("SELECT id FROM event_sign_up WHERE (status = '0' OR status = '2') AND troopid = '".$db->id."' AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) LIKE '%handler%'");
 
 									// Check if handlers full
 									if($getNumOfHandlers->num_rows >= $db->limitHandlers) {
