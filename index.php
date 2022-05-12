@@ -828,39 +828,37 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 	<div name="searchForm" id="searchForm">
 		<form action="index.php?action=search" method="POST">';
 			// Get our search type, and show certain fields
-			if($_POST['searchType'] == "regular")
+			if(!isset($_POST['searchType']) || $_POST['searchType'] == "regular")
 			{
 				echo '
-				Search Troop Name: <input type="text" name="searchName" id="searchName" value="'.cleanInput($_POST['searchName']).'" />
+				Search Troop Name: <input type="text" name="searchName" id="searchName" value="'. (!isset($_POST['searchName']) ? '' : cleanInput($_POST['searchName'])) .'" />
 				<br /><br />
-				Search Trooper Name: <input type="text" name="searchTrooperName" id="searchTrooperName" value="'.cleanInput($_POST['searchTrooperName']).'" />
+				Search Trooper Name: <input type="text" name="searchTrooperName" id="searchTrooperName" value="'. (!isset($_POST['searchTrooperName']) ? '' : cleanInput($_POST['searchTrooperName'])) .'" />
 				<br /><br />';
 			}
 			
 			echo '
-			Date Start: <input type="text" name="dateStart" id="datepicker3" value="'.cleanInput($_POST['dateStart']).'" />
+			Date Start: <input type="text" name="dateStart" id="datepicker3" value="'. (!isset($_POST['dateStart']) ? '' : cleanInput($_POST['dateStart'])) .'" />
 			<br /><br />
-			Date End: <input type="text" name="dateEnd" id="datepicker4" value="'.cleanInput($_POST['dateEnd']).'" />
+			Date End: <input type="text" name="dateEnd" id="datepicker4" value="'. (!isset($_POST['dateEnd']) ? '' : cleanInput($_POST['dateEnd'])) .'" />
 			<br /><br />';
 			
 			// Get our search type, and show certain fields
-			if($_POST['searchType'] == "regular")
+			if(!isset($_POST['searchType']) || $_POST['searchType'] == "regular")
 			{
 				echo '
-				Search TKID: <input type="text" name="tkID" id="tkID" value="'.cleanInput($_POST['tkID']).'" />
+				Search TKID: <input type="text" name="tkID" id="tkID" value="'. (!isset($_POST['tkID']) ? '' : cleanInput($_POST['tkID'])) .'" />
 				<br /><br />';
 			}
 			
 			// Set search type
 			echo '
-			<input type="hidden" name="searchType" value="'.cleanInput($_POST['searchType']).'" />';
+			<input type="hidden" name="searchType" value="'. (!isset($_POST['searchType']) ? 'regular' : cleanInput($_POST['searchType'])) .'" />';
 			
 			// If trooper search, include searchType for another search
-			if($_POST['searchType'] == "trooper" || $_POST['searchType'] == "donations")
+			if(isset($_POST['searchType']) && ($_POST['searchType'] == "trooper" || $_POST['searchType'] == "donations"))
 			{
 				echo '
-				<input type="hidden" name="searchType" value="'.cleanInput($_POST['searchType']).'" />
-				
 				<select name="squad" id="squad">
 					<option value="0" '.echoSelect(0, cleanInput($_POST['squad'])).'>All</option>
 					'.squadSelectList(true, "select").'
@@ -889,14 +887,13 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			echo '
 			<input type="submit" name="submitSearch" id="submitSearch" value="Search!" />
 		</form>
-	</div>
 	
 	<br /><br />
 	<hr />
 	<br /><br />';
 	
 	// Regular search
-	if($_POST['searchType'] == "regular")
+	if(isset($_POST['searchType']) && $_POST['searchType'] == "regular")
 	{
 		// Query for search
 		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id != ".placeholder." AND ";
@@ -952,7 +949,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			$query .= " troopers.name LIKE '%".cleanInput($_POST['searchTrooperName'])."%'";
 		}
 	}
-	else if($_POST['searchType'] == "trooper")
+	else if(isset($_POST['searchType']) && $_POST['searchType'] == "trooper")
 	{	
 		// Format date start
 		$date = strtotime(cleanInput($_POST['dateStart']));
@@ -1039,7 +1036,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			$clubID++;
 		}
 	}
-	else if($_POST['searchType'] == "donations")
+	else if(isset($_POST['searchType']) && $_POST['searchType'] == "donations")
 	{	
 		// Format date start
 		$date = strtotime(cleanInput($_POST['dateStart']));
@@ -1119,7 +1116,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 
 	// Get our search type, and show certain fields
 	// Regular search
-	if($_POST['searchType'] == "regular")
+	if(isset($_POST['searchType']) && $_POST['searchType'] == "regular")
 	{
 		// Get data
 		$i = 0;
@@ -1164,7 +1161,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		}
 	}
 	// Trooper search
-	else if($_POST['searchType'] == "trooper")
+	else if(isset($_POST['searchType']) && $_POST['searchType'] == "trooper")
 	{
 		// Get data
 		$i = 0;
@@ -1232,7 +1229,8 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				if(($_POST['squad'] >= 1 && $_POST['squad'] <= count($squadArray)))
 				{
 					// Get troop counts - 501st
-					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR EXISTS(SELECT events.id, events.oldid FROM events WHERE events.oldid != 0 AND events.id = event_sign_up.troopid))");
+					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR EXISTS(SELECT events.id FROM events WHERE events.id = event_sign_up.troopid))");
+
 					$count = $troops_get->fetch_row();
 				}
 				
@@ -1277,7 +1275,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		}
 	}
 	// Donation search
-	else if($_POST['searchType'] == "donations")
+	else if(isset($_POST['searchType']) && $_POST['searchType'] == "donations")
 	{
 		// Get data
 		$i = 0;
@@ -1345,7 +1343,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				if(($_POST['squad'] >= 1 && $_POST['squad'] <= count($squadArray)))
 				{
 					// Get troop counts - 501st
-					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR EXISTS(SELECT events.id, events.oldid FROM events WHERE events.oldid != 0 AND events.id = event_sign_up.troopid))");
+					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR EXISTS(SELECT events.id FROM events WHERE events.id = event_sign_up.troopid))");
 					$count = $troops_get->fetch_row();
 				}
 				
