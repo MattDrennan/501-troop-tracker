@@ -6392,7 +6392,7 @@ else
 					while ($db = mysqli_fetch_object($result))
 					{
 						// Get number of troopers at event
-						$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".$db->id."' AND status != '4' AND status != '1'");
+						$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".$db->id."' AND (status = '0' OR status = '2')");
 						
 						// Get number of events with link
 						$getNumOfLinks = $conn->query("SELECT id FROM events WHERE link = '".$db->id."'");
