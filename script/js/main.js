@@ -2568,6 +2568,8 @@ $(document).ready(function()
 					{
 						$("#tkTable").html(ifEmpty(json.tkid));	
 					}
+
+					$("#approveButtons").show();
 				}
 			});
 		}
@@ -2577,6 +2579,8 @@ $(document).ready(function()
 			$("#nameTable").html("");
 			$("#emailTable").html("");
 			$("#forumTable").html("");
+
+			$("#approveButtons").hide();
 
 			// Loop through clubs
 			for(var i = 0; i <= (clubDB3Array.length - 1); i++)

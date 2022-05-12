@@ -4082,7 +4082,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<br /><br />
 
-				<input type="submit" name="submitApproveUser" id="submitApproveUser" value="Approve" /> <input type="submit" name="submitDenyUser" id="submitDenyUser" value="Deny" />
+					<div id="approveButtons" style="display: none;">
+						<input type="submit" name="submitApproveUser" id="submitApproveUser" value="Approve" /> <input type="submit" name="submitDenyUser" id="submitDenyUser" value="Deny" />
+					</div>
 				</form>
 
 				<div style="overflow-x: auto;">
