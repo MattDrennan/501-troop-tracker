@@ -1202,7 +1202,7 @@ if(isset($_GET['do']) && $_GET['do'] == "assigntitles" && loggedIn() && isAdmin(
 					<select name="userIDTitle" id="userIDTitle">';
 				}
 
-					$returnMessage2 .= '<option value="'.$db->id.'">'.readInput($db->name).'</option>';
+					$returnMessage2 .= '<option value="'.$db->id.'">'.readInput($db->name).' - '.getTKNumber($db->id, true).' - '.$db->forum_id.'</option>';
 
 				// Increment
 				$i++;
