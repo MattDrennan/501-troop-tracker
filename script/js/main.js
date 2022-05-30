@@ -1922,7 +1922,7 @@ $(document).ready(function()
 		});
 
 		// Add comment to comment text area
-		$("#comment").val($("#comment").val() + "[quotec trooperid=" + $(this).attr("trooperid") + " name=" + $(this).attr("troopername") + " tkid=" + $(this).attr("tkid") + " commentid=" + id + "]" + $(changeThis).text() + "[/quotec]\n\n");
+		$("#comment").val($("#comment").val() + "[QUOTE=\"" + $(this).attr("troopername") + ", post: " + $(this).attr("post_id") + ", member: " + $(this).attr("user_id") + "\"]" + $(changeThis).text() + "[/QUOTE]\n\n");
 
 	});
 	
