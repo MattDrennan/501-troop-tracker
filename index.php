@@ -6447,8 +6447,15 @@ else
 								<br />
 								<span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
 							}
-							// If full (trooper count)
-							else if($getNumOfTroopers->num_rows >= $limitTotal)
+							// If full (w/ handlers)
+							else if($getNumOfTroopers->num_rows >= $limitTotal && ($db->limitHandlers > 500 || $db->limitHandlers < 500) && (handlerEventCount($db->id) >= $db->limitHandlers))
+							{
+								echo '
+								<br />
+								<span style="color:green;"><b>THIS TROOP IS FULL!</b></span>';
+							}
+							// If full
+							else if($getNumOfTroopers->num_rows >= $limitTotal && $db->limitHandlers == 500)
 							{
 								// Check handler count
 								if($db->limitHandlers == 500) {
