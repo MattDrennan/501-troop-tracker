@@ -978,7 +978,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			$charity_count = $charity_get->fetch_row();
 
 			$charity_get2 = $conn->query("SELECT SUM(charityIndirectFunds) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."'");
-			$charity_count2 = $charity_get->fetch_row();
+			$charity_count2 = $charity_get2->fetch_row();
 		}
 		
 		// If 501st
@@ -996,7 +996,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			$charity_count = $charity_get->fetch_row();
 
 			$charity_get2 = $conn->query("SELECT SUM(charityIndirectFunds) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."' AND squad = '".cleanInput($_POST['squad'])."'");
-			$charity_count2 = $charity_get->fetch_row();
+			$charity_count2 = $charity_get2->fetch_row();
 			
 			// If active only set
 			if(isset($_POST['activeonly']) && $_POST['activeonly'] == 1)
@@ -1023,7 +1023,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				$charity_count = $charity_get->fetch_row();
 
 				$charity_get2 = $conn->query("SELECT SUM(total) FROM (SELECT events.charityIndirectFunds AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ".getCostumeQueryValues($clubID)." GROUP BY event_sign_up.troopid) AS ABC");
-				$charity_count2 = $charity_get->fetch_row();
+				$charity_count2 = $charity_get2->fetch_row();
 				
 				// If active only set
 				if(isset($_POST['activeonly']) && $_POST['activeonly'] == 1)
@@ -1062,7 +1062,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			$charity_count = $charity_get->fetch_row();
 
 			$charity_get2 = $conn->query("SELECT SUM(charityIndirectFunds) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."'");
-			$charity_count2 = $charity_get->fetch_row();
+			$charity_count2 = $charity_get2->fetch_row();
 		}
 		
 		// If 501st
@@ -1080,7 +1080,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			$charity_count = $charity_get->fetch_row();
 
 			$charity_get2 = $conn->query("SELECT SUM(charityIndirectFunds) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."' AND squad = '".cleanInput($_POST['squad'])."'");
-			$charity_count2 = $charity_get->fetch_row();
+			$charity_count2 = $charity_get2->fetch_row();
 		}
 		
 		// Set up Squad ID
@@ -1101,7 +1101,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				$charity_count = $charity_get->fetch_row();
 
 				$charity_get2 = $conn->query("SELECT SUM(total) FROM (SELECT events.charityIndirectFunds AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ".getCostumeQueryValues($clubID)." GROUP BY event_sign_up.troopid) AS ABC");
-				$charity_count2 = $charity_get->fetch_row();
+				$charity_count2 = $charity_get2->fetch_row();
 
 				// Add to query
 				$query .= " AND ".getCostumeQueryValues($clubID)."";
