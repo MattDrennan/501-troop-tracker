@@ -488,7 +488,7 @@ function pendingTroopsDisplay($trooperid)
 
 			$returnString .= '
 			<tr>
-				<td><a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.$dateFormat.'</td>	<td>'.getCostume($db->costume).'</td>
+				<td><a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.$dateFormat.'</td>	<td>'.ifEmpty('<a href="index.php?action=costume&costumeid='.$db->costume.'">' . getCostume($db->costume) . '</a>', "N/A").'</td>
 			</tr>';
 
 			// Increment
@@ -3959,11 +3959,11 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 						</td>
 						
 						<td>
-							'.getCostume($db2->costume).'
+							'.ifEmpty('<a href="index.php?action=costume&costumeid='.$db2->costume.'">' . getCostume($db2->costume) . '</a>', "N/A").'
 						</td>
 						
 						<td>
-							'.ifEmpty(getCostume($db2->costume_backup), "N/A").'
+							'.ifEmpty('<a href="index.php?action=costume&costumeid='.$db2->costume_backup.'">' . getCostume($db2->costume_backup) . '</a>', "N/A").'
 						</td>
 						
 						<td id="'.$db2->trooperId.'Status" aria-label="'.formatTime($db2->signuptime, 'F j, Y, g:i a').'" data-balloon-pos="up">
@@ -4161,11 +4161,14 @@ function validate_url($url)
 */
 function ifEmpty($value, $message = "EMPTY")
 {
-	if($value == "")
+	// Check for blank HTML
+	$valueClean = strip_tags($value);
+
+	if($valueClean == "")
 	{
 		return $message;
 	}
-	else if(is_null($value))
+	else if(is_null($valueClean))
 	{
 		return $message;
 	}

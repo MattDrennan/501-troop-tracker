@@ -531,7 +531,7 @@ if(isset($_GET['profile']))
 			$dateFormat = date('m-d-Y', strtotime($db->dateEnd));
 
 			echo '
-				<td>'.$dateFormat.'</td>	<td>'.ifEmpty(getCostume($db->costume), "N/A").'</td>
+				<td>'.$dateFormat.'</td>	<td>'.ifEmpty('<a href="index.php?action=costume&costumeid='.$db->costume.'">' . getCostume($db->costume) . '</a>', "N/A").'</td>
 			</tr>';
 
 			// Increment i
@@ -817,6 +817,47 @@ if(isset($_GET['action']) && $_GET['action'] == "photos")
 	{
 		echo '
 		<p style="text-align: center;">No photos to display.</p>';
+	}
+}
+
+// Show the costume count page
+if(isset($_GET['action']) && $_GET['action'] == "costume" && isset($_GET['costumeid']) && $_GET['costumeid'] >= 0)
+{
+	// Get data
+	$query = "SELECT (SELECT COUNT(event_sign_up.trooperid)) AS troopCount, troopers.name AS trooperName, troopers.tkid, troopers.squad, event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, (TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) AS charityHours FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE event_sign_up.costume = '".cleanInput($_GET['costumeid'])."' AND status = 3 AND events.closed = '1' GROUP BY event_sign_up.trooperid ORDER BY troopCount DESC";
+
+	// Troop count
+	$i = 0;
+
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			if($i == 0)
+			{
+				echo '
+				<h2 class="tm-section-header">'.getCostume($db->costume).'</h2>
+				<div style="overflow-x: auto;">
+				<table border="1">
+				<tr>
+					<th>Trooper Name</th>	<th>Trooper TKID</th>	<th>Costume Troop Count</th>
+				</tr>';
+			}
+
+			echo '
+			<tr>
+				<td><a href="index.php?profile='.$db->trooperid.'">'.$db->trooperName.'</a></td>	<td>'.readTKNumber($db->tkid, $db->squad).'</td>	<td>'.$db->troopCount.'</td>
+			</tr>';
+
+			$i++;
+		}
+	}
+
+	if($i > 0)
+	{
+		echo '
+		</table>
+		</div>';
 	}
 }
 
@@ -1153,7 +1194,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 					}
 					
 					echo '
-					<td>'.ifEmpty(getCostume($db->costume), "N/A").'</td>	<td>'.getStatus($db->status).'</td>
+					<td>'.ifEmpty('<a href="index.php?action=costume&costumeid='.$db->costume.'">' . getCostume($db->costume) . '</a>', "N/A").'</td>	<td>'.getStatus($db->status).'</td>
 				</tr>';
 
 				$i++;
