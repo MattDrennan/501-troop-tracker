@@ -924,6 +924,38 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 					<br /><br />';
 				}
 			}
+
+			// If costume search, include searchType for another search
+			if(isset($_POST['searchType']) && ($_POST['searchType'] == "trooper" || $_POST['searchType'] == "costumecount"))
+			{
+				echo '
+				<select multiple style="height: 500px;" id="costumes_choice_search_box" name="costumes_choice_search_box[]">';
+				
+				$query = "SELECT costumes.id AS id, costumes.costume FROM costumes ORDER BY costume";
+
+				if ($result = mysqli_query($conn, $query))
+				{
+					while ($db = mysqli_fetch_object($result))
+					{
+						$check = "";
+
+						// Should we check the select
+						if(isset($_POST['costumes_choice_search_box']))
+						{
+							if(in_array($db->id, $_POST['costumes_choice_search_box']))
+							{
+								$check = "SELECTED";
+							}
+						}
+
+						echo '
+						<option value="'.$db->id.'" '.$check.'>'.$db->costume .'</option>';
+					}
+				}
+				
+				echo '
+				</select>';
+			}
 			
 			echo '
 			<input type="submit" name="submitSearch" id="submitSearch" value="Search!" />
@@ -1153,6 +1185,67 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		}
 
 		$query .= " GROUP BY events.id";
+	}
+	else if(isset($_POST['searchType']) && $_POST['searchType'] == "costumecount")
+	{	
+		// Format date start
+		$date = strtotime(cleanInput($_POST['dateStart']));
+		$dateF = date('Y-m-d H:i:s', $date);
+		
+		// Format date end
+		$date = strtotime(cleanInput($_POST['dateEnd']));
+		$dateE = date('Y-m-d H:i:s', $date);
+
+		// Loop through clubs
+		foreach($_POST['costumes_choice_search_box'] as $costume)
+		{
+			echo '
+			<h2 class="tm-section-header">'.getCostume($costume).'</h2>';
+
+			// Get data
+			$query = "SELECT (SELECT COUNT(event_sign_up.trooperid)) AS troopCount, troopers.name AS trooperName, troopers.tkid, troopers.squad, event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, (TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) AS charityHours FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE event_sign_up.costume = '".cleanInput($costume)."' AND status = 3 AND events.closed = '1' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' GROUP BY event_sign_up.trooperid ORDER BY troopCount DESC";
+
+			// Troop count
+			$i = 0;
+
+			if ($result = mysqli_query($conn, $query))
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					if($i == 0)
+					{
+						echo '
+						<div style="overflow-x: auto;">
+						<table border="1">
+						<tr>
+							<th>Trooper Name</th>	<th>Trooper TKID</th>	<th>Costume Troop Count</th>
+						</tr>';
+					}
+
+					echo '
+					<tr>
+						<td><a href="index.php?profile='.$db->trooperid.'">'.$db->trooperName.'</a></td>	<td>'.readTKNumber($db->tkid, $db->squad).'</td>	<td>'.$db->troopCount.'</td>
+					</tr>';
+
+					$i++;
+				}
+			}
+
+			if($i == 0)
+			{
+				echo '
+				<p style="text-align: center;">
+					No troops found.
+				</p>';
+			}
+
+			if($i > 0)
+			{
+				echo '
+				</table>
+				</div>';
+			}
+		}
 	}
 
 	// Get our search type, and show certain fields
@@ -1432,20 +1525,24 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		}
 	}
 
-	// What to do if we have more than one field
-	if($i > 0)
+	// Don't use for this search type
+	if(isset($_POST['searchType']) && $_POST['searchType'] != "costumecount")
 	{
-		echo '
-		</table>
-		</div>';
-	}
-	else
-	{
-		// Nothing to show
-		echo '
-		<p style="text-align: center;">
-			<b>No results</b>
-		</p>';
+		// What to do if we have more than one field
+		if($i > 0)
+		{
+			echo '
+			</table>
+			</div>';
+		}
+		else
+		{
+			// Nothing to show
+			echo '
+			<p style="text-align: center;">
+				<b>No results</b>
+			</p>';
+		}
 	}
 }
 
@@ -1873,6 +1970,8 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 			<input type="radio" name="searchType" value="trooper" />Troop Count Per Trooper
 			<br />
 			<input type="radio" name="searchType" value="donations" />Donation Count Per Event
+			<br />
+			<input type="radio" name="searchType" value="costumecount" />Costume Count Per Trooper
 			<br /><br />
 			<div id="trooper_count_radio" style="display: none;">
 				<select name="squad" id="squad">
@@ -1884,6 +1983,23 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 				<input type="checkbox" name="activeonly" value="1" /> Active Members Only?
 				<br /><br />
 				</span>
+			</div>
+			<div id="costumes_choice_search" style="display: none;">
+				<select multiple style="height: 500px;" id="costumes_choice_search_box" name="costumes_choice_search_box[]">';
+				
+				$query = "SELECT costumes.id AS id, costumes.costume FROM costumes ORDER BY costume";
+
+				if ($result = mysqli_query($conn, $query))
+				{
+					while ($db = mysqli_fetch_object($result))
+					{
+						echo '
+						<option value="'.$db->id.'">'.$db->costume .'</option>';
+					}
+				}
+				
+				echo '
+				</select>
 			</div>
 			<input type="submit" name="submitSearch" id="submitSearch" value="Search!" />
 		</form>

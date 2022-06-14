@@ -881,6 +881,7 @@ $(document).ready(function()
 			$("#tkIDDiv").show();
 			$("#trooper_count_radio").hide();
 			$("[name=activeRadios]").hide();
+			$("#costumes_choice_search").hide();
 		}
 		else if($("input[name='searchType']:checked").val() == "trooper")
 		{
@@ -888,6 +889,7 @@ $(document).ready(function()
 			$("#tkIDDiv").hide();
 			$("#trooper_count_radio").show();
 			$("[name=activeRadios]").show();
+			$("#costumes_choice_search").hide();
 		}
 		else if($("input[name='searchType']:checked").val() == "donations")
 		{
@@ -895,6 +897,15 @@ $(document).ready(function()
 			$("#tkIDDiv").hide();
 			$("#trooper_count_radio").show();
 			$("[name=activeRadios]").hide();
+			$("#costumes_choice_search").hide();
+		}
+		else if($("input[name='searchType']:checked").val() == "costumecount")
+		{
+			$("#searchNameDiv").hide();
+			$("#tkIDDiv").hide();
+			$("#trooper_count_radio").hide();
+			$("[name=activeRadios]").hide();
+			$("#costumes_choice_search").show();
 		}
 	})
 
