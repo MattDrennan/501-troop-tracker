@@ -140,7 +140,7 @@ else
 			if($txn_count->num_rows == 0)
 			{
 				// Make sure this is a payment completed
-				if($payment_status == "Completed")
+				if($payment_status == "Completed" && $payment_type == "instant" && ($txn_type == "recurring_payment" || $txn_type == "web_accept"))
 				{
 					// Update donations
 					$conn->query("INSERT INTO donations (trooperid, amount, txn_id, txn_type) VALUES ('".$custom."', '".$mc_gross."', '".$txn_id."', '".$txn_type."')");
