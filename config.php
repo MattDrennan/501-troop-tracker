@@ -539,9 +539,10 @@ function addSquadLink($squad, $match, $name)
  * 
  * @param boolean $addWhere Optional. This is used to add a "where" to the MySQL query.
  * @param int $friendID Optional. This is used to determine which costumes to display. If this interval does not match the session interval, then all costumes will display.
+ * @param boolean $allowDualCostume Optional. This is used to disable/enable allowing dual costumes to show.
  * @return string Returns a query to restrict costumes of clubs a trooper is not a member of
 */
-function costume_restrict_query($addWhere = false, $friendID = 0)
+function costume_restrict_query($addWhere = false, $friendID = 0, $allowDualCostume = true)
 {
 	global $conn, $clubArray, $dualCostume;
 	
@@ -562,7 +563,7 @@ function costume_restrict_query($addWhere = false, $friendID = 0)
 	// Check if friend ID
 	if($friendID != $_SESSION['id'] && $friendID != 0)
 	{
-		$friendQuery = " OR (costumes.club >= 0)";
+		$friendQuery = " OR (costumes.club >= 0) AND (costumes.club != ".$dualCostume.")";
 	}
 
 	// 501 member, prepare to add or statement if a dual member
@@ -599,6 +600,11 @@ function costume_restrict_query($addWhere = false, $friendID = 0)
 
 					foreach($club_value['costumes'] as $costume)
 					{
+						if(!$allowDualCostume && $costume == $dualCostume)
+						{
+							break;
+						}
+						
 						// Passed first step, keep adding OR
 						if($i > 0)
 						{
@@ -3763,7 +3769,7 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 								$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
 							}
 							
-							$query3 .= costume_restrict_query(false, $db2->trooperId) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
+							$query3 .= costume_restrict_query(false, $db2->trooperId, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
 							
 							if ($result3 = mysqli_query($conn, $query3))
 							{
@@ -3800,7 +3806,7 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 								$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
 							}
 							
-							$query3 .= costume_restrict_query(false, $db2->trooperId) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
+							$query3 .= costume_restrict_query(false, $db2->trooperId, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
 							
 							// Count results
 							$c = 0;

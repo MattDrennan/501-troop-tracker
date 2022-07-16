@@ -5806,7 +5806,7 @@ if(isset($_GET['event']))
 											$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
 										}
 										
-										$query3 .= costume_restrict_query() . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
+										$query3 .= costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
 										
 										if ($result3 = mysqli_query($conn, $query3))
 										{
@@ -5861,7 +5861,7 @@ if(isset($_GET['event']))
 											$query2 .= " era = '".$db->limitTo."' OR era = '4' AND ";
 										}
 										
-										$query2 .= costume_restrict_query() . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
+										$query2 .= costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
 										// Amount of costumes
 										$c = 0;
 										if ($result2 = mysqli_query($conn, $query2))
@@ -6219,7 +6219,7 @@ if(isset($_GET['event']))
 							$query2 .= " era = '".$limitTo."' OR era = '4' AND ";
 						}
 						
-						$query2 .= costume_restrict_query() . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id']).") DESC, costume";
+						$query2 .= costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id']).") DESC, costume";
 						// Amount of costumes
 						$c = 0;
 						if ($result2 = mysqli_query($conn, $query2))
