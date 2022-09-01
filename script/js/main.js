@@ -2580,6 +2580,12 @@ $(document).ready(function()
 						$("#tkTable").html(ifEmpty(json.tkid));	
 					}
 
+					// If TKID is 0, show as handler request
+					if(json.tkid == "TK0")
+					{
+						$("#tkTable").html("**Handler Request**");
+					}
+
 					$("#approveButtons").show();
 				}
 			});
