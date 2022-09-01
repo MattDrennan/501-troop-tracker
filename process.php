@@ -2469,6 +2469,11 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 
 				// Change date based on event type
 				if($isShift) {
+					// Fix where wrong date would be posted on forum
+					$date1 = date('Y-m-d H:i:s', strtotime(cleanInput($_POST['dateStart'])));
+					$date2 = date('Y-m-d H:i:s', strtotime(cleanInput($_POST['dateEnd'])));
+					
+					// Set up title
 					$title = date("m/d/y h:i A", strtotime($date1)) . " - " . date("h:i A", strtotime($date2)) . " " . $_POST['eventName'];
 				}
 
