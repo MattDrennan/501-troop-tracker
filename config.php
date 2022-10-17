@@ -932,10 +932,10 @@ function resetTrooperStatus($eventID, $link = 0)
 			if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
 			{
 				// Reset event sign up
-				$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE '%handler%'");
+				$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'NOT LIKE \'%handler%\'' : '')."");
 
 				// Update statuses to going if room
-				$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE '%handler%' ORDER BY signuptime ASC LIMIT " . $db->limitTotalTroopers);
+				$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'NOT LIKE \'%handler%\'' : '')." ORDER BY signuptime ASC LIMIT " . $db->limitTotalTroopers);
 			}
 			
 			// Check handler limit
