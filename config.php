@@ -4786,14 +4786,22 @@ function eventClubCount($eventID, $clubID)
 	$returnVal = 0;
 
 	// Query database for roster info
-	$query = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".$eventID."' AND status != '1' AND status != '4' AND status != '5' AND status != '6'";
+	$query = "SELECT events.limitHandlers, event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid LEFT JOIN events ON events.id = event_sign_up.troopid WHERE troopid = '".$eventID."' AND status != '1' AND status != '4' AND status != '5' AND status != '6'";
 
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
 			// Query costume database to add to club counts
-			$query2 = "SELECT * FROM costumes WHERE id = '".$db->costume."' AND costume NOT LIKE '%handler%'";
+			$query2 = "SELECT * FROM costumes WHERE id = '".$db->costume."'";
+
+			// Prevent bug where if event does not limit handlers, handlers are not counted towards the total
+			if($db->limitHandlers > 500 || $db->limitHandlers < 500)
+			{
+				$query2 .= " AND costume NOT LIKE '%handler%'";
+			}
+
+
 			if ($result2 = mysqli_query($conn, $query2))
 			{
 				while ($db2 = mysqli_fetch_object($result2))
