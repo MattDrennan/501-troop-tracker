@@ -3267,6 +3267,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						echo '
 						<option value="5">Dual (501st + Rebel)</option>
+						<option value="6">Dual-Mando (501st + Mando)</option>
 					</select>
 				</p>
 				
@@ -3353,6 +3354,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						echo '
 						<option value="5">Dual (501st + Rebel)</option>
+						<option value="6">Dual-Mando (501st + Mando)</option>
 					</select>
 				</p>
 
