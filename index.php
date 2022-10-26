@@ -3266,7 +3266,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						}
 
 						echo '
-						<option value="'.$dualCostume.'">Dual (501st + Rebel)</option>
+						<option value="5">Dual (501st + Rebel)</option>
 					</select>
 				</p>
 				
@@ -3352,7 +3352,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						}
 
 						echo '
-						<option value="'.$dualCostume.'">Dual (501st + Rebel)</option>
+						<option value="5">Dual (501st + Rebel)</option>
 					</select>
 				</p>
 
@@ -5533,7 +5533,7 @@ if(isset($_GET['event']))
 										<select name="costume" id="costume">
 											<option value="null" SELECTED>Please choose an option...</option>';
 
-										$query3 = "SELECT * FROM costumes WHERE club != ".$dualCostume." AND";
+										$query3 = "SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND";
 										
 										// If limited to certain costumes, only show certain costumes...
 										if($db->limitTo < 4)
@@ -5588,7 +5588,7 @@ if(isset($_GET['event']))
 										<select name="backupcostume" id="backupcostume">';
 
 										// Display costumes
-										$query2 = "SELECT * FROM costumes WHERE club != ".$dualCostume." AND ";
+										$query2 = "SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND ";
 										
 										// If limited to certain costumes, only show certain costumes...
 										if($db->limitTo < 4)
@@ -5891,7 +5891,7 @@ if(isset($_GET['event']))
 						<select name="costume" id="costume">
 							<option value="null" SELECTED>Please choose an option...</option>';
 
-						$query3 = "SELECT * FROM costumes WHERE club != ".$dualCostume."";
+						$query3 = "SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).")";
 						
 						// If limited to certain costumes, only show certain costumes...
 						if($limitTo < 4)
@@ -5946,7 +5946,7 @@ if(isset($_GET['event']))
 						<select name="backupcostume" id="backupcostume">';
 
 						// Display costumes
-						$query2 = "SELECT * FROM costumes WHERE club != ".$dualCostume." AND ";
+						$query2 = "SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND ";
 						
 						// If limited to certain costumes, only show certain costumes...
 						if($limitTo < 4)
