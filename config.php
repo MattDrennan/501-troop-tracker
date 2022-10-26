@@ -2431,57 +2431,6 @@ function hasAward($trooperid, $awardid, $echo = false, $remove = false)
 }
 
 /**
- * Returns if the trooper has a title
- * 
- * @param int $trooperid The ID of the trooper
- * @param int $awardid The ID of the award
- * @param boolean $echo Optional. Returns text to output
- * @param boolean $remove Optional. When set, will hide or show element
- * @return string Returns HTML string
-*/
-function hasTitle($trooperid, $awardid, $echo = false, $remove = false)
-{
-	global $conn;
-	
-	// Get data
-	$query = "SELECT * FROM title_troopers WHERE trooperid = '".$trooperid."' AND titleid = '".$awardid."'";
-
-	// Set up return variable
-	$hasTitle = false;
-	
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			// Set
-			$hasTitle = true;
-		}
-	}
-	
-	// Does not print
-	if(!$echo)
-	{
-		return $hasTitle;
-	}
-	else
-	{
-		// Does not have title
-		if($hasTitle && !$remove)
-		{
-			return 'style = "display: none;"';
-		}
-		else if(!$hasTitle && $remove)
-		{
-			return 'style = "display: none;"';
-		}
-		else
-		{
-			return '';
-		}
-	}
-}
-
-/**
  * Sends a notification to the log
  * 
  * 0 = N/A
