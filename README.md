@@ -194,6 +194,41 @@ $handlerUserGroup = 1490;
 
 $userGroupRIP = 1496;
 
+/**
+ * userGroupRankImages: These get matched with Xenforo secondary groups and will show images on Troop Tracker profile
+*/
+
+$userGroupRankImages = array(
+	1479 => '<img src="https://www.nightshiftsabers.com/images/GML/gmlteambanner3.png" class="rankTitle" />',
+	1480 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/everglades_charity.png" class="rankTitle" />',
+	1464 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/everglades_sl.png" class="rankTitle" />',
+	1465 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/everglades_xo.png" class="rankTitle" />',
+	1434 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/gcr.png" class="rankTitle" />',
+	1466 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/commander.png" class="rankTitle" />',
+	1495 => '<img src="https://www.nightshiftsabers.com/images/GML/garrisonmembership.png" class="rankTitle" />',
+	1435 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/gmo.png" class="rankTitle" />',
+	1493 => '<img src="https://fl501st.com/troop-tracker/images/ranks/qm.png" class="rankTitle" />',
+	1498 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/gwl.png" class="rankTitle" />',
+	1467 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/gwm.png" class="rankTitle" />',
+	1468 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/xo.png" class="rankTitle" />',
+	1481 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/gktw.png" class="rankTitle" />',
+	1482 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/hospital.png" class="rankTitle" />',
+	1469 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/makaze_sl.png" class="rankTitle" />',
+	1483 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/makaze_staff.png" class="rankTitle" />',
+	1470 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/makaze_xo.png" class="rankTitle" />',
+	1471 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/parjai_sl.png" class="rankTitle" />',
+	1472 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/parjai_xo.png" class="rankTitle" />',
+	1492 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/mushu.png" class="rankTitle" />',
+	1473 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/ra_kura.png" class="rankTitle" />',
+	1474 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/saberguildcs.png" class="rankTitle" />',
+	1497 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/s7_charity_tracker.png.png" class="rankTitle" />',
+	1475 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/s7_sl.png" class="rankTitle" />',
+	1476 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/s7_XO.png" class="rankTitle" />',
+	1477 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/tampa_sl.png" class="rankTitle" />',
+	1478 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/tampa_xo.png" class="rankTitle" />',
+	1494 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/tt-guru.png" class="rankTitle" />',
+);
+
 // Please note: Do not change the order of squads and clubs after your set up your troop tracker, otherwise you will mess up the squad IDs
 // Make sure you run queries on your database if you need to change the order after installation.
 

@@ -2974,7 +2974,7 @@ function getFileName($file)
 */
 function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 {
-	global $conn, $squadArray, $clubArray;
+	global $conn, $squadArray, $clubArray, $userGroupRankImages;
 	
 	// Command Staff Edit Link
 	if(isAdmin())
@@ -3062,6 +3062,26 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 			<img src="https://www.501st.com/memberdata/templates/tk_head.jpg" />
 		</p>';
 	}
+
+	echo '
+	<div style="text-align: center;">';
+
+	// Show rank images
+	$xenforo = @getUserForumID(getUserID($id))['user']['secondary_group_ids'];
+
+	if($xenforo != "")
+	{
+		foreach($xenforo as $value)
+		{
+			if(array_key_exists($value, $userGroupRankImages))
+			{
+				echo $userGroupRankImages[$value];
+			}
+		}
+	}
+
+	echo '
+	</div>';
 	
 	// Ranks for members
 	$query2 = "SELECT * FROM troopers WHERE id = '".$id."'";
