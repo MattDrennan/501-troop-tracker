@@ -2030,7 +2030,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<a href="index.php?action=commandstaff&do=managecostumes" class="button">Costume Management</a> 
 				<a href="index.php?action=commandstaff&do=managetroopers" class="button">Trooper Management</a> 
 				<a href="index.php?action=commandstaff&do=assignawards" class="button">Award Management</a>
-				<a href="index.php?action=commandstaff&do=assigntitles" class="button">Title Management</a>
 				<a href="index.php?action=commandstaff&do=stats" class="button">Statistics</a>
 				<a href="index.php?action=commandstaff&do=sitesettings" class="button">Site Settings</a>';
 			}
@@ -2203,22 +2202,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				{
 					echo '
 					<div class="title">
-
-					<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</a>';
-
-					// Show titles
-					$query2 = "SELECT titles.title FROM title_troopers LEFT JOIN titles ON title_troopers.titleid = titles.id WHERE title_troopers.trooperid = '".$db->id."'";
-
-					if ($result2 = mysqli_query($conn, $query2))
-					{
-						while ($db2 = mysqli_fetch_object($result2))
-						{
-							echo '
-							<p>'.$db2->title.'</p>';
-						}
-					}
-
-					echo '
+						<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.'<br /><br />'.readTKNumber($db->tkid, $db->squad).'</a>
 					</div>';
 					
 					// Increment
@@ -2250,22 +2234,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				{
 					echo '
 					<div class="title">
-
-					<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</a>';
-
-					// Show titles
-					$query2 = "SELECT titles.title FROM title_troopers LEFT JOIN titles ON title_troopers.titleid = titles.id WHERE title_troopers.trooperid = '".$db->id."'";
-
-					if ($result2 = mysqli_query($conn, $query2))
-					{
-						while ($db2 = mysqli_fetch_object($result2))
-						{
-							echo '
-							<p>'.$db2->title.'</p>';
-						}
-					}
-
-					echo '
+						<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.'<br /><br />'.readTKNumber($db->tkid, $db->squad).'</a>
 					</div>';
 					
 					// Increment
@@ -2297,22 +2266,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				{
 					echo '
 					<div class="title">
-
-					<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</a>';
-
-					// Show titles
-					$query2 = "SELECT titles.title FROM title_troopers LEFT JOIN titles ON title_troopers.titleid = titles.id WHERE title_troopers.trooperid = '".$db->id."'";
-
-					if ($result2 = mysqli_query($conn, $query2))
-					{
-						while ($db2 = mysqli_fetch_object($result2))
-						{
-							echo '
-							<p>'.$db2->title.'</p>';
-						}
-					}
-
-					echo '
+						<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.'<br /><br />'.readTKNumber($db->tkid, $db->squad).'</a>
 					</div>';
 					
 					// Increment
@@ -2331,7 +2285,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			
 			<h2>Statistics</h2>';
 
-			// Show all troopers with titles
+			// Get settings
 			$query = "SELECT * FROM settings";
 
 			if ($result = mysqli_query($conn, $query))
@@ -3449,225 +3403,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				</select>
 
 				<input type="submit" name="submitDeleteCostume" id="submitDeleteCostume" value="Delete Costume" />
-				</form>';
-			}
-			
-			echo '
-			</div>';
-		}
-
-		/**************************** TITLES *********************************/
-
-		// Assign a title to troopers
-		if(isset($_GET['do']) && $_GET['do'] == "assigntitles" && hasPermission(1))
-		{
-			echo '<h3>Assign Titles</h3>
-			
-			<div name="assignarea" id="assignarea">';
-
-			// Get data
-			$query = "SELECT * FROM troopers WHERE approved = 1 ORDER BY name";
-
-			// Amount of users
-			$i = 0;
-			$getId = 0;
-
-			if ($result = mysqli_query($conn, $query))
-			{
-				while ($db = mysqli_fetch_object($result))
-				{
-					// Formatting
-					if($i == 0)
-					{
-						$getId = $db->id;
-
-						echo '
-						<form action="process.php?do=assigntitles" method="POST" name="titleUser" id="titleUser">
-
-						<select name="userIDTitle" id="userIDTitle">';
-					}
-
-					echo '<option value="'.$db->id.'">'.readInput($db->name).' - '.readTKNumber($db->tkid, $db->squad).' - '.$db->forum_id.'</option>';
-
-					// Increment
-					$i++;
-				}
-			}
-
-			// If no events
-			if($i == 0)
-			{
-				echo 'There are no troopers to display.';
-			}
-			else
-			{
-				echo '
-				</select>
-
-				<br /><br />';
-
-				// Get data
-				$query2 = "SELECT * FROM titles ORDER BY title";
-
-				// Amount of titles
-				$j = 0;
-
-				if ($result2 = mysqli_query($conn, $query2))
-				{
-					while ($db = mysqli_fetch_object($result2))
-					{
-						// Formatting
-						if($j == 0)
-						{
-							$getId2 = $db->id;
-
-							echo '<select id="titleIDAssign" name="titleIDAssign">';
-						}
-
-						echo '<option value="'.$db->id.'">'.readInput($db->title).'</option>';
-
-						// Increment $j
-						$j++;
-					}
-				}
-
-				// If titles exist
-				if($j > 0)
-				{
-					echo '
-					</select>
-					
-					<input type="submit" name="title" id="title" value="Assign" '.hasTitle($getId, $getId2, true).' />
-					<input type="submit" name="titleRemove" id="titleRemove" value="Remove" '.hasTitle($getId, $getId2, true, true).' />';
-				}
-				else
-				{
-					echo 'No titles to display.';
-				}
-			}
-			
-			echo '</form></div>';
-
-			echo '<br /><hr /><br /><h3>Create Title</h3>
-
-			<form action="process.php?do=assigntitles" method="POST" name="addTitle" id="addTitle">
-				<p>
-					<b>Title Name:</b>
-					<input type="text" name="titleName" id="titleName" />
-				</p>
-
-				<p>
-					<b>Title Image (example.png):</b></br />
-					<input type="text" name="titleImage" id="titleImage" />
-				</p>
-
-				<p>
-					<b>Corresponding Forum Title ID:</b></br />
-					<input type="number" name="titleForumID" id="titleForumID" value="0" />
-				</p>
-				<input type="submit" name="submitTitleAdd" id="submitTitleAdd" value="Add Title" />
-			</form>';
-
-			echo '
-			<div id="titlearea">
-			<br /><hr /><br />
-			<h3>Edit Title</h3>';
-
-			// Get data
-			$query = "SELECT * FROM titles ORDER BY title";
-
-			$i = 0;
-			if ($result = mysqli_query($conn, $query))
-			{
-				while ($db = mysqli_fetch_object($result))
-				{
-					// Formatting
-					if($i == 0)
-					{
-						echo '
-						<form action="process.php?do=assigntitles" method="POST" name="titleEdit" id="titleEdit">
-
-						<select name="titleIDEdit" id="titleIDEdit">
-
-							<option value="0" SELECTED>Please select a title...</option>';
-					}
-
-					echo '<option value="'.$db->id.'" title="'.readInput($db->title).'" titleID="'.$db->id.'" titleImage="'.$db->icon.'" titleForumID="'.$db->forum_id.'">'.readInput($db->title).'</option>';
-
-					// Increment
-					$i++;
-				}
-			}
-
-			if($i == 0)
-			{
-				echo 'No titles to display.';
-			}
-			else
-			{
-				echo '
-				</select>
-
-				<br /><br />
-
-				<div id="editTitleList" name="editTitleList" style="display: none;">
-
-				<p>
-					<b>Title:</b><br />
-					<input type="text" name="editTitleTitle" id="editTitle" />
-				</p>
-
-				<p>
-					<b>Image:</b><br />
-					<input type="text" name="editTitleImage" id="editTitleImage" />
-				</p>
-
-				<p>
-					<b>Corresponding Forum ID:</b><br />
-					<input type="number" name="editTitleForumID" id="editTitleForumID" />
-				</p>
-
-				<input type="submit" name="submitEditTitle" id="submitEditTitle" value="Edit Title" />
-
-				</div>
-				</form>';
-			}
-
-			echo '<br /><hr /><br /><h3>Delete Title</h3>';
-
-			// Get data
-			$query = "SELECT * FROM titles ORDER BY title";
-
-			$i = 0;
-			if ($result = mysqli_query($conn, $query))
-			{
-				while ($db = mysqli_fetch_object($result))
-				{
-					// Formatting
-					if($i == 0)
-					{
-						echo '
-						<form action="process.php?do=assigntitles" method="POST" name="titleUserDelete" id="titleUserDelete">
-						<select name="titleID" id="titleID">';
-					}
-
-					echo '<option value="'.$db->id.'">'.readInput($db->title).'</option>';
-
-					// Increment
-					$i++;
-				}
-			}
-
-			if($i == 0)
-			{
-				echo 'No titles to display.';
-			}
-			else
-			{
-				echo '
-				</select>
-
-				<input type="submit" name="submitDeleteTitle" id="submitDeleteTitle" value="Delete Title" />
 				</form>';
 			}
 			

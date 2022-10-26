@@ -19,16 +19,6 @@ include(dirname(__DIR__) . '/../../config.php');
 */
 $groupTitles = array();
 
-// Loop through all titles with Xenforo set up
-$query = "SELECT * FROM titles WHERE forum_id != 0";
-if ($result = mysqli_query($conn, $query))
-{
-	while ($db = mysqli_fetch_object($result))
-	{
-		array_push($groupTitles, $db->forum_id);
-	}
-}
-
 // Loop through all troopers with Xenforo set up
 $query = "SELECT * FROM troopers WHERE user_id != 0 AND approved = 1";
 if ($result = mysqli_query($conn, $query))
@@ -193,23 +183,6 @@ if ($result = mysqli_query($conn, $query))
 			array_push($groupTitles, $userGroupGarrison);
 			array_push($groupTitles, $userGroup501st);
 			array_push($groupTitles, $userGroupRetired);
-
-			// Update user groups so they match troop tracker
-			$query2 = "SELECT titles.forum_id, title_troopers.trooperid FROM titles LEFT JOIN title_troopers ON titles.id = title_troopers.titleid WHERE titles.forum_id != 0 AND title_troopers.trooperid = ".$db->id." GROUP BY titles.id";
-			if ($result2 = mysqli_query($conn, $query2))
-			{
-				while ($db2 = mysqli_fetch_object($result2))
-				{
-					// Check if user group is already on profile
-					if (!in_array($db2->forum_id, $groupArray))
-					{
-						// Not listed on forum, update
-						array_push($groupArray, $db2->forum_id);
-					}
-
-					array_push($groupArray2, $db2->forum_id);
-				}
-			}
 
 			/**
 			 * Check differences - Intersect titles in Troop Tracker DB ($groupTitles) with forum titles ($groupArray), return values that are the same. Check difference between assigned Troop Tracker DB titles and Forum titles. Will return the values to remove.

@@ -3113,19 +3113,6 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 			<img src="https://www.501st.com/memberdata/templates/tk_head.jpg" />
 		</p>';
 	}
-
-	// Title ranks
-	$query2 = "SELECT title_troopers.titleid, title_troopers.trooperid, titles.id, titles.title, titles.icon FROM title_troopers LEFT JOIN titles ON titles.id = title_troopers.titleid WHERE title_troopers.trooperid = '".$id."'";
-	if ($result2 = mysqli_query($conn, $query2))
-	{
-		while ($db2 = mysqli_fetch_object($result2))
-		{
-			echo '
-			<p style="text-align: center;">
-				<img src="images/ranks/'.$db2->icon.'" class="rankTitle" />
-			</p>';
-		}
-	}
 	
 	// Ranks for members
 	$query2 = "SELECT * FROM troopers WHERE id = '".$id."'";
