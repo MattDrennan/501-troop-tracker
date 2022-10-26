@@ -2265,7 +2265,7 @@ function getCostumeQueryValues($clubid)
 	global $squadArray, $clubArray;
 	
 	// Set up count
-	$clubCount = count($squadArray) + 1;
+	$clubCount = count($clubArray) + 1;
 	
 	// Query set up
 	$query = "";
