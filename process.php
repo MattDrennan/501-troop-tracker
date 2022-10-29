@@ -558,7 +558,7 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 				foreach($club_value['costumes'] as $costume)
 				{
 					// Make sure not a dual costume
-					if($costume != $dualCostume)
+					if(!in_array($costume, $dualCostume))
 					{
 						// Check club
 						if((getCostumeClub(cleanInput($_POST['costume'])) == $costume && (${$club_value['dbLimit']} - eventClubCount(cleanInput($_POST['troopid']), $costume)) <= 0) && $status != 4 && inEvent(cleanInput($_POST['trooperid']), cleanInput($_POST['troopid']))['inTroop'] != 1)
@@ -3062,7 +3062,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 					foreach($club_value['costumes'] as $costume)
 					{
 						// Make sure not a dual costume
-						if($costume != $dualCostume)
+						if(!in_array($costume, $dualCostume))
 						{
 							// Check club
 							if((getCostumeClub(cleanInput($_POST['costume'])) == $costume && (${$club_value['dbLimit']} - eventClubCount(cleanInput($_POST['event']), $costume)) <= 0) && $status != 4)

@@ -268,7 +268,7 @@ function getTroopCounts($id)
 	$countAll = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' and events.dateStart > NOW() - INTERVAL 1 YEAR GROUP BY events.id, event_sign_up.id");
 
 	// Get troop counts - 501st
-	$count = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '".$dualCostume."' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY events.id, event_sign_up.id");
+	$count = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ".getCostumeQueryValuesSquad(1)." GROUP BY events.id, event_sign_up.id");
 
 	// Add to string
 	$troopCountString .= '
@@ -563,7 +563,7 @@ function costume_restrict_query($addWhere = false, $friendID = 0, $allowDualCost
 	// Check if friend ID
 	if($friendID != $_SESSION['id'] && $friendID != 0)
 	{
-		$friendQuery = " OR (costumes.club >= 0) AND (costumes.club != ".$dualCostume.")";
+		$friendQuery = " OR (costumes.club >= 0) AND (costumes.club NOT IN (".implode(",", $dualCostume)."))";
 	}
 
 	// 501 member, prepare to add or statement if a dual member
@@ -600,7 +600,7 @@ function costume_restrict_query($addWhere = false, $friendID = 0, $allowDualCost
 
 					foreach($club_value['costumes'] as $costume)
 					{
-						if(!$allowDualCostume && $costume == $dualCostume)
+						if(!$allowDualCostume && in_array($costume, $dualCostume))
 						{
 							break;
 						}
@@ -2265,7 +2265,7 @@ function getCostumeQueryValues($clubid)
 	global $squadArray, $clubArray;
 	
 	// Set up count
-	$clubCount = count($clubArray) + 1;
+	$clubCount = count($squadArray) + 1;
 	
 	// Query set up
 	$query = "";
@@ -2308,6 +2308,66 @@ function getCostumeQueryValues($clubid)
 		
 		// Increment
 		$clubCount++;
+	}
+	
+	// Return
+	return $query;
+}
+
+/**
+ * Returns query for costume values for squad. This will display costumes from the squad specified.
+ * 
+ * @param int $squadid The ID of the squad
+ * @return string Returns query
+*/
+function getCostumeQueryValuesSquad($squadid)
+{
+	global $squadArray, $clubArray;
+	
+	// Set up count
+	$squadCount = 0;
+	
+	// Query set up
+	$query = "";
+	
+	// Loop through clubs
+	foreach($squadArray as $squad => $squad_value)
+	{
+		// Check if club matches
+		if($squadid == $squadCount)
+		{
+			// Get costume count
+			$costumeCount = count($squad_value['costumes']);
+			
+			// Step count
+			$i = 0;
+			
+			// Add to query
+			$query .= "(";
+			
+			// Match
+			foreach($squad_value['costumes'] as $costume)
+			{
+				// Add to query
+				$query .= "'".$costume."' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)";
+
+				// Increment step
+				$i++;
+				
+				// Check if need to add OR
+				if($i < $costumeCount)
+				{
+					// Add OR
+					$query .= " OR ";
+				}
+			}
+			
+			// Close query
+			$query .= ")";
+		}
+		
+		// Increment
+		$squadCount++;
 	}
 	
 	// Return
@@ -2945,7 +3005,7 @@ function replaceCostumeID($id)
 	$club = getCostumeClub($id);
 
 	if($club == 0) { return 0; }
-	if($club == $dualCostume) { return $dualNA; }
+	//if(in_array($club, $dualCostume)) { return $dualNA; }
 
 	return $clubArray[$club - 1]['naCostume'];
 }
@@ -4806,7 +4866,7 @@ function eventClubCount($eventID, $clubID)
 		foreach($club_value['costumes'] as $costume)
 		{
 			// Make sure not a dual costume
-			if($clubID != $dualCostume)
+			if(!in_array($clubID, $dualCostume))
 			{
 				// If club
 				if($clubID == $costume)
