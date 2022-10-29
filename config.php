@@ -3430,6 +3430,46 @@ function getName($id)
 }
 
 /**
+ * Return's the troopers's address
+ * 
+ * @param int $id ID of the trooper
+ * @return string Returns trooper's address
+*/
+function getTrooperAddress($id)
+{
+	global $conn;
+	
+	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			return $db->address;
+		}
+	}
+}
+
+/**
+ * Return's the troopers's radius
+ * 
+ * @param int $id ID of the trooper
+ * @return string Returns trooper's radius
+*/
+function getTrooperRadius($id)
+{
+	global $conn;
+	
+	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			return $db->radius;
+		}
+	}
+}
+
+/**
  * Return's the troopers's e-mail
  * 
  * @param int $id ID of the trooper
