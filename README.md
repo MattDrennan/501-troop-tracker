@@ -147,10 +147,10 @@ $lflTroop = 212;
 $disneyTroop = 211;
 
 /**
- * dualCostume: This variable is used to determine which costume club ID should be counted as a dual costume.
+ * dualCostume: This array is used to determine which costume club ID should be counted as a dual costume.
 */
 
-$dualCostume = 5;
+$dualCostume = array(5, 7);
 
 /**
  * dualNA: This variable is used to determine which costume ID is the dual N/A
