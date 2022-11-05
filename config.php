@@ -4780,7 +4780,7 @@ function troopersRemaining($value1, $value2)
 */
 function eventClubCount($eventID, $clubID)
 {
-	global $conn, $clubArray, $dualCostume;
+	global $conn, $clubArray, $dualCostume, $squadArray;
 	
 	// Variables
 	$c501 = 0;
@@ -4834,18 +4834,14 @@ function eventClubCount($eventID, $clubID)
 					// Loop through clubs
 					foreach($clubArray as $club => $club_value)
 					{
-						// Loop through costumes
-						foreach($club_value['costumes'] as $costume)
+						// Club
+						if(in_array($db2->club, $club_value['costumes']))
 						{
-							// Club
-							if($db2->club == $costume)
-							{
-								// Increment to club
-								${"c" . $club_value['dbLimit']}++;
+							// Increment to club
+							${"c" . $club_value['dbLimit']}++;
 
-								// Increment total count
-								$totalAll++;
-							}
+							// Increment total count
+							$totalAll++;
 						}
 					}						
 				}
@@ -4862,23 +4858,15 @@ function eventClubCount($eventID, $clubID)
 	// Loop through clubs
 	foreach($clubArray as $club => $club_value)
 	{
-		// Loop through costumes
-		foreach($club_value['costumes'] as $costume)
+		// Set return val if Club ID set to club
+		if(($clubID == (count($squadArray) + 1) + $club) && $clubID >= count($squadArray) + 1)
 		{
-			// Make sure not a dual costume
-			if(!in_array($clubID, $dualCostume))
-			{
-				// If club
-				if($clubID == $costume)
-				{
-					$returnVal = ${"c" . $club_value['dbLimit']};
-				}
-			}
+			$returnVal = ${"c" . $club_value['dbLimit']};
 		}
 	}
 
 	// If want total
-	if($clubID == "all")
+	if($clubID === "all")
 	{
 		$returnVal = $totalAll;
 	}
