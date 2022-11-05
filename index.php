@@ -5363,7 +5363,7 @@ if(isset($_GET['event']))
 									foreach($clubArray as $club => $club_value)
 									{
 										echo '
-										<li>'.$clubCount.' This event is limited to '.$db->{$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining($db->{$club_value['dbLimit']}, eventClubCount($db->id, $clubCount)).'</li>';
+										<li>This event is limited to '.$db->{$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining($db->{$club_value['dbLimit']}, eventClubCount($db->id, $clubCount)).'</li>';
 
 										// Increment club count
 										$clubCount++;
