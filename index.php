@@ -6174,6 +6174,7 @@ else
 				
 				<p style="text-align: center;">
 					<a href="index.php?squad=mytroops" class="button">My Troops</a>
+					<a href="index.php?squad=troopsnearme" class="button">Troops Near Me</a>
 				</p>
 
 				<hr /><br />
@@ -6211,6 +6212,28 @@ else
 				{
 					// Query
 					$query = "SELECT events.id AS id, events.name, events.location, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, ".$addToQuery."events.limitTotalTroopers, events.limitHandlers, events.closed FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() - INTERVAL 1 DAY AND event_sign_up.status < 3 AND (events.closed = 0 OR events.closed = 3 OR events.closed = 4) ORDER BY events.dateStart";
+				}
+				// Troops near me
+				else if(isset($_GET['squad']) && $_GET['squad'] == "troopsnearme")
+				{
+					// Query
+					$query = "SELECT * FROM events WHERE dateStart >= CURDATE() AND (closed = '0' OR closed = '3' OR closed = '4') ORDER BY dateStart";
+
+					// Get post submit address
+					if(isset($_POST['submitAddress']))
+					{
+						$conn->query("UPDATE troopers SET address = '".cleanInput($_POST['address'])."', radius = '".cleanInput($_POST['radius'])."' WHERE id = '".$_SESSION['id']."'");
+					}
+
+					$trooperAddress = getTrooperAddress($_SESSION['id']);
+					$trooperRadius = getTrooperRadius($_SESSION['id']);
+
+					echo '
+					<form action="" method="POST">
+						<input type="text" name="address" value="'.$trooperAddress.'" placeholder="Your address" />
+						<input type="number" value="'.$trooperRadius.'" name="radius" placeholder="Miles from address" />
+						<input type="submit" name="submitAddress" />
+					</form>';
 				}
 				else if(isset($_GET['squad']) && $_GET['squad'] == "canceledtroops")
 				{
@@ -6284,6 +6307,40 @@ else
 				{
 					while ($db = mysqli_fetch_object($result))
 					{
+						if(isset($trooperAddress) && $trooperAddress != "")
+						{
+							// Troops near me
+							if(isset($_GET['squad']) && $_GET['squad'] == "troopsnearme")
+							{
+								// In metric unit. This is default
+								$distance_data = file_get_contents('https://maps.googleapis.com/maps/api/distancematrix/json?&units=imperial&origins='.urlencode($trooperAddress).'&destinations='.urlencode($db->location).'&key=' . googleKey);
+								$distance_arr = json_decode($distance_data);
+
+								if ($distance_arr->status=='OK')
+								{
+									$destination_addresses = $distance_arr->destination_addresses[0];
+									$origin_addresses = $distance_arr->origin_addresses[0];
+								} else {
+									continue;
+								}
+								if ($origin_addresses == "" or $destination_addresses == "")
+								{
+									continue;
+								}
+
+								// Get the elements as array
+								$elements = $distance_arr->rows[0]->elements;
+								$distance = $elements[0]->distance->text;
+								$duration = $elements[0]->duration->text;
+							
+
+								if(intval($distance) > intval($trooperRadius))
+								{
+									continue;
+								}
+							}
+						}
+
 						// Get number of troopers at event
 						$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".$db->id."' AND (status = '0' OR status = '2')");
 						

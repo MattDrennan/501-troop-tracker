@@ -2,8 +2,9 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Generation Time: Apr 16, 2022 at 04:13 AM
--- Server version: 8.0.23
+-- Host: ls-b461765348ab37f7774d47c6788e7713192d710a.c7bgdu4hw8kg.us-east-1.rds.amazonaws.com:3306
+-- Generation Time: Oct 29, 2022 at 04:35 PM
+-- Server version: 8.0.28
 -- PHP Version: 7.4.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -64,7 +65,7 @@ CREATE TABLE `awards` (
   `id` int UNSIGNED NOT NULL,
   `title` varchar(100) NOT NULL,
   `icon` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -77,7 +78,7 @@ CREATE TABLE `award_troopers` (
   `trooperid` int NOT NULL,
   `awardid` int NOT NULL,
   `awarded` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -93,7 +94,7 @@ CREATE TABLE `comments` (
   `comment` text NOT NULL,
   `important` int NOT NULL,
   `posted` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -106,7 +107,7 @@ CREATE TABLE `costumes` (
   `costume` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `era` int NOT NULL,
   `club` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -184,7 +185,7 @@ CREATE TABLE `events` (
   `charityNote` text NOT NULL,
   `squad` int NOT NULL,
   `link` int NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -213,7 +214,7 @@ CREATE TABLE `event_sign_up` (
   `addedby` int NOT NULL DEFAULT '0',
   `note` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
   `signuptime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -412,8 +413,10 @@ CREATE TABLE `troopers` (
   `efast` tinyint(1) DEFAULT '0',
   `ecommandnotify` tinyint(1) DEFAULT '1',
   `econfirm` tinyint(1) DEFAULT '1',
+  `address` varchar(255) DEFAULT NULL,
+  `radius` int NOT NULL DEFAULT '15',
   `datecreated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
