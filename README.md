@@ -150,7 +150,7 @@ $disneyTroop = 211;
  * dualCostume: This array is used to determine which costume club ID should be counted as a dual costume.
 */
 
-$dualCostume = array(5, 7);
+$dualCostume = array(5, 6, 7, 8, 9, 10);
 
 /**
  * dualNA: This variable is used to determine which costume ID is the dual N/A
@@ -246,13 +246,12 @@ $userGroupRankImages = array(
  * userGroup: The Xenforo user group ID assigned to this squad
  */
 
-
 // Squads
 $squadArray = array(
 	array(
 		"name" => "Everglades Squad",
 		"logo" => "everglades_emblem.png",
-		"costumes" => array(0, 5),
+		"costumes" => array(0, 5, 6, 8, 10),
 		"db" => "p501",
 		"db2" => "",
 		"rankRegular" => "everglades_sm.png",
@@ -263,7 +262,7 @@ $squadArray = array(
 	array(
 		"name" => "Makaze Squad",
 		"logo" => "makaze_emblem.png",
-		"costumes" => array(0, 5),
+		"costumes" => array(0, 5, 6, 8, 10),
 		"db" => "p501",
 		"db2" => "",
 		"rankRegular" => "makaze_sm.png",
@@ -274,7 +273,7 @@ $squadArray = array(
 	array(
 		"name" => "Parjai Squad",
 		"logo" => "parjai_emblem.png",
-		"costumes" => array(0, 5),
+		"costumes" => array(0, 5, 6, 8, 10),
 		"db" => "p501",
 		"db2" => "",
 		"rankRegular" => "parjai_sm.png",
@@ -285,7 +284,7 @@ $squadArray = array(
 	array(
 		"name" => "Squad 7",
 		"logo" => "squad7_emblem.png",
-		"costumes" => array(0, 5),
+		"costumes" => array(0, 5, 6, 8, 10),
 		"db" => "p501",
 		"db2" => "",
 		"rankRegular" => "s7_sm.png",
@@ -296,7 +295,7 @@ $squadArray = array(
 	array(
 		"name" => "Tampa Bay Squad",
 		"logo" => "tampabay_emblem.png",
-		"costumes" => array(0, 5),
+		"costumes" => array(0, 5, 6, 8, 10),
 		"db" => "p501",
 		"db2" => "",
 		"rankRegular" => "tampa_sm.png",
@@ -329,7 +328,7 @@ $clubArray = array(
 	array(
 		"name" => "Rebel Legion",
 		"logo" => "test",
-		"costumes" => array(1, 5),
+		"costumes" => array(1, 5, 7, 9, 10),
 		"db" => "pRebel",
 		"db2" => "",
 		"db3" => "rebelforum",
@@ -358,7 +357,7 @@ $clubArray = array(
 	array(
 		"name" => "Mando Mercs",
 		"logo" => "test",
-		"costumes" => array(2),
+		"costumes" => array(2, 6, 7),
 		"db" => "pMando",
 		"db2" => "",
 		"db3" => "mandoid",
@@ -377,12 +376,12 @@ $clubArray = array(
 		"costumes" => array(4),
 		"db" => "pOther",
 		"db2" => "",
-		"db3" => "sgid",
-		"db3Name" => "Saber Guild SG #",
+		"db3" => "",
+		"db3Name" => "",
 		"db3Require" => "0,digits,0",
 		"db3Link" => "",
 		"dbLimit" => "limitOther",
-		"rankRegular" => "saberguildmember.png",
+		"rankRegular" => "",
 		"rankReserve" => "",
 		"rankRetired" => "",
 		"naCostume" => 717,
@@ -390,7 +389,7 @@ $clubArray = array(
 	array(
 		"name" => "Saber Guild",
 		"logo" => "test",
-		"costumes" => array(6),
+		"costumes" => array(6, 8, 9, 10),
 		"db" => "pSG",
 		"db2" => "",
 		"db3" => "sgid",
