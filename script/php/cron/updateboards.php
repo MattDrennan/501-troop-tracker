@@ -45,7 +45,23 @@ if ($result = mysqli_query($conn, $query))
 		// Make thread body
 		$thread_body = threadTemplate($db->name, $db->venue, $db->location, $db->dateStart, $db->dateEnd, $db->website, $db->numberOfAttend, $db->requestedNumber, $db->requestedCharacter, $db->secureChanging, $db->blasters, $db->lightsabers, $db->parking, $db->mobility, $db->amenities, $db->comments, $db->referred, $db->id, $db->label, $roster);
 
+		// Get dates
+		$date1 = date('Y-m-d H:i:s', strtotime($db->dateStart));
+		$date2 = date('Y-m-d H:i:s', strtotime($db->dateEnd));
+					
 		// Update thread
+		// If a shift
+		if(isLink($db->id) > 0)
+		{
+			editThread($db->thread_id, date("m/d/y h:i A", strtotime($date1)) . " - " . date("h:i A", strtotime($date2)) . " " . $db->name);
+		}
+		else
+		{
+			// Not a shift
+			editThread($db->thread_id, date("m/d/y", strtotime($date1)) . " - " . $db->name);
+		}
+		
+		// Update post
 		editPost($db->post_id, $thread_body);
 	}
 }

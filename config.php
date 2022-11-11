@@ -1082,6 +1082,41 @@ function createThread($id, $title, $message, $userID = xenforoAPI_userID)
 }
 
 /**
+ * Edits a thread in Xenforo
+ * 
+ * @param int $id The thread ID to be edited
+ * @param string $title The title of the thread
+ * @return json Return's the Xenforo thread data if success
+*/
+function editThread($id, $title)
+{
+	global $forumURL;
+	
+	// Edit Post
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => $forumURL . "api/threads/" . $id,
+	  CURLOPT_POST => 1,
+	  CURLOPT_POSTFIELDS => "title=" . urlencode($title) . "&api_bypass_permissions=1",
+	  CURLOPT_CUSTOMREQUEST => "POST",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+/**
  * Locks a thread in Xenforo
  * 
  * @param int $id The post ID to be locked
