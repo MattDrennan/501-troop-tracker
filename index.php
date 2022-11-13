@@ -5554,8 +5554,6 @@ if(isset($_GET['event']))
 										
 										$query3 .= costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
 										
-										echo $query3;
-										
 										if ($result3 = mysqli_query($conn, $query3))
 										{
 											while ($db3 = mysqli_fetch_object($result3))
