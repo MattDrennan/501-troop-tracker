@@ -136,6 +136,9 @@ $(function()
                             {
                                 $(this).remove();
                             });
+							
+							// Set event link
+							$("#create_event_area").html('<p><a href="index.php?event=' + json.eventid + '" class="button">View Posted Event</a>');
                         }
 
                         // Alert to success

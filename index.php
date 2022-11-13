@@ -4500,6 +4500,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<input type="text" name="referred" id="referred" value="'.copyEvent($eid, $referred).'" />
 
 				<input type="submit" name="submitEvent" value="Create!" />
+				
+				<div id="create_event_area"></div>
 			</form>';
 		}
 	}

@@ -2170,7 +2170,7 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 			// Send notification to command staff
 			sendNotification(getName($_SESSION['id']) . " has added an event: [" . $eventId . "][" . cleanInput($_POST['eventName']) . "]", cleanInput($_SESSION['id']), 13, convertDataToJSON("SELECT * FROM events WHERE id = '".$eventId."'"));
 
-			$array = array('success' => 'success', 'data' => 'Event created!');
+			$array = array('success' => 'success', 'data' => 'Event created!', 'eventid' => $eventId);
 			echo json_encode($array);
 		}
 		else
