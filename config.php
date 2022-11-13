@@ -602,7 +602,7 @@ function costume_restrict_query($addWhere = false, $friendID = 0, $allowDualCost
 					{
 						if(!$allowDualCostume && in_array($costume, $dualCostume))
 						{
-							break;
+							continue;
 						}
 						
 						// Passed first step, keep adding OR

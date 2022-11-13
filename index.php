@@ -3267,11 +3267,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						echo '
 						<option value="5">Dual (501st + Rebel)</option>
-						<option value="6">Dual-Mando (501st + Mando)</option>
-						<option value="7">Dual-Mando (RL + Mando)</option>
-						<option value="8">Dual-Saber (501st + SG)</option>
-						<option value="9">Dual-Saber (RL + SG)</option>
-						<option value="10">Triple-Dual (501st + RL + SG)</option>
+						<option value="7">Dual-Mando (501st + Mando)</option>
+						<option value="8">Dual-Mando (RL + Mando)</option>
+						<option value="9">Dual-Saber (501st + SG)</option>
+						<option value="10">Dual-Saber (RL + SG)</option>
+						<option value="11">Triple-Dual (501st + RL + SG)</option>
 					</select>
 				</p>
 				
@@ -5553,6 +5553,8 @@ if(isset($_GET['event']))
 										}
 										
 										$query3 .= costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
+										
+										echo $query3;
 										
 										if ($result3 = mysqli_query($conn, $query3))
 										{

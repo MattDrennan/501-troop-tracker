@@ -22,7 +22,7 @@ $conn->query("DELETE FROM sg_troopers");
 $values = getSheet("1PcveycMujakkKeG2m4y8iFunrFbo2KVpQJ00GyPI3b8", "Sheet1");
 
 // Reset Saber Guild Status
-$conn->query("UPDATE troopers SET pSG = 0 WHERE sgid > 0");
+$conn->query("UPDATE troopers SET pSG = 0");
 
 // Set up count
 $i = 0;
@@ -46,7 +46,7 @@ foreach($values as $value)
 		$conn->query("INSERT INTO sg_troopers (sgid, name, image, ranktitle, costumename, link) VALUES ('".cleanInput($value[2])."', '".cleanInput($value[0])."', '".cleanInput($image)."', '".cleanInput($value[1])."', '".cleanInput($value[3])."', '')");
 		
 		// Update status to regular member
-		$conn->query("UPDATE troopers SET pSG = 1 WHERE sgid = '".str_replace("SG-", "", $value[2])."'");
+		$conn->query("UPDATE troopers SET pSG = 1 WHERE sgid = '".str_replace("SG-", "", $value[2])."' AND sgid > 0");
 	}
 
 	// Increment

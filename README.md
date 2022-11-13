@@ -150,7 +150,7 @@ $disneyTroop = 211;
  * dualCostume: This array is used to determine which costume club ID should be counted as a dual costume.
 */
 
-$dualCostume = array(5, 6, 7, 8, 9, 10);
+$dualCostume = array(5, 7, 8, 9, 10, 11);
 
 /**
  * dualNA: This variable is used to determine which costume ID is the dual N/A
@@ -328,7 +328,7 @@ $clubArray = array(
 	array(
 		"name" => "Rebel Legion",
 		"logo" => "test",
-		"costumes" => array(1, 5, 7, 9, 10),
+		"costumes" => array(1, 5, 8, 10, 11),
 		"db" => "pRebel",
 		"db2" => "",
 		"db3" => "rebelforum",
@@ -357,7 +357,7 @@ $clubArray = array(
 	array(
 		"name" => "Mando Mercs",
 		"logo" => "test",
-		"costumes" => array(2, 6, 7),
+		"costumes" => array(2, 7, 8),
 		"db" => "pMando",
 		"db2" => "",
 		"db3" => "mandoid",
@@ -389,7 +389,7 @@ $clubArray = array(
 	array(
 		"name" => "Saber Guild",
 		"logo" => "test",
-		"costumes" => array(6, 8, 9, 10),
+		"costumes" => array(6, 9, 10, 11),
 		"db" => "pSG",
 		"db2" => "",
 		"db3" => "sgid",
