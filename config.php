@@ -1894,7 +1894,7 @@ function showSGCostumes($id)
 	global $conn;
 	
 	// Get data
-	$query = "SELECT * FROM sg_troopers WHERE sgid = 'SG-".$id."'";
+	$query = "SELECT * FROM sg_troopers WHERE sgid = 'SG-".$id."' AND sgid > 0";
 	
 	// Set up count
 	$i = 0;
