@@ -2250,39 +2250,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 			echo '
 			</div>
-			
-			<h3>Other</h3>
-			<div class="stat-container">';
 
-			// Show all super admins
-			$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.squad FROM troopers LEFT JOIN title_troopers ON troopers.id = title_troopers.trooperid WHERE (troopers.permissions != 1 AND troopers.permissions != 2) AND title_troopers.trooperid = troopers.id ORDER BY name";
-
-			// Trooper count set up
-			$i = 0;
-
-			if ($result = mysqli_query($conn, $query))
-			{
-				while ($db = mysqli_fetch_object($result))
-				{
-					echo '
-					<div class="title">
-						<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.'<br /><br />'.readTKNumber($db->tkid, $db->squad).'</a>
-					</div>';
-					
-					// Increment
-					$i++;
-				}
-			}
-			
-			// No troopers
-			if($i == 0)
-			{
-				echo '<p>No troopers to display.</p>';
-			}
-
-			echo '
-			</div>
-			
 			<h2>Statistics</h2>';
 
 			// Get settings
