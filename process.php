@@ -3188,7 +3188,7 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmList")
 	$dataMain = "";
 
 	// Load events that need confirmation
-	$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND status < 3 AND events.closed = 1";
+	$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC";
 
 	if ($result = mysqli_query($conn, $query))
 	{
@@ -3212,6 +3212,118 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmList")
 
 	// Send back data
 	$array = array('success' => 'success', 'data' => $dataMain, 'id' => $_SESSION['id']);
+	echo json_encode($array);
+
+	// End send back AJAX data
+}
+
+// Confirm troop for friend
+if(isset($_GET['do']) && $_GET['do'] == "confirmfriend")
+{
+	// Query the database
+	$conn->query("UPDATE event_sign_up SET status = '3' WHERE trooperid = '".cleanInput($_POST['friendid'])."' AND troopid = '".cleanInput($_POST['troopid'])."' AND addedby = '".$_SESSION['id']."'");
+
+	// Send back AJAX data
+
+	// What we are going to send back
+	$dataMain = "";
+
+	// Load events that need confirmation
+	$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.addedby, event_sign_up.costume FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.addedby = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC";
+
+	if ($result = mysqli_query($conn, $query))
+	{
+		// Number of results total
+		$i = 0;
+
+		while ($db = mysqli_fetch_object($result))
+		{
+			// If a shift exists to attest to
+			$i++;
+			
+			// Set up string to add to title if a linked event
+			$add = "";
+			
+			// If added by friend, add name
+			if($db->addedby != 0)
+			{
+				$add .= '<a href="#/" trooperid="'.$db->trooperid.'" troopid="'.$db->eventId.'" class="button" name="attendFriend">Attended</a> <a href="#/" trooperid="'.$db->trooperid.'" troopid="'.$db->eventId.'" class="button" name="didNotFriend">Did Not Attend</a> <b>' . getName($db->trooperid) . ' as ' . getCostume($db->costume) . '</b>: ';
+			}
+			
+			// If this a linked event?
+			if(isLink($db->eventId) > 0)
+			{
+				$add .= "[<b>" . date("l", strtotime($db->dateStart)) . "</b> : <i>" . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "</i>] ";
+			}
+
+			$dataMain .= '
+			<div name="confirmListBox_'.$db->eventId.'_'.$db->trooperid.'" id="confirmListBox_'.$db->eventId.'_'.$db->trooperid.'">
+				'.$add.''.$db->name.'<br /><br />
+			</div>';
+
+			$dataMain .= '
+			</div>';
+		}
+	}
+
+	// Send back data
+	$array = array('success' => 'success', 'data' => $dataMain, 'id' => $_SESSION['id'], 'count' => $i);
+	echo json_encode($array);
+
+	// End send back AJAX data
+}
+
+// Did not attend troop for friend
+if(isset($_GET['do']) && $_GET['do'] == "friendnoconfirm")
+{
+	// Query the database
+	$conn->query("UPDATE event_sign_up SET status = '4' WHERE trooperid = '".cleanInput($_POST['friendid'])."' AND troopid = '".cleanInput($_POST['troopid'])."' AND addedby = '".$_SESSION['id']."'");
+
+	// Send back AJAX data
+
+	// What we are going to send back
+	$dataMain = "";
+
+	// Load events that need confirmation
+	$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.addedby, event_sign_up.costume FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.addedby = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC";
+
+	if ($result = mysqli_query($conn, $query))
+	{
+		// Number of results total
+		$i = 0;
+
+		while ($db = mysqli_fetch_object($result))
+		{
+			// If a shift exists to attest to
+			$i++;
+			
+			// Set up string to add to title if a linked event
+			$add = "";
+			
+			// If added by friend, add name
+			if($db->addedby != 0)
+			{
+				$add .= '<a href="#/" trooperid="'.$db->trooperid.'" troopid="'.$db->eventId.'" class="button" name="attendFriend">Attended</a> <a href="#/" trooperid="'.$db->trooperid.'" troopid="'.$db->eventId.'" class="button" name="didNotFriend">Did Not Attend</a> <b>' . getName($db->trooperid) . ' as ' . getCostume($db->costume) . '</b>: ';
+			}
+			
+			// If this a linked event?
+			if(isLink($db->eventId) > 0)
+			{
+				$add .= "[<b>" . date("l", strtotime($db->dateStart)) . "</b> : <i>" . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "</i>] ";
+			}
+
+			$dataMain .= '
+			<div name="confirmListBox_'.$db->eventId.'_'.$db->trooperid.'" id="confirmListBox_'.$db->eventId.'_'.$db->trooperid.'">
+				'.$add.''.$db->name.'<br /><br />
+			</div>';
+
+			$dataMain .= '
+			</div>';
+		}
+	}
+
+	// Send back data
+	$array = array('success' => 'success', 'data' => $dataMain, 'id' => $_SESSION['id'], 'count' => $i);
 	echo json_encode($array);
 
 	// End send back AJAX data

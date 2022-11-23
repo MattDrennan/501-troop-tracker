@@ -6546,7 +6546,7 @@ else
 				}
 				
 				// Load events that need confirmation
-				$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1";
+				$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC";
 
 				if ($result = mysqli_query($conn, $query))
 				{
@@ -6620,6 +6620,60 @@ else
 						</select>
 					</form>
 					<p>If your costume is not listed, please notify the garrison web master before confirming.</p>
+					</div>';
+				}
+				
+				// Load events that need confirmation
+				$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, event_sign_up.addedby, event_sign_up.costume FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.addedby = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC";
+
+				if ($result = mysqli_query($conn, $query))
+				{
+					// Number of results total
+					$i = 0;
+
+					while ($db = mysqli_fetch_object($result))
+					{
+						// If data
+						if($i == 0)
+						{
+							echo '
+							<br />
+							<div name="confirmArea3" id="confirmArea3">
+							<h2 class="tm-section-header" id="confirmtroops">Confirm Friends</h2>
+							<div name="confirmArea4" id="confirmArea4">';
+						}
+						
+						// Set up string to add to title if a linked event
+						$add = "";
+						
+						// If added by friend, add name
+						if($db->addedby != 0)
+						{
+							$add .= '<a href="#/" trooperid="'.$db->trooperid.'" troopid="'.$db->eventId.'" class="button" name="attendFriend">Attended</a> <a href="#/" trooperid="'.$db->trooperid.'" troopid="'.$db->eventId.'" class="button" name="didNotFriend">Did Not Attend</a> <b>' . getName($db->trooperid) . ' as ' . getCostume($db->costume) . '</b>: ';
+						}
+						
+						// If this a linked event?
+						if(isLink($db->eventId) > 0)
+						{
+							$add .= "[<b>" . date("l", strtotime($db->dateStart)) . "</b> : <i>" . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "</i>] ";
+						}
+
+						echo '
+						<div name="confirmListBox_'.$db->eventId.'_'.$db->trooperid.'" id="confirmListBox_'.$db->eventId.'_'.$db->trooperid.'">
+							'.$add.''.$db->name.'<br /><br />
+						</div>';
+						
+						// If a shift exists to attest to
+						$i++;
+					}
+				}
+
+				// If data
+				if($i > 0)
+				{
+					echo '
+					</div>
+					<p>If confirming for another trooper, you cannot set a new attended costume. Refer to a squad leader to change costume set.</p>
 					</div>';
 				}
 			}

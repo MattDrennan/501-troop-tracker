@@ -3212,7 +3212,78 @@ $(document).ready(function()
 			});
 		}
 	})
+	
+	// Confirm Friend: Attended
+	$("body").on("click", "[name=attendFriend]", function(e)
+	{
+		e.preventDefault();
 
+		var trooperid = $(this).attr('trooperid');
+		var troopid = $(this).attr('troopid');
+		
+		var r = confirm("Are you sure you want to confirm these events for your friend?");
+
+		if (r == true)
+		{
+			$.ajax({
+				type: "POST",
+				url: "process.php?do=confirmfriend",
+				data: "do=confirmfriend&friendid=" + trooperid + "&troopid=" + troopid,
+				success: function(data)
+				{
+					// If there is still data
+					var json = JSON.parse(data);
+					
+					$("#confirmArea4").html(json.data);
+					
+					// If no data
+					if(json.count <= 0)
+					{
+						$("#confirmArea3").html('');
+					}
+
+					alert("Troops confirmation submitted!");
+				}
+			});
+		}
+	})
+	
+	// Confirm Friend: Did Not Attend
+	$("body").on("click", "[name=didNotFriend]", function(e)
+	{
+		e.preventDefault();
+
+		var trooperid = $(this).attr('trooperid');
+		var troopid = $(this).attr('troopid');
+		
+		var r = confirm("Are you sure your friend DID NOT attend?");
+
+		if (r == true)
+		{
+			$.ajax({
+				type: "POST",
+				url: "process.php?do=friendnoconfirm",
+				data: "do=friendnoconfirm&friendid=" + trooperid + "&troopid=" + troopid,
+				success: function(data)
+				{
+					// If there is still data
+					var json = JSON.parse(data);
+					
+					$("#confirmArea4").html(json.data);
+					
+					// If no data
+					if(json.count <= 0)
+					{
+						$("#confirmArea3").html('');
+					}
+
+					alert("Troops confirmation submitted!");
+				}
+			});
+		}
+	})
+
+	// Button to autofill create event form
 	$("#easyFillButton").button().click(function(e)
 	{
 		e.preventDefault();
