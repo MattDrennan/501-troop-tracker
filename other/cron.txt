@@ -5,3 +5,4 @@
 0 1 * * 0 /opt/bitnami/php/bin/php /opt/bitnami/apache/htdocs/troop-tracker/script/php/cron/sgsync.php
 */2 * * * * /opt/bitnami/php/bin/php /opt/bitnami/apache/htdocs/troop-tracker/script/php/cron/updateboards.php
 0 * * * * /opt/bitnami/php/bin/php /opt/bitnami/apache/htdocs/troop-tracker/script/php/cron/updateforumusers.php
+0 * * * * /opt/bitnami/php/bin/php /opt/bitnami/apache/htdocs/troop-tracker/script/php/cron/autoconfirm.php
