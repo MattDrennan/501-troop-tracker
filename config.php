@@ -1270,7 +1270,7 @@ function getUserForum($username)
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => $forumURL . "api/users/find-name&username=" . $username,
+	  CURLOPT_URL => $forumURL . "api/users/find-name&username=" . urlencode($username),
 	  CURLOPT_CUSTOMREQUEST => "GET",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
