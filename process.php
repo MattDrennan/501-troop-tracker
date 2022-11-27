@@ -85,40 +85,6 @@ if(isset($_GET['do']) && $_GET['do'] == "smileyeditor")
 	echo json_encode($array);
 }
 
-/******************** EDIT COMMENT *******************************/
-
-if(isset($_GET['do']) && isset($_POST['commentid']) && isset($_POST['comment']) && $_GET['do'] == "editcomment")
-{
-	// Data to send back
-	$data = "";
-
-	// Query database for comment
-	$query = "SELECT * FROM comments WHERE id = '".cleanInput($_POST['commentid'])."'";
-	
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			// Check comment matches ID of trooper
-			if($_SESSION['id'] == $db->trooperid)
-			{
-				// Update comment
-				$conn->query("UPDATE comments SET comment = '".cleanInput($_POST['comment'])."' WHERE id = '".cleanInput($_POST['commentid'])."' AND trooperid = '".cleanInput($_SESSION['id'])."'");
-
-				// Edit comment
-				editPost(getCommentPostID(cleanInput($_POST['commentid'])), cleanInput($_POST['comment']));
-
-				// Set up return data
-				$data = nl2br(readInput(isImportant($db->important, showBBcodes(cleanInput($_POST['comment'])))));
-			}
-		}
-	}
-
-	// Send JSON
-	$array = array('data' => $data);
-	echo json_encode($array);
-}
-
 /******************** ADD MASTER ROSTER *******************************/
 
 if(isset($_GET['do']) && isset($_POST['userID']) && isset($_POST['squad']) && $_GET['do'] == "addmasterroster" && isAdmin())
@@ -644,6 +610,13 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 	$thread_id = $_POST['thread_id'];
 	
 	replyThread($thread_id, getUserID($_SESSION['id']), $_POST['comment']);
+	
+	// If important save comment
+	if($_POST['important'] == 1)
+	{
+		// Query the database
+		$conn->query("INSERT INTO comments (troopid, trooperid, comment) VALUES ('".cleanInput($_POST['eventId'])."', '".$_SESSION['id']."', '".cleanInput($_POST['comment'])."')");
+	}
 	
 	// Set up return data
 	$data = "";
@@ -1354,7 +1327,6 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 		// Update other databases that will be affected
 		$conn->query("DELETE FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['userID'])."'");
 		$conn->query("DELETE FROM award_troopers WHERE trooperid = '".cleanInput($_POST['userID'])."'");
-		$conn->query("DELETE FROM comments WHERE trooperid = '".cleanInput($_POST['userID'])."'");
 		$conn->query("DELETE FROM event_notifications WHERE trooperid = '".cleanInput($_POST['userID'])."'");
 		$conn->query("DELETE FROM notification_check WHERE trooperid = '".cleanInput($_POST['userID'])."'");
 		$conn->query("DELETE FROM title_troopers WHERE trooperid = '".cleanInput($_POST['userID'])."'");

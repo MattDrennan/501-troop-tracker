@@ -2861,26 +2861,6 @@ function getEventPostID($id)
 }
 
 /**
- * Returns the event Xenforo comment ID on the forum
- * 
- * @param int $id The ID of the event
- * @return int Returns comment ID
-*/
-function getCommentPostID($id)
-{
-	global $conn;
-	
-	$query = "SELECT * FROM comments WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->post_id;
-		}
-	}
-}
-
-/**
  * Removes letters from string
  * 
  * @param string $string The string to be processed

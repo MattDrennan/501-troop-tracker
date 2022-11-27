@@ -5067,8 +5067,9 @@ if(isset($_GET['event']))
 				
 				// Create button variable
 				$button = '
-				<p style="text-align: center;" aria-label="Get updates on sign ups, cancellations, and discussion." data-balloon-pos="up" data-balloon-length="fit">
-					<a href="#/" class="button" id="subscribeupdates" event="'.cleanInput($_GET['event']).'">'.$subscribeText.'</a>
+				<p style="text-align: center;">
+					<a href="#/" class="button" id="subscribeupdates" event="'.cleanInput($_GET['event']).'" aria-label="Get updates on sign ups and cancellations." data-balloon-pos="up" data-balloon-length="fit">'.$subscribeText.'</a>
+					<a href="https://www.fl501st.com/boards/index.php?threads/'.$db->thread_id.'/watch" target="_blank" class="button" aria-label="Get updates on replies to this event." data-balloon-pos="up" data-balloon-length="fit">Watch Discussion</a>
 				</p>';
 
 				// If this event is over, don't show it
@@ -5982,6 +5983,7 @@ if(isset($_GET['event']))
 					echo '
 					<form aciton="process.php?do=postcomment" name="commentForm" id="commentForm" method="POST">
 						<input type="hidden" name="thread_id" id="thread_id" value="'.$thread_id.'" />
+						<input type="hidden" name="eventId" id="eventId" value="'.cleanInput($_GET['event']).'" />
 
 						<h2 class="tm-section-header">Discussion</h2>
 						<div style="text-align: center;">
