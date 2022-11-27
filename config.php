@@ -1289,6 +1289,81 @@ function getUserForum($username)
 }
 
 /**
+ * Reply to Xenforo thread
+ * 
+ * @param int $threadid The ID of the thread
+ * @param int $userid The ID of the Xenforo user
+ * @param int $message Message of the reply
+ * @return json Success response
+*/
+function replyThread($threadid, $userid, $message)
+{
+	global $forumURL;
+	
+	// Update user by forum groups by ID
+	$curl = curl_init();
+	
+	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => $forumURL . "api/posts",
+	  CURLOPT_POST => 1,
+	  CURLOPT_POSTFIELDS => "thread_id=" . $threadid . "&message=" . $message,
+	  CURLOPT_CUSTOMREQUEST => "POST",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . $userid,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+	
+	echo curl_error($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+/**
+ * Get's Xenforo forum posts from thread
+ * 
+ * @param int $threadid The ID of the thread
+ * @param int $page Return posts on page
+ * @return json Return's the Xenforo user data if success
+*/
+function getThreadPosts($threadid, $page)
+{
+	global $forumURL;
+	
+	// Get user forum info by forum name
+	$curl = curl_init();
+	
+	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => $forumURL . "api/threads/".$threadid."&with_posts=true&page=".$page."",
+	  CURLOPT_CUSTOMREQUEST => "GET",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+/**
  * Get's Xenforo forum user by ID
  * 
  * @param int $id The user ID of the Xenforo user
@@ -3494,12 +3569,32 @@ function getUserID($id)
 {
 	global $conn;
 	
-	$query = "SELECT * FROM troopers WHERE id='".$id."'";
+	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
 			return $db->user_id;
+		}
+	}
+}
+
+/**
+ * Return's the tracker ID based on Xenforo Forum ID
+ * 
+ * @param int $userid ID of the trooper on forum
+ * @return int Returns ID from tracker
+*/
+function getIDFromUserID($id)
+{
+	global $conn;
+	
+	$query = "SELECT * FROM troopers WHERE user_id = '".$id."'";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			return $db->id;
 		}
 	}
 }

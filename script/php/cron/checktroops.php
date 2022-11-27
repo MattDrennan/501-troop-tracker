@@ -95,7 +95,7 @@ if ($result = mysqli_query($conn, $query))
 }
 
 // Loop through all comments that are important
-$query = "SELECT * FROM comments, settings WHERE comments.id > settings.lastimportantcomment AND comments.important = '1'";
+$query = "SELECT * FROM comments";
 if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))
@@ -108,13 +108,13 @@ if ($result = mysqli_query($conn, $query))
 			{
 				// Update message
 				${"sC" . $db2->squad} .= getName($db->trooperid) . ': ' . $db->comment . "\nhttps://fl501st.com/troop-tracker/index.php?event=".$db->troopid."\n\n";
-
-				// Update last important comment
-				$conn->query("UPDATE settings SET lastimportantcomment = '".$db->id."'");
 			}
 		}
 	}
 }
+
+// Reset comments
+$conn->query("DELETE * FROM comments");
 
 // Set up squad count
 $i = 1;

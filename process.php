@@ -640,160 +640,56 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 // Enter comment into database
 if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitComment']) && loggedIn())
 {
-	if(strlen(trim($_POST['comment'])) > 0 && ($_POST['important'] == 0 || $_POST['important'] == 1))
+	// Set up thread id
+	$thread_id = $_POST['thread_id'];
+	
+	replyThread($thread_id, getUserID($_SESSION['id']), $_POST['comment']);
+	
+	// Set up return data
+	$data = "";
+	
+	// Get thread
+	$thread = getThreadPosts($thread_id, 1);
+	
+	for($page = $thread['pagination']['last_page']; $page >= 1; $page--)
 	{
-		// Query - check if a comment has been recently posted by this trooper
-		$commentCheck = $conn->query("SELECT id FROM comments WHERE comment = '".cleanInput($_POST['comment'])."' AND posted > NOW() - INTERVAL 5 MINUTE");
-
-		// Check comment check
-		if($commentCheck->num_rows == 0)
-		{
-			// Query the database
-			$conn->query("INSERT INTO comments (troopid, trooperid, comment, important) VALUES ('".cleanInput($_POST['eventId'])."', '".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['comment'])."', '".cleanInput($_POST['important'])."')");
-
-			// Get last ID of comment
-			$last_id = $conn->insert_id;
-
-			// Get thread ID
-			$thread_id = getEventThreadID(cleanInput($_POST['eventId']));
-
-			// Check if there is a forum thread
-			if($thread_id > 0)
-			{
-				// Post to forum
-				$post = createPost($thread_id, $_POST['comment'], getUserID($_SESSION['id']));
-
-				// Update comment
-				$conn->query("UPDATE comments SET post_id = '".$post['post']['post_id']."' WHERE id = '".$last_id."'");
-			}
-		}
-
-		// Set up query string
-		$troops = "";
+		$thread = getThreadPosts($thread_id, $page);
 		
-		// Check if link
-		$link = isLink(cleanInput($_POST['eventId']));
-		
-		// Make sure this is a linked event
-		if($link > 0)
+		// Remove first post from thread
+		if($page == 1)
 		{
-			// Query database for shifts to display all comments for linked events
-			$query = "SELECT * FROM events WHERE link = '".$link."'";
-			
-			// Set up count so we don't start with an operator
-			$j = 0;
-			
-			// Query loop
-			if ($result = mysqli_query($conn, $query))
-			{
-				while ($db = mysqli_fetch_object($result))
-				{
-					// If not first result
-					if($j != 0)
-					{
-						$troops .= "OR ";
-					}
-					
-					// Add to query
-					$troops .= "troopid = '".$db->id."' ";
-					
-					// Increment j
-					$j++;
-				}
-			}
-
-			// Add a last OR at end if linked data
-			if($j > 0)
-			{
-				$troops .= "OR ";
-			}
+			array_shift($thread['posts']);
 		}
 		
-		// Check which type of link
-		if(!isset($link) || isset($link) && $link <= 0)
-		{
-			$link = cleanInput($_POST['eventId']);
-		}
-
-		// Load comments for return data
-		$query = "SELECT * FROM comments WHERE ".$troops."troopid = '".$link."' ORDER BY posted DESC";
-
-		// Count comments
-		$i = 0;
-
-		// Return data
-		$data = "";
-		
-		// Set name comment var - used for e-mails
-		$name = "";
-		
-		// Set comment var - used for e-mails
-		$comment = "";
-
-		if ($result = mysqli_query($conn, $query))
-		{
-			while ($db = mysqli_fetch_object($result))
-			{
-				$data .= '
-				<table border="1" name="comment_'.$db->id.'" id="comment_'.$db->id.'">';
-				
-				// Set up admin variable
-				$admin = '';
-				
-				// Set comment variables
-				$name = getName($db->trooperid);
-				$comment = $db->comment;
-				
-				// If is admin, set up admin options
-				if(isAdmin())
-				{
-					$admin = '<span style="margin-right: 15px;"><a href="#/" id="deleteComment_'.$db->id.'" name="'.$db->id.'"><img src="images/trash.png" alt="Delete Comment" /></a></span>';
-				}
-				
-				// If is trooper, set up edit option
-				if($db->trooperid == $_SESSION['id'])
-				{
-					$admin .= '<span style="margin-right: 15px;"><a href="#/" id="editComment_'.$db->id.'" name="'.$db->id.'"><img src="images/edit.png" alt="Edit Comment" /></a></span>';
-				}
-
-				// Convert date/time
-				$newdate = formatTime($db->posted, "F j, Y, g:i a");
-
-				$data .= '
-				<tr>
-					<td><span style="float: left;">'.$admin.'<a href="#/" id="quoteComment_'.$db->id.'" name="'.$db->id.'" troopername="'.getTrooperForum($db->trooperid).'" user_id="'.getUserID($db->trooperid).'" post_id="'.$db->post_id.'"><img src="images/quote.png" alt="Quote Comment"></a></span> <a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.readTKNumber(getTKNumber($db->trooperid), getTrooperSquad($db->trooperid)).'</a>'.getForumAvatar($db->trooperid).''.$newdate.'</td>
-				</tr>
-				
-				<tr>
-					<td name="insideComment">'.nl2br(isImportant($db->important, showBBcodes($comment))).'</td>
-				</tr>
-
-				</table>
-
-				<br />';
-
-				// Increment
-				$i++;
-			}
-		}
-		
-		// Check comment check
-		if($commentCheck->num_rows == 0)
-		{
-			// Send to database to send out notifictions later
-			$conn->query("INSERT INTO notification_check (troopid, commentid) VALUES ('".cleanInput($_POST['eventId'])."', '".$last_id."')");
-		}
-
-		if($i == 0)
+		// Loop through posts
+		foreach(array_reverse($thread['posts']) as $key => $post)
 		{
 			$data .= '
-			<br />
-			<b>No discussion to display.</b>';
-		}
+			<table border="1">
+			<tr>
+				<td><a href="index.php?profile='.getIDFromUserID($post['user_id']).'">'.getName(getIDFromUserID($post['user_id'])).' - '.readTKNumber(getTKNumber(getIDFromUserID($post['user_id'])), getTrooperSquad(getIDFromUserID($post['user_id']))).'</a><br /><img src="'.$post['User']['avatar_urls']['m'].'" /></td>
+			</tr>
+			
+			<tr>
+				<td>'.showBBcodes($post['message_parsed']).'</td>
+			</tr>
 
-		$array = array('data' => $data);
-		echo json_encode($array);
+			</table>
+
+			<br />';
+		}
 	}
+
+	// If no posts
+	if(count($thread['posts']) == 0)
+	{
+		$data .= '
+		<br />
+		<b>No discussion to display.</b>';
+	}
+
+	$array = array('data' => $data);
+	echo json_encode($array);
 }
 
 
