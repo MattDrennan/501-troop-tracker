@@ -1302,8 +1302,6 @@ function replyThread($threadid, $userid, $message)
 	
 	// Update user by forum groups by ID
 	$curl = curl_init();
-	
-	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
 	curl_setopt_array($curl, [
 	  CURLOPT_URL => $forumURL . "api/posts",
@@ -1341,8 +1339,6 @@ function getThreadPosts($threadid, $page)
 	
 	// Get user forum info by forum name
 	$curl = curl_init();
-	
-	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
 	curl_setopt_array($curl, [
 	  CURLOPT_URL => $forumURL . "api/threads/".$threadid."&with_posts=true&page=".$page."",
