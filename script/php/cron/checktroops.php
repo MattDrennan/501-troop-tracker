@@ -114,7 +114,7 @@ if ($result = mysqli_query($conn, $query))
 }
 
 // Reset comments
-$conn->query("DELETE * FROM comments");
+$conn->query("DELETE FROM comments");
 
 // Set up squad count
 $i = 1;
