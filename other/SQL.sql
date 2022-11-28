@@ -2,8 +2,7 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Host: ls-b461765348ab37f7774d47c6788e7713192d710a.c7bgdu4hw8kg.us-east-1.rds.amazonaws.com:3306
--- Generation Time: Oct 29, 2022 at 04:35 PM
+-- Generation Time: Nov 28, 2022 at 08:55 AM
 -- Server version: 8.0.28
 -- PHP Version: 7.4.7
 
@@ -92,7 +91,6 @@ CREATE TABLE `comments` (
   `trooperid` int NOT NULL,
   `post_id` int NOT NULL DEFAULT '0',
   `comment` text NOT NULL,
-  `important` int NOT NULL,
   `posted` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
@@ -318,7 +316,6 @@ CREATE TABLE `settings` (
   `lastnotification` int NOT NULL DEFAULT '0',
   `supportgoal` int NOT NULL DEFAULT '0',
   `notifyevent` int NOT NULL DEFAULT '0',
-  `lastimportantcomment` int NOT NULL DEFAULT '0',
   `syncdate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `syncdaterebels` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
@@ -409,7 +406,6 @@ CREATE TABLE `troopers` (
   `esquad8` int NOT NULL DEFAULT '1',
   `esquad9` int NOT NULL DEFAULT '1',
   `esquad10` int NOT NULL DEFAULT '1',
-  `ecomments` tinyint(1) DEFAULT '1',
   `efast` tinyint(1) DEFAULT '0',
   `ecommandnotify` tinyint(1) DEFAULT '1',
   `econfirm` tinyint(1) DEFAULT '1',
