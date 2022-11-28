@@ -1854,33 +1854,6 @@ $(document).ready(function()
 			}
 		});
 	});
-	
-	// When admin clicks delete comment icon
-	$("body").on("click", "[id^=deleteComment]", function(e)
-	{
-		e.preventDefault();
-
-		var r = confirm("Are you sure you want to delete this comment?");
-
-		var id = $(this).attr("name");
-
-		if (r == true)
-		{
-			$.ajax({
-				type: "POST",
-				url: "index.php?event=" + $(this).attr("name"),
-				data: "comment=" + id + "&deleteComment=1",
-				success: function(data)
-				{
-					// Remove comment
-					$("#comment_" + id).remove();
-
-					// Alert to success
-			  		alert("The comment was removed successfully!");
-				}
-			});
-		}
-	});
 
 	// When trooper clicks button to add smiley
 	$("body").on("click", "[name=addSmiley]", function(e)
@@ -1931,52 +1904,6 @@ $(document).ready(function()
 		// Add comment to comment text area
 		$("#comment").val($("#comment").val() + "[QUOTE=\"" + $(this).attr("troopername") + ", post: " + $(this).attr("post_id") + ", member: " + $(this).attr("user_id") + "\"]" + $(changeThis).text() + "[/QUOTE]\n\n");
 
-	});
-	
-	// When trooper quotes a comment
-	$("body").on("click", "[id^=editComment]", function(e)
-	{
-		e.preventDefault();
-
-		// Get ID of comment
-		var id = $(this).attr("name");
-
-		// Replace smileys with code
-		$("table[name=comment_" + id + "] td[name=insideComment] img").each(function() {
-			$(this).replaceWith($(this).attr("code"));
-		});
-		
-		// Add comment to comment text area with HTML for display purposes
-		$("table[name=comment_" + id + "] td[name=insideComment]").html('<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\', \'textcomment_' + id + '\')" class="button">Bold</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\', \'textcomment_' + id + '\')" class="button">Italic</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\', \'textcomment_' + id + '\')" class="button">Underline</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'Q\', \'textcomment_' + id + '\')" class="button">Quote</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\', \'textcomment_' + id + '\')" class="button">Color</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\', \'textcomment_' + id + '\')" class="button">Size</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\', \'textcomment_' + id + '\')" class="button">URL</a> <a href="#/" name="addSmiley" class="button">Add Smiley</a><textarea id="textcomment_' + id + '" commentid="' + id + '">' + $("table[name=comment_" + id + "] td[name=insideComment]").text().replace('<br/>', '\n').replace('<br />', '\n') + '</textarea><span name="smileyarea"></span><br /><input type="submit" name="editCommentSubmit" commentid="' + id + '" value="Save" />');
-	});
-	
-	// When trooper quotes a comment
-	$("body").on("click", "[name=editCommentSubmit]", function(e)
-	{
-		e.preventDefault();
-
-		// Get ID of comment
-		var id = $(this).attr("commentid");
-		
-		// Get comment
-		var comment = $("table[name=comment_" + id + "] td[name=insideComment] textarea").val().replace(/\n/g, '\n<br />')
-		
-		// Save comment
-		$.ajax({
-			type: "POST",
-			url: "process.php?do=editcomment",
-			data: "commentid=" + id + "&comment=" + comment,
-			success: function(data)
-			{
-				var json = JSON.parse(data);
-
-				// Add text area to comment
-				$("table[name=comment_" + id + "] td[name=insideComment]").html(json.data);
-
-				// Alert to success
-				alert("Comment updated!");
-			}
-		});
 	});
 
 	$("#changephoneLink").click(function(e)

@@ -358,7 +358,6 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 
 				<h3>Website</h3>
 				<input type="checkbox" name="efast" id="efast" ' . emailSettingStatus("efast", true) . ' />Instant Event Notification<br />
-				<input type="checkbox" name="ecomments" id="ecomments" ' . emailSettingStatus("ecomments", true) . ' />Comments<br />
 				<input type="checkbox" name="econfirm" id="econfirm" ' . emailSettingStatus("econfirm", true) . ' />Confirm Attendance Notification<br />
 				<input type="checkbox" name="ecommandnotify" id="ecommandnotify" ' . emailSettingStatus("ecommandnotify", true) . ' />Command Staff Notifications<br />
 			</form>
@@ -5003,7 +5002,7 @@ if(isset($_GET['event']))
 	$eventExist = false;
 			
 	// Query database for event info
-	$query = "SELECT * FROM events WHERE id = '".strip_tags(addslashes($_GET['event']))."'";
+	$query = "SELECT * FROM events WHERE id = '".cleanInput($_GET['event'])."'";
 	if ($result = mysqli_query($conn, $query))
 	{
 		while ($db = mysqli_fetch_object($result))
@@ -5014,6 +5013,7 @@ if(isset($_GET['event']))
 			$limitTo = $db->limitTo;
 			$friendLimit = $db->friendLimit;
 			$allowTentative = $db->allowTentative;
+			$thread_id = $db->thread_id;
 			
 			// Set total
 			$limitTotal = $db->limit501st;
@@ -5066,8 +5066,9 @@ if(isset($_GET['event']))
 				
 				// Create button variable
 				$button = '
-				<p style="text-align: center;" aria-label="Get updates on sign ups, cancellations, and discussion." data-balloon-pos="up" data-balloon-length="fit">
-					<a href="#/" class="button" id="subscribeupdates" event="'.cleanInput($_GET['event']).'">'.$subscribeText.'</a>
+				<p style="text-align: center;">
+					<a href="#/" class="button" id="subscribeupdates" event="'.cleanInput($_GET['event']).'" aria-label="Get updates on sign ups and cancellations." data-balloon-pos="up" data-balloon-length="fit">'.$subscribeText.'</a>
+					<a href="https://www.fl501st.com/boards/index.php?threads/'.$db->thread_id.'/watch" target="_blank" class="button" aria-label="Get updates on replies to this event." data-balloon-pos="up" data-balloon-length="fit">Watch Discussion</a>
 				</p>';
 
 				// If this event is over, don't show it
@@ -5409,7 +5410,7 @@ if(isset($_GET['event']))
 			</p>';
 
 			// HR Fix for formatting
-			if(loggedIn())
+			if(loggedIn() && !$isMerged)
 			{
 				echo '<hr />';
 			}
@@ -5782,7 +5783,7 @@ if(isset($_GET['event']))
 			}
 
 			// HR Fix for formatting
-			if(loggedIn())
+			if(loggedIn() && !$isMerged)
 			{
 				echo '<hr />';
 			}
@@ -5975,141 +5976,91 @@ if(isset($_GET['event']))
 					//echo '
 					//<p>This event is closed for editing.</p>';
 				}
-
-				echo '
-				<form aciton="process.php?do=postcomment" name="commentForm" id="commentForm" method="POST">
-					<input type="hidden" name="eventId" id="eventId" value="'.cleanInput($_GET['event']).'" />
-
-					<h2 class="tm-section-header">Discussion</h2>
-					<div style="text-align: center;">
-
-					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\', \'comment\')" class="button">Bold</a>
-					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\', \'comment\')" class="button">Italic</a>
-					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\', \'comment\')" class="button">Underline</a>
-					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'Q\', \'comment\')" class="button">Quote</a>
-					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\', \'comment\')" class="button">Color</a>
-					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\', \'comment\')" class="button">Size</a>
-					<a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\', \'comment\')" class="button">URL</a>
-					<a href="#/" class="button" name="addSmiley">Add Smiley</a>
-
-					<textarea cols="30" rows="10" name="comment" id="comment"></textarea>
-
-					<br />
-
-					<p aria-label="This will highlight and notify command staff of your comment." data-balloon-pos="up" data-balloon-length="fit">Notify command staff?</p>
-					<select name="important" id="important">
-						<option value="0">No</option>
-						<option value="1">Yes</option>
-					</select>
-
-					<br /><br />
-
-					<span name="smileyarea" style="display: block;">
-					</span>
-
-					<input type="submit" name="submitComment" value="Post!" />
-					</div>
-				</form>
-
-				<div name="commentArea" id="commentArea">';
 				
-				// Set up query string
-				$troops = "";
-				
-				// Make sure this is a linked event
-				if($link > 0)
-				{
-					// Query database for shifts to display all comments for linked events
-					$query = "SELECT * FROM events WHERE link = '".$link."'";
-					
-					// Set up count so we don't start with an operator
-					$j = 0;
-					
-					// Query loop
-					if ($result = mysqli_query($conn, $query))
-					{
-						while ($db = mysqli_fetch_object($result))
-						{
-							// If not first result
-							if($j != 0)
-							{
-								$troops .= "OR ";
-							}
-							
-							// Add to query
-							$troops .= "troopid = '".$db->id."' ";
-							
-							// Increment j
-							$j++;
-						}
-					}
-
-					// Add a last OR at end if linked data
-					if($j > 0)
-					{
-						$troops .= "OR ";
-					}
-				}
-				
-				// Check which type of link
-				if(!isset($link) || isset($link) && $link <= 0)
-				{
-					$link = cleanInput($_GET['event']);
-				}
-
-				// Query database for event info
-				$query = "SELECT * FROM comments WHERE ".$troops."troopid = '".$link."' ORDER BY posted DESC";
-				
-				// Count comments
-				$i = 0;
-				if ($result = mysqli_query($conn, $query))
-				{
-					while ($db = mysqli_fetch_object($result))
-					{
-						echo '
-						<table border="1" name="comment_'.$db->id.'" id="comment_'.$db->id.'">';
-						
-						// Set up admin variable
-						$admin = '';
-						
-						// If is admin, set up admin options
-						if(isAdmin())
-						{
-							$admin = '<span style="margin-right: 15px;"><a href="#/" id="deleteComment_'.$db->id.'" name="'.$db->id.'"><img src="images/trash.png" alt="Delete Comment" /></a></span>';
-						}
-						
-						// If is trooper, set up edit option
-						if($db->trooperid == $_SESSION['id'])
-						{
-							$admin .= '<span style="margin-right: 15px;"><a href="#/" id="editComment_'.$db->id.'" name="'.$db->id.'"><img src="images/edit.png" alt="Edit Comment" /></a></span>';
-						}
-						
-						// Convert date/time
-						$newdate = formatTime($db->posted, "F j, Y, g:i a");
-
-						echo '
-						<tr>
-							<td><span style="float: left;">'.$admin.'<a href="#/" id="quoteComment_'.$db->id.'" name="'.$db->id.'" troopername="'.getTrooperForum($db->trooperid).'" user_id="'.getUserID($db->trooperid).'" post_id="'.$db->post_id.'"><img src="images/quote.png" alt="Quote Comment"></a></span> <a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.readTKNumber(getTKNumber($db->trooperid), getTrooperSquad($db->trooperid)).'</a>'.getForumAvatar($db->trooperid).''.$newdate.'</td>
-						</tr>
-						
-						<tr>
-							<td name="insideComment">'.nl2br(isImportant($db->important, showBBcodes($db->comment))).'</td>
-						</tr>
-
-						</table>
-
-						<br />';
-
-						// Increment
-						$i++;
-					}
-				}
-
-				if($i == 0)
+				if($thread_id > 0)
 				{
 					echo '
-					<br />
-					<b>No discussion to display.</b>';
+					<form aciton="process.php?do=postcomment" name="commentForm" id="commentForm" method="POST">
+						<input type="hidden" name="thread_id" id="thread_id" value="'.$thread_id.'" />
+						<input type="hidden" name="eventId" id="eventId" value="'.cleanInput($_GET['event']).'" />
+
+						<h2 class="tm-section-header">Discussion</h2>
+						<div style="text-align: center;">
+
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\', \'comment\')" class="button">Bold</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\', \'comment\')" class="button">Italic</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\', \'comment\')" class="button">Underline</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\', \'comment\')" class="button">Color</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\', \'comment\')" class="button">Size</a>
+						<a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\', \'comment\')" class="button">URL</a>
+						<a href="#/" class="button" name="addSmiley">Add Smiley</a>
+
+						<textarea cols="30" rows="10" name="comment" id="comment"></textarea>
+
+						<br />
+
+						<p aria-label="This will highlight and notify command staff of your comment." data-balloon-pos="up" data-balloon-length="fit">Notify command staff?</p>
+						<select name="important" id="important">
+							<option value="0">No</option>
+							<option value="1">Yes</option>
+						</select>
+
+						<br /><br />
+
+						<span name="smileyarea" style="display: block;">
+						</span>
+
+						<input type="submit" name="submitComment" value="Quick Reply!" /><br /><a href="https://www.fl501st.com/boards/index.php?threads/'.$thread_id.'/reply?" class="button" target="_blank">Reply On Forum</a>
+						</div>
+					</form>
+
+					<div name="commentArea" id="commentArea">';
+					
+					// Get thread
+					$thread = getThreadPosts($thread_id, 1);
+					
+					for($page = $thread['pagination']['last_page']; $page >= 1; $page--)
+					{
+						$thread = getThreadPosts($thread_id, $page);
+						
+						// Remove first post from thread
+						if($page == 1)
+						{
+							array_shift($thread['posts']);
+						}
+						
+						// Loop through posts
+						foreach(array_reverse($thread['posts']) as $key => $post)
+						{
+							echo '
+							<table border="1">
+							<tr>
+								<td><a href="index.php?profile='.getIDFromUserID($post['user_id']).'">'.getName(getIDFromUserID($post['user_id'])).' - '.readTKNumber(getTKNumber(getIDFromUserID($post['user_id'])), getTrooperSquad(getIDFromUserID($post['user_id']))).'</a><br /><img src="'.$post['User']['avatar_urls']['m'].'" /></td>
+							</tr>
+							
+							<tr>
+								<td>'.showBBcodes($post['message_parsed']).'</td>
+							</tr>
+
+							</table>
+
+							<br />';
+						}
+					}
+
+					// If no posts
+					if(count($thread['posts']) == 0)
+					{
+						echo '
+						<br />
+						<b>No discussion to display.</b>';
+					}
+				}
+				else
+				{
+						echo '
+						<br />
+						<b>A corresponding forum thread does not exist for this event.</b>';
 				}
 			}
 		}
