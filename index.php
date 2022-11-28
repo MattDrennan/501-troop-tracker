@@ -6279,46 +6279,86 @@ else
 				
 				// Event calendar
 				$events = array();
-
-				// Load events that are today or in the future
-				if ($result = mysqli_query($conn, $query))
+				
+				// Troops near me
+				if(isset($_GET['squad']) && $_GET['squad'] == "troopsnearme" && isset($trooperAddress) && $trooperAddress != "")
 				{
-					while ($db = mysqli_fetch_object($result))
+					// Within range events
+					$destination_addresses_array = array();
+				
+					// Loop count
+					$addressCount = 0;
+					
+					// URL String Builder
+					$urlStringBuild = "";
+					
+					// Load events that are today or in the future
+					if ($result = mysqli_query($conn, $query))
 					{
-						if(isset($trooperAddress) && $trooperAddress != "")
+						while ($db = mysqli_fetch_object($result))
 						{
-							// Troops near me
-							if(isset($_GET['squad']) && $_GET['squad'] == "troopsnearme")
+							$urlStringBuild .= urlencode($db->location) . '|';
+							
+							// Increment
+							$addressCount++;
+							
+							if($addressCount >= 24)
 							{
-								// In metric unit. This is default
-								$distance_data = file_get_contents('https://maps.googleapis.com/maps/api/distancematrix/json?&units=imperial&origins='.urlencode($trooperAddress).'&destinations='.urlencode($db->location).'&key=' . googleKey);
+								$distance_data = file_get_contents('https://maps.googleapis.com/maps/api/distancematrix/json?&units=imperial&origins='.urlencode($trooperAddress).'&destinations='.$urlStringBuild.'&key=' . googleKey);
 								$distance_arr = json_decode($distance_data);
-
+							
 								if ($distance_arr->status=='OK')
 								{
 									$destination_addresses = $distance_arr->destination_addresses[0];
 									$origin_addresses = $distance_arr->origin_addresses[0];
-								} else {
-									continue;
 								}
-								if ($origin_addresses == "" or $destination_addresses == "")
-								{
-									continue;
-								}
-
-								// Get the elements as array
-								$elements = $distance_arr->rows[0]->elements;
-								$distance = $elements[0]->distance->text;
-								$duration = $elements[0]->duration->text;
-							
-
-								if(intval($distance) > intval($trooperRadius))
-								{
-									continue;
-								}
+								
+								array_push($destination_addresses_array, $distance_arr);
+								
+								// Reset
+								$urlStringBuild = "";
+								$addressCount = 0;
 							}
 						}
+						
+						// Locations that are left over, lets check those
+						$distance_data = file_get_contents('https://maps.googleapis.com/maps/api/distancematrix/json?&units=imperial&origins='.urlencode($trooperAddress).'&destinations='.$urlStringBuild.'&key=' . googleKey);
+						$distance_arr = json_decode($distance_data);
+					
+						if ($distance_arr->status=='OK')
+						{
+							$destination_addresses = $distance_arr->destination_addresses[0];
+							$origin_addresses = $distance_arr->origin_addresses[0];
+						}
+						
+						array_push($destination_addresses_array, $distance_arr);
+						
+						// Reset
+						$urlStringBuild = "";
+						$addressCount = 0;
+					}
+				}
+				
+				// Set up location count
+				$locationCount = 0;
 
+				// Load events that are today or in the future
+				if ($result = mysqli_query($conn, $query))
+				{
+					while($db = mysqli_fetch_object($result))
+					{
+						if(isset($_GET['squad']) && $_GET['squad'] == "troopsnearme" && isset($trooperAddress) && $trooperAddress != "")
+						{
+							// Increment location
+							$locationCount++;
+							
+							// Check distance
+							if(intval(@$destination_addresses_array[floor(($locationCount - 1) / 24)]->rows[0]->elements[($locationCount - 1) - ((floor(($locationCount - 1) / 24)) * 24)]->distance->text) > intval($trooperRadius))
+							{
+								continue;
+							}
+						}
+						
 						// Get number of troopers at event
 						$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".$db->id."' AND (status = '0' OR status = '2')");
 						
