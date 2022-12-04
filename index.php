@@ -2413,7 +2413,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			}
 			
 			// Query database
-			$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, event_sign_up.costume, troopers.name AS trooperName FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE ".$queryAdd." events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 AND troopers.id != 0 ORDER BY troopers.name";
+			$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, event_sign_up.costume, event_sign_up.note, troopers.name AS trooperName FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE ".$queryAdd." events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 AND troopers.id != 0 ORDER BY troopers.name";
 			
 			// Query count
 			$i = 0;
@@ -2452,7 +2452,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 					echo '
 					<p class="trooper-confirmation-box" signid="'.$db->signupId.'">
-						<a href="index.php?event='.$db->eventId.'" target="_blank">'.$add.''.$db->name.' '.$db->trooperName.'</a>
+						<a href="index.php?event='.$db->eventId.'" target="_blank">'.$add.''.$db->name.' '.$db->trooperName.' '.($db->note != '' ? 'noted as ' . $db->note : '').'</a>
 						<br />
 						<b>Attended As:</b> '.getCostume($db->costume).'
 						<br /><br />
@@ -4522,6 +4522,11 @@ if(isset($_GET['action']) && $_GET['action'] == "faq")
 	<p>
 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/C0WCxIRZafQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 	</p>
+	
+	<h3>How to add someone to a troop without them being a member or having tracker access</h3>
+	<p>
+		<iframe width="100%" height="315" src="https://www.youtube.com/watch?v=mDeJaANqLIk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</p>
 
 	<h3>How to search for troops and troop counts</h3>
 	<p>
@@ -5999,7 +6004,7 @@ if(isset($_GET['event']))
 
 						<br />
 
-						<p aria-label="This will highlight and notify command staff of your comment." data-balloon-pos="up" data-balloon-length="fit">Notify command staff?</p>
+						<p aria-label="This will notify command staff of your comment." data-balloon-pos="up" data-balloon-length="fit">Notify command staff?</p>
 						<select name="important" id="important">
 							<option value="0">No</option>
 							<option value="1">Yes</option>
@@ -6033,9 +6038,13 @@ if(isset($_GET['event']))
 						foreach(array_reverse($thread['posts']) as $key => $post)
 						{
 							echo '
-							<table border="1">
+							<table border="1" style="width: 100%">
 							<tr>
-								<td><a href="index.php?profile='.getIDFromUserID($post['user_id']).'">'.getName(getIDFromUserID($post['user_id'])).' - '.readTKNumber(getTKNumber(getIDFromUserID($post['user_id'])), getTrooperSquad(getIDFromUserID($post['user_id']))).'</a><br /><img src="'.$post['User']['avatar_urls']['m'].'" /></td>
+								<td>
+									<a href="index.php?profile='.$post['User']['custom_fields']['trackerid'].'">'.$post['User']['custom_fields']['fullname'].' - '.$post['User']['custom_fields']['tkid'].'<br />'.$post['username'].'</a>'.($post['User']['avatar_urls']['m'] != '' ? '<br /><img src="'.$post['User']['avatar_urls']['m'].'" />' : '').'
+									<br />
+									'.date("F j, Y, g:i a", $post['post_date']).'
+								</td>
 							</tr>
 							
 							<tr>
