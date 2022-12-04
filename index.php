@@ -4525,7 +4525,7 @@ if(isset($_GET['action']) && $_GET['action'] == "faq")
 	
 	<h3>How to add someone to a troop without them being a member or having tracker access</h3>
 	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/watch?v=mDeJaANqLIk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+		<iframe width="100%" height="315" src="https://www.youtube.com/embed/mDeJaANqLIk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 	</p>
 
 	<h3>How to search for troops and troop counts</h3>

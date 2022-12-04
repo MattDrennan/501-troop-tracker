@@ -163,10 +163,10 @@ function dailyTip()
 		case 13:
 			$tip = 'Did you know you can type when selecting a costume to find it easier?';
 			$link = 'https://youtu.be/YLjiVGgqe-Y';
-
+		
 		case 14:
-			$tip = 'Did you know you can type when selecting a costume to find it easier?';
-			$link = 'https://youtu.be/YLjiVGgqe-Y';
+			$tip = 'Did you know you can add someone to a troop that is not a member and does not have tracker access?';
+			$link = 'https://www.youtube.com/watch?v=mDeJaANqLIk';
 		break;
 
 		default:
