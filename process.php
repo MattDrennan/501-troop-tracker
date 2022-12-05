@@ -3089,7 +3089,7 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmList")
 if(isset($_GET['do']) && $_GET['do'] == "confirmfriend")
 {
 	// Query the database
-	$conn->query("UPDATE event_sign_up SET status = '3' WHERE trooperid = '".cleanInput($_POST['friendid'])."' AND troopid = '".cleanInput($_POST['troopid'])."' AND addedby = '".$_SESSION['id']."'");
+	$conn->query("UPDATE event_sign_up SET status = '3' WHERE trooperid = '".cleanInput($_POST['friendid'])."' AND troopid = '".cleanInput($_POST['troopid'])."' AND id = '".cleanInput($_POST['signid'])."' AND addedby = '".$_SESSION['id']."'");
 
 	// Send back AJAX data
 
@@ -3097,7 +3097,7 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmfriend")
 	$dataMain = "";
 
 	// Load events that need confirmation
-	$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.addedby, event_sign_up.costume FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.addedby = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC";
+	$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.addedby, event_sign_up.costume, event_sign_up.note FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.addedby = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC";
 
 	if ($result = mysqli_query($conn, $query))
 	{
@@ -3115,7 +3115,15 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmfriend")
 			// If added by friend, add name
 			if($db->addedby != 0)
 			{
-				$add .= '<a href="#/" trooperid="'.$db->trooperid.'" troopid="'.$db->eventId.'" class="button" name="attendFriend">Attended</a> <a href="#/" trooperid="'.$db->trooperid.'" troopid="'.$db->eventId.'" class="button" name="didNotFriend">Did Not Attend</a> <b>' . getName($db->trooperid) . ' as ' . getCostume($db->costume) . '</b>: ';
+				$add .= '<a href="#/" trooperid="'.$db->trooperid.'" troopid="'.$db->eventId.'" signid="'.$db->signupId.'" class="button" name="attendFriend">Attended</a> <a href="#/" trooperid="'.$db->trooperid.'" troopid="'.$db->eventId.'" signid="'.$db->signupId.'" class="button" name="didNotFriend">Did Not Attend</a>';
+				
+				// If note left, add note
+				if($db->note != "")
+				{
+					$add .= '<b>[' . $db->note . ']</b> ';
+				}
+				
+				$add .= '<b>' . getName($db->trooperid) . ' as ' . getCostume($db->costume) . '</b>: ';
 			}
 			
 			// If this a linked event?
@@ -3145,7 +3153,7 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmfriend")
 if(isset($_GET['do']) && $_GET['do'] == "friendnoconfirm")
 {
 	// Query the database
-	$conn->query("UPDATE event_sign_up SET status = '4' WHERE trooperid = '".cleanInput($_POST['friendid'])."' AND troopid = '".cleanInput($_POST['troopid'])."' AND addedby = '".$_SESSION['id']."'");
+	$conn->query("UPDATE event_sign_up SET status = '4' WHERE trooperid = '".cleanInput($_POST['friendid'])."' AND troopid = '".cleanInput($_POST['troopid'])."' AND id = '".cleanInput($_POST['signid'])."' AND addedby = '".$_SESSION['id']."'");
 
 	// Send back AJAX data
 
@@ -3171,7 +3179,7 @@ if(isset($_GET['do']) && $_GET['do'] == "friendnoconfirm")
 			// If added by friend, add name
 			if($db->addedby != 0)
 			{
-				$add .= '<a href="#/" trooperid="'.$db->trooperid.'" troopid="'.$db->eventId.'" class="button" name="attendFriend">Attended</a> <a href="#/" trooperid="'.$db->trooperid.'" troopid="'.$db->eventId.'" class="button" name="didNotFriend">Did Not Attend</a>';
+				$add .= '<a href="#/" trooperid="'.$db->trooperid.'" troopid="'.$db->eventId.'" signid="'.$db->signupId.'" class="button" name="attendFriend">Attended</a> <a href="#/" trooperid="'.$db->trooperid.'" troopid="'.$db->eventId.'" signid="'.$db->signupId.'" class="button" name="didNotFriend">Did Not Attend</a>';
 				
 				// If note left, add note
 				if($db->note != "")

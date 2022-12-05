@@ -3147,6 +3147,7 @@ $(document).ready(function()
 
 		var trooperid = $(this).attr('trooperid');
 		var troopid = $(this).attr('troopid');
+		var signid = $(this).attr('signid');
 		
 		var r = confirm("Are you sure you want to confirm these events for your friend?");
 
@@ -3155,7 +3156,7 @@ $(document).ready(function()
 			$.ajax({
 				type: "POST",
 				url: "process.php?do=confirmfriend",
-				data: "do=confirmfriend&friendid=" + trooperid + "&troopid=" + troopid,
+				data: "do=confirmfriend&friendid=" + trooperid + "&troopid=" + troopid + "&signid=" + signid,
 				success: function(data)
 				{
 					// If there is still data
@@ -3182,6 +3183,7 @@ $(document).ready(function()
 
 		var trooperid = $(this).attr('trooperid');
 		var troopid = $(this).attr('troopid');
+		var signid = $(this).attr('signid');
 		
 		var r = confirm("Are you sure your friend DID NOT attend?");
 
@@ -3190,7 +3192,7 @@ $(document).ready(function()
 			$.ajax({
 				type: "POST",
 				url: "process.php?do=friendnoconfirm",
-				data: "do=friendnoconfirm&friendid=" + trooperid + "&troopid=" + troopid,
+				data: "do=friendnoconfirm&friendid=" + trooperid + "&troopid=" + troopid + "&signid=" + signid,
 				success: function(data)
 				{
 					// If there is still data

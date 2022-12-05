@@ -6649,7 +6649,7 @@ else
 						// If added by friend, add name
 						if($db->addedby != 0)
 						{
-							$add .= '<a href="#/" trooperid="'.$db->trooperid.'" troopid="'.$db->eventId.'" class="button" name="attendFriend">Attended</a> <a href="#/" trooperid="'.$db->trooperid.'" troopid="'.$db->eventId.'" class="button" name="didNotFriend">Did Not Attend</a>';
+							$add .= '<a href="#/" trooperid="'.$db->trooperid.'" troopid="'.$db->eventId.'" signid="'.$db->signupId.'" class="button" name="attendFriend">Attended</a> <a href="#/" trooperid="'.$db->trooperid.'" troopid="'.$db->eventId.'" signid="'.$db->signupId.'" class="button" name="didNotFriend">Did Not Attend</a>';
 							
 							// If note left, add note
 							if($db->note != "")
