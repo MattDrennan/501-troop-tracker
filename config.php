@@ -1045,6 +1045,41 @@ function loginWithForum($username, $password)
 }
 
 /**
+ * Create's an alert in Xenforo
+ * 
+ * @param int $to The forum ID the alert is to be sent to
+ * @param string $message The message of the alert to be sent
+ * @return json Return alert success
+*/
+function createAlert($to, $message)
+{
+	global $forumURL;
+	
+	// Create Thread
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => $forumURL . "api/alerts",
+	  CURLOPT_POST => 1,
+	  CURLOPT_POSTFIELDS => "from_user_id=0&to_user_id=" . urlencode($to) . "&alert=" . urlencode($message) . "&link_url=https%3A%2F%2Ffl501st.com%2Ftroop-tracker%2F&link_title=From Troop%20Tracker",
+	  CURLOPT_CUSTOMREQUEST => "POST",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+/**
  * Create's a thread in Xenforo
  * 
  * @param int $id The forum ID to be posted in
