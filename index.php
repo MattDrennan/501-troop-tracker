@@ -2747,7 +2747,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<select name="userID" id="userID">';
 						}
 
-						echo '<option value="'.$db->id.'" tkid="'.readTKNumber($db->tkid, $db->squad).'" troopername="'.$db->name.'" forum_id="'.$db->forum_id.'">'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).'</option>';
+						echo '<option value="'.$db->id.'" tkid="'.readTKNumber($db->tkid, $db->squad).'" troopername="'.$db->name.'" forum_id="'.$db->forum_id.'">'.$db->name.' - '.$db->forum_id.' - '.readTKNumber($db->tkid, $db->squad).'</option>';
 
 						// Increment
 						$i++;
