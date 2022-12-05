@@ -1657,6 +1657,9 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			$addToQuery3 = "";
 			$addToQuery4 = "";
 
+			// Set up Squad ID
+			$clubID = count($squadArray) + 1;
+
 			// Loop through clubs
 			foreach($clubArray as $club => $club_value)
 			{
@@ -1668,7 +1671,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 				}
 				else
 				{
-					// If contains ID
+					// If contains ID (which would make the value an int)
 					if (isset($_POST[$club_value['db3']]) && strpos($club_value['db3'], "id") !== false)
 					{
 						// Set as int
@@ -1676,15 +1679,29 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 					}
 				}
 
-				// If database 3 set
+				// Make member of club
+				if($clubID == cleanInput($_POST['squad']))
+				{
+					// Change value
+					${$club_value['db']} = cleanInput($_POST['accountType']);
+				}
+
+				// Club membership DB value set
+				if($club_value['db'] != "")
+				{
+					$addToQuery3 .= "".$club_value['db'].", ";
+					$addToQuery4 .= "'".${$club_value['db']}."', ";
+				}
+
+				// If Club membership DB member identifer set
 				if($club_value['db3'] != "")
 				{
 					// Add to query
 					$addToQuery1 .= "".$club_value['db3'].", ";
 					$addToQuery2 .= "'".cleanInput($_POST[$club_value['db3']])."', ";
-					$addToQuery3 .= "".$club_value['db'].", ";
-					$addToQuery4 .= "'".${$club_value['db']}."', ";
 				}
+
+				$clubID++;
 			}
 			
 			// Insert
