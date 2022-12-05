@@ -12,6 +12,13 @@
 // Include config
 include(dirname(__DIR__) . '/../../config.php');
 
+// Cronjob check
+$isCLI = (php_sapi_name() == 'cli');
+if(!$isCLI)
+{
+    die("Sorry! Cannot run in a browser! This script is set to run via cron job.");
+}
+
 // Drop troopers
 $conn->query("UPDATE event_sign_up LEFT JOIN events ON event_sign_up.troopid = events.id SET event_sign_up.status = 4 WHERE event_sign_up.status = 2 AND NOW() > events.dateStart - INTERVAL 1 DAY");
 
