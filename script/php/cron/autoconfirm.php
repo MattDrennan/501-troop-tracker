@@ -12,6 +12,6 @@
 // Include config
 include(dirname(__DIR__) . '/../../config.php');
 
-$conn->query("UPDATE event_sign_up SET status = 3 WHERE status = 0 AND signuptime <= NOW() - INTERVAL 6 MONTH");
+$conn->query("UPDATE event_sign_up SET event_sign_up.status = 3 WHERE event_sign_up.status = 0 AND event_sign_up.signuptime <= NOW() - INTERVAL 6 MONTH AND 1 = (SELECT events.closed FROM events WHERE events.id = event_sign_up.troopid)");
 
 ?>
