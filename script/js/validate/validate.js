@@ -129,6 +129,7 @@ $(function()
                             }
 
                             $("#referred").val("");
+							$("#poc").val("");
                             $("#options").show();
 
                             // Remove all shift boxes

@@ -3899,6 +3899,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						<p>Referred By:</p>
 						<input type="text" name="referred" id="referred" />
+						
+						<p>Point of Contact (Name & Contact):</p>
+						<input type="text" name="poc" id="poc" />
 
 						<input type="submit" name="submitEventEdit" id="submitEventEdit" value="Edit!" />
 					</form>
@@ -4179,6 +4182,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			$mobility = "";
 			$amenities = "";
 			$referred = "";
+			$poc = "";
 			$comments = "";
 			$location = "";
 			$label = "";
@@ -4233,6 +4237,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						$mobility = $db->mobility;
 						$amenities = $db->amenities;
 						$referred = $db->referred;
+						$poc = $db->poc;
 						$comments = $db->comments;
 						$location = $db->location;
 						$label = $db->label;
@@ -4465,6 +4470,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 				<p>Referred By:</p>
 				<input type="text" name="referred" id="referred" value="'.copyEvent($eid, $referred).'" />
+				
+				<p>Point of Contact (Name & Contact):</p>
+				<input type="text" name="poc" id="poc" value="'.copyEvent($eid, $poc).'" />
 
 				<input type="submit" name="submitEvent" value="Create!" />
 				
@@ -5191,7 +5199,8 @@ if(isset($_GET['event']))
 					</div>
 					<p><b>Amenities available at venue:</b> '.ifEmpty($db->amenities, "No amenities for this event.").'</p>
 					<p><b>Comments:</b><br />'.ifEmpty(nl2br(showBBcodes($db->comments)), "No comments for this event.").'</p>
-					<p><b>Referred by:</b> '.ifEmpty($db->referred, "Not available").'</p>';
+					<p><b>Referred by:</b> '.ifEmpty($db->referred, "Not available").'</p>
+					'.(isAdmin() ? '<p><b>Point of Contact:</b> '.ifEmpty($db->poc, "Not available").'</p>' : '').'';
 
 					// If attached to a forum thread
 					if($db->thread_id > 0)

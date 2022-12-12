@@ -2,7 +2,7 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Generation Time: Nov 28, 2022 at 08:55 AM
+-- Generation Time: Dec 12, 2022 at 05:47 PM
 -- Server version: 8.0.28
 -- PHP Version: 7.4.7
 
@@ -158,6 +158,7 @@ CREATE TABLE `events` (
   `mobility` tinyint(1) DEFAULT NULL,
   `amenities` text,
   `referred` text,
+  `poc` text,
   `comments` text,
   `location` varchar(500) DEFAULT NULL,
   `label` varchar(100) DEFAULT NULL,

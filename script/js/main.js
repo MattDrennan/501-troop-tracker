@@ -1427,6 +1427,7 @@ $(document).ready(function()
 					}
 
 					$("#referred").val(json.referred);
+					$("#poc").val(json.poc);
 
 					// Hide options if armor party
 					if(json.label == 10)
