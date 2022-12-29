@@ -4983,7 +4983,7 @@ function eventClubCount($eventID, $clubID)
 	$returnVal = 0;
 
 	// Query database for roster info
-	$query = "SELECT events.limitHandlers, event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid LEFT JOIN events ON events.id = event_sign_up.troopid WHERE troopid = '".$eventID."' AND status != '1' AND status != '2' AND status != '4' AND status != '5' AND status != '6'";
+	$query = "SELECT events.limitHandlers, event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid LEFT JOIN events ON events.id = event_sign_up.troopid WHERE troopid = '".$eventID."' AND (event_sign_up.status = 0 OR event_sign_up.status = 2)";
 
 	if ($result = mysqli_query($conn, $query))
 	{
@@ -5071,7 +5071,7 @@ function handlerEventCount($eventID)
 	$total = 0;
 
 	// Query database for roster info
-	$query = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid LEFT JOIN costumes ON costumes.id = event_sign_up.costume WHERE troopid = '".$eventID."' AND status != '1' AND status != '2' AND status != '4' AND status != '6' AND costumes.costume LIKE '%handler%'";
+	$query = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid LEFT JOIN costumes ON costumes.id = event_sign_up.costume WHERE troopid = '".$eventID."' AND (event_sign_up.status = 0 OR event_sign_up.status = 2) AND costumes.costume LIKE '%handler%'";
 
 	if ($result = mysqli_query($conn, $query))
 	{
