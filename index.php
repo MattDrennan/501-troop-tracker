@@ -925,7 +925,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			}
 
 			// If costume search, include searchType for another search
-			if(isset($_POST['searchType']) && ($_POST['searchType'] == "trooper" || $_POST['searchType'] == "costumecount"))
+			if(isset($_POST['searchType']) && $_POST['searchType'] == "costumecount")
 			{
 				echo '
 				<select multiple style="height: 500px;" id="costumes_choice_search_box" name="costumes_choice_search_box[]">';
@@ -1362,7 +1362,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				if(($_POST['squad'] >= 1 && $_POST['squad'] <= count($squadArray)))
 				{
 					// Get troop counts - 501st
-					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR EXISTS(SELECT events.id FROM events WHERE events.id = event_sign_up.troopid))");
+					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.closed = '1' AND event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ".substr(getCostumeQueryValuesSquad(cleanInput($_POST['squad'])), 0, -1)." OR EXISTS(SELECT events.id FROM events WHERE events.id = event_sign_up.troopid))");
 
 					$count = $troops_get->fetch_row();
 				}
