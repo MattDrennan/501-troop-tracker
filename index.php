@@ -1363,7 +1363,6 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				{
 					// Get troop counts - 501st
 					$troops_get = $conn->query("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.closed = '1' AND event_sign_up.trooperid = '".$db->id."' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ".substr(getCostumeQueryValuesSquad(cleanInput($_POST['squad'])), 0, -1)." OR EXISTS(SELECT events.id FROM events WHERE events.id = event_sign_up.troopid))");
-
 					$count = $troops_get->fetch_row();
 				}
 				
