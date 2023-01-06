@@ -552,9 +552,13 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 			$troopFull = true;
 		}
 	}
-
+	
+	// Update time ONLY if changed status
+	$conn->query("UPDATE event_sign_up SET signuptime = NOW() WHERE status != '".$status."' AND ".$status." != 2 AND trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['troopid'])."' AND id = '".cleanInput($_POST['signid'])."'");
+	
 	// Update SQL
-	$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costume'])."', costume_backup = '".cleanInput($_POST['costume_backup'])."', status = '".$status."', signuptime = NOW() WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['troopid'])."' AND id = '".cleanInput($_POST['signid'])."'");
+	$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costume'])."', costume_backup = '".cleanInput($_POST['costume_backup'])."', status = '".$status."' WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['troopid'])."' AND id = '".cleanInput($_POST['signid'])."'");
+
 	
 	// Update notifications
 	// Going
