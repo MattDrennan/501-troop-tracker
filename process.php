@@ -3012,7 +3012,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 		$rosterUpdate = getRoster(cleanInput($_POST['event']), $limitTotal, $totalTrooperEvent, isset($_POST['addfriend']));
 		
 		// Send back data
-		$array = array('success' => $success, 'success_message' => $success_message, 'numFriends' => $numFriends->num_rows, 'data' => $rosterUpdate[0], 'id' => $_SESSION['id'], 'troopersRemaining' => $rosterUpdate[1]);
+		$array = array('success' => $success, 'success_message' => $success_message, 'numFriends' => ($friendLimit - $numFriends->num_rows), 'data' => $rosterUpdate[0], 'id' => $_SESSION['id'], 'troopersRemaining' => $rosterUpdate[1]);
 		echo json_encode($array);
 	}
 }
