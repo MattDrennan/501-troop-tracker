@@ -505,6 +505,13 @@ $(document).ready(function()
 		}
 	})
 	
+	// Add friend without an account button
+	$("body").on("click", "#withoutAccount", function(e)
+	{
+		$("#trooperSelect").val(placeholder);
+		$("#trooperSelect").select2();
+	})
+	
 	// Roster - Update member status
 	$("body").on("change", "[name=changepermission]", function(e)
 	{

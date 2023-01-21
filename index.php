@@ -5876,7 +5876,9 @@ if(isset($_GET['event']))
 						else
 						{
 							echo '
-							</select>';
+							</select>
+							
+							<a href="#/" class="button" id="withoutAccount" aria-label="Once you add a friend without an account using placeholder. Click on the blank textbox on the roster to set a name. To save, click off to the side after writing the name." data-balloon-pos="down" data-balloon-length="fit">Add a friend without an account</a>';
 						}
 								
 						echo '
