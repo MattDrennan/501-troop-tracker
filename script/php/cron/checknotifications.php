@@ -36,16 +36,6 @@ if ($result = mysqli_query($conn, $query))
 
 		// Send notification to Discord
 		sendEventNotify($db->id, readInput($db->name), readInput($db->comments), $db->squad);
-		
-		try
-		{
-			// Post to Twitter
-			postTweet("".readInput($db->name)." has been added in ".getSquadName($db->squad).".");
-		}
-		catch(Exception $e)
-		{
-			echo 'ERROR: Duplicate Tweet!';
-		}
 	}
 }
 

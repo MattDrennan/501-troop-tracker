@@ -22,9 +22,6 @@ set_time_limit(0);
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// Twitter namespace
-use DG\Twitter\Twitter;
-
 // Calendar links - namespace
 use Spatie\CalendarLinks\Link;
 
@@ -2158,29 +2155,6 @@ function showCostumes($id, $squad)
 		</p>';
 	}
 }
-
-/**
- * Posts a tweet to Twitter using Twitter API
- * 
- * @param string $message The message to post to Twitter
- * @return void
-*/
-function postTweet($message)
-{
-	// Credentials
-	$twitter = new Twitter(consumerKey, consumerSecret, accessToken, accessTokenSecret);
-
-	try
-	{
-		// Send tweet
-		$tweet = $twitter->send($message);
-	}
-	catch (DG\Twitter\TwitterException $e)
-	{
-		// Do nothing
-	}
-}
-
 
 /**
  * Converts squad ID to Discord role ID
