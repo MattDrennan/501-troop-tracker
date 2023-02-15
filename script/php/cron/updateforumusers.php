@@ -177,12 +177,14 @@ if ($result = mysqli_query($conn, $query))
 			}
 
 			/**
-			 * Add $userGroupGarrison, $userGroup501st, $userGroupRetired to the $groupTitles array
+			 * Add $userGroupGarrison, $userGroup501st, $userGroupRetired, $handlerUserGroup, $userGroupRIP to the $groupTitles array
 			 * so the code knows they exist in Troop Tracker DB.
 			*/
 			array_push($groupTitles, $userGroupGarrison);
 			array_push($groupTitles, $userGroup501st);
 			array_push($groupTitles, $userGroupRetired);
+			array_push($groupTitles, $handlerUserGroup);
+			array_push($groupTitles, $userGroupRIP);
 
 			/**
 			 * Check differences - Intersect titles in Troop Tracker DB ($groupTitles) with forum titles ($groupArray), return values that are the same. Check difference between assigned Troop Tracker DB titles and Forum titles. Will return the values to remove.
