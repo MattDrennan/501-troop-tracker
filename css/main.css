@@ -778,3 +778,12 @@ td[name=insideComment] {
 	margin-bottom: 10px;
 }
 
+/* Quotes from forum */
+
+blockquote {
+	border: 5px solid black; 
+	box-sizing: border-box; 
+	grid-area: 1 / 1; /* first row, first column */
+	padding: 20px; 
+	width: inherit; 
+}

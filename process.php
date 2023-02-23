@@ -648,7 +648,7 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 			</tr>
 			
 			<tr>
-				<td>'.showBBcodes($post['message_parsed']).'</td>
+				<td>'.$post['message_parsed'].'</td>
 			</tr>
 
 			</table>

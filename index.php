@@ -6058,7 +6058,7 @@ if(isset($_GET['event']))
 							</tr>
 							
 							<tr>
-								<td>'.showBBcodes($post['message_parsed']).'</td>
+								<td>'.$post['message_parsed'].'</td>
 							</tr>
 
 							</table>
