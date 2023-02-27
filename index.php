@@ -2189,7 +2189,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<div class="stat-container">';
 
 			// Show all super admins
-			$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.squad FROM troopers WHERE (permissions = '1') ORDER BY name";
+			$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.note, troopers.squad FROM troopers WHERE (permissions = '1') ORDER BY name";
 
 			// Trooper count set up
 			$i = 0;
@@ -2201,6 +2201,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					echo '
 					<div class="title">
 						<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.'<br /><br />'.readTKNumber($db->tkid, $db->squad).'</a>
+						'.($db->note != "" ? '<br /><br />' . $db->note : '').'
 					</div>';
 					
 					// Increment
@@ -2221,7 +2222,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<div class="stat-container">';
 
 			// Show all super admins
-			$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.squad FROM troopers WHERE (permissions = '2') ORDER BY name";
+			$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.note, troopers.squad FROM troopers WHERE (permissions = '2') ORDER BY name";
 
 			// Trooper count set up
 			$i = 0;
@@ -2233,6 +2234,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					echo '
 					<div class="title">
 						<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.'<br /><br />'.readTKNumber($db->tkid, $db->squad).'</a>
+						'.($db->note != "" ? '<br /><br />' . $db->note : '').'
 					</div>';
 					
 					// Increment
@@ -4054,7 +4056,10 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 								<option value="3">RIP Member</option>
 								<option value="2">Moderator</option>
 								<option value="1">Super Admin</option>
-							</select>';
+							</select>
+							
+							<p>User note:</p>
+							<input type="text" name="note" id="note" maxlength="255" />';
 						}
 
 						echo '

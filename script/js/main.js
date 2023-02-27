@@ -1290,6 +1290,7 @@ $(document).ready(function()
 					$("#phone").val(json.phone);
 					$("#squad").val(json.squad);
 					$("#permissions").val(json.permissions);
+					$("#note").val(json.note);
 
 					// Special permissions
 

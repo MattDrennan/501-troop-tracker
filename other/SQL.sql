@@ -2,7 +2,7 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Generation Time: Dec 12, 2022 at 05:47 PM
+-- Generation Time: Feb 27, 2023 at 10:01 PM
 -- Server version: 8.0.28
 -- PHP Version: 7.4.7
 
@@ -412,6 +412,7 @@ CREATE TABLE `troopers` (
   `econfirm` tinyint(1) DEFAULT '1',
   `address` varchar(255) DEFAULT NULL,
   `radius` int NOT NULL DEFAULT '15',
+  `note` varchar(255) DEFAULT NULL,
   `datecreated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 

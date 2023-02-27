@@ -1345,7 +1345,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$array = array('id' => $db->id, 'name' => readInput($db->name), 'phone' => readInput($db->phone), 'squad' => $db->squad, 'permissions' => $db->permissions, 'p501' => $db->p501, 'tkid' => $db->tkid, 'forumid' => readInput($db->forum_id), 'supporter' => $db->supporter, 'spTrooper' => $db->spTrooper, 'spCostume' => $db->spCostume, 'spAward' => $db->spAward);
+				$array = array('id' => $db->id, 'name' => readInput($db->name), 'phone' => readInput($db->phone), 'squad' => $db->squad, 'permissions' => $db->permissions, 'note' => $db->note, 'p501' => $db->p501, 'tkid' => $db->tkid, 'forumid' => readInput($db->forum_id), 'supporter' => $db->supporter, 'spTrooper' => $db->spTrooper, 'spCostume' => $db->spCostume, 'spAward' => $db->spAward);
 
 				// Loop through clubs
 				foreach($clubArray as $club => $club_value)
@@ -1408,7 +1408,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 			}
 			
 			// Query the database
-			$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['user'])."', phone = '".cleanInput(cleanInput($_POST['phone']))."', squad = '".cleanInput($_POST['squad'])."', p501 = '".cleanInput($_POST['p501'])."', ".$addToQuery." tkid = '".$tkid."', forum_id = '".filter_var($_POST['forumid'], FILTER_SANITIZE_ADD_SLASHES)."', supporter = '".cleanInput($_POST['supporter'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'");
+			$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['user'])."', phone = '".cleanInput(cleanInput($_POST['phone']))."', squad = '".cleanInput($_POST['squad'])."', p501 = '".cleanInput($_POST['p501'])."', ".$addToQuery." tkid = '".$tkid."', forum_id = '".filter_var($_POST['forumid'], FILTER_SANITIZE_ADD_SLASHES)."', note = '".cleanInput($_POST['note'])."', supporter = '".cleanInput($_POST['supporter'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'");
 
 			// If super user, update special permissions
 			if(hasPermission(1))
@@ -1419,7 +1419,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 				if(!isset($_POST['spAward'])) { $_POST['spAward'] = 0; } else { $_POST['spAward'] = 1; }
 
 				// Query the database
-				$conn->query("UPDATE troopers SET spTrooper = '".cleanInput($_POST['spTrooper'])."', spCostume = '".cleanInput($_POST['spCostume'])."', spAward = '".cleanInput($_POST['spAward'])."', permissions = '".cleanInput($_POST['permissions'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'");
+				$conn->query("UPDATE troopers SET spTrooper = '".cleanInput($_POST['spTrooper'])."', spCostume = '".cleanInput($_POST['spCostume'])."', spAward = '".cleanInput($_POST['spAward'])."', permissions = '".cleanInput($_POST['permissions'])."', WHERE id = '".cleanInput($_POST['userIDE'])."'");
 			}
 
 			$array = array('success' => 'true', 'newname' => readInput(cleanInput($_POST['user'])) . " - " . readTKNumber($tkid, getTrooperSquad(cleanInput($_POST['userIDE']))) . " - " . readInput(cleanInput($_POST['forumid'])), 'data' => $message);
