@@ -244,6 +244,19 @@ echo drawSupportGraph();
 // Show tip
 echo dailyTip();
 
+if(loggedIn())
+{
+	$userID = getUserID($_SESSION['id']);
+	
+	$alerts = getAlerts($userID)['alerts'];
+	$conversations = getConversations($userID)['conversations'];
+
+	// Forum notifications
+	echo '
+	<p style="text-align: center;"><a href="https://fl501st.com/boards/">Welcome '.getName($_SESSION['id']).', you have '.count($alerts).' notifications and '.count($conversations).' unread messages on the boards.</a></p>
+	';
+}
+
 // Show the account page
 if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 {

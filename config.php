@@ -1392,6 +1392,70 @@ function getThreadPosts($threadid, $page)
 }
 
 /**
+ * Get user alerts
+ * 
+ * @param int $userid The ID of the user
+ * @return json Success response
+*/
+function getAlerts($userid)
+{
+	global $forumURL;
+	
+	// Get user forum info by forum name
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => $forumURL . "api/alerts&unread=1",
+	  CURLOPT_CUSTOMREQUEST => "GET",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . $userid,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+/**
+ * Get user private messages (unread)
+ * 
+ * @param int $userid The ID of the user
+ * @return json Success response
+*/
+function getConversations($userid)
+{
+	global $forumURL;
+	
+	// Get user forum info by forum name
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => $forumURL . "api/conversations&unread=1",
+	  CURLOPT_CUSTOMREQUEST => "GET",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . $userid,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+/**
  * Get's Xenforo forum user by ID
  * 
  * @param int $id The user ID of the Xenforo user
