@@ -253,7 +253,7 @@ if(loggedIn())
 
 	// Forum notifications
 	echo '
-	<p style="text-align: center;"><a href="https://fl501st.com/boards/">Welcome '.getName($_SESSION['id']).', you have '.count($alerts).' notifications and '.count($conversations).' unread messages on the boards.</a></p>
+	<p style="text-align: center; border: 1px; border-style: dotted;"><a href="https://fl501st.com/boards/">Welcome '.getName($_SESSION['id']).', you have '.count($alerts).' notifications and '.count($conversations).' unread messages on the boards.</a></p>
 	';
 }
 
