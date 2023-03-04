@@ -1086,7 +1086,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			// If active only set
 			if(isset($_POST['activeonly']) && $_POST['activeonly'] == 1)
 			{
-				$query .= " AND p501 = '1' OR p501 = '2'";
+				$query .= " AND (p501 = '1' OR p501 = '2')";
 			}
 		}
 		
