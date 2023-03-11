@@ -5390,37 +5390,45 @@ if(isset($_GET['event']))
 							</ul>
 						</div>';
 					}
-					else
+					
+					// If is a admin and a limited event
+					if(isAdmin() && $db->limitedEvent == 1)
 					{
-						// If is a admin and a limited event
-						if(isAdmin() && $db->limitedEvent == 1)
-						{
-							// All other events show counts of sign ups
-							echo '
-							<br />
-							<hr />
-							<br />
-							
-							<div name="troopersRemainingDisplay">
-								<h3>Admin Trooper Counts</h3>
-
-								<ul>
-									<li>501st troopers: '.eventClubCount($db->id, 0).' </li>
-									<li>Rebel Legion: '.eventClubCount($db->id, 1).' </li>
-									<li>Mando Mercs: '.eventClubCount($db->id, 2).' </li>
-									<li>Droid Builders: '.eventClubCount($db->id, 3).' </li>
-									<li>Other troopers: '.eventClubCount($db->id, 4).' </li>
-								</ul>
-							</div>';
-						}
+						// All other events show counts of sign ups
+						echo '
+						<br />
+						<hr />
+						<br />
 						
-						if($db->limitedEvent == 1)
-						{
+						<div name="troopersRemainingDisplay">
+							<h3>Admin Trooper Counts</h3>
+
+							<ul style="display:inline-table;">
+								<li>501st: '.eventClubCount($db->id, 0).' </li>';
+								
+								// Set up club count
+								$clubID = count($squadArray) + 1;
+								
+								// Loop through clubs
+								foreach($clubArray as $club => $club_value)
+								{
+									echo '<li>' . $club_value['name'] . ': ' . eventClubCount($db->id, $clubID) . '</li>';
+									
+									// Increment
+									$clubID++;
+								}
+								
 							echo '
-							<p>
-								<b>Reminder:</b> This event has been set as a <i>manual selection</i> event. When a trooper needs to make a change to their attending status or costume, troopers must comment below what changes need to be made, and command staff will make the changes. Please note, this only applies to manual selection events.
-							</p>';
-						}
+							</ul>
+						</div>';
+					}
+					
+					if($db->limitedEvent == 1)
+					{
+						echo '
+						<p>
+							<b>Reminder:</b> This event has been set as a <i>manual selection</i> event. When a trooper needs to make a change to their attending status or costume, troopers must comment below what changes need to be made, and command staff will make the changes. Please note, this only applies to manual selection events.
+						</p>';
 					}
 				}
 			}

@@ -1809,13 +1809,23 @@ if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin(
 				// Load trooper counts
 				$message2 .= '
 				<h3>Admin Trooper Counts</h3>
-
+				
 				<ul style="display:inline-table;">
-					<li>501st troopers: '.eventClubCount(cleanInput($_POST['eventid']), 0).' </li>
-					<li>Rebel Legion: '.eventClubCount(cleanInput($_POST['eventid']), 1).' </li>
-					<li>Mando Mercs: '.eventClubCount(cleanInput($_POST['eventid']), 2).' </li>
-					<li>Droid Builders: '.eventClubCount(cleanInput($_POST['eventid']), 3).' </li>
-					<li>Other troopers: '.eventClubCount(cleanInput($_POST['eventid']), 4).' </li>
+					<li>501st: '.eventClubCount(cleanInput($_POST['eventid']), 0).' </li>';
+					
+					// Set up club count
+					$clubID = count($squadArray) + 1;
+					
+					// Loop through clubs
+					foreach($clubArray as $club => $club_value)
+					{
+						$message2 .= '<li>' . $club_value['name'] . ': ' . eventClubCount(cleanInput($_POST['eventid']), $clubID) . '</li>';
+						
+						// Increment
+						$clubID++;
+					}
+					
+				$message2 .= '
 				</ul>';
 			}
 		}
