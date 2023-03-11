@@ -3546,6 +3546,8 @@ function profileExist($id)
 */
 function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $website, $numberOfAttend, $requestedNumber, $requestedCharacter, $secure, $blasters, $lightsabers, $parking, $mobility, $amenities, $comments, $referred, $eventId, $eventType = 0, $roster = "")
 {
+	global $conn;
+	
 	$returnString = '';
 
 	$returnString .= '
@@ -3583,8 +3585,21 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 	'.ifEmpty(readInput($comments), "No comments for this event.").'
 	[b]Referred by:[/b] '.ifEmpty(readInput($referred), "Not available").'
 
-	'.$roster.'
+	'.$roster.'';
+	
+	// Loop through all admin photos
+	$query = "SELECT * FROM uploads WHERE troopid = '".$eventId."' AND admin = '1' ORDER BY date ASC";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			$returnString .= '
+			[IMG]https://fl501st.com/troop-tracker/images/uploads/'.$db->filename.'[/IMG]
+			';
+		}
+	}
 
+	$returnString .= '
 	[b][u]Sign Up / Event Roster:[/u][/b]
 
 	[url]https://fl501st.com/troop-tracker/index.php?event=' . $eventId . '[/url]';
