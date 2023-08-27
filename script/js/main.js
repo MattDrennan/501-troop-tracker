@@ -1136,24 +1136,36 @@ $(document).ready(function()
 		var form = $("#changeSettingsForm");
 		var url = form.attr("action");
 
-		$.ajax({
-			type: "POST",
-			url: url,
-			data: form.serialize()  + "&submitCloseSite=1",
-			success: function(data)
-			{
-				if($("#submitCloseSite").prop("value") == "Close Website")
+		// Prompt based on button status
+		var sitemessage = null;
+
+		if($("#submitCloseSite").prop("value") == "Close Website") {
+			sitemessage = prompt("What would you like the site message to be? (optional)");
+		} else {
+			sitemessage = "";
+		}
+
+		// Get site message first
+		if (sitemessage != null) {
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize()  + "&submitCloseSite=1&sitemessage=" + sitemessage,
+				success: function(data)
 				{
-					$("#submitCloseSite").prop("value", "Open Website");
+					if($("#submitCloseSite").prop("value") == "Close Website")
+					{
+						$("#submitCloseSite").prop("value", "Open Website");
+					}
+					else
+					{
+						$("#submitCloseSite").prop("value", "Close Website");
+					}
+					
+					alert("Changes submitted!");
 				}
-				else
-				{
-					$("#submitCloseSite").prop("value", "Close Website");
-				}
-				
-				alert("Changes submitted!");
-			}
-		});
+			});
+		}
 	})
 	
 	// Change Site Settings - Close Sign Ups

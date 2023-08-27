@@ -2041,8 +2041,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<a href="index.php?action=commandstaff&do=managecostumes" class="button">Costume Management</a> 
 				<a href="index.php?action=commandstaff&do=managetroopers" class="button">Trooper Management</a> 
 				<a href="index.php?action=commandstaff&do=assignawards" class="button">Award Management</a>
-				<a href="index.php?action=commandstaff&do=stats" class="button">Statistics</a>
-				<a href="index.php?action=commandstaff&do=sitesettings" class="button">Site Settings</a>';
+				<a href="index.php?action=commandstaff&do=stats" class="button">Statistics</a>';
 			}
 
 			// If have special permission for trooper management
@@ -2062,6 +2061,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			{
 				echo '<a href="index.php?action=commandstaff&do=assignawards" class="button">Award Management</a> ';
 			}
+
+			echo '
+			<a href="index.php?action=commandstaff&do=sitesettings" class="button">Site Settings</a>';
 			
 		echo '
 		</p>';
@@ -2098,24 +2100,30 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					}
 					
 					// If sign up closed, show button
-					if($db->signupclosed == 0)
-					{
-						// Close sign up button
-						echo '
-						<input type="submit" name="submitCloseSignUps" id="submitCloseSignUps" value="Close Sign Ups" />';
-					}
-					else
-					{
-						// Open sign up button
-						echo '
-						<input type="submit" name="submitCloseSignUps" id="submitCloseSignUps" value="Open Sign Ups" />';
+					// If super admin only
+					if(hasPermission(1)) {
+						if($db->signupclosed == 0)
+						{
+							// Close sign up button
+							echo '
+							<input type="submit" name="submitCloseSignUps" id="submitCloseSignUps" value="Close Sign Ups" />';
+						}
+						else
+						{
+							// Open sign up button
+							echo '
+							<input type="submit" name="submitCloseSignUps" id="submitCloseSignUps" value="Open Sign Ups" />';
+						}
 					}
 					
 					// Change donation support
-					echo '
-					<input type="submit" name="submitSupportGoal" id="submitSupportGoal" value="Change Support Goal" />
-					
-					<div id="settingsEditArea" name="settingsEditArea"></div>';
+					// If super admin only
+					if(hasPermission(1)) {
+						echo '
+						<input type="submit" name="submitSupportGoal" id="submitSupportGoal" value="Change Support Goal" />
+						
+						<div id="settingsEditArea" name="settingsEditArea"></div>';
+					}
 						
 					echo '
 					</form>';
@@ -6768,7 +6776,8 @@ else
 			<h2 class="tm-section-header">Sorry...</h2>
 			
 			<p style="text-align: center;">
-				The Troop Tracker is temporarily down for maintenance. Please check back later.
+				The Troop Tracker is closed at this time.
+				<p>'.getSiteMessage().'</p>
 			</p>';
 		}
 	}

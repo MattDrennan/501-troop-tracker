@@ -4668,6 +4668,34 @@ function isClubMember($dbclub)
 }
 
 /**
+ * Returns site message when closed
+ *
+ * @return string Returns the site closed message
+*/
+function getSiteMessage()
+{
+	global $conn;
+	
+	$siteMessage = "";
+	
+	$query = "SELECT * FROM settings LIMIT 1";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			$siteMessage = $db->sitemessage;
+		}
+	}
+
+	// Check if site message is blank
+	if($siteMessage != "") {
+		$siteMessage = '<p style="text-align: center; font-size: 20px; color: red;"><b>**** Message From Command Staff ****</b></p><p style="text-align: center; color: red; font-size: 18px;">' . $siteMessage . '</p>';
+	}
+	
+	return $siteMessage;
+}
+
+/**
  * Returns if the website is closed
  *
  * @return boolean Returns if the website is open or closed
@@ -4687,7 +4715,7 @@ function isWebsiteClosed()
 			{
 				$isWebsiteClosed = true;
 				
-				if(loggedIn() && !hasPermission(1))
+				if(loggedIn() && !isAdmin())
 				{
 					session_destroy();
 				}

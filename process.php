@@ -1851,12 +1851,12 @@ if(isset($_GET['do']) && $_GET['do'] == "changesettings" && loggedIn() && isAdmi
 				if($db->siteclosed == 0)
 				{
 					// Close website button
-					$conn->query("UPDATE settings SET siteclosed = '1'");
+					$conn->query("UPDATE settings SET siteclosed = '1', sitemessage = '".cleanInput($_POST['sitemessage'])."'");
 				}
 				else
 				{
 					// Open website button
-					$conn->query("UPDATE settings SET siteclosed = '0'");
+					$conn->query("UPDATE settings SET siteclosed = '0', sitemessage = NULL");
 				}
 			}
 			
