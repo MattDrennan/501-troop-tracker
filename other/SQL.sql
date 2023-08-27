@@ -2,7 +2,7 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Generation Time: Feb 27, 2023 at 10:01 PM
+-- Generation Time: Aug 27, 2023 at 05:06 PM
 -- Server version: 8.0.28
 -- PHP Version: 7.4.7
 
@@ -318,7 +318,8 @@ CREATE TABLE `settings` (
   `supportgoal` int NOT NULL DEFAULT '0',
   `notifyevent` int NOT NULL DEFAULT '0',
   `syncdate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `syncdaterebels` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `syncdaterebels` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `sitemessage` text
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
