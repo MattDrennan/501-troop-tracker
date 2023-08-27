@@ -194,7 +194,7 @@ echo '
 if(!isWebsiteClosed() || isAdmin())
 {
 	echo '
-	<a href="index.php?action=trooptracker" '.isPageActive("trooptracker").'>Troop Tracker</a>';
+	<a href="index.php?action=trooptracker" '.isPageActive("trooptracker").'>Stats & Search</a>';
 }
 
 // If not logged in
