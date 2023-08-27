@@ -96,10 +96,20 @@ Search.appendIndex(
             "summary": "Login\u0020the\u0020trooper\u0020with\u0020there\u0020Xenforo\u0020credentials.\u0020Used\u0020for\u0020single\u0020sign\u0020on.",
             "url": "namespaces/default.html#function_loginWithForum"
         },                {
+            "fqsen": "\\createAlert\u0028\u0029",
+            "name": "createAlert",
+            "summary": "Create\u0027s\u0020an\u0020alert\u0020in\u0020Xenforo",
+            "url": "namespaces/default.html#function_createAlert"
+        },                {
             "fqsen": "\\createThread\u0028\u0029",
             "name": "createThread",
             "summary": "Create\u0027s\u0020a\u0020thread\u0020in\u0020Xenforo",
             "url": "namespaces/default.html#function_createThread"
+        },                {
+            "fqsen": "\\editThread\u0028\u0029",
+            "name": "editThread",
+            "summary": "Edits\u0020a\u0020thread\u0020in\u0020Xenforo",
+            "url": "namespaces/default.html#function_editThread"
         },                {
             "fqsen": "\\lockThread\u0028\u0029",
             "name": "lockThread",
@@ -125,6 +135,26 @@ Search.appendIndex(
             "name": "getUserForum",
             "summary": "Get\u0027s\u0020Xenforo\u0020forum\u0020user\u0020by\u0020username",
             "url": "namespaces/default.html#function_getUserForum"
+        },                {
+            "fqsen": "\\replyThread\u0028\u0029",
+            "name": "replyThread",
+            "summary": "Reply\u0020to\u0020Xenforo\u0020thread",
+            "url": "namespaces/default.html#function_replyThread"
+        },                {
+            "fqsen": "\\getThreadPosts\u0028\u0029",
+            "name": "getThreadPosts",
+            "summary": "Get\u0027s\u0020Xenforo\u0020forum\u0020posts\u0020from\u0020thread",
+            "url": "namespaces/default.html#function_getThreadPosts"
+        },                {
+            "fqsen": "\\getAlerts\u0028\u0029",
+            "name": "getAlerts",
+            "summary": "Get\u0020user\u0020alerts",
+            "url": "namespaces/default.html#function_getAlerts"
+        },                {
+            "fqsen": "\\getConversations\u0028\u0029",
+            "name": "getConversations",
+            "summary": "Get\u0020user\u0020private\u0020messages\u0020\u0028unread\u0029",
+            "url": "namespaces/default.html#function_getConversations"
         },                {
             "fqsen": "\\getUserForumID\u0028\u0029",
             "name": "getUserForumID",
@@ -226,11 +256,6 @@ Search.appendIndex(
             "summary": "Displays\u0020all\u0020the\u0020troopers\u0020costumes\u0020in\u0020synced\u0020501st\u0020database",
             "url": "namespaces/default.html#function_showCostumes"
         },                {
-            "fqsen": "\\postTweet\u0028\u0029",
-            "name": "postTweet",
-            "summary": "Posts\u0020a\u0020tweet\u0020to\u0020Twitter\u0020using\u0020Twitter\u0020API",
-            "url": "namespaces/default.html#function_postTweet"
-        },                {
             "fqsen": "\\squadToDiscord\u0028\u0029",
             "name": "squadToDiscord",
             "summary": "Converts\u0020squad\u0020ID\u0020to\u0020Discord\u0020role\u0020ID",
@@ -256,6 +281,11 @@ Search.appendIndex(
             "summary": "Returns\u0020query\u0020for\u0020costume\u0020values\u0020for\u0020club.\u0020This\u0020will\u0020display\u0020costumes\u0020from\u0020the\u0020club\u0020specified.",
             "url": "namespaces/default.html#function_getCostumeQueryValues"
         },                {
+            "fqsen": "\\getCostumeQueryValuesSquad\u0028\u0029",
+            "name": "getCostumeQueryValuesSquad",
+            "summary": "Returns\u0020query\u0020for\u0020costume\u0020values\u0020for\u0020squad.\u0020This\u0020will\u0020display\u0020costumes\u0020from\u0020the\u0020squad\u0020specified.",
+            "url": "namespaces/default.html#function_getCostumeQueryValuesSquad"
+        },                {
             "fqsen": "\\isImportant\u0028\u0029",
             "name": "isImportant",
             "summary": "Returns\u0020the\u0020comment\u0020in\u0020a\u0020red\u0020color\u0020if\u0020it\u0020is\u0020marked\u0020as\u0020important",
@@ -275,11 +305,6 @@ Search.appendIndex(
             "name": "hasAward",
             "summary": "Returns\u0020if\u0020the\u0020trooper\u0020has\u0020an\u0020award",
             "url": "namespaces/default.html#function_hasAward"
-        },                {
-            "fqsen": "\\hasTitle\u0028\u0029",
-            "name": "hasTitle",
-            "summary": "Returns\u0020if\u0020the\u0020trooper\u0020has\u0020a\u0020title",
-            "url": "namespaces/default.html#function_hasTitle"
         },                {
             "fqsen": "\\sendNotification\u0028\u0029",
             "name": "sendNotification",
@@ -320,11 +345,6 @@ Search.appendIndex(
             "name": "getEventPostID",
             "summary": "Returns\u0020the\u0020event\u0020Xenforo\u0020post\u0020ID\u0020on\u0020the\u0020forum",
             "url": "namespaces/default.html#function_getEventPostID"
-        },                {
-            "fqsen": "\\getCommentPostID\u0028\u0029",
-            "name": "getCommentPostID",
-            "summary": "Returns\u0020the\u0020event\u0020Xenforo\u0020comment\u0020ID\u0020on\u0020the\u0020forum",
-            "url": "namespaces/default.html#function_getCommentPostID"
         },                {
             "fqsen": "\\removeLetters\u0028\u0029",
             "name": "removeLetters",
@@ -411,10 +431,25 @@ Search.appendIndex(
             "summary": "Return\u0027s\u0020the\u0020user\u0027s\u0020ID\u0020from\u0020Xenforo\u0020Forum",
             "url": "namespaces/default.html#function_getUserID"
         },                {
+            "fqsen": "\\getIDFromUserID\u0028\u0029",
+            "name": "getIDFromUserID",
+            "summary": "Return\u0027s\u0020the\u0020tracker\u0020ID\u0020based\u0020on\u0020Xenforo\u0020Forum\u0020ID",
+            "url": "namespaces/default.html#function_getIDFromUserID"
+        },                {
             "fqsen": "\\getName\u0028\u0029",
             "name": "getName",
             "summary": "Return\u0027s\u0020the\u0020troopers\u0027s\u0020name",
             "url": "namespaces/default.html#function_getName"
+        },                {
+            "fqsen": "\\getTrooperAddress\u0028\u0029",
+            "name": "getTrooperAddress",
+            "summary": "Return\u0027s\u0020the\u0020troopers\u0027s\u0020address",
+            "url": "namespaces/default.html#function_getTrooperAddress"
+        },                {
+            "fqsen": "\\getTrooperRadius\u0028\u0029",
+            "name": "getTrooperRadius",
+            "summary": "Return\u0027s\u0020the\u0020troopers\u0027s\u0020radius",
+            "url": "namespaces/default.html#function_getTrooperRadius"
         },                {
             "fqsen": "\\getEmail\u0028\u0029",
             "name": "getEmail",
@@ -510,6 +545,11 @@ Search.appendIndex(
             "name": "isClubMember",
             "summary": "Returns\u0020if\u0020trooper\u0020has\u0020club\u0020access",
             "url": "namespaces/default.html#function_isClubMember"
+        },                {
+            "fqsen": "\\getSiteMessage\u0028\u0029",
+            "name": "getSiteMessage",
+            "summary": "Returns\u0020site\u0020message\u0020when\u0020closed",
+            "url": "namespaces/default.html#function_getSiteMessage"
         },                {
             "fqsen": "\\isWebsiteClosed\u0028\u0029",
             "name": "isWebsiteClosed",
@@ -630,36 +670,6 @@ Search.appendIndex(
             "name": "get_numerics",
             "summary": "Returns\u0020numbers\u0020from\u0020string",
             "url": "namespaces/default.html#function_get_numerics"
-        },                {
-            "fqsen": "\\convertMemberApproved\u0028\u0029",
-            "name": "convertMemberApproved",
-            "summary": "Converts\u0020the\u0020member\u0020approval\u0020string\u0020value\u0020to\u0020an\u0020interger",
-            "url": "namespaces/default.html#function_convertMemberApproved"
-        },                {
-            "fqsen": "\\convertMemberStatus\u0028\u0029",
-            "name": "convertMemberStatus",
-            "summary": "Returns\u0020an\u0020interger\u0020based\u0020on\u0020the\u0020member\u0020status",
-            "url": "namespaces/default.html#function_convertMemberStatus"
-        },                {
-            "fqsen": "\\convertMemberStanding\u0028\u0029",
-            "name": "convertMemberStanding",
-            "summary": "Returns\u0020an\u0020interger\u0020based\u0020on\u0020the\u0020member\u0020standing",
-            "url": "namespaces/default.html#function_convertMemberStanding"
-        },                {
-            "fqsen": "\\convertSquadId\u0028\u0029",
-            "name": "convertSquadId",
-            "summary": "Returns\u0020the\u0020squad\u0027s\u0020ID\u0020for\u0020troop\u0020tracker",
-            "url": "namespaces/default.html#function_convertSquadId"
-        },                {
-            "fqsen": "\\print_r_reverse\u0028\u0029",
-            "name": "print_r_reverse",
-            "summary": "Convert\u0020a\u0020string\u0020\u0028print_r\u0029\u0020back\u0020to\u0020an\u0020array\u0020value",
-            "url": "namespaces/default.html#function_print_r_reverse"
-        },                {
-            "fqsen": "\\contains\u0028\u0029",
-            "name": "contains",
-            "summary": "Checks\u0020if\u0020string\u0020is\u0020inside\u0020another\u0020string",
-            "url": "namespaces/default.html#function_contains"
         },                {
             "fqsen": "\\html_get\u0028\u0029",
             "name": "html_get",
@@ -1381,14 +1391,104 @@ Search.appendIndex(
             "summary": "",
             "url": "classes/simple-html-dom.html#property_optional_closing_tags"
         },                {
+            "fqsen": "\\convertMemberApproved\u0028\u0029",
+            "name": "convertMemberApproved",
+            "summary": "Converts\u0020the\u0020member\u0020approval\u0020string\u0020value\u0020to\u0020an\u0020interger",
+            "url": "namespaces/default.html#function_convertMemberApproved"
+        },                {
+            "fqsen": "\\convertMemberStatus\u0028\u0029",
+            "name": "convertMemberStatus",
+            "summary": "Returns\u0020an\u0020interger\u0020based\u0020on\u0020the\u0020member\u0020status",
+            "url": "namespaces/default.html#function_convertMemberStatus"
+        },                {
+            "fqsen": "\\convertMemberStanding\u0028\u0029",
+            "name": "convertMemberStanding",
+            "summary": "Returns\u0020an\u0020interger\u0020based\u0020on\u0020the\u0020member\u0020standing",
+            "url": "namespaces/default.html#function_convertMemberStanding"
+        },                {
+            "fqsen": "\\convertSquadId\u0028\u0029",
+            "name": "convertSquadId",
+            "summary": "Returns\u0020the\u0020squad\u0027s\u0020ID\u0020for\u0020troop\u0020tracker",
+            "url": "namespaces/default.html#function_convertSquadId"
+        },                {
+            "fqsen": "\\print_r_reverse\u0028\u0029",
+            "name": "print_r_reverse",
+            "summary": "Convert\u0020a\u0020string\u0020\u0028print_r\u0029\u0020back\u0020to\u0020an\u0020array\u0020value",
+            "url": "namespaces/default.html#function_print_r_reverse"
+        },                {
+            "fqsen": "\\contains\u0028\u0029",
+            "name": "contains",
+            "summary": "Checks\u0020if\u0020string\u0020is\u0020inside\u0020another\u0020string",
+            "url": "namespaces/default.html#function_contains"
+        },                {
             "fqsen": "\\array_to_csv_download\u0028\u0029",
             "name": "array_to_csv_download",
             "summary": "Generate\u0020CSV\u0020file\u0020from\u0020array",
             "url": "namespaces/default.html#function_array_to_csv_download"
         },                {
+            "fqsen": "\\PaypalIPN",
+            "name": "PaypalIPN",
+            "summary": "",
+            "url": "classes/PaypalIPN.html"
+        },                {
+            "fqsen": "\\PaypalIPN\u003A\u003AuseSandbox\u0028\u0029",
+            "name": "useSandbox",
+            "summary": "Sets\u0020the\u0020IPN\u0020verification\u0020to\u0020sandbox\u0020mode\u0020\u0028for\u0020use\u0020when\u0020testing,\nshould\u0020not\u0020be\u0020enabled\u0020in\u0020production\u0029.",
+            "url": "classes/PaypalIPN.html#method_useSandbox"
+        },                {
+            "fqsen": "\\PaypalIPN\u003A\u003AusePHPCerts\u0028\u0029",
+            "name": "usePHPCerts",
+            "summary": "Sets\u0020curl\u0020to\u0020use\u0020php\u0020curl\u0027s\u0020built\u0020in\u0020certs\u0020\u0028may\u0020be\u0020required\u0020in\u0020some\nenvironments\u0029.",
+            "url": "classes/PaypalIPN.html#method_usePHPCerts"
+        },                {
+            "fqsen": "\\PaypalIPN\u003A\u003AgetPaypalUri\u0028\u0029",
+            "name": "getPaypalUri",
+            "summary": "Determine\u0020endpoint\u0020to\u0020post\u0020the\u0020verification\u0020data\u0020to.",
+            "url": "classes/PaypalIPN.html#method_getPaypalUri"
+        },                {
+            "fqsen": "\\PaypalIPN\u003A\u003AverifyIPN\u0028\u0029",
+            "name": "verifyIPN",
+            "summary": "Verification\u0020Function\nSends\u0020the\u0020incoming\u0020post\u0020data\u0020back\u0020to\u0020PayPal\u0020using\u0020the\u0020cURL\u0020library.",
+            "url": "classes/PaypalIPN.html#method_verifyIPN"
+        },                {
+            "fqsen": "\\PaypalIPN\u003A\u003AVERIFY_URI",
+            "name": "VERIFY_URI",
+            "summary": "Production\u0020Postback\u0020URL",
+            "url": "classes/PaypalIPN.html#constant_VERIFY_URI"
+        },                {
+            "fqsen": "\\PaypalIPN\u003A\u003ASANDBOX_VERIFY_URI",
+            "name": "SANDBOX_VERIFY_URI",
+            "summary": "Sandbox\u0020Postback\u0020URL",
+            "url": "classes/PaypalIPN.html#constant_SANDBOX_VERIFY_URI"
+        },                {
+            "fqsen": "\\PaypalIPN\u003A\u003AVALID",
+            "name": "VALID",
+            "summary": "Response\u0020from\u0020PayPal\u0020indicating\u0020validation\u0020was\u0020successful",
+            "url": "classes/PaypalIPN.html#constant_VALID"
+        },                {
+            "fqsen": "\\PaypalIPN\u003A\u003AINVALID",
+            "name": "INVALID",
+            "summary": "Response\u0020from\u0020PayPal\u0020indicating\u0020validation\u0020failed",
+            "url": "classes/PaypalIPN.html#constant_INVALID"
+        },                {
+            "fqsen": "\\PaypalIPN\u003A\u003A\u0024use_sandbox",
+            "name": "use_sandbox",
+            "summary": "",
+            "url": "classes/PaypalIPN.html#property_use_sandbox"
+        },                {
+            "fqsen": "\\PaypalIPN\u003A\u003A\u0024use_local_certs",
+            "name": "use_local_certs",
+            "summary": "",
+            "url": "classes/PaypalIPN.html#property_use_local_certs"
+        },                {
             "fqsen": "\\",
             "name": "\\",
             "summary": "",
             "url": "namespaces/default.html"
+        },                {
+            "fqsen": "\\Listener",
+            "name": "Listener",
+            "summary": "",
+            "url": "namespaces/listener.html"
         }            ]
 );
