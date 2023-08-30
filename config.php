@@ -4011,15 +4011,7 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 							<select name="modifysignupFormCostume" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
 
 							// Display costumes
-							$query3 = "SELECT * FROM costumes WHERE ";
-							
-							// If limited to certain costumes, only show certain costumes...
-							if($db->limitTo < 4)
-							{
-								$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
-							}
-							
-							$query3 .= costume_restrict_query(false, $db2->trooperId, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
+							$query3 = "SELECT * FROM costumes WHERE " . costume_restrict_query(false, $db2->trooperId, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
 							
 							if ($result3 = mysqli_query($conn, $query3))
 							{
@@ -4048,15 +4040,7 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 							<select name="modiftybackupcostumeForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
 
 							// Display costumes
-							$query3 = "SELECT * FROM costumes WHERE ";
-							
-							// If limited to certain costumes, only show certain costumes...
-							if($db->limitTo < 4)
-							{
-								$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
-							}
-							
-							$query3 .= costume_restrict_query(false, $db2->trooperId, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
+							$query3 = "SELECT * FROM costumes WHERE " . costume_restrict_query(false, $db2->trooperId, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
 							
 							// Count results
 							$c = 0;
@@ -4938,83 +4922,6 @@ function sendEmail($SendTo, $Name, $Subject, $Message)
 	   //echo $mail->ErrorInfo;
 	}
 	// END MAIL
-}
-
-/**
- * Returns string of Era ID
- *
- * @param int $number ID of era to format
- * @return string String of era
-*/
-function getEra($number)
-{
-	// Return value
-	$text = "";
-	
-	if($number == 0)
-	{
-		$text = "Prequel";
-	}
-	else if($number == 1)
-	{
-		$text = "Original";
-	}
-	else if($number == 2)
-	{
-		$text = "Sequel";
-	}
-	else if($number == 3)
-	{
-		$text = "Expanded";
-	}
-	else if($number == 4)
-	{
-		$text = "All";
-	}
-	
-	// Return
-	return $text;
-}
-
-/**
- * Returns if costume is allowed at the event based off era allowed
- *
- * @param int $eventID ID of the event
- * @param int $costumeID ID of the costume
- * @return boolean Returns if costume is allowed at the event based off era allowed
-*/
-function eraCheck($eventID, $costumeID)
-{
-	global $conn;
-
-	// Variables
-	$eventFail = false;	// Is this costume allowed?
-
-	// Query database for event info
-	$query = "SELECT * FROM events WHERE id = '".$eventID."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			// Query costume database to get information on the users costume
-			$query4 = "SELECT * FROM costumes WHERE id = '".$costumeID."'";
-			if ($result4 = mysqli_query($conn, $query4))
-			{
-				while ($db4 = mysqli_fetch_object($result4))
-				{
-					// Make sure event and costume era isn't set to "All" and check if the era and limited to match
-					if($db->limitTo != 4 && $db4->era != 4 && $db->limitTo != $db4->era)
-					{
-						// Did not fail
-						$eventFail = true;
-					}
-				}
-			}
-		}
-	}
-
-	// Return
-	return $eventFail;
 }
 
 /**

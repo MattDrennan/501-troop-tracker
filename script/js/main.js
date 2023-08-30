@@ -644,7 +644,6 @@ $(document).ready(function()
 
 		// Reset
 		$("#postToBoards").val(1);
-		$("#era").val(4);
 		$("#limit501st").val(500);
 		$("#limitedEvent").val(0);
 		$("#limitHandlers").val(500);
@@ -1432,7 +1431,6 @@ $(document).ready(function()
 					$("#comments").val(json.comments);
 					$("#label").val(json.label);
 					$("#limitedEvent").val(json.limitedEvent);
-					$("#era").val(json.limitTo);
 					$("#limitRebels").val(json.limitRebels);
 					$("#limit501st").val(json.limit501st);
 					$("#limitHandlers").val(json.limitHandlers);
@@ -2571,7 +2569,6 @@ $(document).ready(function()
 		}
 
 		$("#costumeNameEdit").val($(this).find('option:selected').attr("costumeName"));
-		$("#costumeEraEdit").val($(this).find('option:selected').attr("costumeEra"));
 		$("#costumeClubEdit").val($(this).find('option:selected').attr("costumeClub"));
 	});
 	
@@ -2600,7 +2597,6 @@ $(document).ready(function()
 					// Change values for edit form
 					$("#costumeIDEdit :selected").text($("#costumeNameEdit").val());
 					$("#costumeIDEdit :selected").attr("costumeName", $("#costumeNameEdit").val());
-					$("#costumeIDEdit :selected").attr("costumeEra", $("#costumeEraEdit").val());
 					$("#costumeIDEdit :selected").attr("costumeClub", $("#costumeClubEdit").val());
 					$("#costumeIDEdit").select2();
 
@@ -2637,11 +2633,10 @@ $(document).ready(function()
 					
 					// Add to lists
 					$("#costumeID").append("<option value='" + json[0].id + "'>" + $("#costumeName").val() + "</option>");
-					$("#costumeIDEdit").append("<option value='" + json[0].id + "' costumeName='" + $("#costumeName").val() + "' costumeID='" + json[0].id + "' costumeEra='" + $("#costumeEra").val() + "' costumeClub='" + $("#costumeClub").val() + "'>" + $("#costumeName").val() + "</option>");
+					$("#costumeIDEdit").append("<option value='" + json[0].id + "' costumeName='" + $("#costumeName").val() + "' costumeID='" + json[0].id + "' costumeClub='" + $("#costumeClub").val() + "'>" + $("#costumeName").val() + "</option>");
 
 					// Clear form
 					$("#costumeName").val("");
-					$("#costumeEra").val("1");
 					$("#costumeClub").val("0");
 					
 					if($("#costumeID option").length <= 1)

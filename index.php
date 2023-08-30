@@ -3232,17 +3232,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				</p>
 				
 				<p>
-					<b>Costume Era:</b></br />
-					<select name="costumeEra" id="costumeEra">
-						<option value="0">Prequel</option>
-						<option value="1" SELECTED>Original</option>
-						<option value="2">Sequel</option>
-						<option value="3">Expanded</option>
-						<option value="4">All</option>
-					</select>
-				</p>
-				
-				<p>
 					<b>Costume Club:</b></br />
 					<select name="costumeClub" id="costumeClub">
 						<option value="0" SELECTED>501st Legion</option>';
@@ -3296,7 +3285,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					}
 
 					echo '
-					<option value="'.$db->id.'" costumeName="'.$db->costume.'" costumeID="'.$db->id.'" costumeEra="'.$db->era.'" costumeClub="'.$db->club.'">'.$db->costume.'</option>';
+					<option value="'.$db->id.'" costumeName="'.$db->costume.'" costumeID="'.$db->id.'" costumeClub="'.$db->club.'">'.$db->costume.'</option>';
 
 
 					// Increment
@@ -3320,17 +3309,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<p>
 					<b>Costume Name:</b></br />
 					<input type="text" name="costumeNameEdit" id="costumeNameEdit" />
-				</p>
-				
-				<p>
-					<b>Costume Era:</b></br />
-					<select name="costumeEraEdit" id="costumeEraEdit">
-						<option value="0">Prequel</option>
-						<option value="1" SELECTED>Original</option>
-						<option value="2">Sequel</option>
-						<option value="3">Expanded</option>
-						<option value="4">All</option>
-					</select>
 				</p>
 
 				<p>
@@ -3886,15 +3864,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<option value="1">Yes</option>
 						</select>
 
-						<p>Do you wish to limit the era of the costume?</p>
-						<select name="era" id="era">
-							<option value="0">Prequel</option>
-							<option value="1" SELECTED>Original</option>
-							<option value="2">Sequel</option>
-							<option value="3">Expanded</option>
-							<option value="4" SELECTED>All</option>
-						</select>
-
 						<p>Limit of 501st Troopers:</p>
 						<input type="number" name="limit501st" value="500" id="limit501st" class="limitClass" />';
 
@@ -4214,7 +4183,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			$postComment = "";
 			$notes = "";
 			$limitedEvent = "";
-			$limitTo = "";
 			$limit501st = "";
 			$limitTotalTroopers = "";
 			$limitHandlers = "";
@@ -4269,7 +4237,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						$postComment = $db->postComment;
 						$notes = $db->notes;
 						$limitedEvent = $db->limitedEvent;
-						$limitTo = $db->limitTo;
 						$limit501st = $db->limit501st;
 						$limitTotalTroopers = $db->limitTotalTroopers;
 						$limitHandlers = $db->limitHandlers;
@@ -4458,15 +4425,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<select name="limitedEvent" id="limitedEvent">
 					<option value="0" '.copyEventSelect($eid, $limitedEvent, 0).'>No</option>
 					<option value="1" '.copyEventSelect($eid, $limitedEvent, 1).'>Yes</option>
-				</select>
-
-				<p>Do you wish to limit the era of the costume?</p>
-				<select name="era" id="era">
-					<option value="0" '.copyEventSelect($eid, $limitTo, 0).'>Prequel</option>
-					<option value="1" '.copyEventSelect($eid, $limitTo, 1).'>Original</option>
-					<option value="2" '.copyEventSelect($eid, $limitTo, 2).'>Sequel</option>
-					<option value="3" '.copyEventSelect($eid, $limitTo, 3).'>Expanded</option>
-					<option value="4" '.copyEventSelect($eid, $limitTo, 4, 4).'>All</option>
 				</select>
 				
 				<p>Limit of 501st Troopers:</p>
@@ -5048,7 +5006,6 @@ if(isset($_GET['event']))
 			// Update globals
 			$eventClosed = $db->closed;
 			$limitedEvent = $db->limitedEvent;
-			$limitTo = $db->limitTo;
 			$friendLimit = $db->friendLimit;
 			$allowTentative = $db->allowTentative;
 			$thread_id = $db->thread_id;
@@ -5311,19 +5268,6 @@ if(isset($_GET['event']))
 							}
 						}
 					}
-			
-					// If this event is limited to era
-					if($db->limitTo != 4)
-					{
-						echo '
-						<br />
-						<hr />
-						<br />
-						
-						<div style="color: red;">
-							This event is limited to ' . getEra($db->limitTo) . ' era.
-						</div>';
-					}
 
 					// Set up is limited event?
 					$isLimited = false;
@@ -5560,15 +5504,7 @@ if(isset($_GET['event']))
 										<select name="costume" id="costume">
 											<option value="null" SELECTED>Please choose an option...</option>';
 
-										$query3 = "SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND";
-										
-										// If limited to certain costumes, only show certain costumes...
-										if($db->limitTo < 4)
-										{
-											$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
-										}
-										
-										$query3 .= costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
+										$query3 = "SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND " . costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
 										
 										if ($result3 = mysqli_query($conn, $query3))
 										{
@@ -5615,15 +5551,7 @@ if(isset($_GET['event']))
 										<select name="backupcostume" id="backupcostume">';
 
 										// Display costumes
-										$query2 = "SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND ";
-										
-										// If limited to certain costumes, only show certain costumes...
-										if($db->limitTo < 4)
-										{
-											$query2 .= " era = '".$db->limitTo."' OR era = '4' AND ";
-										}
-										
-										$query2 .= costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
+										$query2 = "SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND " . costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
 										// Amount of costumes
 										$c = 0;
 										if ($result2 = mysqli_query($conn, $query2))
@@ -5920,15 +5848,7 @@ if(isset($_GET['event']))
 						<select name="costume" id="costume">
 							<option value="null" SELECTED>Please choose an option...</option>';
 
-						$query3 = "SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).")";
-						
-						// If limited to certain costumes, only show certain costumes...
-						if($limitTo < 4)
-						{
-							$query3 .= " AND era = '".$limitTo."' OR era = '4'";
-						}
-						
-						$query3 .= " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id']).") DESC, costume";
+						$query3 = "SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id']).") DESC, costume";
 						
 						if ($result3 = mysqli_query($conn, $query3))
 						{
@@ -5975,15 +5895,7 @@ if(isset($_GET['event']))
 						<select name="backupcostume" id="backupcostume">';
 
 						// Display costumes
-						$query2 = "SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND ";
-						
-						// If limited to certain costumes, only show certain costumes...
-						if($limitTo < 4)
-						{
-							$query2 .= " era = '".$limitTo."' OR era = '4' AND ";
-						}
-						
-						$query2 .= costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id']).") DESC, costume";
+						$query2 = "SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND " . costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id']).") DESC, costume";
 						// Amount of costumes
 						$c = 0;
 						if ($result2 = mysqli_query($conn, $query2))
