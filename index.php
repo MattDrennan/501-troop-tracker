@@ -5067,7 +5067,7 @@ if(isset($_GET['event']))
 				</p>';
 
 				// If this event is over, don't show it
-				if(strtotime($db->dateEnd) >= strtotime("-1 day") && $db->closed == 0)
+				if(strtotime($db->dateEnd) >= strtotime("-1 day") && $db->closed != 1)
 				{					
 					// Subscribe button
 					echo $button;
