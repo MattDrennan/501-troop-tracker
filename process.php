@@ -648,19 +648,23 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 		// Loop through posts
 		foreach(array_reverse($thread['posts']) as $key => $post)
 		{
-			$data .= '
-			<table border="1">
-			<tr>
-				<td><a href="index.php?profile='.getIDFromUserID($post['user_id']).'">'.getName(getIDFromUserID($post['user_id'])).' - '.readTKNumber(getTKNumber(getIDFromUserID($post['user_id'])), getTrooperSquad(getIDFromUserID($post['user_id']))).'</a><br /><img src="'.$post['User']['avatar_urls']['m'].'" /></td>
-			</tr>
-			
-			<tr>
-				<td>'.$post['message_parsed'].'</td>
-			</tr>
+			// Only show messages that are visible // Example: We don't want to show messages that are hidden from public view
+			if($post['message_state'] == "visible")
+			{
+				$data .= '
+				<table border="1">
+				<tr>
+					<td><a href="index.php?profile='.getIDFromUserID($post['user_id']).'">'.getName(getIDFromUserID($post['user_id'])).' - '.readTKNumber(getTKNumber(getIDFromUserID($post['user_id'])), getTrooperSquad(getIDFromUserID($post['user_id']))).'</a><br /><img src="'.$post['User']['avatar_urls']['m'].'" /></td>
+				</tr>
+				
+				<tr>
+					<td>'.$post['message_parsed'].'</td>
+				</tr>
 
-			</table>
+				</table>
 
-			<br />';
+				<br />';
+			}
 		}
 	}
 
