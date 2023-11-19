@@ -498,6 +498,8 @@ $(document).ready(function()
 			var troopername = $("#userID option:selected").attr("troopername");
 			var tkid = $("#userID option:selected").attr("tkid");
 			var forum_id = $("#userID option:selected").attr("forum_id");
+			var db3 = $("#userID option:selected").attr("db3");
+			var idvalue = $("#userID option:selected").attr("idvalue");
 
 			$.ajax({
 				type: "POST",
@@ -512,7 +514,7 @@ $(document).ready(function()
 					$("#userID option:selected").remove();
 					
 					// Add to table
-					$("#masterRosterTable").append('<tr name="row_' + trooperid + '"><td><a href="index.php?profile=' + trooperid + '" target="_blank">' + troopername + '</a></td><td>' + forum_id + '</td><td>' + tkid + '</td><td><select name="changepermission" trooperid="' + trooperid + '"><option value="0">Not A Member</option><option value="1" SELECTED>Regular Member</option><option value="2">Reserve Member</option><option value="3">Retired Member</option><option value="4">Handler</option></select></td></tr>');
+					$("#masterRosterTable").append('<tr name="row_' + trooperid + '"><td><a href="index.php?profile=' + trooperid + '" target="_blank">' + troopername + '</a></td><td>' + forum_id + '</td>' + ((db3 != undefined) ? '<td><input type="text" name="changedb3" db3="' + db3 + '" trooperid="' + trooperid + '" value="' + idvalue + '" /></td>' : '') + '<td>' + tkid + '</td><td><select name="changepermission" trooperid="' + trooperid + '"><option value="0">Not A Member</option><option value="1" SELECTED>Regular Member</option><option value="2">Reserve Member</option><option value="3">Retired Member</option><option value="4">Handler</option></select></td></tr>');
 					
 					// Alert user
 					alert(json.data);

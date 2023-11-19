@@ -2790,7 +2790,22 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<select name="userID" id="userID">';
 						}
 
-						echo '<option value="'.$db->id.'" tkid="'.readTKNumber($db->tkid, $db->squad).'" troopername="'.$db->name.'" forum_id="'.$db->forum_id.'">'.$db->name.' - '.$db->forum_id.' - '.readTKNumber($db->tkid, $db->squad).'</option>';
+						echo '
+						<option
+						value="'.$db->id.'"
+						tkid="'.readTKNumber($db->tkid, $db->squad).'"
+						troopername="'.$db->name.'"
+						forum_id="'.$db->forum_id.'"';
+
+						if(isset($_GET['squad']) && $_GET['squad'] > count($squadArray) && $clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3'] != "")
+						{
+							echo '
+							db3="'.$clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3'].'"
+							idvalue="'.$db->{$clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3']}.'"';
+						}
+
+						echo '
+						>'.$db->name.' - '.$db->forum_id.' - '.readTKNumber($db->tkid, $db->squad).'</option>';
 
 						// Increment
 						$i++;
