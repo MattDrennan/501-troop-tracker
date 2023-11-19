@@ -6014,23 +6014,27 @@ if(isset($_GET['event']))
 						// Loop through posts
 						foreach(array_reverse($thread['posts']) as $key => $post)
 						{
-							echo '
-							<table border="1" style="width: 100%">
-							<tr>
-								<td>
-									<a href="index.php?profile='.$post['User']['custom_fields']['trackerid'].'">'.$post['User']['custom_fields']['fullname'].' - '.$post['User']['custom_fields']['tkid'].'<br />'.$post['username'].'</a>'.($post['User']['avatar_urls']['m'] != '' ? '<br /><img src="'.$post['User']['avatar_urls']['m'].'" />' : '').'
-									<br />
-									'.date("F j, Y, g:i a", $post['post_date']).'
-								</td>
-							</tr>
-							
-							<tr>
-								<td>'.$post['message_parsed'].'</td>
-							</tr>
+							// Only show messages that are visible // Example: We don't want to show messages that are hidden from public view
+							if($post['message_state'] == "visible")
+							{
+								echo '
+								<table border="1" style="width: 100%">
+								<tr>
+									<td>
+										<a href="index.php?profile='.$post['User']['custom_fields']['trackerid'].'">'.$post['User']['custom_fields']['fullname'].' - '.$post['User']['custom_fields']['tkid'].'<br />'.$post['username'].'</a>'.($post['User']['avatar_urls']['m'] != '' ? '<br /><img src="'.$post['User']['avatar_urls']['m'].'" />' : '').'
+										<br />
+										'.date("F j, Y, g:i a", $post['post_date']).'
+									</td>
+								</tr>
+								
+								<tr>
+									<td>'.$post['message_parsed'].'</td>
+								</tr>
 
-							</table>
+								</table>
 
-							<br />';
+								<br />';
+							}
 						}
 					}
 
