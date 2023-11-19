@@ -2619,7 +2619,19 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<div style="overflow-x: auto;">
 						<table id="masterRosterTable">
 							<tr>
-								<th>Name</th>	<th>Board Name</th>	<th>TKID</th>';
+								<th>Name</th>
+								<th>Board Name</th>';
+
+								if(isset($_GET['squad']) && $_GET['squad'] > count($squadArray) && $clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3'] != "")
+								{
+									echo '
+									<th>
+										'.$clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3Name'].'
+									</th>';
+								}
+
+								echo '
+								<th>TKID</th>';
 								
 								// Only show if squad set
 								if(isset($_GET['squad']))
@@ -2640,8 +2652,17 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						<td>
 							'.$db->forum_id.'
-						</td>
+						</td>';
+
+						if(isset($_GET['squad']) && $_GET['squad'] > count($squadArray) && $clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3'] != "")
+						{
+							echo '
+							<td>
+								<input type="text" name="changedb3" db3="'.$clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3'].'" trooperid="'.$db->id.'" value="'.$db->{$clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3']}.'" />
+							</td>';
+						}
 						
+						echo '
 						<td>
 							<a href="#/" name="roster-edit-tkid" tkid="'.$db->tkid.'">'.readTKNumber($db->tkid, $db->squad).'</a>
 							<span id="roster-'.$db->tkid.'" trooperid="'.$db->id.'"></span>

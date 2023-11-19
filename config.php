@@ -2950,39 +2950,44 @@ function removeLetters($string)
 function readTKNumber($tkid, $squad)
 {
 	global $conn, $clubArray, $squadArray;
-	
-	// Is the trooper in a club?
-	$inClub = false;
 
-	// Based on squad ID, is the trooper in a club
-	if($squad > count($squadArray))
+	if($tkid == 0)
 	{
-		// Get first letter of club
-		$firstLetter = strtoupper(substr(getSquadName($squad), 0, 1));
-		
-		// Set TKID return
-		$tkid = $firstLetter . $tkid;
-		
-		// Set inClub
-		$inClub = true;
-	}
-	
-	// If not in club, set default
-	if(!$inClub)
-	{
-		$prefix = "TK";
-		
-		// Get TK prefix from database
-		$getPrefix = $conn->query("SELECT prefix FROM 501st_costumes WHERE legionid = '".$tkid."' LIMIT 1");
-		$getPrefix_value = $getPrefix->fetch_row();
-		
-		// Make sure TK prefix was found
-		if(isset($getPrefix_value[0]) && $getPrefix_value[0] != "")
+		$tkid = "Not Assigned";
+	} else {
+		// Is the trooper in a club?
+		$inClub = false;
+
+		// Based on squad ID, is the trooper in a club
+		if($squad > count($squadArray))
 		{
-			$prefix = $getPrefix_value[0];
+			// Get first letter of club
+			$firstLetter = strtoupper(substr(getSquadName($squad), 0, 1));
+			
+			// Set TKID return
+			$tkid = $firstLetter . $tkid;
+			
+			// Set inClub
+			$inClub = true;
 		}
 		
-		$tkid = $prefix . $tkid;
+		// If not in club, set default
+		if(!$inClub)
+		{
+			$prefix = "TK";
+			
+			// Get TK prefix from database
+			$getPrefix = $conn->query("SELECT prefix FROM 501st_costumes WHERE legionid = '".$tkid."' LIMIT 1");
+			$getPrefix_value = $getPrefix->fetch_row();
+			
+			// Make sure TK prefix was found
+			if(isset($getPrefix_value[0]) && $getPrefix_value[0] != "")
+			{
+				$prefix = $getPrefix_value[0];
+			}
+			
+			$tkid = $prefix . $tkid;
+		}
 	}
 
 	return $tkid;

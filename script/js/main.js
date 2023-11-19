@@ -279,6 +279,22 @@ $(document).ready(function()
 		});
 	});
 
+	// DB3 save note
+	$(document).on('blur', '[name=changedb3]', function()
+	{
+		var db3 = $(this);
+
+		$.ajax({
+			type: "POST",
+			url: "process.php?do=savedb3",
+			data: "idvalue=" + db3.val() + "&trooperid=" + db3.attr("trooperid") + "&db3=" + db3.attr("db3"),
+			success: function(data)
+			{
+				// Nothing
+			}
+		});
+	});
+
     // Add rules to clubs - clubs
     $('.clubs').each(function()
     {

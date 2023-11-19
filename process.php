@@ -76,6 +76,13 @@ if(isset($_GET['do']) && $_GET['do'] == "saveplaceholder" && loggedIn())
 	}
 }
 
+/******************** SAVE DB3 *******************************/
+
+if(isset($_GET['do']) && $_GET['do'] == "savedb3" && isAdmin())
+{
+	$conn->query("UPDATE troopers SET ".cleanInput($_POST['db3'])." = '".cleanInput($_POST['idvalue'])."' WHERE id = '".cleanInput($_POST['trooperid'])."'");
+}
+
 /******************** SMILEY EDITOR *******************************/
 
 if(isset($_GET['do']) && $_GET['do'] == "smileyeditor")
