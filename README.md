@@ -236,7 +236,7 @@ $squadArray = array(
 	array(
 		"name" => "Everglades Squad",
 		"logo" => "everglades_emblem.png",
-		"costumes" => array(0, 5, 6, 8, 10),
+		"costumes" => array(0, 5, 7, 9, 11),
 		"db" => "p501",
 		"db2" => "",
 		"rankRegular" => "everglades_sm.png",
@@ -247,7 +247,7 @@ $squadArray = array(
 	array(
 		"name" => "Makaze Squad",
 		"logo" => "makaze_emblem.png",
-		"costumes" => array(0, 5, 6, 8, 10),
+		"costumes" => array(0, 5, 7, 9, 11),
 		"db" => "p501",
 		"db2" => "",
 		"rankRegular" => "makaze_sm.png",
@@ -258,7 +258,7 @@ $squadArray = array(
 	array(
 		"name" => "Parjai Squad",
 		"logo" => "parjai_emblem.png",
-		"costumes" => array(0, 5, 6, 8, 10),
+		"costumes" => array(0, 5, 7, 9, 11),
 		"db" => "p501",
 		"db2" => "",
 		"rankRegular" => "parjai_sm.png",
@@ -269,7 +269,7 @@ $squadArray = array(
 	array(
 		"name" => "Squad 7",
 		"logo" => "squad7_emblem.png",
-		"costumes" => array(0, 5, 6, 8, 10),
+		"costumes" => array(0, 5, 7, 9, 11),
 		"db" => "p501",
 		"db2" => "",
 		"rankRegular" => "s7_sm.png",
@@ -280,7 +280,7 @@ $squadArray = array(
 	array(
 		"name" => "Tampa Bay Squad",
 		"logo" => "tampabay_emblem.png",
-		"costumes" => array(0, 5, 6, 8, 10),
+		"costumes" => array(0, 5, 7, 9, 11),
 		"db" => "p501",
 		"db2" => "",
 		"rankRegular" => "tampa_sm.png",
