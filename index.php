@@ -1769,11 +1769,8 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn())
 		}
 		else
 		{
-			// Default page
-			$page = 1;
-			
 			// Start from - default
-			$startFrom = ($page - 1) * $results;
+			$startFrom = 0;
 		}
 		
 		// Squad is set, show only that data
@@ -3121,11 +3118,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			}
 			else
 			{
-				// Default page
-				$page = 1;
-				
 				// Start from - default
-				$startFrom = ($page - 1) * $results;
+				$startFrom = 0;
 			}
 			
 			// Add to query
@@ -5683,11 +5677,8 @@ if(isset($_GET['event']) && loggedIn())
 				}
 				else
 				{
-					// Default page
-					$page = 1;
-					
 					// Start from - default
-					$startFrom = ($page - 1) * $results;
+					$startFrom = 0;
 				}
 				
 				// Query database for photos
