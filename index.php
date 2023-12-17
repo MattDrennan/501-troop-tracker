@@ -1769,6 +1769,9 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn())
 		}
 		else
 		{
+			// Default
+			$page = 1;
+			
 			// Start from - default
 			$startFrom = 0;
 		}
@@ -3118,6 +3121,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			}
 			else
 			{
+				// Default
+				$page = 1;
+				
 				// Start from - default
 				$startFrom = 0;
 			}
@@ -5677,6 +5683,9 @@ if(isset($_GET['event']) && loggedIn())
 				}
 				else
 				{
+					// Default
+					$page = 1;
+					
 					// Start from - default
 					$startFrom = 0;
 				}
