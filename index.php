@@ -46,6 +46,7 @@ echo '
 	<!-- Setup Variable -->
 	<script>
 	var placeholder = '.placeholder.';
+	var squadCount = '.count($squadArray).';
 	var clubArray = [';
 
 	/* CHECK IF MEMBER CLUB DB VALUE */
@@ -2634,6 +2635,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 								<th>Name</th>
 								<th>Board Name</th>';
 
+								// Only show for clubs with DB3
 								if(isset($_GET['squad']) && $_GET['squad'] > count($squadArray) && $clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3'] != "")
 								{
 									echo '
@@ -2642,8 +2644,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 									</th>';
 								}
 
-								echo '
-								<th>TKID</th>';
+								// Only show TKID for 501st
+								if(isset($_GET['squad']) && $_GET['squad'] <= count($squadArray))
+								{
+									echo '
+									<th>TKID</th>';
+								}
 								
 								// Only show if squad set
 								if(isset($_GET['squad']))
@@ -2670,15 +2676,17 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						{
 							echo '
 							<td>
-								<input type="text" name="changedb3" db3="'.$clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3'].'" trooperid="'.$db->id.'" value="'.$db->{$clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3']}.'" />
+								<input type="text" name="changedb3" db3="'.$clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3'].'" trooperid="'.$db->id.'" db3value="'.$db->{$clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3']}.'" value="'.$db->{$clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3']}.'" />
 							</td>';
 						}
-						
-						echo '
-						<td>
-							<a href="#/" name="roster-edit-tkid" tkid="'.$db->tkid.'">'.readTKNumber($db->tkid, $db->squad).'</a>
-							<span id="roster-'.$db->tkid.'" trooperid="'.$db->id.'"></span>
-						</td>';
+
+						if(isset($_GET['squad']) && $_GET['squad'] <= count($squadArray))
+						{
+							echo '
+							<td>
+								<input type="number" name="changetkid" tkid="'.$db->tkid.'" trooperid="'.$db->id.'" value="'.$db->tkid.'" />
+							</td>';
+						}
 						
 						// Only show if squad set
 						if(isset($_GET['squad']))
@@ -2806,6 +2814,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<option
 						value="'.$db->id.'"
 						tkid="'.readTKNumber($db->tkid, $db->squad).'"
+						tkidBasic="'.$db->tkid.'"
 						troopername="'.$db->name.'"
 						forum_id="'.$db->forum_id.'"';
 

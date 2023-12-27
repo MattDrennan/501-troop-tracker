@@ -20,28 +20,6 @@ if(isset($_GET['do']) && $_GET['do'] == "roster-trooper-confirmation" && loggedI
 	$conn->query("UPDATE event_sign_up SET status = '".cleanInput($_POST['status'])."' WHERE id = '".cleanInput($_POST['signid'])."'");
 }
 
-/******************** ROSTER SAVE TROOPER TKID *******************************/
-
-if(isset($_GET['do']) && $_GET['do'] == "roster-edit-tkid" && loggedIn() && isAdmin())
-{
-	// Check if TKID already exists
-	if(!doesTKExist(cleanInput($_POST['new_tkid']), getSquadID(cleanInput($_POST['trooperid']))))
-	{
-		// Update trooper TKID
-		$conn->query("UPDATE troopers SET tkid = '".cleanInput($_POST['new_tkid'])."' WHERE id = '".cleanInput($_POST['trooperid'])."'");
-
-		// Send JSON
-		$array = array('success' => true);
-		echo json_encode($array);
-	}
-	else
-	{
-		// Send JSON
-		$array = array('success' => false);
-		echo json_encode($array);
-	}
-}
-
 /******************** SAVE FAVORITE COSTUMES *******************************/
 
 if(isset($_GET['do']) && $_GET['do'] == "savefavoritecostumes" && loggedIn())
@@ -81,6 +59,27 @@ if(isset($_GET['do']) && $_GET['do'] == "saveplaceholder" && loggedIn())
 if(isset($_GET['do']) && $_GET['do'] == "savedb3" && isAdmin())
 {
 	$conn->query("UPDATE troopers SET ".cleanInput($_POST['db3'])." = '".cleanInput($_POST['idvalue'])."' WHERE id = '".cleanInput($_POST['trooperid'])."'");
+}
+
+/******************** SAVE TKID *******************************/
+
+if(isset($_GET['do']) && $_GET['do'] == "savetkid" && isAdmin())
+{
+	// Check if TKID already exists
+	if(!doesTKExist(cleanInput($_POST['idvalue']), getSquadID(cleanInput($_POST['trooperid']))))
+	{
+		$conn->query("UPDATE troopers SET tkid = '".cleanInput($_POST['idvalue'])."' WHERE id = '".cleanInput($_POST['trooperid'])."'");
+
+		// Send JSON
+		$array = array('success' => true);
+		echo json_encode($array);
+	}
+	else
+	{
+		// Send JSON
+		$array = array('success' => false);
+		echo json_encode($array);
+	}
 }
 
 /******************** SMILEY EDITOR *******************************/

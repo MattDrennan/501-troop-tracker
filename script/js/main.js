@@ -284,15 +284,51 @@ $(document).ready(function()
 	{
 		var db3 = $(this);
 
-		$.ajax({
-			type: "POST",
-			url: "process.php?do=savedb3",
-			data: "idvalue=" + db3.val() + "&trooperid=" + db3.attr("trooperid") + "&db3=" + db3.attr("db3"),
-			success: function(data)
-			{
-				// Nothing
-			}
-		});
+		// If DB3 was changed
+		if(db3.attr("db3value") != db3.val())
+		{
+			$.ajax({
+				type: "POST",
+				url: "process.php?do=savedb3",
+				data: "idvalue=" + db3.val() + "&trooperid=" + db3.attr("trooperid") + "&db3=" + db3.attr("db3"),
+				success: function(data)
+				{
+					db3.attr("db3value", db3.val());
+				}
+			});
+		}
+	});
+
+	// TKID change save note
+	$(document).on('blur', '[name=changetkid]', function()
+	{
+		var tkid = $(this);
+
+		// If TKID was changed
+		if(tkid.attr("tkid") != tkid.val())
+		{
+			$.ajax({
+				type: "POST",
+				url: "process.php?do=savetkid",
+				data: "idvalue=" + tkid.val() + "&trooperid=" + tkid.attr("trooperid"),
+				success: function(data)
+				{
+					// Get JSON
+					var json = JSON.parse(data);
+
+					if(json.success)
+					{
+						tkid.attr("tkid", tkid.val());
+						alert("Saved!");
+					}
+					else
+					{
+						tkid.val(tkid.attr("tkid"));
+						alert("This TKID is already assigned.");
+					}
+				}
+			});
+		}
 	});
 
     // Add rules to clubs - clubs
@@ -353,63 +389,6 @@ $(document).ready(function()
 			{
 				// Delete HTML
 				$("p[class=trooper-confirmation-box][signid=" + signid + "]").remove();
-			}
-		});
-	})
-
-	// Roster - Edit TKID
-	$("body").on("click", "[name=roster-edit-tkid]", function(e)
-	{
-		// TKID Roster span HTML - Displays below TKID
-		var span = $("#roster-" + $(this).attr("tkid"));
-
-		if(span.html() == "")
-		{
-			// Show
-			span.html("<br /><input type='text' value='" + $(this).attr("tkid") + "' id='roster-" + $(this).attr("tkid") + "-edit' /><input type='submit' value='Save' name='roster-edit-tkid-save' tkid='" + $(this).attr("tkid") + "' />");
-		}
-		else
-		{
-			// Hide
-			span.html("");
-		}
-	})
-
-	// Roster - Edit TKID (Save Button)
-	$("body").on("click", "[name=roster-edit-tkid-save]", function(e)
-	{
-		// TKID Roster span HTML - Displays below TKID
-		var span = $("#roster-" + $(this).attr("tkid"));
-		var trooperid = $("#roster-" + $(this).attr("tkid") + " ").attr("trooperid");
-		var old_tkid = $("a[tkid=" + $(this).attr("tkid") + "]").text();
-		var new_tkid = $("#roster-" + $(this).attr("tkid") + " input").val();
-		var prefix = old_tkid.replace(/[0-9]/g, "");
-
-		// Save
-		$.ajax({
-			type: "POST",
-			url: "process.php?do=roster-edit-tkid",
-			data: "trooperid=" + trooperid + "&new_tkid=" + new_tkid,
-			success: function(data)
-			{
-				// Get JSON
-				var json = JSON.parse(data);
-
-				// Check success
-				if(json.success)
-				{
-					alert("Trooper TKID updated!");
-
-					// Set new TKID with prefix on screen
-					$("a[tkid=" + $(this).attr("tkid") + "]").text(prefix + new_tkid);
-
-					// Clear
-					span.html("");
-				}
-				else
-				{
-					alert("This TKID already exists.");
-				}
 			}
 		});
 	})
@@ -497,9 +476,11 @@ $(document).ready(function()
 			var trooperid = $("#userID option:selected").val();
 			var troopername = $("#userID option:selected").attr("troopername");
 			var tkid = $("#userID option:selected").attr("tkid");
+			var tkidBasic = $("#userID option:selected").attr("tkidBasic");
 			var forum_id = $("#userID option:selected").attr("forum_id");
 			var db3 = $("#userID option:selected").attr("db3");
 			var idvalue = $("#userID option:selected").attr("idvalue");
+			var squad = $("#addMasterRosterForm input[name='squad']").val();
 
 			$.ajax({
 				type: "POST",
@@ -514,7 +495,7 @@ $(document).ready(function()
 					$("#userID option:selected").remove();
 					
 					// Add to table
-					$("#masterRosterTable").append('<tr name="row_' + trooperid + '"><td><a href="index.php?profile=' + trooperid + '" target="_blank">' + troopername + '</a></td><td>' + forum_id + '</td>' + ((db3 != undefined) ? '<td><input type="text" name="changedb3" db3="' + db3 + '" trooperid="' + trooperid + '" value="' + idvalue + '" /></td>' : '') + '<td>' + tkid + '</td><td><select name="changepermission" trooperid="' + trooperid + '"><option value="0">Not A Member</option><option value="1" SELECTED>Regular Member</option><option value="2">Reserve Member</option><option value="3">Retired Member</option><option value="4">Handler</option></select></td></tr>');
+					$("#masterRosterTable").append('<tr name="row_' + trooperid + '"><td><a href="index.php?profile=' + trooperid + '" target="_blank">' + troopername + '</a></td><td>' + forum_id + '</td>' + ((db3 != undefined) ? '<td><input type="text" name="changedb3" db3="' + db3 + '" trooperid="' + trooperid + '" value="' + idvalue + '" /></td>' : '') + ((squadCount >= squad) ? '<td><input type="number" name="changetkid" tkid="' + tkidBasic + '" trooperid="' + trooperid + '" value="' + tkidBasic + '" /></td>' : '') + '<td><select name="changepermission" trooperid="' + trooperid + '"><option value="0">Not A Member</option><option value="1" SELECTED>Regular Member</option><option value="2">Reserve Member</option><option value="3">Retired Member</option><option value="4">Handler</option></select></td></tr>');
 					
 					// Alert user
 					alert(json.data);
