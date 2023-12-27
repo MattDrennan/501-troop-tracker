@@ -46,6 +46,7 @@ echo '
 	<!-- Setup Variable -->
 	<script>
 	var placeholder = '.placeholder.';
+	var squadCount = '.count($squadArray).';
 	var clubArray = [';
 
 	/* CHECK IF MEMBER CLUB DB VALUE */
@@ -191,12 +192,6 @@ echo '
 <a href="index.php" '.isPageActive("home").'>Home</a>
 <a href="https://fl501st.com/boards/">Forums</a>';
 
-if(!isWebsiteClosed() || isAdmin())
-{
-	echo '
-	<a href="index.php?action=trooptracker" '.isPageActive("trooptracker").'>Troop Tracker</a>';
-}
-
 // If not logged in
 if(!loggedIn())
 {
@@ -220,6 +215,7 @@ else
 {
 	// Logged in
 	echo '
+	<a href="index.php?action=trooptracker" '.isPageActive("trooptracker").'>Stats & Search</a>
 	<a href="index.php?action=account" '.isPageActive("account").'>Manage Account</a>';
 
 	// If is admin
@@ -243,6 +239,19 @@ echo drawSupportGraph();
 
 // Show tip
 echo dailyTip();
+
+if(loggedIn())
+{
+	$userID = getUserID($_SESSION['id']);
+	
+	$alerts = @getAlerts($userID)['alerts'];
+	$conversations = @getConversations($userID)['conversations'];
+
+	// Forum notifications
+	echo '
+	<p style="text-align: center; border: 1px; border-style: dotted;"><a href="https://fl501st.com/boards/">Welcome '.getName($_SESSION['id']).', you have '.@count($alerts).' notifications and '.@count($conversations).' unread messages on the boards.</a></p>
+	';
+}
 
 // Show the account page
 if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
@@ -435,7 +444,7 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 		<p style="text-align: center;">New to the 501st and/or '.garrison.'? Or are you solely a member of another club? Use this form below to start signing up for troops. Command Staff will need to approve your account prior to use.</p>
 		
 		<form action="process.php?do=requestaccess" name="requestAccessForm" id="requestAccessForm" method="POST">
-			First & Last Name: <input type="text" name="name" id="name" />
+			First & Last Name (use a nickname if you wish to remain anonymous): <input type="text" name="name" id="name" />
 			<br /><br />
 			TKID (numbers only): <input type="number" min="0" name="tkid" id="tkid" />
 			<p><i>Non-501st clubs, please enter an ID number of your choosing.</i></p>
@@ -475,9 +484,16 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 
 	<div name="requestAccessFormArea2" id="requestAccessFormArea2"></div>';
 }
+else
+{
+	if(isset($_GET['action']) && $_GET['action'] == "requestaccess")
+	{
+		echo '<p style="text-align: center;"><b>You are already logged in.</b></p>';
+	}
+}
 
 // Show the profile page
-if(isset($_GET['profile']))
+if(isset($_GET['profile']) && loggedIn())
 {
 	// Hold value
 	$profile = cleanInput($_GET['profile']);
@@ -731,6 +747,13 @@ if(isset($_GET['profile']))
 		
 		// Show Droid Builder costumes
 		showDroids(getTrooperForum($profile));
+	}
+}
+else
+{
+	if(isset($_GET['profile']))
+	{
+		echo '<p style="text-align: center;"><b>Please login to view this profile.</b></p>';
 	}
 }
 
@@ -1073,7 +1096,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			// If active only set
 			if(isset($_POST['activeonly']) && $_POST['activeonly'] == 1)
 			{
-				$query .= " AND p501 = '1' OR p501 = '2'";
+				$query .= " AND (p501 = '1' OR p501 = '2')";
 			}
 		}
 		
@@ -1545,165 +1568,161 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 }
 
 // Show the troop tracker page
-if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
+if(isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn())
 {
-	// If logged in
-	if(loggedIn())
-	{
-		echo '
-		<h2 class="tm-section-header">My Stats</h2>
-		
-		<p style="text-align: center;">
-			<a href="#/" class="button" id="showstats" name="showstats">Show My Stats</a> 
-			<a href="index.php?profile='.$_SESSION['id'].'" class="button">View My Profile</a>
-		</p>
+	echo '
+	<h2 class="tm-section-header">My Stats</h2>
+	
+	<p style="text-align: center;">
+		<a href="#/" class="button" id="showstats" name="showstats">Show My Stats</a> 
+		<a href="index.php?profile='.$_SESSION['id'].'" class="button">View My Profile</a>
+	</p>
 
-		<p style="text-align: center;">
-			<a href="#/" class="button" id="show-top-troops">Top Troopers</a> 
-		</p>
+	<p style="text-align: center;">
+		<a href="#/" class="button" id="show-top-troops">Top Troopers</a> 
+	</p>
 
-		<div class="top-troops" id="top-troops">
-			<h2 class="tm-section-header">Top Troopers</h2>
+	<div class="top-troops" id="top-troops">
+		<h2 class="tm-section-header">Top Troopers</h2>
 
-			<h4><u>All Time</u></h4>
+		<h4><u>All Time</u></h4>
 
-			<ol>';
+		<ol>';
 
-			$query = "SELECT trooperid, COUNT(trooperid) AS total FROM event_sign_up LEFT JOIN events ON event_sign_up.trooperid = events.id WHERE event_sign_up.trooperid != ".placeholder." AND events.closed = '1' AND event_sign_up.status = '3' GROUP BY trooperid ORDER BY total DESC LIMIT 25";
+		$query = "SELECT trooperid, COUNT(trooperid) AS total FROM event_sign_up LEFT JOIN events ON event_sign_up.trooperid = events.id WHERE event_sign_up.trooperid != ".placeholder." AND events.closed = '1' AND event_sign_up.status = '3' GROUP BY trooperid ORDER BY total DESC LIMIT 25";
 
-			$i = 0;
-
-			if ($result = mysqli_query($conn, $query))
-			{
-				while ($db = mysqli_fetch_object($result))
-				{
-					echo '<li><a href="index.php?profile='.$db->trooperid.'">' . getName($db->trooperid) . ' - '.$db->total.'</a></li>';
-
-					$i++;
-				}
-			}
-
-			// If none to display
-			if($i == 0)
-			{
-				echo '<li>Nothing to display.</li>';
-			}
-			
-			echo '
-			</ol>
-
-			<h4><u>Last 365 Days</u></h4>
-
-			<ol>';
-
-			$query = "SELECT trooperid, COUNT(trooperid) AS total FROM event_sign_up LEFT JOIN events ON event_sign_up.troopid = events.id WHERE events.dateEnd > NOW() - INTERVAL 365 DAY AND event_sign_up.trooperid != ".placeholder." AND events.closed = '1' AND event_sign_up.status = '3' GROUP BY trooperid ORDER BY total DESC LIMIT 25";
-
-			$i = 0;
-
-			if ($result = mysqli_query($conn, $query))
-			{
-				while ($db = mysqli_fetch_object($result))
-				{
-					echo '<li><a href="index.php?profile='.$db->trooperid.'">' . getName($db->trooperid) . ' - '.$db->total.'</a></li>';
-
-					$i++;
-				}
-			}
-
-			// If none to display
-			if($i == 0)
-			{
-				echo '<li>Nothing to display.</li>';
-			}
-			
-			echo '
-			</ol>
-
-			<h4><u>Last 30 Days</u></h4>
-
-			<ol>';
-
-			$query = "SELECT trooperid, COUNT(trooperid) AS total FROM event_sign_up LEFT JOIN events ON event_sign_up.troopid = events.id WHERE events.dateEnd > NOW() - INTERVAL 30 DAY AND event_sign_up.trooperid != ".placeholder." AND events.closed = '1' AND event_sign_up.status = '3' GROUP BY trooperid ORDER BY total DESC LIMIT 25";
-
-			$i = 0;
-
-			if ($result = mysqli_query($conn, $query))
-			{
-				while ($db = mysqli_fetch_object($result))
-				{
-					echo '<li><a href="index.php?profile='.$db->trooperid.'">' . getName($db->trooperid) . ' - '.$db->total.'</a></li>';
-
-					$i++;
-				}
-			}
-
-			// If none to display
-			if($i == 0)
-			{
-				echo '<li>Nothing to display.</li>';
-			}
-			
-			echo '
-			</ol>
-		</div>
-
-		<div id="mystats" name="mystats" style="display: none;">';
-
-		// Get data
-		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, (TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) AS charityHours FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND status = 3 AND events.closed = '1' ORDER BY events.dateEnd DESC";
-
-		// Troop count
 		$i = 0;
 
 		if ($result = mysqli_query($conn, $query))
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				if($i == 0)
-				{
-					echo getTroopCounts(cleanInput($_SESSION['id'])) . '
-					<div style="overflow-x: auto;">
-					<table border="1">
-					<tr>
-						<th>Troop</th>	<th>Costume</th>	<th>Charity</th>
-					</tr>';
-				}
-				
-				// Set add to title if linked event
-				$add = "";
-				
-				// If linked event
-				if(isLink($db->eventId) > 0)
-				{
-					$add = "[<b>" . date("l", strtotime($db->dateStart)) . "</b> : ".date("m/d - h:i A", strtotime($db->dateStart))." - ".date("h:i A", strtotime($db->dateEnd))."] ";
-				}
+				echo '<li><a href="index.php?profile='.$db->trooperid.'">' . getName($db->trooperid) . ' - '.$db->total.'</a></li>';
 
-				echo '
-				<tr>
-					<td><a href="index.php?event='.$db->eventId.'">'.$add.''.$db->eventName.'</a></td>	<td>'.ifEmpty(getCostume($db->costume), "N/A").'</td>	<td>Direct: $'.number_format($db->charityDirectFunds).'<br />Indirect: $'.number_format($db->charityIndirectFunds).'<br />Hours: '.$db->charityHours.'</td>
-				</tr>';
-
-				// Increment troop count
 				$i++;
 			}
 		}
 
-		if($i > 0)
+		// If none to display
+		if($i == 0)
 		{
-			echo '
-			</table>
-			</div>';
-		}
-		else
-		{
-			// No troops attended
-			echo '
-			<p><b>You have not attended any troops. Get out there and troop!</b></p>';
+			echo '<li>Nothing to display.</li>';
 		}
 		
 		echo '
+		</ol>
+
+		<h4><u>Last 365 Days</u></h4>
+
+		<ol>';
+
+		$query = "SELECT trooperid, COUNT(trooperid) AS total FROM event_sign_up LEFT JOIN events ON event_sign_up.troopid = events.id WHERE events.dateEnd > NOW() - INTERVAL 365 DAY AND event_sign_up.trooperid != ".placeholder." AND events.closed = '1' AND event_sign_up.status = '3' GROUP BY trooperid ORDER BY total DESC LIMIT 25";
+
+		$i = 0;
+
+		if ($result = mysqli_query($conn, $query))
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				echo '<li><a href="index.php?profile='.$db->trooperid.'">' . getName($db->trooperid) . ' - '.$db->total.'</a></li>';
+
+				$i++;
+			}
+		}
+
+		// If none to display
+		if($i == 0)
+		{
+			echo '<li>Nothing to display.</li>';
+		}
+		
+		echo '
+		</ol>
+
+		<h4><u>Last 30 Days</u></h4>
+
+		<ol>';
+
+		$query = "SELECT trooperid, COUNT(trooperid) AS total FROM event_sign_up LEFT JOIN events ON event_sign_up.troopid = events.id WHERE events.dateEnd > NOW() - INTERVAL 30 DAY AND event_sign_up.trooperid != ".placeholder." AND events.closed = '1' AND event_sign_up.status = '3' GROUP BY trooperid ORDER BY total DESC LIMIT 25";
+
+		$i = 0;
+
+		if ($result = mysqli_query($conn, $query))
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				echo '<li><a href="index.php?profile='.$db->trooperid.'">' . getName($db->trooperid) . ' - '.$db->total.'</a></li>';
+
+				$i++;
+			}
+		}
+
+		// If none to display
+		if($i == 0)
+		{
+			echo '<li>Nothing to display.</li>';
+		}
+		
+		echo '
+		</ol>
+	</div>
+
+	<div id="mystats" name="mystats" style="display: none;">';
+
+	// Get data
+	$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, (TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) AS charityHours FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND status = 3 AND events.closed = '1' ORDER BY events.dateEnd DESC";
+
+	// Troop count
+	$i = 0;
+
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			if($i == 0)
+			{
+				echo getTroopCounts(cleanInput($_SESSION['id'])) . '
+				<div style="overflow-x: auto;">
+				<table border="1">
+				<tr>
+					<th>Troop</th>	<th>Costume</th>	<th>Charity</th>
+				</tr>';
+			}
+			
+			// Set add to title if linked event
+			$add = "";
+			
+			// If linked event
+			if(isLink($db->eventId) > 0)
+			{
+				$add = "[<b>" . date("l", strtotime($db->dateStart)) . "</b> : ".date("m/d - h:i A", strtotime($db->dateStart))." - ".date("h:i A", strtotime($db->dateEnd))."] ";
+			}
+
+			echo '
+			<tr>
+				<td><a href="index.php?event='.$db->eventId.'">'.$add.''.$db->eventName.'</a></td>	<td>'.ifEmpty(getCostume($db->costume), "N/A").'</td>	<td>Direct: $'.number_format($db->charityDirectFunds).'<br />Indirect: $'.number_format($db->charityIndirectFunds).'<br />Hours: '.$db->charityHours.'</td>
+			</tr>';
+
+			// Increment troop count
+			$i++;
+		}
+	}
+
+	if($i > 0)
+	{
+		echo '
+		</table>
 		</div>';
 	}
+	else
+	{
+		// No troops attended
+		echo '
+		<p><b>You have not attended any troops. Get out there and troop!</b></p>';
+	}
+	
+	echo '
+	</div>';
 
 	// Show troop tracker for everyone
 	echo '
@@ -1751,11 +1770,11 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		}
 		else
 		{
-			// Default page
+			// Default
 			$page = 1;
 			
 			// Start from - default
-			$startFrom = ($page - 1) * $results;
+			$startFrom = 0;
 		}
 		
 		// Squad is set, show only that data
@@ -1939,7 +1958,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 	{
 		// No troops attended
 		echo '
-		<p><b>No one has attended a troop recently!</b></p>';
+		<p style="text-align: center;"><b>No one has attended a troop recently!</b></p>';
 	}
 
 	echo '
@@ -2003,6 +2022,13 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
 		</form>
 	</div>';
 }
+else
+{
+	if(isset($_GET['action']) && $_GET['action'] == "trooptracker")
+	{
+		echo '<p style="text-align: center;"><b>Please login to view this page.</b></p>';
+	}
+}
 
 // Show the command staff page
 if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
@@ -2028,8 +2054,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<a href="index.php?action=commandstaff&do=managecostumes" class="button">Costume Management</a> 
 				<a href="index.php?action=commandstaff&do=managetroopers" class="button">Trooper Management</a> 
 				<a href="index.php?action=commandstaff&do=assignawards" class="button">Award Management</a>
-				<a href="index.php?action=commandstaff&do=stats" class="button">Statistics</a>
-				<a href="index.php?action=commandstaff&do=sitesettings" class="button">Site Settings</a>';
+				<a href="index.php?action=commandstaff&do=stats" class="button">Statistics</a>';
 			}
 
 			// If have special permission for trooper management
@@ -2049,6 +2074,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			{
 				echo '<a href="index.php?action=commandstaff&do=assignawards" class="button">Award Management</a> ';
 			}
+
+			echo '
+			<a href="index.php?action=commandstaff&do=sitesettings" class="button">Site Settings</a>';
 			
 		echo '
 		</p>';
@@ -2085,24 +2113,30 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					}
 					
 					// If sign up closed, show button
-					if($db->signupclosed == 0)
-					{
-						// Close sign up button
-						echo '
-						<input type="submit" name="submitCloseSignUps" id="submitCloseSignUps" value="Close Sign Ups" />';
-					}
-					else
-					{
-						// Open sign up button
-						echo '
-						<input type="submit" name="submitCloseSignUps" id="submitCloseSignUps" value="Open Sign Ups" />';
+					// If super admin only
+					if(hasPermission(1)) {
+						if($db->signupclosed == 0)
+						{
+							// Close sign up button
+							echo '
+							<input type="submit" name="submitCloseSignUps" id="submitCloseSignUps" value="Close Sign Ups" />';
+						}
+						else
+						{
+							// Open sign up button
+							echo '
+							<input type="submit" name="submitCloseSignUps" id="submitCloseSignUps" value="Open Sign Ups" />';
+						}
 					}
 					
 					// Change donation support
-					echo '
-					<input type="submit" name="submitSupportGoal" id="submitSupportGoal" value="Change Support Goal" />
-					
-					<div id="settingsEditArea" name="settingsEditArea"></div>';
+					// If super admin only
+					if(hasPermission(1)) {
+						echo '
+						<input type="submit" name="submitSupportGoal" id="submitSupportGoal" value="Change Support Goal" />
+						
+						<div id="settingsEditArea" name="settingsEditArea"></div>';
+					}
 						
 					echo '
 					</form>';
@@ -2189,7 +2223,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<div class="stat-container">';
 
 			// Show all super admins
-			$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.squad FROM troopers WHERE (permissions = '1') ORDER BY name";
+			$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.note, troopers.squad FROM troopers WHERE (permissions = '1') ORDER BY name";
 
 			// Trooper count set up
 			$i = 0;
@@ -2201,6 +2235,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					echo '
 					<div class="title">
 						<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.'<br /><br />'.readTKNumber($db->tkid, $db->squad).'</a>
+						'.($db->note != "" ? '<br /><br />' . $db->note : '').'
 					</div>';
 					
 					// Increment
@@ -2221,7 +2256,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<div class="stat-container">';
 
 			// Show all super admins
-			$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.squad FROM troopers WHERE (permissions = '2') ORDER BY name";
+			$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.note, troopers.squad FROM troopers WHERE (permissions = '2') ORDER BY name";
 
 			// Trooper count set up
 			$i = 0;
@@ -2233,6 +2268,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					echo '
 					<div class="title">
 						<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.'<br /><br />'.readTKNumber($db->tkid, $db->squad).'</a>
+						'.($db->note != "" ? '<br /><br />' . $db->note : '').'
 					</div>';
 					
 					// Increment
@@ -2596,7 +2632,24 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<div style="overflow-x: auto;">
 						<table id="masterRosterTable">
 							<tr>
-								<th>Name</th>	<th>Board Name</th>	<th>TKID</th>';
+								<th>Name</th>
+								<th>Board Name</th>';
+
+								// Only show for clubs with DB3
+								if(isset($_GET['squad']) && $_GET['squad'] > count($squadArray) && $clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3'] != "")
+								{
+									echo '
+									<th>
+										'.$clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3Name'].'
+									</th>';
+								}
+
+								// Only show TKID for 501st
+								if(isset($_GET['squad']) && $_GET['squad'] <= count($squadArray))
+								{
+									echo '
+									<th>TKID</th>';
+								}
 								
 								// Only show if squad set
 								if(isset($_GET['squad']))
@@ -2617,12 +2670,23 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						<td>
 							'.$db->forum_id.'
-						</td>
-						
-						<td>
-							<a href="#/" name="roster-edit-tkid" tkid="'.$db->tkid.'">'.readTKNumber($db->tkid, $db->squad).'</a>
-							<span id="roster-'.$db->tkid.'" trooperid="'.$db->id.'"></span>
 						</td>';
+
+						if(isset($_GET['squad']) && $_GET['squad'] > count($squadArray) && $clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3'] != "")
+						{
+							echo '
+							<td>
+								<input type="text" name="changedb3" db3="'.$clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3'].'" trooperid="'.$db->id.'" db3value="'.$db->{$clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3']}.'" value="'.$db->{$clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3']}.'" />
+							</td>';
+						}
+
+						if(isset($_GET['squad']) && $_GET['squad'] <= count($squadArray))
+						{
+							echo '
+							<td>
+								<input type="number" name="changetkid" tkid="'.$db->tkid.'" trooperid="'.$db->id.'" value="'.$db->tkid.'" />
+							</td>';
+						}
 						
 						// Only show if squad set
 						if(isset($_GET['squad']))
@@ -2746,7 +2810,23 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<select name="userID" id="userID">';
 						}
 
-						echo '<option value="'.$db->id.'" tkid="'.readTKNumber($db->tkid, $db->squad).'" troopername="'.$db->name.'" forum_id="'.$db->forum_id.'">'.$db->name.' - '.$db->forum_id.' - '.readTKNumber($db->tkid, $db->squad).'</option>';
+						echo '
+						<option
+						value="'.$db->id.'"
+						tkid="'.readTKNumber($db->tkid, $db->squad).'"
+						tkidBasic="'.$db->tkid.'"
+						troopername="'.$db->name.'"
+						forum_id="'.$db->forum_id.'"';
+
+						if(isset($_GET['squad']) && $_GET['squad'] > count($squadArray) && $clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3'] != "")
+						{
+							echo '
+							db3="'.$clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3'].'"
+							idvalue="'.$db->{$clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3']}.'"';
+						}
+
+						echo '
+						>'.$db->name.' - '.$db->forum_id.' - '.readTKNumber($db->tkid, $db->squad).'</option>';
 
 						// Increment
 						$i++;
@@ -3050,11 +3130,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			}
 			else
 			{
-				// Default page
+				// Default
 				$page = 1;
 				
 				// Start from - default
-				$startFrom = ($page - 1) * $results;
+				$startFrom = 0;
 			}
 			
 			// Add to query
@@ -3209,17 +3289,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				</p>
 				
 				<p>
-					<b>Costume Era:</b></br />
-					<select name="costumeEra" id="costumeEra">
-						<option value="0">Prequel</option>
-						<option value="1" SELECTED>Original</option>
-						<option value="2">Sequel</option>
-						<option value="3">Expanded</option>
-						<option value="4">All</option>
-					</select>
-				</p>
-				
-				<p>
 					<b>Costume Club:</b></br />
 					<select name="costumeClub" id="costumeClub">
 						<option value="0" SELECTED>501st Legion</option>';
@@ -3273,7 +3342,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					}
 
 					echo '
-					<option value="'.$db->id.'" costumeName="'.$db->costume.'" costumeID="'.$db->id.'" costumeEra="'.$db->era.'" costumeClub="'.$db->club.'">'.$db->costume.'</option>';
+					<option value="'.$db->id.'" costumeName="'.$db->costume.'" costumeID="'.$db->id.'" costumeClub="'.$db->club.'">'.$db->costume.'</option>';
 
 
 					// Increment
@@ -3298,17 +3367,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<b>Costume Name:</b></br />
 					<input type="text" name="costumeNameEdit" id="costumeNameEdit" />
 				</p>
-				
-				<p>
-					<b>Costume Era:</b></br />
-					<select name="costumeEraEdit" id="costumeEraEdit">
-						<option value="0">Prequel</option>
-						<option value="1" SELECTED>Original</option>
-						<option value="2">Sequel</option>
-						<option value="3">Expanded</option>
-						<option value="4">All</option>
-					</select>
-				</p>
 
 				<p>
 					<b>Costume Club:</b></br />
@@ -3324,11 +3382,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						echo '
 						<option value="5">Dual (501st + Rebel)</option>
-						<option value="6">Dual-Mando (501st + Mando)</option>
-						<option value="7">Dual-Mando (RL + Mando)</option>
-						<option value="8">Dual-Saber (501st + SG)</option>
-						<option value="9">Dual-Saber (RL + SG)</option>
-						<option value="10">Triple-Dual (501st + RL + SG)</option>
+						<option value="7">Dual-Mando (501st + Mando)</option>
+						<option value="8">Dual-Mando (RL + Mando)</option>
+						<option value="9">Dual-Saber (501st + SG)</option>
+						<option value="10">Dual-Saber (RL + SG)</option>
+						<option value="11">Triple-Dual (501st + RL + SG)</option>
 					</select>
 				</p>
 
@@ -3863,15 +3921,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<option value="1">Yes</option>
 						</select>
 
-						<p>Do you wish to limit the era of the costume?</p>
-						<select name="era" id="era">
-							<option value="0">Prequel</option>
-							<option value="1" SELECTED>Original</option>
-							<option value="2">Sequel</option>
-							<option value="3">Expanded</option>
-							<option value="4" SELECTED>All</option>
-						</select>
-
 						<p>Limit of 501st Troopers:</p>
 						<input type="number" name="limit501st" value="500" id="limit501st" class="limitClass" />';
 
@@ -4054,7 +4103,10 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 								<option value="3">RIP Member</option>
 								<option value="2">Moderator</option>
 								<option value="1">Super Admin</option>
-							</select>';
+							</select>
+							
+							<p>User note:</p>
+							<input type="text" name="note" id="note" maxlength="255" />';
 						}
 
 						echo '
@@ -4188,7 +4240,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			$postComment = "";
 			$notes = "";
 			$limitedEvent = "";
-			$limitTo = "";
 			$limit501st = "";
 			$limitTotalTroopers = "";
 			$limitHandlers = "";
@@ -4243,7 +4294,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						$postComment = $db->postComment;
 						$notes = $db->notes;
 						$limitedEvent = $db->limitedEvent;
-						$limitTo = $db->limitTo;
 						$limit501st = $db->limit501st;
 						$limitTotalTroopers = $db->limitTotalTroopers;
 						$limitHandlers = $db->limitHandlers;
@@ -4432,15 +4482,6 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<select name="limitedEvent" id="limitedEvent">
 					<option value="0" '.copyEventSelect($eid, $limitedEvent, 0).'>No</option>
 					<option value="1" '.copyEventSelect($eid, $limitedEvent, 1).'>Yes</option>
-				</select>
-
-				<p>Do you wish to limit the era of the costume?</p>
-				<select name="era" id="era">
-					<option value="0" '.copyEventSelect($eid, $limitTo, 0).'>Prequel</option>
-					<option value="1" '.copyEventSelect($eid, $limitTo, 1).'>Original</option>
-					<option value="2" '.copyEventSelect($eid, $limitTo, 2).'>Sequel</option>
-					<option value="3" '.copyEventSelect($eid, $limitTo, 3).'>Expanded</option>
-					<option value="4" '.copyEventSelect($eid, $limitTo, 4, 4).'>All</option>
 				</select>
 				
 				<p>Limit of 501st Troopers:</p>
@@ -4959,6 +5000,13 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed() && 
 		</form>';
 	}
 }
+else
+{
+	if(isset($_GET['action']) && $_GET['action'] == "setup")
+	{
+		echo '<p style="text-align: center;"><b>You are already logged in.</b></p>';
+	}
+}
 
 // Show the logout page
 if(isset($_GET['action']) && $_GET['action'] == "logout")
@@ -4982,14 +5030,8 @@ if(isset($_GET['action']) && $_GET['action'] == "logout")
 }
 
 // If we are viewing an event, hide all other info
-if(isset($_GET['event']))
-{
-	// Set cookie for login
-	if(!loggedIn())
-	{
-		setcookie("TroopTrackerLastEvent", cleanInput($_GET['event']), time() + 3600);
-	}
-	
+if(isset($_GET['event']) && loggedIn())
+{	
 	// Delete Comment
 	if(isset($_POST['deleteComment']) && isAdmin())
 	{
@@ -5022,7 +5064,6 @@ if(isset($_GET['event']))
 			// Update globals
 			$eventClosed = $db->closed;
 			$limitedEvent = $db->limitedEvent;
-			$limitTo = $db->limitTo;
 			$friendLimit = $db->friendLimit;
 			$allowTentative = $db->allowTentative;
 			$thread_id = $db->thread_id;
@@ -5061,57 +5102,48 @@ if(isset($_GET['event']))
 			$date1 = date("m/d/Y - h:i A", strtotime($db->dateStart)); 
 			$date2 = date("m/d/Y - h:i A", strtotime($db->dateEnd));
 
-			// Only show if logged in
-			if(loggedIn())
+			// Query to see if trooper is subscribed
+			$isSubscribed = $conn->query("SELECT * FROM event_notifications WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($_GET['event'])."'");
+
+			// Set default subscribe button text
+			$subscribeText = "Subscribe Updates";
+
+			// Check if we are subscribed
+			if($isSubscribed->num_rows > 0)
 			{
-				// Query to see if trooper is subscribed
-				$isSubscribed = $conn->query("SELECT * FROM event_notifications WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($_GET['event'])."'");
+				$subscribeText = "Unsubscribe Updates";
+			}
+			
+			// Create button variable
+			$button = '
+			<p style="text-align: center;">
+				<a href="#/" class="button" id="subscribeupdates" event="'.cleanInput($_GET['event']).'" aria-label="Get updates on sign ups and cancellations." data-balloon-pos="up" data-balloon-length="fit">'.$subscribeText.'</a>
+				<a href="https://www.fl501st.com/boards/index.php?threads/'.$db->thread_id.'/watch" target="_blank" class="button" aria-label="Get updates on replies to this event." data-balloon-pos="up" data-balloon-length="fit">Watch Discussion</a>
+			</p>';
 
-				// Set default subscribe button text
-				$subscribeText = "Subscribe Updates";
-
-				// Check if we are subscribed
-				if($isSubscribed->num_rows > 0)
-				{
-					$subscribeText = "Unsubscribe Updates";
-				}
+			// If this event is over, don't show it
+			if(strtotime($db->dateEnd) >= strtotime("-1 day") && $db->closed != 1)
+			{					
+				// Subscribe button
+				echo $button;
 				
-				// Create button variable
-				$button = '
-				<p style="text-align: center;">
-					<a href="#/" class="button" id="subscribeupdates" event="'.cleanInput($_GET['event']).'" aria-label="Get updates on sign ups and cancellations." data-balloon-pos="up" data-balloon-length="fit">'.$subscribeText.'</a>
-					<a href="https://www.fl501st.com/boards/index.php?threads/'.$db->thread_id.'/watch" target="_blank" class="button" aria-label="Get updates on replies to this event." data-balloon-pos="up" data-balloon-length="fit">Watch Discussion</a>
-				</p>';
-
-				// If this event is over, don't show it
-				if(strtotime($db->dateEnd) >= strtotime("-1 day") && $db->closed == 0)
-				{					
-					// Subscribe button
-					echo $button;
-					
-					// Add to calendar links
-					echo showCalendarLinks($db->name, $db->location, "Troop Tracker Event", $db->dateStart, $db->dateEnd);
-				}
-				// If subscribed, allow to unsubscribe
-				else if($subscribeText == "Unsubscribe Updates")
-				{
-					// Subscribe button
-					echo $button;
-				}
+				// Add to calendar links
+				echo showCalendarLinks($db->name, $db->location, "Troop Tracker Event", $db->dateStart, $db->dateEnd);
+			}
+			// If subscribed, allow to unsubscribe
+			else if($subscribeText == "Unsubscribe Updates")
+			{
+				// Subscribe button
+				echo $button;
 			}
 			
 			// Is this merged data?
 			if($db->venue == NULL && $db->numberOfAttend == NULL && $db->requestedCharacter == NULL && $db->secureChanging == NULL && $db->lightsabers == NULL && $db->parking == NULL && $db->mobility == NULL && $db->amenities == NULL && $db->referred == NULL)
 			{	
 				echo '
-				<h2 class="tm-section-header">'.$db->name.'</h2>';
-				
-				if(loggedIn())
-				{
-					echo '
-					<p><b>Event Date:</b> '.$date1.' ('.date('l', strtotime($db->dateStart)).')</p>
-					<p><b>Comments:</b> '.ifEmpty($db->comments, "N/A").'</p>';
-				}
+				<h2 class="tm-section-header">'.$db->name.'</h2>
+				<p><b>Event Date:</b> '.$date1.' ('.date('l', strtotime($db->dateStart)).')</p>
+				<p><b>Comments:</b> '.ifEmpty($db->comments, "N/A").'</p>';
 				
 				// Set is merged
 				$isMerged = true;
@@ -5159,251 +5191,243 @@ if(isset($_GET['event']))
 				echo '
 				<h2 class="tm-section-header">'.$add.''.$db->name.'</h2>';
 				
-				if(loggedIn())
+				// If event closed
+				if($db->closed == 1)
 				{
-					// If event closed
-					if($db->closed == 1)
-					{
-						$hours = timeBetweenDates($db->dateStart, $db->dateEnd);
-						$hours += intval($db->charityAddHours);
+					$hours = timeBetweenDates($db->dateStart, $db->dateEnd);
+					$hours += intval($db->charityAddHours);
 
-						echo '
-						<div class="charitybox"><b>Event Raised:</b><br />Direct: $'.number_format($db->charityDirectFunds).'<br />Indirect: $'.number_format($db->charityIndirectFunds).'<br />Charity Name: '.ifEmpty($db->charityName, "N/A").'<br />Charity Hours: '.$hours.'<br />Charity Note:<br />'.ifEmpty(nl2br($db->charityNote), "N/A").'</div>';
-					}
-
-					// Set up show options
-					$style = '';
-
-					// If armor party
-					if($db->label == 10)
-					{
-						$style = 'style="display: none;"';
-					}
-					
 					echo '
-					<p><b>Venue:</b> '.$db->venue.'</p>
-					<p><b>Address:</b> <a href="https://www.google.com/maps/search/?api=1&query='.$db->location.'" target="_blank">'.$db->location.'</a></p>
-					<p><b>Event Start:</b> '.$date1.' ('.date('l', strtotime($db->dateStart)).')</p>
-					<p><b>Event End:</b> '.$date2.' ('.date('l', strtotime($db->dateEnd)).')</p>
-					<div id="options" '.$style.'>
-						<p><b>Website:</b> '.validate_url($db->website).'</p>
-						<p><b>Expected number of attendees:</b> '.number_format($db->numberOfAttend).'</p>
-						<p><b>Requested number of characters:</b> '.number_format($db->requestedNumber).'</p>
-						<p><b>Requested character types:</b> '.$db->requestedCharacter.'</p>
-						<p><b>Secure changing/staging area:</b> '.yesNo($db->secureChanging).'</p>
-						<p><b>Can troopers bring blasters:</b> '.yesNo($db->blasters).'</p>
-						<p><b>Can troopers bring/carry prop like lightsabers:</b> '.yesNo($db->lightsabers).'</p>
-						<p><b>Is parking available:</b> '.yesNo($db->parking).'</p>
-						<p><b>Is venue accessible to those with limited mobility:</b> '.yesNo($db->mobility).'</p>
-					</div>
-					<p><b>Amenities available at venue:</b> '.ifEmpty($db->amenities, "No amenities for this event.").'</p>
-					<p><b>Comments:</b><br />'.ifEmpty(nl2br(showBBcodes($db->comments)), "No comments for this event.").'</p>
-					<p><b>Referred by:</b> '.ifEmpty($db->referred, "Not available").'</p>
-					'.(isAdmin() ? '<p><b>Point of Contact:</b> '.ifEmpty($db->poc, "Not available").'</p>' : '').'';
+					<div class="charitybox"><b>Event Raised:</b><br />Direct: $'.number_format($db->charityDirectFunds).'<br />Indirect: $'.number_format($db->charityIndirectFunds).'<br />Charity Name: '.ifEmpty($db->charityName, "N/A").'<br />Charity Hours: '.$hours.'<br />Charity Note:<br />'.ifEmpty(nl2br($db->charityNote), "N/A").'</div>';
+				}
 
-					// If attached to a forum thread
-					if($db->thread_id > 0)
-					{
-						echo '
-						<p><b>View post on forum:</b> <a href="https://www.fl501st.com/boards/index.php?threads/'.$db->thread_id.'" target="_blank">https://www.fl501st.com/forums/index.php?threads/'.$db->thread_id.'</a></p>';
-					}
+				// Set up show options
+				$style = '';
+
+				// If armor party
+				if($db->label == 10)
+				{
+					$style = 'style="display: none;"';
+				}
 				
-					// Get linked event
-					$link = isLink($db->id);
-					
-					// If has links to event, or is linked, show shift data
-					if($link > 0)
-					{						
-						echo '
-						<h2 class="tm-section-header">Other Shifts</h2>';
-						
-						// Query database for photos
-						$query2 = "SELECT * FROM events WHERE (id = '".$link."' OR link = '".$link."') AND id != '".$db->id."' ORDER BY dateStart DESC";
-						
-						if ($result2 = mysqli_query($conn, $query2))
-						{
-							while ($db2 = mysqli_fetch_object($result2))
-							{
-								echo '
-								<div style="border: 1px solid gray; margin-bottom: 10px; text-align: center;">
-								<a href="index.php?event=' . $db2->id . '"><b>'.date('l', strtotime($db2->dateStart)).'</b> - ' . date('M d, Y', strtotime($db2->dateStart)) . '
-								<br />' .
-								date('h:i A', strtotime($db2->dateStart)) . ' - ' . date('h:i A', strtotime($db2->dateEnd)) .
-								'</a>
-								</div>';
-							}
-						}
-					}
+				echo '
+				<p><b>Venue:</b> '.$db->venue.'</p>
+				<p><b>Address:</b> <a href="https://www.google.com/maps/search/?api=1&query='.$db->location.'" target="_blank">'.$db->location.'</a></p>
+				<p><b>Event Start:</b> '.$date1.' ('.date('l', strtotime($db->dateStart)).')</p>
+				<p><b>Event End:</b> '.$date2.' ('.date('l', strtotime($db->dateEnd)).')</p>
+				<div id="options" '.$style.'>
+					<p><b>Website:</b> '.validate_url($db->website).'</p>
+					<p><b>Expected number of attendees:</b> '.number_format($db->numberOfAttend).'</p>
+					<p><b>Requested number of characters:</b> '.number_format($db->requestedNumber).'</p>
+					<p><b>Requested character types:</b> '.$db->requestedCharacter.'</p>
+					<p><b>Secure changing/staging area:</b> '.yesNo($db->secureChanging).'</p>
+					<p><b>Can troopers bring blasters:</b> '.yesNo($db->blasters).'</p>
+					<p><b>Can troopers bring/carry prop like lightsabers:</b> '.yesNo($db->lightsabers).'</p>
+					<p><b>Is parking available:</b> '.yesNo($db->parking).'</p>
+					<p><b>Is venue accessible to those with limited mobility:</b> '.yesNo($db->mobility).'</p>
+				</div>
+				<p><b>Amenities available at venue:</b> '.ifEmpty($db->amenities, "No amenities for this event.").'</p>
+				<p><b>Comments:</b><br />'.ifEmpty(nl2br(showBBcodes($db->comments)), "No comments for this event.").'</p>
+				<p><b>Referred by:</b> '.ifEmpty($db->referred, "Not available").'</p>
+				'.(isAdmin() ? '<p><b>Point of Contact:</b> '.ifEmpty($db->poc, "Not available").'</p>' : '').'';
 
-					// Set up add to query
-					$add = "";
-
-					// Add to query if this is a linked event
-					if($link > 0)
-					{
-						$add = " OR troopid = '".$link."'";
-					}
-					
-					// Don't show photos, if merged data
-					if(!$isMerged)
-					{
-						// Query database for photos
-						$query2 = "SELECT * FROM uploads WHERE admin = '1' AND (troopid = '".cleanInput($_GET['event'])."'".$add.") ORDER BY date DESC";
-						
-						// Query count
-						$j = 0;
-						
-						if ($result2 = mysqli_query($conn, $query2))
-						{
-							while ($db2 = mysqli_fetch_object($result2))
-							{
-								// If first result...
-								if($j == 0)
-								{
-									echo '
-									<hr />';
-								}
-								
-								echo '
-								<div class="container-image">
-									<a href="images/uploads/'.$db2->filename.'" data-lightbox="photosadmin" data-title="Uploaded by '.getName($db2->trooperid).'" id="photo'.$db2->id.'"><img src="images/uploads/'.$db2->filename.'" width="200px" height="200px" class="image-c" /></a>
-									
-									<p class="container-text">';
-									
-										// If owned by trooper or admin
-										if(isAdmin() || $db2->trooperid == $_SESSION['id'])
-										{
-											echo '<a href="index.php?action=editphoto&id='.$db2->id.'">Edit</a>';
-										}
-										
-									echo '
-									</p>
-								</div>';
-								
-								// Increment photo count
-								$j++;
-							}
-						}
-					}
+				// If attached to a forum thread
+				if($db->thread_id > 0)
+				{
+					echo '
+					<p><b>View post on forum:</b> <a href="https://www.fl501st.com/boards/index.php?threads/'.$db->thread_id.'" target="_blank">https://www.fl501st.com/boards/index.php?threads/'.$db->thread_id.'</a></p>';
+				}
 			
-					// If this event is limited to era
-					if($db->limitTo != 4)
-					{
-						echo '
-						<br />
-						<hr />
-						<br />
-						
-						<div style="color: red;">
-							This event is limited to ' . getEra($db->limitTo) . ' era.
-						</div>';
-					}
-
-					// Set up is limited event?
-					$isLimited = false;
-
-					// Loop through clubs
-					foreach($clubArray as $club => $club_value)
-					{
-						// Check if limited
-						if($db->{$club_value['dbLimit']} < 500)
-						{
-							$isLimited = true;
-						}
-					}
-
-					// Check for total limit set, if it is, set event as limited
-					if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
-					{
-						$isLimited = true;
-					}
-					
-					// Check for total limit set, if it is, set event as limited
-					if($db->limitHandlers > 500 || $db->limitHandlers < 500)
-					{
-						$isLimited = true;
-					}
+				// Get linked event
+				$link = isLink($db->id);
 				
-					// If this event is limited in troopers
-					if($db->limit501st < 500 || $isLimited)
+				// If has links to event, or is linked, show shift data
+				if($link > 0)
+				{						
+					echo '
+					<h2 class="tm-section-header">Other Shifts</h2>';
+					
+					// Query database for photos
+					$query2 = "SELECT * FROM events WHERE (id = '".$link."' OR link = '".$link."') AND id != '".$db->id."' ORDER BY dateStart DESC";
+					
+					if ($result2 = mysqli_query($conn, $query2))
 					{
-						echo '
-						<br />
-						<hr />
-						<br />
-						
-						<div style="color: red;" name="troopersRemainingDisplay">
-							<ul>
-								<li>This event is limited to '.$limitTotal.' troopers. ';
-
-								// Check for total limit set, if it is, add remaining troopers
-								if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
-								{
-									echo '
-									' . troopersRemaining($limitTotal, eventClubCount($db->id, "all")) . '</li>';
-								}
-								else
-								{
-									echo '
-									</li>
-									<li>This event is limited to '.$db->limit501st.' 501st troopers. '.troopersRemaining($db->limit501st, eventClubCount($db->id, 0)).' </li>';
-
-									// Set up club count
-									$clubCount = count($squadArray) + 1;
-
-									// Loop through clubs
-									foreach($clubArray as $club => $club_value)
-									{
-										echo '
-										<li>This event is limited to '.$db->{$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining($db->{$club_value['dbLimit']}, eventClubCount($db->id, $clubCount)).'</li>';
-
-										// Increment club count
-										$clubCount++;
-									}
-								}
-								
-								// Check for total limit set, if it is, set event as limited
-								if($db->limitHandlers > 500 || $db->limitHandlers < 500)
-								{
-									echo '
-									<li>This event is limited to '.$db->limitHandlers.' handlers. <b>'.($db->limitHandlers - handlerEventCount($db->id)).' handlers remaining.</b></li>';
-								}
-						echo '
-							</ul>
-						</div>';
-					}
-					else
-					{
-						// If is a admin and a limited event
-						if(isAdmin() && $db->limitedEvent == 1)
+						while ($db2 = mysqli_fetch_object($result2))
 						{
-							// All other events show counts of sign ups
 							echo '
-							<br />
-							<hr />
-							<br />
-							
-							<div name="troopersRemainingDisplay">
-								<h3>Admin Trooper Counts</h3>
-
-								<ul>
-									<li>501st troopers: '.eventClubCount($db->id, 0).' </li>
-									<li>Rebel Legion: '.eventClubCount($db->id, 1).' </li>
-									<li>Mando Mercs: '.eventClubCount($db->id, 2).' </li>
-									<li>Droid Builders: '.eventClubCount($db->id, 3).' </li>
-									<li>Other troopers: '.eventClubCount($db->id, 4).' </li>
-								</ul>
+							<div style="border: 1px solid gray; margin-bottom: 10px; text-align: center;">
+							<a href="index.php?event=' . $db2->id . '"><b>'.date('l', strtotime($db2->dateStart)).'</b> - ' . date('M d, Y', strtotime($db2->dateStart)) . '
+							<br />' .
+							date('h:i A', strtotime($db2->dateStart)) . ' - ' . date('h:i A', strtotime($db2->dateEnd)) .
+							'</a>
 							</div>';
 						}
-						
-						if($db->limitedEvent == 1)
+					}
+				}
+
+				// Set up add to query
+				$add = "";
+
+				// Add to query if this is a linked event
+				if($link > 0)
+				{
+					$add = " OR troopid = '".$link."'";
+				}
+				
+				// Don't show photos, if merged data
+				if(!$isMerged)
+				{
+					// Query database for photos
+					$query2 = "SELECT * FROM uploads WHERE admin = '1' AND (troopid = '".cleanInput($_GET['event'])."'".$add.") ORDER BY date DESC";
+					
+					// Query count
+					$j = 0;
+					
+					if ($result2 = mysqli_query($conn, $query2))
+					{
+						while ($db2 = mysqli_fetch_object($result2))
 						{
+							// If first result...
+							if($j == 0)
+							{
+								echo '
+								<hr />';
+							}
+							
 							echo '
-							<p>
-								<b>Reminder:</b> This event has been set as a <i>manual selection</i> event. When a trooper needs to make a change to their attending status or costume, troopers must comment below what changes need to be made, and command staff will make the changes. Please note, this only applies to manual selection events.
-							</p>';
+							<div class="container-image">
+								<a href="images/uploads/'.$db2->filename.'" data-lightbox="photosadmin" data-title="Uploaded by '.getName($db2->trooperid).'" id="photo'.$db2->id.'"><img src="images/uploads/'.$db2->filename.'" width="200px" height="200px" class="image-c" /></a>
+								
+								<p class="container-text">';
+								
+									// If owned by trooper or admin
+									if(isAdmin() || $db2->trooperid == $_SESSION['id'])
+									{
+										echo '<a href="index.php?action=editphoto&id='.$db2->id.'">Edit</a>';
+									}
+									
+								echo '
+								</p>
+							</div>';
+							
+							// Increment photo count
+							$j++;
 						}
 					}
+				}
+
+				// Set up is limited event?
+				$isLimited = false;
+
+				// Loop through clubs
+				foreach($clubArray as $club => $club_value)
+				{
+					// Check if limited
+					if($db->{$club_value['dbLimit']} < 500)
+					{
+						$isLimited = true;
+					}
+				}
+
+				// Check for total limit set, if it is, set event as limited
+				if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+				{
+					$isLimited = true;
+				}
+				
+				// Check for total limit set, if it is, set event as limited
+				if($db->limitHandlers > 500 || $db->limitHandlers < 500)
+				{
+					$isLimited = true;
+				}
+			
+				// If this event is limited in troopers
+				if($db->limit501st < 500 || $isLimited)
+				{
+					echo '
+					<br />
+					<hr />
+					<br />
+					
+					<div style="color: red;" name="troopersRemainingDisplay">
+						<ul>
+							<li>This event is limited to '.$limitTotal.' troopers. ';
+
+							// Check for total limit set, if it is, add remaining troopers
+							if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+							{
+								echo '
+								' . troopersRemaining($limitTotal, eventClubCount($db->id, "all")) . '</li>';
+							}
+							else
+							{
+								echo '
+								</li>
+								<li>This event is limited to '.$db->limit501st.' 501st troopers. '.troopersRemaining($db->limit501st, eventClubCount($db->id, 0)).' </li>';
+
+								// Set up club count
+								$clubCount = count($squadArray) + 1;
+
+								// Loop through clubs
+								foreach($clubArray as $club => $club_value)
+								{
+									echo '
+									<li>This event is limited to '.$db->{$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining($db->{$club_value['dbLimit']}, eventClubCount($db->id, $clubCount)).'</li>';
+
+									// Increment club count
+									$clubCount++;
+								}
+							}
+							
+							// Check for total limit set, if it is, set event as limited
+							if($db->limitHandlers > 500 || $db->limitHandlers < 500)
+							{
+								echo '
+								<li>This event is limited to '.$db->limitHandlers.' handlers. <b>'.($db->limitHandlers - handlerEventCount($db->id)).' handlers remaining.</b></li>';
+							}
+					echo '
+						</ul>
+					</div>';
+				}
+				
+				// If is a admin and a limited event
+				if(isAdmin() && $db->limitedEvent == 1)
+				{
+					// All other events show counts of sign ups
+					echo '
+					<br />
+					<hr />
+					<br />
+					
+					<div name="troopersRemainingDisplay">
+						<h3>Admin Trooper Counts</h3>
+
+						<ul style="display:inline-table;">
+							<li>501st: '.eventClubCount($db->id, 0).' </li>';
+							
+							// Set up club count
+							$clubID = count($squadArray) + 1;
+							
+							// Loop through clubs
+							foreach($clubArray as $club => $club_value)
+							{
+								echo '<li>' . $club_value['name'] . ': ' . eventClubCount($db->id, $clubID) . '</li>';
+								
+								// Increment
+								$clubID++;
+							}
+							
+						echo '
+						</ul>
+					</div>';
+				}
+				
+				if($db->limitedEvent == 1)
+				{
+					echo '
+					<p>
+						<b>Reminder:</b> This event has been set as a <i>manual selection</i> event. When a trooper needs to make a change to their attending status or costume, troopers must comment below what changes need to be made, and command staff will make the changes. Please note, this only applies to manual selection events.
+					</p>';
 				}
 			}
 			
@@ -5423,7 +5447,7 @@ if(isset($_GET['event']))
 			</p>';
 
 			// HR Fix for formatting
-			if(loggedIn() && !$isMerged)
+			if(!$isMerged)
 			{
 				echo '<hr />';
 			}
@@ -5435,7 +5459,7 @@ if(isset($_GET['event']))
 			}
 
 			// If logged in and assigned to event
-			if(loggedIn() && !$isMerged)
+			if(!$isMerged)
 			{
 				// Is the user in the event?
 				$eventCheck = inEvent($_SESSION['id'], strip_tags(addslashes($_GET['event'])));
@@ -5526,15 +5550,7 @@ if(isset($_GET['event']))
 										<select name="costume" id="costume">
 											<option value="null" SELECTED>Please choose an option...</option>';
 
-										$query3 = "SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND";
-										
-										// If limited to certain costumes, only show certain costumes...
-										if($db->limitTo < 4)
-										{
-											$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
-										}
-										
-										$query3 .= costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
+										$query3 = "SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND " . costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
 										
 										if ($result3 = mysqli_query($conn, $query3))
 										{
@@ -5581,15 +5597,7 @@ if(isset($_GET['event']))
 										<select name="backupcostume" id="backupcostume">';
 
 										// Display costumes
-										$query2 = "SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND ";
-										
-										// If limited to certain costumes, only show certain costumes...
-										if($db->limitTo < 4)
-										{
-											$query2 .= " era = '".$db->limitTo."' OR era = '4' AND ";
-										}
-										
-										$query2 .= costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
+										$query2 = "SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND " . costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
 										// Amount of costumes
 										$c = 0;
 										if ($result2 = mysqli_query($conn, $query2))
@@ -5684,11 +5692,11 @@ if(isset($_GET['event']))
 				}
 				else
 				{
-					// Default page
+					// Default
 					$page = 1;
 					
 					// Start from - default
-					$startFrom = ($page - 1) * $results;
+					$startFrom = 0;
 				}
 				
 				// Query database for photos
@@ -5768,40 +5776,37 @@ if(isset($_GET['event']))
 				}
 				
 				// If trooper logged in show uploader
-				if(loggedIn())
-				{
-					echo '
-					<p>
-						<a href="#/" class="button" id="changeUpload" aria-label="Regular Upload: Share photos from troops / Instructional Image: Help troopers with troop information" data-balloon-pos="down" data-balloon-length="fit">Change To: Troop Instructional Image Upload</a>
+				echo '
+				<p>
+					<a href="#/" class="button" id="changeUpload" aria-label="Regular Upload: Share photos from troops / Instructional Image: Help troopers with troop information" data-balloon-pos="down" data-balloon-length="fit">Change To: Troop Instructional Image Upload</a>
 
-						<form action="script/php/upload.php" class="dropzone" id="photoupload">
-							<input type="hidden" name="admin" value="0" />
-							<input type="hidden" name="troopid" value="'.cleanInput($_GET['event']).'" />
-							<input type="hidden" name="trooperid" value="'.$_SESSION['id'].'" />
-						</form>
+					<form action="script/php/upload.php" class="dropzone" id="photoupload">
+						<input type="hidden" name="admin" value="0" />
+						<input type="hidden" name="troopid" value="'.cleanInput($_GET['event']).'" />
+						<input type="hidden" name="trooperid" value="'.$_SESSION['id'].'" />
+					</form>
 
-						<!-- Image Uploader JS -->
-						<script type="text/javascript">
-						  
-						    Dropzone.autoDiscover = false;
-						  
-						    var myDropzone = new Dropzone(".dropzone", { 
-						       maxFilesize: 10,
-						       acceptedFiles: ".jpeg,.jpg,.png,.gif"
-						    });
-						      
-						</script>
-					</p>';
-				}
+					<!-- Image Uploader JS -->
+					<script type="text/javascript">
+					  
+					    Dropzone.autoDiscover = false;
+					  
+					    var myDropzone = new Dropzone(".dropzone", { 
+					       maxFilesize: 10,
+					       acceptedFiles: ".jpeg,.jpg,.png,.gif"
+					    });
+					      
+					</script>
+				</p>';
 			}
 
 			// HR Fix for formatting
-			if(loggedIn() && !$isMerged)
+			if(!$isMerged)
 			{
 				echo '<hr />';
 			}
 
-			if(loggedIn() && !$isMerged)
+			if(!$isMerged)
 			{
 				// Check to see if this event is full
 				$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".cleanInput($_GET['event'])."' AND status != '4' AND status != '1'");
@@ -5886,15 +5891,7 @@ if(isset($_GET['event']))
 						<select name="costume" id="costume">
 							<option value="null" SELECTED>Please choose an option...</option>';
 
-						$query3 = "SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).")";
-						
-						// If limited to certain costumes, only show certain costumes...
-						if($limitTo < 4)
-						{
-							$query3 .= " AND era = '".$limitTo."' OR era = '4'";
-						}
-						
-						$query3 .= " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id']).") DESC, costume";
+						$query3 = "SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id']).") DESC, costume";
 						
 						if ($result3 = mysqli_query($conn, $query3))
 						{
@@ -5941,15 +5938,7 @@ if(isset($_GET['event']))
 						<select name="backupcostume" id="backupcostume">';
 
 						// Display costumes
-						$query2 = "SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND ";
-						
-						// If limited to certain costumes, only show certain costumes...
-						if($limitTo < 4)
-						{
-							$query2 .= " era = '".$limitTo."' OR era = '4' AND ";
-						}
-						
-						$query2 .= costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id']).") DESC, costume";
+						$query2 = "SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND " . costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id']).") DESC, costume";
 						// Amount of costumes
 						$c = 0;
 						if ($result2 = mysqli_query($conn, $query2))
@@ -6047,23 +6036,27 @@ if(isset($_GET['event']))
 						// Loop through posts
 						foreach(array_reverse($thread['posts']) as $key => $post)
 						{
-							echo '
-							<table border="1" style="width: 100%">
-							<tr>
-								<td>
-									<a href="index.php?profile='.$post['User']['custom_fields']['trackerid'].'">'.$post['User']['custom_fields']['fullname'].' - '.$post['User']['custom_fields']['tkid'].'<br />'.$post['username'].'</a>'.($post['User']['avatar_urls']['m'] != '' ? '<br /><img src="'.$post['User']['avatar_urls']['m'].'" />' : '').'
-									<br />
-									'.date("F j, Y, g:i a", $post['post_date']).'
-								</td>
-							</tr>
-							
-							<tr>
-								<td>'.showBBcodes($post['message_parsed']).'</td>
-							</tr>
+							// Only show messages that are visible // Example: We don't want to show messages that are hidden from public view
+							if($post['message_state'] == "visible")
+							{
+								echo '
+								<table border="1" style="width: 100%">
+								<tr>
+									<td>
+										<a href="index.php?profile='.$post['User']['custom_fields']['trackerid'].'">'.$post['User']['custom_fields']['fullname'].' - '.$post['User']['custom_fields']['tkid'].'<br />'.$post['username'].'</a>'.($post['User']['avatar_urls']['m'] != '' ? '<br /><img src="'.$post['User']['avatar_urls']['m'].'" />' : '').'
+										<br />
+										'.date("F j, Y, g:i a", $post['post_date']).'
+									</td>
+								</tr>
+								
+								<tr>
+									<td>'.$post['message_parsed'].'</td>
+								</tr>
 
-							</table>
+								</table>
 
-							<br />';
+								<br />';
+							}
 						}
 					}
 
@@ -6084,6 +6077,16 @@ if(isset($_GET['event']))
 			}
 		}
 	}
+}
+// If we are viewing an event, hide all other info
+else if(isset($_GET['event']) && !loggedIn())
+{
+	// Set cookie for login
+	if(!loggedIn())
+	{
+		setcookie("TroopTrackerLastEvent", cleanInput($_GET['event']), time() + 3600);
+	}
+	echo '<p style="text-align: center;"><b>Please login to view this event.</b></p>';
 }
 else
 {
@@ -6159,7 +6162,7 @@ else
 				if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
 				{
 					// Query
-					$query = "SELECT events.id AS id, events.name, events.location, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, ".$addToQuery."events.limitTotalTroopers, events.limitHandlers, events.closed FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() - INTERVAL 1 DAY AND event_sign_up.status < 3 AND (events.closed = 0 OR events.closed = 3 OR events.closed = 4) ORDER BY events.dateStart";
+					$query = "SELECT events.id AS id, events.name, events.location, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, ".$addToQuery."events.limitTotalTroopers, events.limitHandlers, events.closed FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd > NOW() - INTERVAL 1 DAY AND (event_sign_up.status < 3 OR event_sign_up.status = 2) AND (events.closed = 0 OR events.closed = 3 OR events.closed = 4) ORDER BY events.dateStart";
 				}
 				// Troops near me
 				else if(isset($_GET['squad']) && $_GET['squad'] == "troopsnearme")
@@ -6742,7 +6745,8 @@ else
 			<h2 class="tm-section-header">Sorry...</h2>
 			
 			<p style="text-align: center;">
-				The Troop Tracker is temporarily down for maintenance. Please check back later.
+				The Troop Tracker is closed at this time.
+				<p>'.getSiteMessage().'</p>
 			</p>';
 		}
 	}
@@ -6753,39 +6757,42 @@ echo '
 
 if(!isWebsiteClosed())
 {
-	// User's online
-	echo '
-	<hr />
-	<section class="tm-section tm-section-small">
-	<h2 class="tm-section-header">Users Online</h2>
-	<p style="text-align: center;">';
-
-	// Load users online
-	$query = "SELECT * FROM troopers WHERE last_active >= NOW() - INTERVAL 5 MINUTE ORDER BY tkid";
-	if ($result = mysqli_query($conn, $query))
+	if(loggedIn())
 	{
-		$i = 0;
-		while ($db = mysqli_fetch_object($result))
+		// User's online
+		echo '
+		<hr />
+		<section class="tm-section tm-section-small">
+		<h2 class="tm-section-header">Users Online</h2>
+		<p style="text-align: center;">';
+
+		// Load users online
+		$query = "SELECT * FROM troopers WHERE last_active >= NOW() - INTERVAL 5 MINUTE ORDER BY tkid";
+		if ($result = mysqli_query($conn, $query))
 		{
-			if($i != 0)
+			$i = 0;
+			while ($db = mysqli_fetch_object($result))
 			{
-				echo ', ';
+				if($i != 0)
+				{
+					echo ', ';
+				}
+
+				echo '<a href="index.php?profile='.$db->id.'">' . readTKNumber($db->tkid, $db->squad) . '</a>';
+
+				$i++;
 			}
-
-			echo '<a href="index.php?profile='.$db->id.'">' . readTKNumber($db->tkid, $db->squad) . '</a>';
-
-			$i++;
 		}
-	}
 
-	if($i == 0)
-	{
-		echo 'No users online!';
-	}
+		if($i == 0)
+		{
+			echo 'No users online!';
+		}
 
-	echo '
-	</p>
-	</section>';
+		echo '
+		</p>
+		</section>';
+	}
 }
 
 echo '

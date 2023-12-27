@@ -2,7 +2,7 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Generation Time: Dec 12, 2022 at 05:47 PM
+-- Generation Time: Aug 30, 2023 at 02:55 PM
 -- Server version: 8.0.28
 -- PHP Version: 7.4.7
 
@@ -103,7 +103,6 @@ CREATE TABLE `comments` (
 CREATE TABLE `costumes` (
   `id` int UNSIGNED NOT NULL,
   `costume` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `era` int NOT NULL,
   `club` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
@@ -165,7 +164,6 @@ CREATE TABLE `events` (
   `postComment` text,
   `notes` text,
   `limitedEvent` tinyint(1) DEFAULT NULL,
-  `limitTo` int DEFAULT NULL,
   `limitRebels` int NOT NULL DEFAULT '500',
   `limit501st` int NOT NULL DEFAULT '500',
   `limitMando` int NOT NULL DEFAULT '500',
@@ -318,7 +316,8 @@ CREATE TABLE `settings` (
   `supportgoal` int NOT NULL DEFAULT '0',
   `notifyevent` int NOT NULL DEFAULT '0',
   `syncdate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `syncdaterebels` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `syncdaterebels` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `sitemessage` text
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -412,6 +411,7 @@ CREATE TABLE `troopers` (
   `econfirm` tinyint(1) DEFAULT '1',
   `address` varchar(255) DEFAULT NULL,
   `radius` int NOT NULL DEFAULT '15',
+  `note` varchar(255) DEFAULT NULL,
   `datecreated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 

@@ -79,21 +79,6 @@ define('emailServer', 'SMTP_SERVER');
 define('emailPort', SMTP_PORT);
 
 /**
- * consumerKey: This is the consumer key for Twitter API
- * consumerSecret: This is the consumer secret for Twitter API
- * bearerToken: This is the bearer token for Twitter API
- * accessToken: This is the access token for Twitter API
- * accessTokenSecret: This is the access token secret for Twitter API
- * https://developer.twitter.com/en/docs/twitter-api
-*/
-
-define('consumerKey', 'consumer_key_here');
-define('consumerSecret', 'consumer_secret_here');
-define('bearerToken', 'bearer_token_here');
-define('accessToken', 'access_token_here');
-define('accessTokenSecret', 'access_secret_here');
-
-/**
  * googleKey: This is a Google API key which is used to access Google services. This is used for automatically detecting where an event is located, and it will automatically assign a squad based on the location.
  * https://developers.google.com/maps/documentation/javascript/get-api-key
 */
@@ -251,7 +236,7 @@ $squadArray = array(
 	array(
 		"name" => "Everglades Squad",
 		"logo" => "everglades_emblem.png",
-		"costumes" => array(0, 5, 6, 8, 10),
+		"costumes" => array(0, 5, 7, 9, 11),
 		"db" => "p501",
 		"db2" => "",
 		"rankRegular" => "everglades_sm.png",
@@ -262,7 +247,7 @@ $squadArray = array(
 	array(
 		"name" => "Makaze Squad",
 		"logo" => "makaze_emblem.png",
-		"costumes" => array(0, 5, 6, 8, 10),
+		"costumes" => array(0, 5, 7, 9, 11),
 		"db" => "p501",
 		"db2" => "",
 		"rankRegular" => "makaze_sm.png",
@@ -273,7 +258,7 @@ $squadArray = array(
 	array(
 		"name" => "Parjai Squad",
 		"logo" => "parjai_emblem.png",
-		"costumes" => array(0, 5, 6, 8, 10),
+		"costumes" => array(0, 5, 7, 9, 11),
 		"db" => "p501",
 		"db2" => "",
 		"rankRegular" => "parjai_sm.png",
@@ -284,7 +269,7 @@ $squadArray = array(
 	array(
 		"name" => "Squad 7",
 		"logo" => "squad7_emblem.png",
-		"costumes" => array(0, 5, 6, 8, 10),
+		"costumes" => array(0, 5, 7, 9, 11),
 		"db" => "p501",
 		"db2" => "",
 		"rankRegular" => "s7_sm.png",
@@ -295,7 +280,7 @@ $squadArray = array(
 	array(
 		"name" => "Tampa Bay Squad",
 		"logo" => "tampabay_emblem.png",
-		"costumes" => array(0, 5, 6, 8, 10),
+		"costumes" => array(0, 5, 7, 9, 11),
 		"db" => "p501",
 		"db2" => "",
 		"rankRegular" => "tampa_sm.png",

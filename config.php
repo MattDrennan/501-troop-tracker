@@ -906,10 +906,10 @@ function resetTrooperStatus($eventID, $link = 0)
 			if($db->limit501st > 500 || $db->limit501st < 500)
 			{
 				// Reset event sign up
-				$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')."");
+				$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')."");
 
 				// Update statuses to going if room
-				$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')." ORDER BY signuptime ASC LIMIT " . $db->limit501st);
+				$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')." ORDER BY signuptime ASC LIMIT " . $db->limit501st);
 			}
 
 			// Loop through clubs to check limits
@@ -918,10 +918,10 @@ function resetTrooperStatus($eventID, $link = 0)
 				if($db->{$club_value['dbLimit']} > 500 || $db->{$club_value['dbLimit']} < 500)
 				{
 					// Reset event sign up
-					$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')."");
+					$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')."");
 
 					// Update statuses to going if room
-					$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')." ORDER BY signuptime ASC LIMIT " . $db->{$club_value['dbLimit']});
+					$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')." ORDER BY signuptime ASC LIMIT " . $db->{$club_value['dbLimit']});
 				}
 			}
 
@@ -929,20 +929,20 @@ function resetTrooperStatus($eventID, $link = 0)
 			if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
 			{
 				// Reset event sign up
-				$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')."");
+				$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')."");
 
 				// Update statuses to going if room
-				$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')." ORDER BY signuptime ASC LIMIT " . $db->limitTotalTroopers);
+				$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')." ORDER BY signuptime ASC LIMIT " . $db->limitTotalTroopers);
 			}
 			
 			// Check handler limit
 			if($db->limitHandlers > 500 || $db->limitHandlers < 500)
 			{
 				// Reset event sign up
-				$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) LIKE '%handler%'");
+				$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) LIKE '%handler%'");
 
 				// Update statuses to going if room
-				$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) LIKE '%handler%' ORDER BY signuptime ASC LIMIT " . $db->limitHandlers);
+				$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) LIKE '%handler%' ORDER BY signuptime ASC LIMIT " . $db->limitHandlers);
 			}
 		}
 	}
@@ -1381,6 +1381,70 @@ function getThreadPosts($threadid, $page)
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
 	    "XF-Api-User: " . xenforoAPI_userID,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+/**
+ * Get user alerts
+ * 
+ * @param int $userid The ID of the user
+ * @return json Success response
+*/
+function getAlerts($userid)
+{
+	global $forumURL;
+	
+	// Get user forum info by forum name
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => $forumURL . "api/alerts&unread=1",
+	  CURLOPT_CUSTOMREQUEST => "GET",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . $userid,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+/**
+ * Get user private messages (unread)
+ * 
+ * @param int $userid The ID of the user
+ * @return json Success response
+*/
+function getConversations($userid)
+{
+	global $forumURL;
+	
+	// Get user forum info by forum name
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => $forumURL . "api/conversations&unread=1",
+	  CURLOPT_CUSTOMREQUEST => "GET",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . $userid,
 	  ],
 	]);
 
@@ -2886,39 +2950,44 @@ function removeLetters($string)
 function readTKNumber($tkid, $squad)
 {
 	global $conn, $clubArray, $squadArray;
-	
-	// Is the trooper in a club?
-	$inClub = false;
 
-	// Based on squad ID, is the trooper in a club
-	if($squad > count($squadArray))
+	if($tkid == 0)
 	{
-		// Get first letter of club
-		$firstLetter = strtoupper(substr(getSquadName($squad), 0, 1));
-		
-		// Set TKID return
-		$tkid = $firstLetter . $tkid;
-		
-		// Set inClub
-		$inClub = true;
-	}
-	
-	// If not in club, set default
-	if(!$inClub)
-	{
-		$prefix = "TK";
-		
-		// Get TK prefix from database
-		$getPrefix = $conn->query("SELECT prefix FROM 501st_costumes WHERE legionid = '".$tkid."' LIMIT 1");
-		$getPrefix_value = $getPrefix->fetch_row();
-		
-		// Make sure TK prefix was found
-		if(isset($getPrefix_value[0]) && $getPrefix_value[0] != "")
+		$tkid = "Not Assigned";
+	} else {
+		// Is the trooper in a club?
+		$inClub = false;
+
+		// Based on squad ID, is the trooper in a club
+		if($squad > count($squadArray))
 		{
-			$prefix = $getPrefix_value[0];
+			// Get first letter of club
+			$firstLetter = strtoupper(substr(getSquadName($squad), 0, 1));
+			
+			// Set TKID return
+			$tkid = $firstLetter . $tkid;
+			
+			// Set inClub
+			$inClub = true;
 		}
 		
-		$tkid = $prefix . $tkid;
+		// If not in club, set default
+		if(!$inClub)
+		{
+			$prefix = "TK";
+			
+			// Get TK prefix from database
+			$getPrefix = $conn->query("SELECT prefix FROM 501st_costumes WHERE legionid = '".$tkid."' LIMIT 1");
+			$getPrefix_value = $getPrefix->fetch_row();
+			
+			// Make sure TK prefix was found
+			if(isset($getPrefix_value[0]) && $getPrefix_value[0] != "")
+			{
+				$prefix = $getPrefix_value[0];
+			}
+			
+			$tkid = $prefix . $tkid;
+		}
 	}
 
 	return $tkid;
@@ -3482,6 +3551,8 @@ function profileExist($id)
 */
 function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $website, $numberOfAttend, $requestedNumber, $requestedCharacter, $secure, $blasters, $lightsabers, $parking, $mobility, $amenities, $comments, $referred, $eventId, $eventType = 0, $roster = "")
 {
+	global $conn;
+	
 	$returnString = '';
 
 	$returnString .= '
@@ -3519,8 +3590,21 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 	'.ifEmpty(readInput($comments), "No comments for this event.").'
 	[b]Referred by:[/b] '.ifEmpty(readInput($referred), "Not available").'
 
-	'.$roster.'
+	'.$roster.'';
+	
+	// Loop through all admin photos
+	$query = "SELECT * FROM uploads WHERE troopid = '".$eventId."' AND admin = '1' ORDER BY date ASC";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			$returnString .= '
+			[IMG]https://fl501st.com/troop-tracker/images/uploads/'.$db->filename.'[/IMG]
+			';
+		}
+	}
 
+	$returnString .= '
 	[b][u]Sign Up / Event Roster:[/u][/b]
 
 	[url]https://fl501st.com/troop-tracker/index.php?event=' . $eventId . '[/url]';
@@ -3932,15 +4016,7 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 							<select name="modifysignupFormCostume" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
 
 							// Display costumes
-							$query3 = "SELECT * FROM costumes WHERE ";
-							
-							// If limited to certain costumes, only show certain costumes...
-							if($db->limitTo < 4)
-							{
-								$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
-							}
-							
-							$query3 .= costume_restrict_query(false, $db2->trooperId, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
+							$query3 = "SELECT * FROM costumes WHERE " . costume_restrict_query(false, $db2->trooperId, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
 							
 							if ($result3 = mysqli_query($conn, $query3))
 							{
@@ -3969,15 +4045,7 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 							<select name="modiftybackupcostumeForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
 
 							// Display costumes
-							$query3 = "SELECT * FROM costumes WHERE ";
-							
-							// If limited to certain costumes, only show certain costumes...
-							if($db->limitTo < 4)
-							{
-								$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
-							}
-							
-							$query3 .= costume_restrict_query(false, $db2->trooperId, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
+							$query3 = "SELECT * FROM costumes WHERE " . costume_restrict_query(false, $db2->trooperId, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
 							
 							// Count results
 							$c = 0;
@@ -4589,6 +4657,34 @@ function isClubMember($dbclub)
 }
 
 /**
+ * Returns site message when closed
+ *
+ * @return string Returns the site closed message
+*/
+function getSiteMessage()
+{
+	global $conn;
+	
+	$siteMessage = "";
+	
+	$query = "SELECT * FROM settings LIMIT 1";
+	if ($result = mysqli_query($conn, $query))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			$siteMessage = $db->sitemessage;
+		}
+	}
+
+	// Check if site message is blank
+	if($siteMessage != "") {
+		$siteMessage = '<p style="text-align: center; font-size: 20px; color: red;"><b>**** Message From Command Staff ****</b></p><p style="text-align: center; color: red; font-size: 18px;">' . $siteMessage . '</p>';
+	}
+	
+	return $siteMessage;
+}
+
+/**
  * Returns if the website is closed
  *
  * @return boolean Returns if the website is open or closed
@@ -4608,7 +4704,7 @@ function isWebsiteClosed()
 			{
 				$isWebsiteClosed = true;
 				
-				if(loggedIn() && !hasPermission(1))
+				if(loggedIn() && !isAdmin())
 				{
 					session_destroy();
 				}
@@ -4831,83 +4927,6 @@ function sendEmail($SendTo, $Name, $Subject, $Message)
 	   //echo $mail->ErrorInfo;
 	}
 	// END MAIL
-}
-
-/**
- * Returns string of Era ID
- *
- * @param int $number ID of era to format
- * @return string String of era
-*/
-function getEra($number)
-{
-	// Return value
-	$text = "";
-	
-	if($number == 0)
-	{
-		$text = "Prequel";
-	}
-	else if($number == 1)
-	{
-		$text = "Original";
-	}
-	else if($number == 2)
-	{
-		$text = "Sequel";
-	}
-	else if($number == 3)
-	{
-		$text = "Expanded";
-	}
-	else if($number == 4)
-	{
-		$text = "All";
-	}
-	
-	// Return
-	return $text;
-}
-
-/**
- * Returns if costume is allowed at the event based off era allowed
- *
- * @param int $eventID ID of the event
- * @param int $costumeID ID of the costume
- * @return boolean Returns if costume is allowed at the event based off era allowed
-*/
-function eraCheck($eventID, $costumeID)
-{
-	global $conn;
-
-	// Variables
-	$eventFail = false;	// Is this costume allowed?
-
-	// Query database for event info
-	$query = "SELECT * FROM events WHERE id = '".$eventID."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			// Query costume database to get information on the users costume
-			$query4 = "SELECT * FROM costumes WHERE id = '".$costumeID."'";
-			if ($result4 = mysqli_query($conn, $query4))
-			{
-				while ($db4 = mysqli_fetch_object($result4))
-				{
-					// Make sure event and costume era isn't set to "All" and check if the era and limited to match
-					if($db->limitTo != 4 && $db4->era != 4 && $db->limitTo != $db4->era)
-					{
-						// Did not fail
-						$eventFail = true;
-					}
-				}
-			}
-		}
-	}
-
-	// Return
-	return $eventFail;
 }
 
 /**

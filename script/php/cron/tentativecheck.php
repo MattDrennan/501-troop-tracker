@@ -20,7 +20,7 @@ if(!$isCLI)
 }
 
 // Drop troopers
-$conn->query("UPDATE event_sign_up LEFT JOIN events ON event_sign_up.troopid = events.id SET event_sign_up.status = 4 WHERE event_sign_up.status = 2 AND NOW() > events.dateStart - INTERVAL 1 DAY");
+$conn->query("UPDATE event_sign_up LEFT JOIN events ON event_sign_up.troopid = events.id SET event_sign_up.status = 4 WHERE event_sign_up.status = 2 AND NOW() > events.dateStart - INTERVAL 3 DAY");
 
 // Loop through event sign ups that are within 7 days and still have tentative troopers
 $query = "SELECT troopers.user_id, troopers.email, troopers.name, events.dateStart, events.id, event_sign_up.trooperid FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE event_sign_up.status = 2 AND NOW() > events.dateStart - INTERVAL 7 DAY GROUP BY event_sign_up.trooperid";
@@ -39,7 +39,5 @@ if ($result = mysqli_query($conn, $query))
         sendEmail($db->email, readInput($db->name), "Troop Tracker: Please adjust your status!", readInput($message));
     }
 }
-
-$conn->query("UPDATE event_sign_up SET event_sign_up.status = 4 WHERE event_sign_up.status = 2 AND NOW() > (SELECT events.dateStart FROM events WHERE events.id = event_sign_up.troopid) - INTERVAL 7 DAY");
 
 ?>
