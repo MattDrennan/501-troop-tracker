@@ -1572,7 +1572,11 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn())
 {
 	echo '
 	<h2 class="tm-section-header">My Stats</h2>
-	
+
+	<p style="text-align: center;">
+		<b>Troop Tracker Rank:</b><br />#'.getTrooperRanking($_SESSION['id']).'
+	</p>
+
 	<p style="text-align: center;">
 		<a href="#/" class="button" id="showstats" name="showstats">Show My Stats</a> 
 		<a href="index.php?profile='.$_SESSION['id'].'" class="button">View My Profile</a>

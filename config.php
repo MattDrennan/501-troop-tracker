@@ -878,6 +878,40 @@ function drawSupportGraph()
 }
 
 /**
+ * Returns the troopers ranking
+ * 
+ * @param int $trooperID The ID of the trooper
+ * @return int
+*/
+
+function getTrooperRanking($trooperID)
+{
+	global $conn;
+
+	// Get rank of trooper
+	$i = 0;
+
+	$queryPersonal = "SELECT trooperid, COUNT(trooperid) AS total FROM event_sign_up LEFT JOIN events ON event_sign_up.trooperid = events.id WHERE event_sign_up.trooperid != ".placeholder." AND events.closed = '1' AND event_sign_up.status = '3' GROUP BY trooperid ORDER BY total DESC";
+
+	if ($result = mysqli_query($conn, $queryPersonal))
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Increment
+			$i++;
+
+			// Found trooper
+			if($db->trooperid == $trooperID)
+			{
+				break;
+			}
+		}
+	}
+
+	return $i;
+}
+
+/**
  * If a limited event, resets all troopers attendance status in an event, and recalculates status
  * 
  * @param int $eventID The event ID to check
@@ -3441,6 +3475,11 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 		echo '
 		<p style="text-align: center;">Boards Name: '.$forum.'</p>';
 	}
+
+	echo '
+	<p style="text-align: center;">
+		<b>Troop Tracker Rank:</b><br />#'.getTrooperRanking($id).'
+	</p>';
 
 	if(isset(get501Info($tkid, $squad)['joindate']) && $is501Member && !is_null(get501Info($tkid, $squad)['joindate']))
 	{
