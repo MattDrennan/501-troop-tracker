@@ -3937,11 +3937,31 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						}
 
 						echo '
+						<p>
+							<i>Use the above limit club feature to limit the amount of troopers on a per club basis. When all values are 500, there is no limit. Changing one club limit, will limit all to the set value.</i>
+						</p>
+
+						<p>
+							<hr />
+						</p>
+
 						<p>Limit of Total Handlers:</p>
 						<input type="number" name="limitHandlers" value="500" id="limitHandlers" class="limitClass" />
+
+						<p>
+							<i>If you limit handlers, the handlers will not count towards the total trooper count or club count. Handlers will be handled as a seperate count. When value is 500, handlers will be counted in the trooper total or club total.</i>
+						</p>
+
+						<p>
+							<hr />
+						</p>
 						
 						<p>Limit of Total Troopers:</p>
 						<input type="number" name="limitTotalTroopers" value="500" id="limitTotalTroopers" class="limitClass" />
+
+						<p>
+							<i>This will limit the total amount of troopers and/or handlers to an event. This value should NOT be changed if you are using the limit clubs feature. When value is 500, there is no total trooper limit.</i>
+						</p>
 
 						<p>
 							<a href="#/" class="button" id="resetDefaultCount">Reset Default</a>
@@ -4500,11 +4520,31 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				}
 
 				echo '
+				<p>
+					<i>Use the above limit club feature to limit the amount of troopers on a per club basis. When all values are 500, there is no limit. Changing one club limit, will limit all to the set value.</i>
+				</p>
+
+				<p>
+					<hr />
+				</p>
+
 				<p>Limit of Total Handlers:</p>
 				<input type="number" name="limitHandlers" id="limitHandlers" class="limitClass" value="'.copyEvent($eid, $limitHandlers, 500).'" />
+
+				<p>
+					<i>If you limit handlers, the handlers will not count towards the total trooper count or club count. Handlers will be handled as a seperate count. When value is 500, handlers will be counted in the trooper total or club total.</i>
+				</p>
+
+				<p>
+					<hr />
+				</p>
 				
 				<p>Limit of Total Troopers:</p>
 				<input type="number" name="limitTotalTroopers" id="limitTotalTroopers" class="limitClass" value="'.copyEvent($eid, $limitTotalTroopers, 500).'" />
+
+				<p>
+					<i>This will limit the total amount of troopers and/or handlers to an event. This value should NOT be changed if you are using the limit clubs feature. When value is 500, there is no total trooper limit.</i>
+				</p>
 
 				<p>
 					<a href="#/" class="button" id="resetDefaultCount">Reset Default</a>
