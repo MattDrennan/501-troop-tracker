@@ -3925,6 +3925,10 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<option value="1">Yes</option>
 						</select>
 
+						<p>
+							<hr />
+						</p>
+
 						<p>Limit of 501st Troopers:</p>
 						<input type="number" name="limit501st" value="500" id="limit501st" class="limitClass" />';
 
@@ -4507,6 +4511,10 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<option value="0" '.copyEventSelect($eid, $limitedEvent, 0).'>No</option>
 					<option value="1" '.copyEventSelect($eid, $limitedEvent, 1).'>Yes</option>
 				</select>
+
+				<p>
+					<hr />
+				</p>
 				
 				<p>Limit of 501st Troopers:</p>
 				<input type="number" name="limit501st" value="'.copyEvent($eid, $limit501st, 500).'" id="limit501st" class="limitClass" />';
