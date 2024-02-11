@@ -17,7 +17,9 @@ if(isset($_GET['do']) && $_GET['do'] == "roster-trooper-confirmation" && loggedI
 	if(cleanInput($_POST['status']) != 3 && cleanInput($_POST['status']) != 4) { return false; }
 
 	// Update trooper sign up
-	$conn->query("UPDATE event_sign_up SET status = '".cleanInput($_POST['status'])."' WHERE id = '".cleanInput($_POST['signid'])."'");
+	$statement = $conn->prepare("UPDATE event_sign_up SET status = ? WHERE id = ?");
+	$statement->bind_param("ii", $_POST['status'], $_POST['signid']);
+	$statement->execute();
 }
 
 /******************** SAVE FAVORITE COSTUMES *******************************/
