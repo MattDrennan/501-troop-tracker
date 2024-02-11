@@ -44,17 +44,24 @@ if(isset($_GET['do']) && $_GET['do'] == "savefavoritecostumes" && loggedIn())
 
 if(isset($_GET['do']) && $_GET['do'] == "saveplaceholder" && loggedIn())
 {
+	// Bind
+	$placeholder = placeholder;
+
 	// Query database for placeholder
-	$query = "SELECT * FROM event_sign_up WHERE id = '".cleanInput($_POST['signid'])."' AND trooperid = '".placeholder."'";
+	$statement = $conn->prepare("SELECT * FROM event_sign_up WHERE id = ? AND trooperid = ?");
+	$statement->bind_param("ii", $_POST['signid'], $placeholder);
+	$statement->execute();
 	
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
 			// Check if added or is admin
 			if($db->addedby == $_SESSION['id'] || isAdmin())
 			{
-				$conn->query("UPDATE event_sign_up SET note = '".cleanInput($_POST['note'])."' WHERE id = '".cleanInput($_POST['signid'])."'");
+				$statement2 = $conn->prepare("UPDATE event_sign_up SET note = ? WHERE id = ?");
+				$statement2->bind_param("si", $_POST['note'], $_POST['signid']);
+				$statement2->execute();
 			}
 		}
 	}
