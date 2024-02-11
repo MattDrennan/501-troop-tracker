@@ -71,7 +71,20 @@ if(isset($_GET['do']) && $_GET['do'] == "saveplaceholder" && loggedIn())
 
 if(isset($_GET['do']) && $_GET['do'] == "savedb3" && isAdmin())
 {
-	$conn->query("UPDATE troopers SET ".cleanInput($_POST['db3'])." = '".cleanInput($_POST['idvalue'])."' WHERE id = '".cleanInput($_POST['trooperid'])."'");
+	// Loop through clubs to check if db3 is in array to prevent exploits
+	$continue = false;
+
+	foreach($clubArray as $club => $club_value)
+	{
+		if(is_array($club_value)) { if(in_array($_POST['db3'], $club_value)) { $continue = true; } }
+	}
+
+	if(!$continue) { exit; }
+	// End
+
+	$statement = $conn->prepare("UPDATE troopers SET ".$_POST['db3']." = ? WHERE id = ?");
+	$statement->bind_param("si", $_POST['idvalue'], $_POST['trooperid']);
+	$statement->execute();
 }
 
 /******************** SAVE TKID *******************************/
