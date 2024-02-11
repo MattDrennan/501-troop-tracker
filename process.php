@@ -25,12 +25,16 @@ if(isset($_GET['do']) && $_GET['do'] == "roster-trooper-confirmation" && loggedI
 if(isset($_GET['do']) && $_GET['do'] == "savefavoritecostumes" && loggedIn())
 {
 	// Delete all from database
-	$conn->query("DELETE FROM favorite_costumes WHERE trooperid = '".cleanInput($_SESSION['id'])."'");
-	
+	$statement = $conn->prepare("DELETE FROM favorite_costumes WHERE trooperid = ?");
+	$statement->bind_param("i", $_SESSION['id']);
+	$statement->execute();
+
 	// Insert into database
 	foreach(explode(",", $_POST['costumes']) as $value)
 	{
-		$conn->query("INSERT INTO favorite_costumes (trooperid, costumeid) VALUES ('".cleanInput($_SESSION['id'])."', '".cleanInput($value)."')");
+		$statement = $conn->prepare("INSERT INTO favorite_costumes (trooperid, costumeid) VALUES (?, ?)");
+		$statement->bind_param("ii", $_SESSION['id'], $value);
+		$statement->execute();
 	}
 }
 
