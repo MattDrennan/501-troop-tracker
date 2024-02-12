@@ -3205,7 +3205,7 @@ function replaceCostumeID($id)
 	if($club == 0) { return 0; }
 	//if(in_array($club, $dualCostume)) { return $dualNA; }
 
-	return $clubArray[$club - 1]['naCostume'];
+	return intval($clubArray[$club - 1]['naCostume']);
 }
 
 /**

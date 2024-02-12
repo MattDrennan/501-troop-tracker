@@ -723,14 +723,16 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 		$statement->execute();
 		
 		// Update other databases that are affected
+		$replaceCostume = replaceCostumeID($_POST['costumeID']);
+
 		// Costume
 		$statement = $conn->prepare("UPDATE event_sign_up SET costume = ? WHERE costume = ?");
-		$statement->bind_param("ii", replaceCostumeID(cleanInput($_POST['costumeID'])), $_POST['costumeID']);
+		$statement->bind_param("ss", $replaceCostume, $_POST['costumeID']);
 		$statement->execute();
 
 		// Costume back up
 		$statement = $conn->prepare("UPDATE event_sign_up SET costume_backup = ? WHERE costume_backup = ?");
-		$statement->bind_param("ii", replaceCostumeID(cleanInput($_POST['costumeID'])), $_POST['costumeID']);
+		$statement->bind_param("ss", $replaceCostume, $_POST['costumeID']);
 		$statement->execute();
 
 		$array = array('success' => 'pass');
