@@ -186,34 +186,26 @@ if(isset($_GET['do']) && $_GET['do'] == "troopercheckreserve" && loggedIn() && i
 	}
 	else
 	{
-		$queryAdd = "";
-		
 		// Which club to get
 		if($_POST['club'] <= count($squadArray))
 		{
-			$queryAdd = "p501";
-		}
-
-		// Set up count
-		$clubCount = count($squadArray) + 1;
-		
-		// Loop through clubs
-		foreach($clubArray as $club => $club_value)
-		{
-			// Match
-			if($_POST['club'] == $clubCount)
+			foreach($_POST['trooper'] as $trooper)
 			{
-				// Add to query
-				$queryAdd = "".$club_value['db']."";
+				$statement = $conn->prepare("UPDATE troopers SET p501 = '2' WHERE id = ?");
+				$statement->bind_param("i", $trooper);
+				$statement->execute();
 			}
-			
-			// Increment
-			$clubCount++;
-		}
-	
-		foreach($_POST['trooper'] as $trooper)
-		{
-			$conn->query("UPDATE troopers SET ".$queryAdd." = '2' WHERE id = '".cleanInput($trooper)."'");
+		} else {
+			// Grab DB value
+			$dbValue = $clubArray[($_POST['club'] - (count($squadArray) + 1))]['db'];
+
+			// Query
+			foreach($_POST['trooper'] as $trooper)
+			{
+				$statement = $conn->prepare("UPDATE troopers SET ".$dbValue." = '2' WHERE id = ?");
+				$statement->bind_param("i", $trooper);
+				$statement->execute();
+			}
 		}
 		
 		// Send JSON
@@ -233,34 +225,26 @@ if(isset($_GET['do']) && $_GET['do'] == "troopercheckretired" && loggedIn() && i
 	}
 	else
 	{
-		foreach($_POST['trooper'] as $trooper)
+		// Which club to get
+		if($_POST['club'] <= count($squadArray))
 		{
-			$queryAdd = "";
-			
-			// Which club to get
-			if($_POST['club'] <= count($squadArray))
+			foreach($_POST['trooper'] as $trooper)
 			{
-				$queryAdd = "p501";
+				$statement = $conn->prepare("UPDATE troopers SET p501 = '3' WHERE id = ?");
+				$statement->bind_param("i", $trooper);
+				$statement->execute();
 			}
-			
-			// Set up count
-			$clubCount = count($squadArray) + 1;
-			
-			// Loop through clubs
-			foreach($clubArray as $club => $club_value)
+		} else {
+			// Grab DB value
+			$dbValue = $clubArray[($_POST['club'] - (count($squadArray) + 1))]['db'];
+
+			// Query
+			foreach($_POST['trooper'] as $trooper)
 			{
-				// Match
-				if($_POST['club'] == $clubCount)
-				{
-					// Add to query
-					$queryAdd = "".$club_value['db']."";
-				}
-				
-				// Increment
-				$clubCount++;
+				$statement = $conn->prepare("UPDATE troopers SET ".$dbValue." = '3' WHERE id = ?");
+				$statement->bind_param("i", $trooper);
+				$statement->execute();
 			}
-			
-			$conn->query("UPDATE troopers SET ".$queryAdd." = '3' WHERE id = '".cleanInput($trooper)."'");
 		}
 		
 		// Send JSON
