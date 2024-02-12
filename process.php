@@ -1414,16 +1414,17 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 		$statement6 = $conn->prepare("DELETE FROM title_troopers WHERE trooperid = ?");
 		$statement6->bind_param("i", $_POST['userID']);
 		$statement6->execute();
-
-
 	}
 
 	// User submitted for edit...
 	if(isset($_POST['submitEditUser']))
 	{
 		// Load user info
-		$query = "SELECT * FROM troopers WHERE id = '".cleanInput($_POST['userID'])."'";
-		if ($result = mysqli_query($conn, $query))
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
+		$statement->bind_param("i", $_POST['userID']);
+		$statement->execute();
+
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
