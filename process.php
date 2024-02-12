@@ -94,7 +94,9 @@ if(isset($_GET['do']) && $_GET['do'] == "savetkid" && isAdmin())
 	// Check if TKID already exists
 	if(!doesTKExist(cleanInput($_POST['idvalue']), getSquadID(cleanInput($_POST['trooperid']))))
 	{
-		$conn->query("UPDATE troopers SET tkid = '".cleanInput($_POST['idvalue'])."' WHERE id = '".cleanInput($_POST['trooperid'])."'");
+		$statement = $conn->prepare("UPDATE troopers SET tkid = ? WHERE id = ?");
+		$statement->bind_param("si", $_POST['idvalue'], $_POST['trooperid']);
+		$statement->execute();
 
 		// Send JSON
 		$array = array('success' => true);
