@@ -697,7 +697,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 		// Don't allow delete N/A costume
 		foreach($clubArray as $club => $club_value)
 		{
-			if(cleanInput($_POST['costumeID']) == $club_value['naCostume'])
+			if($_POST['costumeID'] == $club_value['naCostume'])
 			{
 				$array = array('success' => 'fail');
 				echo json_encode($array);
@@ -706,7 +706,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 			}
 		}
 
-		if(cleanInput($_POST['costumeID']) == $dualNA)
+		if($_POST['costumeID'] == $dualNA)
 		{
 			$array = array('success' => 'fail');
 			echo json_encode($array);
@@ -715,14 +715,23 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 		}
 
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has deleted costume ID: " . cleanInput($_POST['costumeID']) . "", cleanInput($_SESSION['id']), 2, convertDataToJSON("SELECT * FROM costumes WHERE id = '".cleanInput($_POST['costumeID'])."'"));
+		sendNotification(getName($_SESSION['id']) . " has deleted costume ID: " . $_POST['costumeID'] . "", $_SESSION['id'], 2, convertDataToJSON("SELECT * FROM costumes WHERE id = '".$_POST['costumeID']."'"));
 
 		// Query the database
-		$conn->query("DELETE FROM costumes WHERE id = '".cleanInput($_POST['costumeID'])."'");
+		$statement = $conn->prepare("DELETE FROM costumes WHERE id = ?");
+		$statement->bind_param("i", $_POST['costumeID']);
+		$statement->execute();
 		
 		// Update other databases that are affected
-		$conn->query("UPDATE event_sign_up SET costume = '".replaceCostumeID(cleanInput($_POST['costumeID']))."' WHERE costume = '".cleanInput($_POST['costumeID'])."'");
-		$conn->query("UPDATE event_sign_up SET costume_backup = '".replaceCostumeID(cleanInput($_POST['costumeID']))."' WHERE costume_backup = '".cleanInput($_POST['costumeID'])."'");
+		// Costume
+		$statement = $conn->prepare("UPDATE event_sign_up SET costume = ? WHERE costume = ?");
+		$statement->bind_param("ii", replaceCostumeID(cleanInput($_POST['costumeID'])), $_POST['costumeID']);
+		$statement->execute();
+
+		// Costume back up
+		$statement = $conn->prepare("UPDATE event_sign_up SET costume_backup = ? WHERE costume_backup = ?");
+		$statement->bind_param("ii", replaceCostumeID(cleanInput($_POST['costumeID'])), $_POST['costumeID']);
+		$statement->execute();
 
 		$array = array('success' => 'pass');
 		echo json_encode($array);
@@ -734,28 +743,31 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 		$message = "Costume added!";
 
 		// Check if has value
-		if(cleanInput($_POST['costumeName']) == "")
+		if($_POST['costumeName'] == "")
 		{
 			$message = "Costume must have a name.";
 		}
 		else
 		{
 			// Query the database
-			$conn->query("INSERT INTO costumes (costume, club) VALUES ('".cleanInput($_POST['costumeName'])."', '".cleanInput($_POST['costumeClub'])."')");
+			$statement = $conn->prepare("INSERT INTO costumes (costume, club) VALUES (?, ?)");
+			$statement->bind_param("si", $_POST['costumeName'], $_POST['costumeClub']);
+			$statement->execute();
 			$last_id = $conn->insert_id;
 			
 			// Send notification to command staff
-			sendNotification(getName($_SESSION['id']) . " has added costume: " . cleanInput($_POST['costumeName']), cleanInput($_SESSION['id']), 1, convertDataToJSON("SELECT * FROM costumes WHERE id = '".$last_id."'"));
+			sendNotification(getName($_SESSION['id']) . " has added costume: " . $_POST['costumeName'], $_SESSION['id'], 1, convertDataToJSON("SELECT * FROM costumes WHERE id = '".$last_id."'"));
 		}
 		
 		$returnMessage = '
 		<h3>Edit Costume</h3>';
 
 		// Get data
-		$query = "SELECT * FROM costumes ORDER BY costume";
+		$statement = $conn->prepare("SELECT * FROM costumes ORDER BY costume");
+		$statement->execute();
 
 		$i = 0;
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -816,10 +828,11 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 		<h3>Delete Costume</h3>';
 
 		// Get data
-		$query = "SELECT * FROM costumes ORDER BY costume";
+		$statement = $conn->prepare("SELECT * FROM costumes ORDER BY costume");
+		$statement->execute();
 
 		$i = 0;
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -860,10 +873,12 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 	if(isset($_POST['submitEditCostume']))
 	{
 		// Query the database
-		$conn->query("UPDATE costumes SET costume = '".cleanInput($_POST['costumeNameEdit'])."', club = '".cleanInput($_POST['costumeClubEdit'])."' WHERE id = '".cleanInput($_POST['costumeIDEdit'])."'");
+		$statement = $conn->prepare("UPDATE costumes SET costume = ?, club = ? WHERE id = ?");
+		$statement->bind_param("sii", $_POST['costumeNameEdit'], $_POST['costumeClubEdit'], $_POST['costumeIDEdit']);
+		$statement->execute();
 
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has edited costume ID [" . cleanInput($_POST['costumeIDEdit']) . "] to " . cleanInput($_POST['costumeNameEdit']), cleanInput($_SESSION['id']), 3, convertDataToJSON("SELECT * FROM costumes WHERE id = '".cleanInput($_POST['costumeIDEdit'])."'"));
+		sendNotification(getName($_SESSION['id']) . " has edited costume ID [" . $_POST['costumeIDEdit'] . "] to " . $_POST['costumeNameEdit'], $_SESSION['id'], 3, convertDataToJSON("SELECT * FROM costumes WHERE id = '".$_POST['costumeIDEdit']."'"));
 	}
 }
 
