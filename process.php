@@ -148,39 +148,29 @@ if(isset($_GET['do']) && isset($_POST['userID']) && isset($_POST['squad']) && $_
 
 if(isset($_GET['do']) && isset($_POST['trooperid']) && isset($_POST['permission']) && $_GET['do'] == "changepermission" && isAdmin())
 {
-	$queryAdd = "";
-	
 	// Which club to get
 	if($_POST['club'] <= count($squadArray))
 	{
+		$statement = $conn->prepare("UPDATE troopers SET p501 = ? WHERE id = ?");
+		$statement->bind_param("ii", $_POST['permission'], $_POST['trooperid']);
+		$statement->execute();
+
 		// If set to not a member, remove squad
 		if($_POST['permission'] == 0)
 		{
-			$queryAdd .= "squad = 0, ";
+			$statement = $conn->prepare("UPDATE troopers SET squad = 0 WHERE id = ?");
+			$statement->bind_param("i", $_POST['trooperid']);
+			$statement->execute();
 		}
-		
-		$queryAdd .= "p501";
+	} else {
+		// Grab DB value
+		$dbValue = $clubArray[($_POST['club'] - (count($squadArray) + 1))]['db'];
+
+		// Query
+		$statement = $conn->prepare("UPDATE troopers SET ".$dbValue." = ? WHERE id = ?");
+		$statement->bind_param("ii", $_POST['permission'], $_POST['trooperid']);
+		$statement->execute();
 	}
-	
-	// Set up count
-	$clubCount = count($squadArray) + 1;
-	
-	// Loop through clubs
-	foreach($clubArray as $club => $club_value)
-	{
-		// Match
-		if($_POST['club'] == $clubCount)
-		{
-			// Add to query
-			$queryAdd = "".$club_value['db']."";
-		}
-		
-		// Increment
-		$clubCount++;
-	}
-				
-	// Query the database
-	$conn->query("UPDATE troopers SET ".$queryAdd." = '".cleanInput($_POST['permission'])."' WHERE id = '".cleanInput($_POST['trooperid'])."'");
 }
 
 /******************** TROOPER CHECK *******************************/
