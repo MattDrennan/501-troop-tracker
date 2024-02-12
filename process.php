@@ -122,43 +122,22 @@ if(isset($_GET['do']) && $_GET['do'] == "smileyeditor")
 /******************** ADD MASTER ROSTER *******************************/
 
 if(isset($_GET['do']) && isset($_POST['userID']) && isset($_POST['squad']) && $_GET['do'] == "addmasterroster" && isAdmin())
-{
-	// Set up query add
-	$queryAdd = "";
-	$queryAdd2 = "";
-	
+{	
 	// Which club to get
 	if($_POST['squad'] <= count($squadArray))
 	{
-		$queryAdd = "p501";
+		$statement = $conn->prepare("UPDATE troopers SET p501 = 1, squad = ? WHERE id = ?");
+		$statement->bind_param("ii", $_POST['squad'], $_POST['userID']);
+		$statement->execute();
+	} else {
+		// Grab DB value
+		$dbValue = $clubArray[($_POST['squad'] - (count($squadArray) + 1))]['db'];
+
+		// Query
+		$statement = $conn->prepare("UPDATE troopers SET ".$dbValue." = 1 WHERE id = ?");
+		$statement->bind_param("i", $_POST['userID']);
+		$statement->execute();
 	}
-	
-	// Set up count
-	$clubCount = count($squadArray) + 1;
-	
-	// Loop through clubs
-	foreach($clubArray as $club => $club_value)
-	{
-		// Match
-		if($_POST['squad'] == $clubCount)
-		{
-			// Add to query
-			$queryAdd = "".$club_value['db']."";
-		}
-		
-		// Increment
-		$clubCount++;
-	}
-	
-	// Check if 501st squad
-	if($_POST['squad'] <= count($squadArray))
-	{
-		// Add this query to set squad
-		$queryAdd2 = ", squad = " . cleanInput($_POST['squad']);
-	}
-	
-	// Query trooper
-	$conn->query("UPDATE troopers SET ".$queryAdd." = 1".$queryAdd2." WHERE id = '".cleanInput($_POST['userID'])."'");
 	
 	// Send JSON
 	$array = array('data' => 'Trooper added!');

@@ -2640,7 +2640,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 								<th>Board Name</th>';
 
 								// Only show for clubs with DB3
-								if(isset($_GET['squad']) && $_GET['squad'] > count($squadArray) && $clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3'] != "")
+								if(isset($_GET['squad']) && $_GET['squad'] != "all" && $_GET['squad'] > count($squadArray) && $clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3'] != "")
 								{
 									echo '
 									<th>
@@ -2676,7 +2676,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							'.$db->forum_id.'
 						</td>';
 
-						if(isset($_GET['squad']) && $_GET['squad'] > count($squadArray) && $clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3'] != "")
+						if(isset($_GET['squad']) && $_GET['squad'] != "all" && $_GET['squad'] > count($squadArray) && $clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3'] != "")
 						{
 							echo '
 							<td>
