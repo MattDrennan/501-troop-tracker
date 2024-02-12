@@ -1387,17 +1387,35 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 	if(isset($_POST['submitDeleteUser']))
 	{
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has deleted user ID [" . cleanInput($_POST['userID']) . "]", cleanInput($_SESSION['id']), 10, convertDataToJSON("SELECT * FROM troopers WHERE id = '".cleanInput($_POST['userID'])."'"));
+		sendNotification(getName($_SESSION['id']) . " has deleted user ID [" . $_POST['userID'] . "]", $_SESSION['id'], 10, convertDataToJSON("SELECT * FROM troopers WHERE id = '".$_POST['userID']."'"));
 
 		// Query the database
-		$conn->query("DELETE FROM troopers WHERE id = '".cleanInput($_POST['userID'])."'");
+		$statement = $conn->prepare("DELETE FROM troopers WHERE id = ?");
+		$statement->bind_param("i", $_POST['userID']);
+		$statement->execute();
 		
 		// Update other databases that will be affected
-		$conn->query("DELETE FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['userID'])."'");
-		$conn->query("DELETE FROM award_troopers WHERE trooperid = '".cleanInput($_POST['userID'])."'");
-		$conn->query("DELETE FROM event_notifications WHERE trooperid = '".cleanInput($_POST['userID'])."'");
-		$conn->query("DELETE FROM notification_check WHERE trooperid = '".cleanInput($_POST['userID'])."'");
-		$conn->query("DELETE FROM title_troopers WHERE trooperid = '".cleanInput($_POST['userID'])."'");
+		$statement2 = $conn->prepare("DELETE FROM event_sign_up WHERE trooperid = ?");
+		$statement2->bind_param("i", $_POST['userID']);
+		$statement2->execute();
+
+		$statement3 = $conn->prepare("DELETE FROM award_troopers WHERE trooperid = ?");
+		$statement3->bind_param("i", $_POST['userID']);
+		$statement3->execute();
+
+		$statement4 = $conn->prepare("DELETE FROM event_notifications WHERE trooperid = ?");
+		$statement4->bind_param("i", $_POST['userID']);
+		$statement4->execute();
+
+		$statement5 = $conn->prepare("DELETE FROM notification_check WHERE trooperid = ?");
+		$statement5->bind_param("i", $_POST['userID']);
+		$statement5->execute();
+
+		$statement6 = $conn->prepare("DELETE FROM title_troopers WHERE trooperid = ?");
+		$statement6->bind_param("i", $_POST['userID']);
+		$statement6->execute();
+
+
 	}
 
 	// User submitted for edit...
