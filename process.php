@@ -630,7 +630,9 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 	if($_POST['important'] == 1)
 	{
 		// Query the database
-		$conn->query("INSERT INTO comments (troopid, trooperid, comment) VALUES ('".cleanInput($_POST['eventId'])."', '".$_SESSION['id']."', '".cleanInput($_POST['comment'])."')");
+		$statement = $conn->prepare("INSERT INTO comments (troopid, trooperid, comment) VALUES (?, ?, ?)");
+		$statement->bind_param("iis", $_POST['troopid'], $_POST['trooperid'], $_POST['comment']);
+		$statement->execute();
 	}
 	
 	// Set up return data
