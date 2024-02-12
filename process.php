@@ -1318,9 +1318,11 @@ if(isset($_GET['do']) && $_GET['do'] == "approvetroopers" && loggedIn() && isAdm
 	if(isset($_POST['submitDenyUser']))
 	{
 		// Query for user info
-		$query = "SELECT * FROM troopers WHERE id = '".cleanInput($_POST['userID2'])."'";
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
+		$statement->bind_param("i", $_POST['userID2']);
+		$statement->execute();
 
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -1337,18 +1339,22 @@ if(isset($_GET['do']) && $_GET['do'] == "approvetroopers" && loggedIn() && isAdm
 		}
 
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has denied user ID [" . cleanInput($_POST['userID2']) . "]", cleanInput($_SESSION['id']), 8, convertDataToJSON("SELECT * FROM troopers WHERE id = '".cleanInput($_POST['userID2'])."'"));
+		sendNotification(getName($_SESSION['id']) . " has denied user ID [" . $_POST['userID2'] . "]", $_SESSION['id'], 8, convertDataToJSON("SELECT * FROM troopers WHERE id = '".$_POST['userID2']."'"));
 		
 		// Query the database - troopers
-		$conn->query("DELETE FROM troopers WHERE id = '".cleanInput($_POST['userID2'])."'");
+		$statement = $conn->prepare("DELETE FROM troopers WHERE id = ?");
+		$statement->bind_param("i", $_POST['userID2']);
+		$statement->execute();
 	}
 
 	if(isset($_POST['submitApproveUser']))
 	{
 		// Query for user info
-		$query = "SELECT * FROM troopers WHERE id = '".cleanInput($_POST['userID2'])."'";
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
+		$statement->bind_param("i", $_POST['userID2']);
+		$statement->execute();
 
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -1365,10 +1371,12 @@ if(isset($_GET['do']) && $_GET['do'] == "approvetroopers" && loggedIn() && isAdm
 		}
 		
 		// Query the database
-		$conn->query("UPDATE troopers SET approved = 1 WHERE id = '".cleanInput($_POST['userID2'])."'");
+		$statement = $conn->prepare("UPDATE troopers SET approved = 1 WHERE id = ?");
+		$statement->bind_param("i", $_POST['userID2']);
+		$statement->execute();
 		
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has approved user ID [" . cleanInput($_POST['userID2']) . "]", cleanInput($_SESSION['id']), 9, convertDataToJSON("SELECT * FROM troopers WHERE id = '".cleanInput($_POST['userID2'])."'"));
+		sendNotification(getName($_SESSION['id']) . " has approved user ID [" . $_POST['userID2'] . "]", $_SESSION['id'], 9, convertDataToJSON("SELECT * FROM troopers WHERE id = '".$_POST['userID2']."'"));
 	}
 }
 
