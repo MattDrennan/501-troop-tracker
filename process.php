@@ -1271,9 +1271,11 @@ if(isset($_GET['do']) && $_GET['do'] == "getuser" && loggedIn())
 {
 	if(isset($_POST['getuser']))
 	{
-		$query = "SELECT * FROM troopers WHERE id = '".cleanInput($_POST['id'])."'";
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
+		$statement->bind_param("i", $_POST['id']);
+		$statement->execute();
 
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
