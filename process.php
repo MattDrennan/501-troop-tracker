@@ -360,20 +360,16 @@ if(isset($_GET['do']) && $_GET['do'] == "adminphoto" && loggedIn())
 if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 {
 	// Prevent if troop full
-	$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".cleanInput($_POST['troopid'])."' AND status != '4' AND status != '1'");
-
-	// Set up add to query
-	$addToQuery = "";
-
-	// Loop through clubs
-	foreach($clubArray as $club => $club_value)
-	{
-		// Add
-		$addToQuery .= " + SUM(".$club_value['dbLimit'].")";
-	}
+	$statement = $conn->prepare("SELECT id FROM event_sign_up WHERE troopid = ? AND status != '4' AND status != '1'");
+	$statement->bind_param("i", $_POST['troopid']);
+	$statement->execute();
+	$statement->store_result();
+	$getNumOfTroopers = $statement->num_rows;
 	
 	// Hack Check
-	$query = "SELECT * FROM event_sign_up WHERE (trooperid = '".cleanInput($_SESSION['id'])."' OR addedby = '".cleanInput($_SESSION['id'])."') AND troopid = '".cleanInput($_POST['troopid'])."'";
+	$statement = $conn->prepare("SELECT * FROM event_sign_up WHERE (trooperid = ? OR addedby = ?) AND troopid = ?");
+	$statement->bind_param("iii", $_SESSION['id'], $_SESSION['id'], $_POST['troopid']);
+	$statement->execute();
 	
 	// Used to see if record exists
 	$i = 0;
@@ -382,12 +378,12 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	$isFriend = false;
 	
 	// Output
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
 			// Set variables for trooper we are modifying
-			if(cleanInput($_POST['trooperid']) == $db->trooperid)
+			if($_POST['trooperid'] == $db->trooperid)
 			{
 				// Sign ID
 				$id = $db->id;
@@ -412,23 +408,25 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	$limitHandlers = "";
 
 	// Set up limit totals
-	$limit501stTotal = eventClubCount(cleanInput($_POST['troopid']), 0);
+	$limit501stTotal = eventClubCount($_POST['troopid'], 0);
 
 	// Set up club count
 	$clubCount = 1;
 
-	// Loop through clubs
+	// Loop through clubs to create variables to use later
 	foreach($clubArray as $club => $club_value)
 	{
 		// Set up limits
 		${$club_value['dbLimit']} = "";
 
 		// Set up limit totals
-		${$club_value['dbLimit'] . "Total"} = eventClubCount(cleanInput($_POST['troopid']), $clubCount);
+		${$club_value['dbLimit'] . "Total"} = eventClubCount($_POST['troopid'], $clubCount);
 
 		// Increment club count
 		$clubCount++;
 	}
+
+	/******* SET UP VARIABLES *******/
 
 	// Set total
 	$limitTotal = 0;
@@ -437,10 +435,12 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	$totalTrooperEvent = false;
 
 	// Query to get limits
-	$query = "SELECT * FROM events WHERE id = '".cleanInput($_POST['troopid'])."'";
+	$statement = $conn->prepare("SELECT * FROM events WHERE id = ?");
+	$statement->bind_param("i", $_POST['troopid']);
+	$statement->execute();
 
 	// Output
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -471,6 +471,8 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 			}
 		}
 	}
+
+	/******* END SET UP VARIABLES *******/
 	
 	// Kill hack
 	if($i == 0)
@@ -479,19 +481,19 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	}
 
 	// Set status from post
-	$status = cleanInput($_POST['status']);
+	$status = $_POST['status'];
 
 	// Set troop full - not used at the moment, but will keep it here for now
 	$troopFull = false;
 
 	// Check for total limit set, if it is, check if troop is full based on total
-	if(strpos(strtolower(getCostume(cleanInput($_POST['costume']))), "handler") === false)
+	if(strpos(strtolower(getCostume($_POST['costume'])), "handler") === false)
 	{
 		if($totalTrooperEvent)
 		{
 			/* TOTAL TROOPERS */
 			
-			if($limitTotal - eventClubCount(cleanInput($_POST['troopid']), "all") <= 0 && $status != 4 && inEvent(cleanInput($_POST['trooperid']), cleanInput($_POST['troopid']))['inTroop'] != 1)
+			if($limitTotal - eventClubCount($_POST['troopid'], "all") <= 0 && $status != 4 && inEvent($_POST['trooperid'], $_POST['troopid'])['inTroop'] != 1)
 			{
 				// Troop is full, set to stand by
 				$status = 1;
@@ -505,7 +507,7 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 			/* CHECK IF SQUADS / CLUB ARE FULL */
 
 			// 501
-			if((getCostumeClub(cleanInput($_POST['costume'])) == 0 && ($limit501st - eventClubCount(cleanInput($_POST['troopid']), 0)) <= 0) && $status != 4 && inEvent(cleanInput($_POST['trooperid']), cleanInput($_POST['troopid']))['inTroop'] != 1)
+			if((getCostumeClub($_POST['costume']) == 0 && ($limit501st - eventClubCount($_POST['troopid'], 0)) <= 0) && $status != 4 && inEvent($_POST['trooperid'], $_POST['troopid'])['inTroop'] != 1)
 			{
 				// Troop is full, set to stand by
 				$status = 1;
@@ -524,7 +526,7 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 					if(!in_array($costume, $dualCostume))
 					{
 						// Check club
-						if((getCostumeClub(cleanInput($_POST['costume'])) == $costume && (${$club_value['dbLimit']} - eventClubCount(cleanInput($_POST['troopid']), $costume)) <= 0) && $status != 4 && inEvent(cleanInput($_POST['trooperid']), cleanInput($_POST['troopid']))['inTroop'] != 1)
+						if((getCostumeClub($_POST['costume']) == $costume && (${$club_value['dbLimit']} - eventClubCount($_POST['troopid'], $costume)) <= 0) && $status != 4 && inEvent($_POST['trooperid'], $_POST['troopid'])['inTroop'] != 1)
 						{
 							// Troop is full, set to stand by
 							$status = 1;
@@ -540,7 +542,7 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	else
 	{
 		// Handler check
-		if(($limitHandlers - handlerEventCount(cleanInput($_POST['troopid']))) <= 0 && $status != 4 && inEvent(cleanInput($_POST['trooperid']), cleanInput($_POST['troopid']))['inTroop'] != 1)
+		if(($limitHandlers - handlerEventCount($_POST['troopid'])) <= 0 && $status != 4 && inEvent($_POST['trooperid'], cleanInput($_POST['troopid']))['inTroop'] != 1)
 		{
 			// Troop is full, set to stand by
 			$status = 1;
@@ -551,10 +553,14 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	}
 	
 	// Update time ONLY if changed status
-	$conn->query("UPDATE event_sign_up SET signuptime = NOW() WHERE status != '".$status."' AND ".$status." != 2 AND trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['troopid'])."' AND id = '".cleanInput($_POST['signid'])."'");
+	$statement = $conn->prepare("UPDATE event_sign_up SET signuptime = NOW() WHERE status != ? AND ? != 2 AND trooperid = ? AND troopid = ? AND id = ?");
+	$statement->bind_param("iiiii", $status, $status, $_POST['trooperid'], $_POST['troopid'], $_POST['signid']);
+	$statement->execute();
 	
 	// Update SQL
-	$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costume'])."', costume_backup = '".cleanInput($_POST['costume_backup'])."', status = '".$status."' WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['troopid'])."' AND id = '".cleanInput($_POST['signid'])."'");
+	$statement = $conn->prepare("UPDATE event_sign_up SET costume = ?, costume_backup = ?, status = ? WHERE trooperid = ? AND troopid = ? AND id = ?");
+	$statement->bind_param("iiiiii", $_POST['costume'], $_POST['costume_backup'], $status, $_POST['trooperid'], $_POST['troopid'], $_POST['signid']);
+	$statement->execute();
 
 	
 	// Update notifications
@@ -562,23 +568,29 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	if($status == 0)
 	{
 		// Send to database to send out notifictions later
-		$conn->query("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES ('".cleanInput($_POST['troopid'])."', '".cleanInput($_POST['trooperid'])."', '1')");
+		$statement = $conn->prepare("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES (?, ?, '1')");
+		$statement->bind_param("ii", $_POST['troopid'], $_POST['trooperid']);
+		$statement->execute();
 	}
 	// Cancel
 	else if($status == 4)
 	{
 		// Send to database to send out notifictions later
-		$conn->query("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES ('".cleanInput($_POST['troopid'])."', '".cleanInput($_POST['trooperid'])."', '2')");
+		$statement = $conn->prepare("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES (?, ?, '2')");
+		$statement->bind_param("ii", $_POST['troopid'], $_POST['trooperid']);
+		$statement->execute();
 	}
 	
 	// Check if status is being changed from cancel to another
 	if($oldStatus == 4 && $status < 4)
 	{
 		// Delete
-		$conn->query("DELETE FROM event_sign_up WHERE id = '".$id."'");
+		$statement = $conn->prepare("DELETE FROM event_sign_up WHERE id = ?");
+		$statement->bind_param("i", $id);
+		$statement->execute();
 		
 		// Set added by based on who is updating trooper
-		if(cleanInput($_POST['trooperid']) == $_SESSION['id'])
+		if($_POST['trooperid'] == $_SESSION['id'])
 		{
 			$addedby = 0;
 		}
@@ -588,13 +600,15 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 		}
 		
 		// Insert
-		$conn->query("INSERT INTO event_sign_up (trooperid, troopid, costume, costume_backup, status, addedby) VALUES ('".cleanInput($_POST['trooperid'])."', '".cleanInput($_POST['troopid'])."', '".cleanInput($_POST['costume'])."', '".cleanInput($_POST['costume_backup'])."', '".$status."', '".$addedby."')");
+		$statement = $conn->prepare("INSERT INTO event_sign_up (trooperid, troopid, costume, costume_backup, status, addedby) VALUES (?, ?, ?, ?, ?, ?)");
+		$statement->bind_param("iiiiii", $_POST['trooperid'], $_POST['troopid'], $_POST['costume'], $_POST['costume_backup'], $_POST['status'], $addedby);
+		$statement->execute();
 		$last_id = $conn->insert_id;
 	}
 	
-	resetTrooperStatus(cleanInput($_POST['troopid']));
+	resetTrooperStatus($_POST['troopid']);
 	
-	$rosterUpdate = getRoster(cleanInput($_POST['troopid']), $limitTotal, $totalTrooperEvent, true);
+	$rosterUpdate = getRoster($_POST['troopid'], $limitTotal, $totalTrooperEvent, true);
 
 	// Send JSON
 	$array = array('success' => 'true', 'status' => $status, 'troopFull' => $troopFull, 'limit501st' => $limit501st, 'limit501stTotal' => $limit501stTotal, 'rosterData' => $rosterUpdate[0], 'troopersRemaining' => $rosterUpdate[1]);
