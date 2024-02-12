@@ -1452,14 +1452,14 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 	if(isset($_POST['submitUserEdit']))
 	{
 		// Check we have all the data we need server side. JQuery should do this, but this is a backup
-		if(cleanInput($_POST['user']) != "" && cleanInput($_POST['squad']) != "" && cleanInput($_POST['tkid']) != "" && cleanInput($_POST['forumid']) != "")
+		if($_POST['user'] != "" && $_POST['squad'] != "" && $_POST['tkid'] != "" && $_POST['forumid'] != "")
 		{
 			// Set up message
 			$message = "Trooper has been updated!";
 			
 			// **CUSTOM**
 			// Check if Rebel has a Rebel Forum to change status
-			if(cleanInput($_POST['pRebel']) != 0 && cleanInput($_POST['rebelforum']) == "")
+			if($_POST['pRebel'] != 0 && $_POST['rebelforum'] == "")
 			{
 				// Reset Rebel due to it not being able to put value in spreadsheet
 				$_POST['pRebel'] = 0;
@@ -1469,29 +1469,31 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 			}
 			
 			// Set up TKID
-			$tkid = cleanInput($_POST['tkid']);
+			$tkid = $_POST['tkid'];
 
 			// Send notification to command staff
-			sendNotification(getName($_SESSION['id']) . " has updated user ID [" . cleanInput($_POST['userIDE']) . "]", cleanInput($_SESSION['id']), 11, convertDataToJSON("SELECT * FROM troopers WHERE id = '".cleanInput($_POST['userIDE'])."'"));
+			sendNotification(getName($_SESSION['id']) . " has updated user ID [" . $_POST['userIDE'] . "]", $_SESSION['id'], 11, convertDataToJSON("SELECT * FROM troopers WHERE id = '".$_POST['userIDE']."'"));
 
-			// Set up add to query
-			$addToQuery = "";
-
-			// Loop through clubs
+			// Loop through clubs for custom DB variables
 			foreach($clubArray as $club => $club_value)
 			{
-				// Add
-				$addToQuery .= "".$club_value['db']." = '".cleanInput($_POST[$club_value['db']])."', ";
+				$statement = $conn->prepare("UPDATE troopers SET " . $club_value['db'] . " = ? WHERE id = ?");
+				$statement->bind_param("si", $_POST[$club_value['db']], $_POST['userIDE']);
+				$statement->execute();
 
 				// If DB3 defined
 				if($club_value['db3Name'] != "")
 				{
-					$addToQuery .= "".$club_value['db3']." = '".filter_var($_POST[$club_value['db3']], FILTER_SANITIZE_ADD_SLASHES)."', ";
+					$statement = $conn->prepare("UPDATE troopers SET " . $club_value['db3'] . " = ? WHERE id = ?");
+					$statement->bind_param("si", $_POST[$club_value['db3']], $_POST['userIDE']);
+					$statement->execute();
 				}
 			}
-			
+
 			// Query the database
-			$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['user'])."', phone = '".cleanInput(cleanInput($_POST['phone']))."', squad = '".cleanInput($_POST['squad'])."', p501 = '".cleanInput($_POST['p501'])."', ".$addToQuery." tkid = '".$tkid."', forum_id = '".filter_var($_POST['forumid'], FILTER_SANITIZE_ADD_SLASHES)."', note = '".cleanInput($_POST['note'])."', supporter = '".cleanInput($_POST['supporter'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'");
+			$statement = $conn->prepare("UPDATE troopers SET name = ?, phone = ?, squad = ?, p501 = ?, tkid = ?, forum_id = ?, note = ?, supporter = ? WHERE id = ?");
+			$statement->bind_param("ssiiissii", $_POST['user'], $_POST['phone'], $_POST['squad'], $_POST['p501'], $tkid, $_POST['forumid'], $_POST['note'], $_POST['supporter'], $_POST['userIDE']);
+			$statement->execute();
 
 			// If super user, update special permissions
 			if(hasPermission(1))
@@ -1502,10 +1504,12 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 				if(!isset($_POST['spAward'])) { $_POST['spAward'] = 0; } else { $_POST['spAward'] = 1; }
 
 				// Query the database
-				$conn->query("UPDATE troopers SET spTrooper = '".cleanInput($_POST['spTrooper'])."', spCostume = '".cleanInput($_POST['spCostume'])."', spAward = '".cleanInput($_POST['spAward'])."', permissions = '".cleanInput($_POST['permissions'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'");
+				$statement = $conn->prepare("UPDATE troopers SET spTrooper = ?, spCostume = ?, spAward = ?, permissions = ? WHERE id = ?");
+				$statement->bind_param("iiiii", $_POST['spTrooper'], $_POST['spCostume'], $_POST['spAward'], $_POST['permissions'], $_POST['userIDE']);
+				$statement->execute();
 			}
 
-			$array = array('success' => 'true', 'newname' => readInput(cleanInput($_POST['user'])) . " - " . readTKNumber($tkid, getTrooperSquad(cleanInput($_POST['userIDE']))) . " - " . readInput(cleanInput($_POST['forumid'])), 'data' => $message);
+			$array = array('success' => 'true', 'newname' => $_POST['user'] . " - " . readTKNumber($tkid, getTrooperSquad($_POST['userIDE'])) . " - " . $_POST['forumid'], 'data' => $message);
 			echo json_encode($array);
 		}
 		else
