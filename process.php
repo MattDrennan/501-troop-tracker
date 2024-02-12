@@ -893,13 +893,20 @@ if(isset($_GET['do']) && $_GET['do'] == "eventsubscribe" && isset($_POST['events
 	$message = "";
 
 	// Query to see if trooper is subscribed already
-	$isSubscribed = $conn->query("SELECT * FROM event_notifications WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($_POST['event'])."'");
+	$statement = $conn->prepare("SELECT * FROM event_notifications WHERE trooperid = ? AND troopid = ?");
+	$statement->bind_param("ii", $_SESSION['id'], $_POST['event']);
+	$statement->execute();
+	$statement->store_result();
+
+	$isSubscribed = $statement->num_rows;
 
 	// Check if subscribed
 	if($isSubscribed->num_rows > 0)
 	{
 		// Already subscribed, delete information
-		$conn->query("DELETE FROM event_notifications WHERE trooperid = '".cleanInput($_SESSION['id'])."' AND troopid = '".cleanInput($_POST['event'])."'");
+		$statement = $conn->prepare("DELETE FROM event_notifications WHERE trooperid = ? AND troopid = ?");
+		$statement->bind_param("ii", $_SESSION['id'], $_POST['event']);
+		$statement->execute();
 
 		// Message
 		$message = "You are now unsubscribed from this event.";
@@ -907,7 +914,9 @@ if(isset($_GET['do']) && $_GET['do'] == "eventsubscribe" && isset($_POST['events
 	else
 	{
 		// Subscribe
-		$conn->query("INSERT INTO event_notifications (trooperid, troopid) VALUES ('".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['event'])."')");
+		$statement = $conn->prepare("INSERT INTO event_notifications (trooperid, troopid) VALUES (?, ?)");
+		$statement->bind_param("ii", $_SESSION['id'], $_POST['event']);
+		$statement->execute();
 
 		// Message
 		$message = "You are now subscribed to this event and will receive e-mail notifications.";
