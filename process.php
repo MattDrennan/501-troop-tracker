@@ -934,20 +934,14 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 	// Get award details
 	if(isset($_POST['getaward']))
 	{
-		// Set up return variable
-		$hasAward = 0;
-
 		// Get data
-		$query = "SELECT * FROM award_troopers WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND awardid = '".cleanInput($_POST['awardid'])."'";
-		
-		if ($result = mysqli_query($conn, $query))
-		{
-			while ($db = mysqli_fetch_object($result))
-			{
-				// Set
-				$hasAward = 1;
-			}
-		}
+		$statement = $conn->prepare("SELECT * FROM award_troopers WHERE trooperid = ? AND awardid = ?");
+		$statement->bind_param("ii", $_POST['trooperid'], $_POST['awardid']);
+		$statement->execute();
+		$statement->store_result();
+
+		// Number of awards
+		$hasAward = $statement->num_rows;
 		
 		// Output
 		$array = array('hasAward' => $hasAward);
@@ -958,13 +952,17 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 	if(isset($_POST['submitDeleteAward']))
 	{
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has deleted award ID: " . cleanInput($_POST['awardID']), cleanInput($_SESSION['id']), 4, convertDataToJSON("SELECT * FROM awards WHERE id = '".cleanInput($_POST['awardID'])."'"));
+		sendNotification(getName($_SESSION['id']) . " has deleted award ID: " . $_POST['awardID'], $_SESSION['id'], 4, convertDataToJSON("SELECT * FROM awards WHERE id = '".$_POST['awardID']."'"));
 
 		// Query the database
-		$conn->query("DELETE FROM awards WHERE id = '".cleanInput($_POST['awardID'])."'");
+		$statement = $conn->prepare("DELETE FROM awards WHERE id = ?");
+		$statement->bind_param("i", $_POST['awardID']);
+		$statement->execute();
 
 		// Delete from the other database
-		$conn->query("DELETE FROM award_troopers WHERE awardid = '".cleanInput($_POST['awardID'])."'");
+		$statement = $conn->prepare("DELETE FROM award_troopers WHERE awardid = ?");
+		$statement->bind_param("i", $_POST['awardID']);
+		$statement->execute();
 	}
 
 	// Add award...
@@ -976,27 +974,30 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 		$last_id = 0;
 
 		// Check if has value
-		if(cleanInput($_POST['awardName']) == "")
+		if($_POST['awardName'] == "")
 		{
 			$message = "Award must have a name.";
 		}
 		else
 		{
 			// Query the database
-			$conn->query("INSERT INTO awards (title, icon) VALUES ('".cleanInput($_POST['awardName'])."', '".cleanInput($_POST['awardImage'])."')");
+			$statement = $conn->prepare("INSERT INTO awards (title, icon) VALUES (?, ?)");
+			$statement->bind_param("ss", $_POST['awardName'], $_POST['awardImage']);
+			$statement->execute();
 			$last_id = $conn->insert_id;
 			
 			// Send notification to command staff
-			sendNotification(getName($_SESSION['id']) . " has added award: " . cleanInput($_POST['awardName']), cleanInput($_SESSION['id']), 5, convertDataToJSON("SELECT * FROM awards WHERE id = '".$last_id."'"));
+			sendNotification(getName($_SESSION['id']) . " has added award: " . $_POST['awardName'], $_SESSION['id'], 5, convertDataToJSON("SELECT * FROM awards WHERE id = '".$last_id."'"));
 		}
 		
 		$returnMessage = '<br /><hr /><br /><h3>Edit Award</h3>';
 
 		// Get data
-		$query = "SELECT * FROM awards ORDER BY title";
+		$statement = $conn->prepare("SELECT * FROM awards ORDER BY title");
+		$statement->execute();
 
 		$i = 0;
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -1046,10 +1047,11 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 		$returnMessage .= '<br /><hr /><br /><h3>Delete Award</h3>';
 
 		// Get data
-		$query = "SELECT * FROM awards ORDER BY title";
+		$statement = $conn->prepare("SELECT * FROM awards ORDER BY title");
+		$statement->execute();
 
 		$i = 0;
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -1085,13 +1087,14 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 		$returnMessage2 = '';
 		
 		// Get data
-		$query = "SELECT * FROM troopers WHERE approved = 1 ORDER BY name";
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE approved = 1 ORDER BY name");
+		$statement->execute();
 
 		// Amount of users
 		$i = 0;
 		$getId = 0;
 
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -1126,14 +1129,15 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 			<br /><br />';
 
 			// Get data
-			$query2 = "SELECT * FROM awards ORDER BY title";
+			$statement = $conn->prepare("SELECT * FROM awards ORDER BY title");
+			$statement->execute();
 
 			// Amount of awards
 			$j = 0;
 
-			if ($result2 = mysqli_query($conn, $query2))
+			if ($result = $statement->get_result())
 			{
-				while ($db = mysqli_fetch_object($result2))
+				while ($db = mysqli_fetch_object($result))
 				{
 					// Formatting
 					if($j == 0)
@@ -1174,8 +1178,11 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 	if(isset($_POST['submitAward']))
 	{
 		// Check how many rewards
-		$result = mysqli_query($conn, "SELECT count(*) FROM award_troopers WHERE trooperid = '".cleanInput($_POST['userIDAward'])."' AND awardid = '".cleanInput($_POST['awardIDAssign'])."'");
-		$num_rows = mysqli_fetch_row($result)[0];
+		$statement = $conn->prepare("SELECT count(*) FROM award_troopers WHERE trooperid = ? AND awardid = ?");
+		$statement->bind_param("ii", $_POST['userIDAward'], $_POST['awardIDAssign']);
+		$statement->execute();
+		$statement->store_result();
+		$num_rows = $statement->num_rows;
 
 		$message = "The award was awarded successfully!";
 
@@ -1183,16 +1190,22 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 		if($num_rows == 0)
 		{
 			// Check title exists query
-			$checkExist = $conn->query("SELECT * FROM awards WHERE id = '".cleanInput($_POST['awardIDAssign'])."'");
+			$statement = $conn->prepare("SELECT * FROM awards WHERE id = ?");
+			$statement->bind_param("i", $_POST['awardIDAssign']);
+			$statement->execute();
+			$statement->store_result();
+			$checkExist = $statement->num_rows;
 
 			// Check if title exists
 			if($checkExist->num_rows > 0)
 			{
 				// Query the database
-				$conn->query("INSERT INTO award_troopers (trooperid, awardid) VALUES ('".cleanInput($_POST['userIDAward'])."', '".cleanInput($_POST['awardIDAssign'])."')");
+				$statement = $conn->prepare("INSERT INTO award_troopers (trooperid, awardid) VALUES (?, ?)");
+				$statement->bind_param("ii", $_POST['userIDAward'], $_POST['awardIDAssign']);
+				$statement->execute();
 				
 				// Send notification to command staff
-				sendNotification(getName($_SESSION['id']) . " has awarded ID [" . cleanInput($_POST['awardIDAssign']) . "] to " . getName(cleanInput($_POST['userIDAward'])), cleanInput($_SESSION['id']), 6, json_encode(array("trooperid" => cleanInput($_POST['userIDAward']), "awardid" => cleanInput($_POST['awardIDAssign']))));
+				sendNotification(getName($_SESSION['id']) . " has awarded ID [" . $_POST['awardIDAssign'] . "] to " . getName($_POST['userIDAward']), $_SESSION['id'], 6, json_encode(array("trooperid" => $_POST['userIDAward'], "awardid" => $_POST['awardIDAssign'])));
 			}
 			else
 			{
@@ -1212,8 +1225,11 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 	if(isset($_POST['removeAward']))
 	{
 		// Check how many rewards
-		$result = mysqli_query($conn, "SELECT count(*) FROM award_troopers WHERE trooperid = '".cleanInput($_POST['userIDAward'])."' AND awardid = '".cleanInput($_POST['awardIDAssign'])."'");
-		$num_rows = mysqli_fetch_row($result)[0];
+		$statement = $conn->prepare("SELECT count(*) FROM award_troopers WHERE trooperid = ? AND awardid = ?");
+		$statement->bind_param("ii", $_POST['userIDAward'], $_POST['awardIDAssign']);
+		$statement->execute();
+		$statement->store_result();
+		$num_rows = $statement->num_rows;
 
 		$message = "The award was removed successfully!";
 
@@ -1221,10 +1237,12 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 		if($num_rows > 0)
 		{
 			// Remove
-			$conn->query("DELETE FROM award_troopers WHERE trooperid = '".cleanInput($_POST['userIDAward'])."' AND awardid = '".cleanInput($_POST['awardIDAssign'])."'");
+			$statement = $conn->prepare("DELETE FROM award_troopers WHERE trooperid = ? AND awardid = ?");
+			$statement->bind_param("ii", $_POST['userIDAward'], $_POST['awardIDAssign']);
+			$statement->execute();
 			
 			// Send notification to command staff
-			sendNotification(getName($_SESSION['id']) . " has removed award ID [" . cleanInput($_POST['awardIDAssign']) . "] from " . getName(cleanInput($_POST['userIDAward'])), cleanInput($_SESSION['id']), 25, json_encode(array("trooperid" => cleanInput($_POST['userIDAward']), "awardid" => cleanInput($_POST['awardIDAssign']))));
+			sendNotification(getName($_SESSION['id']) . " has removed award ID [" . $_POST['awardIDAssign'] . "] from " . getName($_POST['userIDAward']), $_SESSION['id'], 25, json_encode(array("trooperid" => $_POST['userIDAward'], "awardid" => $_POST['awardIDAssign'])));
 		}
 		else
 		{
@@ -1239,10 +1257,12 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 	if(isset($_POST['submitEditAward']))
 	{
 		// Query the database
-		$conn->query("UPDATE awards SET title = '".cleanInput($_POST['editAwardTitle'])."', icon = '".cleanInput($_POST['editAwardImage'])."' WHERE id = '".cleanInput($_POST['awardIDEdit'])."'");
+		$statement = $conn->prepare("UPDATE awards SET title = ?, icon = ? WHERE id = ?");
+		$statement->bind_param("iii", $_POST['editAwardTitle'], $_POST['editAwardImage'], $_POST['awardIDEdit']);
+		$statement->execute();
 
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has edited award ID [" . cleanInput($_POST['awardIDEdit']) . "] to " . cleanInput($_POST['editAwardTitle']), cleanInput($_SESSION['id']), 7, convertDataToJSON("SELECT * FROM awards WHERE id = '".cleanInput($_POST['awardIDEdit'])."'"));
+		sendNotification(getName($_SESSION['id']) . " has edited award ID [" . $_POST['awardIDEdit'] . "] to " . $_POST['editAwardTitle'], $_SESSION['id'], 7, convertDataToJSON("SELECT * FROM awards WHERE id = '".$_POST['awardIDEdit']."'"));
 	}
 }
 
