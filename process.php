@@ -1525,7 +1525,9 @@ if(isset($_GET['do']) && $_GET['do'] == "changephone" && loggedIn())
 {
 	if(isset($_POST['phoneButton']))
 	{
-		$conn->query("UPDATE troopers SET phone = '".cleanInput($_POST['phone'])."' WHERE id = '".$_SESSION['id']."'");
+		$statement = $conn->prepare("UPDATE troopers SET phone = ? WHERE id = ?");
+		$statement->bind_param("si", $_POST['phone'], $_SESSION['id']);
+		$statement->execute();
 		echo 'Phone number updated sucessfully!';
 	}
 }
@@ -1545,7 +1547,9 @@ if(isset($_GET['do']) && $_GET['do'] == "changename" && loggedIn())
 
 		if(!$failed)
 		{
-			$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['name'])."' WHERE id = '".$_SESSION['id']."'");
+			$statement = $conn->prepare("UPDATE troopers SET name = ? WHERE id = ?");
+			$statement->bind_param("si", $_POST['name'], $_SESSION['id']);
+			$statement->execute();
 			echo 'Name updated sucessfully!';
 		}
 	}
