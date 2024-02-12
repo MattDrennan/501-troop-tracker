@@ -1560,20 +1560,26 @@ if(isset($_GET['do']) && $_GET['do'] == "unsubscribe" && loggedIn())
 {
 	if(isset($_POST['unsubscribeButton']))
 	{
-		$query = "SELECT subscribe FROM troopers WHERE id = '".$_SESSION['id']."'";
+		$statement = $conn->prepare("SELECT subscribe FROM troopers WHERE id = ?");
+		$statement->bind_param("i", $_SESSION['id']);
+		$statement->execute();
 
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
 				if($db->subscribe == 1)
 				{
-					$conn->query("UPDATE troopers SET subscribe = 0 WHERE id = '".$_SESSION['id']."'");
+					$statement = $conn->prepare("UPDATE troopers SET subscribe = 0 WHERE id = ?");
+					$statement->bind_param("i", $_SESSION['id']);
+					$statement->execute();
 					echo 'You are now unsubscribed from e-mails and will no longer receive notifications.';
 				}
 				else
 				{
-					$conn->query("UPDATE troopers SET subscribe = 1 WHERE id = '".$_SESSION['id']."'");
+					$statement = $conn->prepare("UPDATE troopers SET subscribe = 1 WHERE id = ?");
+					$statement->bind_param("i", $_SESSION['id']);
+					$statement->execute();
 					echo 'You are now subscribed to e-mail notifications.';
 				}
 			}
