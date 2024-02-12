@@ -309,24 +309,30 @@ if(isset($_GET['do']) && $_GET['do'] == "deletephoto" && loggedIn())
 if(isset($_GET['do']) && $_GET['do'] == "adminphoto" && loggedIn())
 {
 	// Query database for photos
-	$query = "SELECT * FROM uploads WHERE id = '".cleanInput($_POST['photoid'])."'";
+	$statement = $conn->prepare("SELECT * FROM uploads WHERE id = ?");
+	$statement->bind_param("i", $_POST['photoid']);
+	$statement->execute();
 	
 	// Count photos
 	$i = 0;
 	
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
 			if($db->admin == 0)
 			{
 				// Query database
-				$conn->query("UPDATE uploads SET admin = '1' WHERE id = '".cleanInput($_POST['photoid'])."'");
+				$statement2 = $conn->prepare("UPDATE uploads SET admin = '1' WHERE id = ?");
+				$statement2->bind_param("i", $_POST['photoid']);
+				$statement2->execute();
 			}
 			else
 			{
 				// Query database
-				$conn->query("UPDATE uploads SET admin = '0' WHERE id = '".cleanInput($_POST['photoid'])."'");
+				$statement2 = $conn->prepare("UPDATE uploads SET admin = '0' WHERE id = ?");
+				$statement2->bind_param("i", $_POST['photoid']);
+				$statement2->execute();
 			}
 			
 			// Increment
