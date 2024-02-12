@@ -259,12 +259,14 @@ if(isset($_GET['do']) && $_GET['do'] == "troopercheckretired" && loggedIn() && i
 if(isset($_GET['do']) && $_GET['do'] == "deletephoto" && loggedIn())
 {
 	// Query database for photos
-	$query = "SELECT * FROM uploads WHERE id = '".cleanInput($_POST['photoid'])."'";
+	$statement = $conn->prepare("SELECT * FROM uploads WHERE id = ?");
+	$statement->bind_param("i", $_POST['photoid']);
+	$statement->execute();
 	
 	// Count photos
 	$i = 0;
 	
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -278,7 +280,9 @@ if(isset($_GET['do']) && $_GET['do'] == "deletephoto" && loggedIn())
 				}
 				
 				// Query database
-				$conn->query("DELETE FROM uploads WHERE id = '".cleanInput($_POST['photoid'])."'");
+				$statement2 = $conn->prepare("DELETE FROM uploads WHERE id = ?");
+				$statement2->bind_param("i", $_POST['photoid']);
+				$statement2->execute();
 				
 				// Increment
 				$i++;
