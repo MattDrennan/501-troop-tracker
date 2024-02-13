@@ -1593,8 +1593,35 @@ if(isset($_GET['do']) && $_GET['do'] == "emailsettings" && loggedIn())
 	// Check for post request
 	if(isset($_POST['setemailsettings']))
 	{
+		// Set up
+		$continue = false;
+
+		// Get a list of all columns to make sure data is validated
+		$statement = $conn->prepare("SELECT COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'troopers'");
+		$statement->execute();
+
+		if($result = $statement->get_result())
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				// Loop through results
+				foreach($db as $row)
+				{
+					if($row == $_POST['setting'])
+					{
+						$continue = true;
+					}
+				}
+			}
+		}
+
+		// Don't continue
+		if(!$continue) { exit; }
+
 		// Check which setting we are changing
-		$conn->query("UPDATE troopers SET " . cleanInput($_POST['setting']) . " = CASE " . cleanInput($_POST['setting']) . " WHEN 1 THEN 0 WHEN 0 THEN 1 END WHERE id = '".$_SESSION['id']."'");
+		$statement = $conn->prepare("UPDATE troopers SET " . $_POST['setting'] . " = CASE " . $_POST['setting'] . " WHEN 1 THEN 0 WHEN 0 THEN 1 END WHERE id = ?");
+		$statement->bind_param("i", $_SESSION['id']);
+		$statement->execute();
 	}
 }
 
