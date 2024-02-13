@@ -359,13 +359,6 @@ if(isset($_GET['do']) && $_GET['do'] == "adminphoto" && loggedIn())
 
 if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 {
-	// Prevent if troop full
-	$statement = $conn->prepare("SELECT id FROM event_sign_up WHERE troopid = ? AND status != '4' AND status != '1'");
-	$statement->bind_param("i", $_POST['troopid']);
-	$statement->execute();
-	$statement->store_result();
-	$getNumOfTroopers = $statement->num_rows;
-	
 	// Hack Check
 	$statement = $conn->prepare("SELECT * FROM event_sign_up WHERE (trooperid = ? OR addedby = ?) AND troopid = ?");
 	$statement->bind_param("iii", $_SESSION['id'], $_SESSION['id'], $_POST['troopid']);
@@ -901,7 +894,7 @@ if(isset($_GET['do']) && $_GET['do'] == "eventsubscribe" && isset($_POST['events
 	$isSubscribed = $statement->num_rows;
 
 	// Check if subscribed
-	if($isSubscribed->num_rows > 0)
+	if($isSubscribed > 0)
 	{
 		// Already subscribed, delete information
 		$statement = $conn->prepare("DELETE FROM event_notifications WHERE trooperid = ? AND troopid = ?");
@@ -1197,7 +1190,7 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 			$checkExist = $statement->num_rows;
 
 			// Check if title exists
-			if($checkExist->num_rows > 0)
+			if($checkExist > 0)
 			{
 				// Query the database
 				$statement = $conn->prepare("INSERT INTO award_troopers (trooperid, awardid) VALUES (?, ?)");
@@ -1636,17 +1629,17 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 		echo '<ul>';
 
 		// If name empty
-		if(cleanInput($_POST['name']) == "")
+		if($_POST['name'] == "")
 		{
 			$failed = true;
 			echo '<li>Please enter your name.</li>';
 		}
 
 		// Set TKID
-		$tkid = cleanInput($_POST['tkid']);
+		$tkid = $_POST['tkid'];
 		
 		// If Forum ID empty
-		if(cleanInput($_POST['forumid']) == "")
+		if($_POST['forumid'] == "")
 		{
 			$failed = true;
 			echo '<li>Please enter your FL 501st Forum Username.</li>';
@@ -1681,25 +1674,39 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 		}
 		
 		// Set squad variable
-		$squad = cleanInput($_POST['squad']);
+		$squad = $_POST['squad'];
 		
 		// Check if 501st
 		if($squad <= count($squadArray))
 		{
 			// Query ID database
-			$idcheck = $conn->query("SELECT id FROM troopers WHERE tkid = '".$tkid."' AND squad <= ".count($squadArray)."");
+			$statement = $conn->prepare("SELECT id FROM troopers WHERE tkid = ? AND squad <= ".count($squadArray)."");
+			$statement->bind_param("i", $tkid);
+			$statement->execute();
+			$statement->store_result();
+			$idcheck = $statement->num_rows;
 		}
 		else
 		{
 			// In a club - query by club
-			$idcheck = $conn->query("SELECT id FROM troopers WHERE tkid = '".$tkid."' AND squad = ".$squad."");
+			$statement = $conn->prepare("SELECT id FROM troopers WHERE tkid = ? AND squad = ?");
+			$statement->bind_param("ii", $tkid, $squad);
+			$statement->execute();
+			$statement->store_result();
+			$idcheck = $statement->num_rows;
 		}
 		
 		// Query 501st forum
-		$forumcheck = $conn->query("SELECT forum_id FROM troopers WHERE forum_id = '".cleanInput($_POST['forumid'])."'");
+		$statement = $conn->prepare("SELECT forum_id FROM troopers WHERE forum_id = ?");
+		$statement->bind_param("s", $_POST['forumid']);
+		$statement->execute();
+		$statement->store_result();
+		$forumcheck = $statement->num_rows;
+
+		error_log($forumcheck);
 		
 		// Check if 501st forum exists
-		if($forumcheck->num_rows > 0)
+		if($forumcheck > 0)
 		{
 			$failed = true;
 			echo '<li>FL Garrison Forum Name is already taken. Please contact the '.garrison.' Webmaster for further assistance.</li>';
@@ -1712,12 +1719,17 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			if($club_value['db3Name'] != "")
 			{
 				// Query Club - if specified
-				if(cleanInput($_POST[$club_value['db3']]) != "")
+				if($_POST[$club_value['db3']] != "")
 				{
-					$clubid = $conn->query("SELECT ".$club_value['db3']." FROM troopers WHERE ".$club_value['db3']." = '".cleanInput($_POST[$club_value['db3']])."'");
+					$statement = $conn->prepare("SELECT ".$club_value['db3']." FROM troopers WHERE ".$club_value['db3']." = ?");
+					$statement->bind_param("s", $_POST[$club_value['db3']]);
+					$statement->execute();
+					$statement->store_result();
+					$clubid = $statement->num_rows;
+
 					
 					// Check if club ID exists
-					if($clubid->num_rows > 0)
+					if($clubid > 0)
 					{
 						$failed = true;
 						echo '<li>'.$club_value['name'].' ID is already taken. Please contact the '.garrison.' Webmaster for further assistance.</li>';
@@ -1727,7 +1739,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 		}
 
 		// Check if ID exists, if not set to 0
-		if($_POST["accountType"] == 1 && $idcheck->num_rows > 0)
+		if($_POST["accountType"] == 1 && $idcheck > 0)
 		{
 			$failed = true;
 			echo '<li>TKID is taken. If you have troops on the old troop tracker, <a href="index.php?action=setup">click here to request access</a>.</li>';
@@ -1743,17 +1755,21 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			echo '<li>Incorrect '.garrison.' Board username and password.</li>';
 		} else {
 			// Query user_id to prevent duplicates
-			$forumcheck = $conn->query("SELECT user_id FROM troopers WHERE user_id = '".$forumLogin['user']['user_id']."'");
+			$statement = $conn->prepare("SELECT user_id FROM troopers WHERE user_id = ?");
+			$statement->bind_param("i", $forumLogin['user']['user_id']);
+			$statement->execute();
+			$statement->store_result();
+			$forumcheck = $statement->num_rows;
 			
 			// Check if user_id exists
-			if($forumcheck->num_rows > 0)
+			if($forumcheck > 0)
 			{
 				$failed = true;
 				echo '<li>You already have a Troop Tracker account.</li>';
 			}
 		}
 
-		if(strlen(cleanInput($_POST['phone'])) < 10 && cleanInput($_POST['phone']) != "")
+		if(strlen($_POST['phone']) < 10 && $_POST['phone'] != "")
 		{
 			$failed = true;
 			echo '<li>Enter a valid phone number.</li>';
@@ -1774,16 +1790,21 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			
 			// Set permissions
 			// 501
-			if(cleanInput($_POST['squad']) <= count($squadArray))
+			if($_POST['squad'] <= count($squadArray))
 			{
-				$p501 = cleanInput($_POST['accountType']);
+				$p501 = $_POST['accountType'];
 			}
 
-			// Add to query set up
-			$addToQuery1 = "";
-			$addToQuery2 = "";
-			$addToQuery3 = "";
-			$addToQuery4 = "";
+			// Hash password
+			$password = password_hash($_POST['forumpassword'], PASSWORD_DEFAULT);
+
+			// Insert
+			$statement = $conn->prepare("INSERT INTO troopers (user_id, name, tkid, email, forum_id, p501, phone, squad, password) VALUES (?, ?, ?, ?, ?,?, ?, ?, ?)");
+			$statement->bind_param("isissisis", $forumLogin['user']['user_id'], $_POST['name'], $tkid, $forumLogin['user']['email'], $_POST['forumid'], $p501, $_POST['phone'], $squad, $password);
+			$statement->execute();
+			
+			// Last ID
+			$last_id = $conn->insert_id;
 
 			// Set up Squad ID
 			$clubID = count($squadArray) + 1;
@@ -1792,10 +1813,10 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			foreach($clubArray as $club => $club_value)
 			{
 				// If has value
-				if(isset($_POST[$club_value['db3']]) && (cleanInput($_POST[$club_value['db3']]) != "" || cleanInput($_POST[$club_value['db3']]) > 0))
+				if(isset($_POST[$club_value['db3']]) && ($_POST[$club_value['db3']] != "" || $_POST[$club_value['db3']] > 0))
 				{
 					// Change value
-					${$club_value['db']} = cleanInput($_POST['accountType']);
+					${$club_value['db']} = $_POST['accountType'];
 				}
 				else
 				{
@@ -1808,35 +1829,30 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 				}
 
 				// Make member of club
-				if($clubID == cleanInput($_POST['squad']))
+				if($clubID == $_POST['squad'])
 				{
 					// Change value
-					${$club_value['db']} = cleanInput($_POST['accountType']);
+					${$club_value['db']} = $_POST['accountType'];
 				}
 
 				// Club membership DB value set
 				if($club_value['db'] != "")
 				{
-					$addToQuery3 .= "".$club_value['db'].", ";
-					$addToQuery4 .= "'".${$club_value['db']}."', ";
+					$statement = $conn->prepare("UPDATE troopers SET " . $club_value['db'] . " = ? WHERE id = ?");
+					$statement->bind_param("si", ${$club_value['db']}, $last_id);
+					$statement->execute();
 				}
 
 				// If Club membership DB member identifer set
 				if($club_value['db3'] != "")
 				{
-					// Add to query
-					$addToQuery1 .= "".$club_value['db3'].", ";
-					$addToQuery2 .= "'".cleanInput($_POST[$club_value['db3']])."', ";
+					$statement = $conn->prepare("UPDATE troopers SET " . $club_value['db3'] . " = ? WHERE id = ?");
+					$statement->bind_param("si", $_POST[$club_value['db3']], $last_id);
+					$statement->execute();
 				}
 
 				$clubID++;
 			}
-			
-			// Insert
-			$conn->query("INSERT INTO troopers (user_id, name, tkid, email, forum_id, ".$addToQuery1."p501,".$addToQuery3."phone, squad, password) VALUES ('".$forumLogin['user']['user_id']."', '".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".$forumLogin['user']['email']."', '".cleanInput($_POST['forumid'])."',".$addToQuery2."'".$p501."',".$addToQuery4."'".cleanInput($_POST['phone'])."', '".$squad."', '".password_hash($_POST['forumpassword'], PASSWORD_DEFAULT)."')");
-			
-			// Last ID
-			$last_id = $conn->insert_id;
 			
 			echo '<li>Request submitted! You will receive an e-mail when your request is approved or denied.</li>';
 		}
