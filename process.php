@@ -1702,8 +1702,6 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 		$statement->execute();
 		$statement->store_result();
 		$forumcheck = $statement->num_rows;
-
-		error_log($forumcheck);
 		
 		// Check if 501st forum exists
 		if($forumcheck > 0)
