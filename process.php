@@ -1877,9 +1877,11 @@ if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin(
 	$message2 = "";
 
 	// Load event sign up in roster
-	$query = "SELECT * FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['eventid'])."' AND id = ".cleanInput($_POST['signid'])."";
+	$statement = $conn->prepare("SELECT * FROM event_sign_up WHERE trooperid = ? AND troopid = ? AND id = ?");
+	$statement->bind_param("iii", $_POST['trooperid'], $_POST['eventid'], $_POST['signid']);
+	$statement->execute();
 
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -1887,7 +1889,9 @@ if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin(
 			if($db->status == 0)
 			{
 				// Set to not picked
-				$conn->query("UPDATE event_sign_up SET status = '6' WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['eventid'])."' AND id = ".cleanInput($_POST['signid'])."");
+				$statement = $conn->prepare("UPDATE event_sign_up SET status = '6' WHERE trooperid = ? AND troopid = ? AND id = ?");
+				$statement->bind_param("iii", $_POST['trooperid'], $_POST['eventid'], $_POST['signid']);
+				$statement->execute();
 
 				// Set return data
 				$message = '
@@ -1920,7 +1924,9 @@ if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin(
 				}
 
 				// Set to not picked
-				$conn->query("UPDATE event_sign_up SET status = '".$status."' WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['eventid'])."' AND id = ".cleanInput($_POST['signid'])."");
+				$statement = $conn->prepare("UPDATE event_sign_up SET status = ? WHERE trooperid = ? AND troopid = ? AND id = ?");
+				$statement->bind_param("iiii", $status, $_POST['trooperid'], $_POST['eventid'], $_POST['signid']);
+				$statement->execute();
 
 				// Set return data
 				$message = '
@@ -1932,7 +1938,9 @@ if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin(
 			else if($db->status == 6)
 			{
 				// Set to going
-				$conn->query("UPDATE event_sign_up SET status = '0' WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['eventid'])."' AND id = ".cleanInput($_POST['signid'])."");
+				$statement = $conn->prepare("UPDATE event_sign_up SET status = '0' WHERE trooperid = ? AND troopid = ? AND id = ?");
+				$statement->bind_param("iii", $_POST['trooperid'], $_POST['eventid'], $_POST['signid']);
+				$statement->execute();
 
 				// Set return data
 				$message = '
