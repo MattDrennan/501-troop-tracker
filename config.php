@@ -4876,7 +4876,7 @@ function cleanInput($value)
 */
 function readInput($value)
 {
-	$value = strip_tags(html_entity_decode(htmlspecialchars_decode($value), ENT_QUOTES));
+	//$value = strip_tags(html_entity_decode(htmlspecialchars_decode($value), ENT_QUOTES));
 
 	return $value;
 }
