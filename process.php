@@ -1984,9 +1984,10 @@ if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin(
 // Edit Settings
 if(isset($_GET['do']) && $_GET['do'] == "changesettings" && loggedIn() && isAdmin())
 {
-	$query = "SELECT * FROM settings LIMIT 1";
+	$statement = $conn->prepare("SELECT * FROM settings LIMIT 1");
+	$statement->execute();
 	
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -1997,12 +1998,15 @@ if(isset($_GET['do']) && $_GET['do'] == "changesettings" && loggedIn() && isAdmi
 				if($db->siteclosed == 0)
 				{
 					// Close website button
-					$conn->query("UPDATE settings SET siteclosed = '1', sitemessage = '".cleanInput($_POST['sitemessage'])."'");
+					$statement = $conn->prepare("UPDATE settings SET siteclosed = '1', sitemessage = ?");
+					$statement->bind_param("s", $_POST['sitemessage']);
+					$statement->execute();
 				}
 				else
 				{
 					// Open website button
-					$conn->query("UPDATE settings SET siteclosed = '0', sitemessage = NULL");
+					$statement = $conn->prepare("UPDATE settings SET siteclosed = '0', sitemessage = NULL");
+					$statement->execute();
 				}
 			}
 			
@@ -2013,12 +2017,14 @@ if(isset($_GET['do']) && $_GET['do'] == "changesettings" && loggedIn() && isAdmi
 				if($db->signupclosed == 0)
 				{
 					// Close sign up button
-					$conn->query("UPDATE settings SET signupclosed = '1'");
+					$statement = $conn->prepare("UPDATE settings SET signupclosed = '1'");
+					$statement->execute();
 				}
 				else
 				{
 					// Open sign up button
-					$conn->query("UPDATE settings SET signupclosed = '0'");
+					$statement = $conn->prepare("UPDATE settings SET signupclosed = '0'");
+					$statement->execute();
 				}
 			}
 			
@@ -2036,7 +2042,9 @@ if(isset($_GET['do']) && $_GET['do'] == "changesettings" && loggedIn() && isAdmi
 				if($_POST['supportgoal'] != "" && is_numeric($_POST['supportgoal']))
 				{
 					// Query
-					$conn->query("UPDATE settings SET supportgoal = '".cleanInput($_POST['supportgoal'])."'");
+					$statement = $conn->prepare("UPDATE settings SET supportgoal = ?");
+					$statement->bind_param("i", $_POST['supportgoal']);
+					$statement->execute();
 				}
 			}
 		}
