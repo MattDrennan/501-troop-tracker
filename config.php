@@ -4882,6 +4882,48 @@ function readInput($value)
 }
 
 /**
+ * Inserts a new event into the database
+ *
+ * @param string $name Name of the event
+ * @param string $venue Name of the venue
+ * @param string $dateStart Date and time the event starts
+ * @param string $dateEnd Date and time the event ends
+ * @param string $website URL of the website for event
+ * @param int $numberOfAttend Projected number of attending public
+ * @param int $requestedNumber Requested number of troopers
+ * @param string $requestedCharacter The types of characters requested
+ * @param int $secureChanging If there is secure changing
+ * @param int $blasters If blasters are allowed
+ * @param int $lightsabers If lightsabers are allowed
+ * @param int $parking If parking is available
+ * @param int $mobility If event has handicap access
+ * @param string $amenities Types of amenities offered
+ * @param string $referred Who referred the event
+ * @param string $poc Point of contact for event
+ * @param string $comments Describe the event
+ * @param string $location Address of the event
+ * @param string $label Type of event
+ * @param int $limitedEvent If event is limited and needs command staff to pick each trooper
+ * @param int $limit501st Limit number of 501st troopers (500 = do not limit)
+ * @param int $limitTotalTroopers Limit number of total troopers (500 = do not limit)
+ * @param int $limitHandlers Limit number of total handlers (500 = no not limit)
+ * @param int $friendLimit Max number of friends a trooper can add to an event
+ * @param int $allowTentative Set whether a trooper can set their status as tentative
+ * @param int $squad Value for squad location
+ * @return int return Last inserted ID
+*/
+function createEvent($name, $venue, $dateStart, $dateEnd, $website, $numberOfAttend, $requestedNumber, $requestedCharacter, $secureChanging, $blasters, $lightsabers, $parking, $mobility, $amenities, $referred, $poc, $comments, $location, $label, $limitedEvent, $limit501st, $limitTotalTroopers, $limitHandlers, $friendLimit, $allowTentative, $squad)
+{
+	global $conn;
+
+	$statement = $conn->prepare("INSERT INTO events (name, venue, dateStart, dateEnd, website, numberOfAttend, requestedNumber, requestedCharacter, secureChanging, blasters, lightsabers, parking, mobility, amenities, referred, poc, comments, location, label, limitedEvent, limit501st, limitTotalTroopers, limitHandlers, friendLimit, allowTentative, squad) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	$statement->bind_param("sssssiisiiiiissssssiiiiiii", $name, $venue, $dateStart, $dateEnd, $website, $numberOfAttend, $requestedNumber, $requestedCharacter, $secureChanging, $blasters, $lightsabers, $parking, $mobility, $amenities, $referred, $poc, $comments, $location, $label, $limitedEvent, $limit501st, $limitTotalTroopers, $limitHandlers, $friendLimit, $allowTentative, $squad);
+	$statement->execute();
+
+	return $conn->insert_id;
+}
+
+/**
  * Send's an e-mail if trooper is subscribed to an event
  *
  * @param int $troopid Event ID of the troop

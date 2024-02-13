@@ -2061,32 +2061,28 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 		if($_POST['eventName'] != "" && $_POST['eventVenue'] != "" && $_POST['location'] != "" && $_POST['dateStart'] != "" && $_POST['dateEnd'] != "" && $_POST['numberOfAttend'] != "" && $_POST['requestedNumber'] != "" && $_POST['secure'] != "" && $_POST['blasters'] != "" && $_POST['lightsabers'] != "" && $_POST['parking'] != "null" && $_POST['mobility'] != "null" && $_POST['label'] != "null" && $_POST['limitedEvent'] != "null")
 		{
 			// Clean date input
-			$date1 = date('Y-m-d H:i:s', strtotime(cleanInput($_POST['dateStart'])));
-			$date2 = date('Y-m-d H:i:s', strtotime(cleanInput($_POST['dateEnd'])));
-
-			// Set up add to query
-			$addToQuery1 = "";
-			$addToQuery2 = "";
+			$date1 = date('Y-m-d H:i:s', strtotime($_POST['dateStart']));
+			$date2 = date('Y-m-d H:i:s', strtotime($_POST['dateEnd']));
+			
+			// Create event and grab last inserted event ID
+			$eventId = createEvent($_POST['eventName'], $_POST['eventVenue'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['referred'], $_POST['poc'], $_POST['comments'], $_POST['location'], $_POST['label'], $_POST['limitedEvent'], $_POST['limit501st'], $_POST['limitTotalTroopers'], $_POST['limitHandlers'], $_POST['friendLimit'], $_POST['allowTentative'], $_POST['squadm']);
 
 			// Loop through clubs
 			foreach($clubArray as $club => $club_value)
 			{
-				// Add
-				$addToQuery1 .= "".$club_value['dbLimit'].", ";
-				$addToQuery2 .= "'".cleanInput($_POST[$club_value['dbLimit']])."', ";
+				// Update limits for each club
+				$statement = $conn->prepare("UPDATE events SET " . $club_value['dbLimit'] . " = ? WHERE id = ?");
+				$statement->bind_param("ii", $_POST[$club_value['dbLimit']], $eventId);
+				$statement->execute();
 			}
-			
-			// Query the database
-			$conn->query("INSERT INTO events (name, venue, dateStart, dateEnd, website, numberOfAttend, requestedNumber, requestedCharacter, secureChanging, blasters, lightsabers, parking, mobility, amenities, referred, poc, comments, location, label, limitedEvent, limit501st, limitTotalTroopers, limitHandlers, friendLimit, allowTentative, ".$addToQuery1."squad) VALUES ('".cleanInput($_POST['eventName'])."', '".cleanInput($_POST['eventVenue'])."', '".cleanInput($date1)."', '".cleanInput($date2)."', '".cleanInput($_POST['website'])."', '".cleanInput($_POST['numberOfAttend'])."', '".cleanInput($_POST['requestedNumber'])."', '".cleanInput($_POST['requestedCharacter'])."', '".cleanInput($_POST['secure'])."', '".cleanInput($_POST['blasters'])."', '".cleanInput($_POST['lightsabers'])."', '".cleanInput($_POST['parking'])."', '".cleanInput($_POST['mobility'])."', '".cleanInput($_POST['amenities'])."', '".cleanInput($_POST['referred'])."', '".cleanInput($_POST['poc'])."', '".cleanInput($_POST['comments'])."', '".cleanInput($_POST['location'])."', '".cleanInput($_POST['label'])."', '".cleanInput($_POST['limitedEvent'])."', '".cleanInput($_POST['limit501st'])."', '".cleanInput($_POST['limitTotalTroopers'])."', '".cleanInput($_POST['limitHandlers'])."', '".cleanInput($_POST['friendLimit'])."', '".cleanInput($_POST['allowTentative'])."', ".$addToQuery2."'".cleanInput($_POST['squadm'])."')") or die(error_log($conn->error));
-			
-			// Event ID - Last insert from database
-			$eventId = $conn->insert_id;
 
 			// Only notify if event is in the future
 			if(strtotime($date1) > strtotime("now"))
 			{
 				// Send to database to send out notifictions later
-				$conn->query("INSERT INTO notification_check (troopid) VALUES ($eventId)");
+				$statement = $conn->prepare("INSERT INTO notification_check (troopid) VALUES (?)");
+				$statement->bind_param("i", $eventId);
+				$statement->execute();
 			}
 
 			// Check if is shift event
@@ -2102,32 +2098,26 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 					$pair = $value;
 					
 					// Verify there is a value in both dates before inserting data
-					if(cleanInput($_POST['adddateStart' . $pair]) != "" && cleanInput($_POST['adddateEnd' . $pair]) != "")
+					if($_POST['adddateStart' . $pair] != "" && $_POST['adddateEnd' . $pair] != "")
 					{
 						// Set shift event
 						$isShift = true;
 					
 						// Clean date input
-						$date1 = date('Y-m-d H:i:s', strtotime(cleanInput($_POST['adddateStart' . $pair])));
-						$date2 = date('Y-m-d H:i:s', strtotime(cleanInput($_POST['adddateEnd' . $pair])));
+						$date1 = date('Y-m-d H:i:s', strtotime($_POST['adddateStart' . $pair]));
+						$date2 = date('Y-m-d H:i:s', strtotime($_POST['adddateEnd' . $pair]));
 
-						// Set up add to query
-						$addToQuery1 = "";
-						$addToQuery2 = "";
+						// Create event and grab last inserted event ID
+						$last_id = createEvent($_POST['eventName'], $_POST['eventVenue'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['referred'], $_POST['poc'], $_POST['comments'], $_POST['location'], $_POST['label'], $_POST['limitedEvent'], $_POST['limit501st'], $_POST['limitTotalTroopers'], $_POST['limitHandlers'], $_POST['friendLimit'], $_POST['allowTentative'], $_POST['squadm']);
 
 						// Loop through clubs
 						foreach($clubArray as $club => $club_value)
 						{
-							// Add
-							$addToQuery1 .= "".$club_value['dbLimit'].", ";
-							$addToQuery2 .= "'".cleanInput($_POST[$club_value['dbLimit']])."', ";
+							// Update limits for each club
+							$statement = $conn->prepare("UPDATE events SET " . $club_value['dbLimit'] . " = ? WHERE id = ?");
+							$statement->bind_param("ii", $_POST[$club_value['dbLimit']], $last_id);
+							$statement->execute();
 						}
-					
-						// Query the database
-						$conn->query("INSERT INTO events (name, venue, dateStart, dateEnd, website, numberOfAttend, requestedNumber, requestedCharacter, secureChanging, blasters, lightsabers, parking, mobility, amenities, referred, poc, comments, location, label, limitedEvent, limit501st, limitTotalTroopers, limitHandlers, friendLimit, allowTentative, ".$addToQuery1."squad, link) VALUES ('".cleanInput($_POST['eventName'])."', '".cleanInput($_POST['eventVenue'])."', '".$date1."', '".$date2."', '".cleanInput($_POST['website'])."', '".cleanInput($_POST['numberOfAttend'])."', '".cleanInput($_POST['requestedNumber'])."', '".cleanInput($_POST['requestedCharacter'])."', '".cleanInput($_POST['secure'])."', '".cleanInput($_POST['blasters'])."', '".cleanInput($_POST['lightsabers'])."', '".cleanInput($_POST['parking'])."', '".cleanInput($_POST['mobility'])."', '".cleanInput($_POST['amenities'])."', '".cleanInput($_POST['referred'])."', '".cleanInput($_POST['poc'])."', '".cleanInput($_POST['comments'])."', '".cleanInput($_POST['location'])."', '".cleanInput($_POST['label'])."', '".cleanInput($_POST['limitedEvent'])."', '".cleanInput($_POST['limit501st'])."', '".cleanInput($_POST['limitTotalTroopers'])."', '".cleanInput($_POST['limitHandlers'])."', '".cleanInput($_POST['friendLimit'])."', '".cleanInput($_POST['allowTentative'])."', ".$addToQuery2."'".cleanInput($_POST['squadm'])."', '".$eventId."')");
-
-						// Last ID
-						$last_id = $conn->insert_id;
 
 						// Only create thread if we can and admin allows
 						if($_POST['postToBoards'] == 1 && ($_POST['squadm'] != 0 || $_POST['label'] == 7 || $_POST['label'] == 4 || $_POST['label'] == 3))
@@ -2160,16 +2150,18 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 							$thread = createThread($forumCat, date("m/d/y h:i A", strtotime($date1)) . " - " . date("h:i A", strtotime($date2)) . " " . $_POST['eventName'], $thread_body, getUserID($_SESSION['id']));
 
 							// Update event
-							$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."', post_id = '".$thread['thread']['last_post_id']."' WHERE id = '".$last_id."'");
+							$statement = $conn->prepare("UPDATE events SET thread_id = ?, post_id = ? WHERE id = ?");
+							$statement->bind_param("iii", $thread['thread']['thread_id'], $thread['thread']['last_post_id'], $last_id);
+							$statement->execute();
 						}
 
 						// Send notification to command staff
-						sendNotification(getName($_SESSION['id']) . " has added an event: [" . $last_id . "][" . cleanInput($_POST['eventName']) . "]", cleanInput($_SESSION['id']), 13, convertDataToJSON("SELECT * FROM events WHERE id = '".$last_id."'"));
+						sendNotification(getName($_SESSION['id']) . " has added an event: [" . $last_id . "][" . $_POST['eventName'] . "]", $_SESSION['id'], 13, convertDataToJSON("SELECT * FROM events WHERE id = '".$last_id."'"));
 					}
 				}
 			}
 
-			// Only create thread if we can and admin allows
+			// Only create thread if we can and admin allows (single event)
 			if($_POST['postToBoards'] == 1 && ($_POST['squadm'] != 0 || $_POST['label'] == 7 || $_POST['label'] == 4 || $_POST['label'] == 3))
 			{
 				// Make thread body
@@ -2202,8 +2194,8 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 				// Change date based on event type
 				if($isShift) {
 					// Fix where wrong date would be posted on forum
-					$date1 = date('Y-m-d H:i:s', strtotime(cleanInput($_POST['dateStart'])));
-					$date2 = date('Y-m-d H:i:s', strtotime(cleanInput($_POST['dateEnd'])));
+					$date1 = date('Y-m-d H:i:s', strtotime($_POST['dateStart']));
+					$date2 = date('Y-m-d H:i:s', strtotime($_POST['dateEnd']));
 					
 					// Set up title
 					$title = date("m/d/y h:i A", strtotime($date1)) . " - " . date("h:i A", strtotime($date2)) . " " . $_POST['eventName'];
@@ -2216,12 +2208,14 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 				if(isset($thread['thread']['thread_id']))
 				{
 					// Update event with thread and post IDs
-					$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."', post_id = '".$thread['thread']['last_post_id']."' WHERE id = '".$eventId."'");
+					$statement = $conn->prepare("UPDATE events SET thread_id = ?, post_id = ? WHERE id = ?");
+					$statement->bind_param("iii", $thread['thread']['thread_id'], $thread['thread']['last_post_id'], $eventId);
+					$statement->execute();
 				}
 			}
 
 			// Send notification to command staff
-			sendNotification(getName($_SESSION['id']) . " has added an event: [" . $eventId . "][" . cleanInput($_POST['eventName']) . "]", cleanInput($_SESSION['id']), 13, convertDataToJSON("SELECT * FROM events WHERE id = '".$eventId."'"));
+			sendNotification(getName($_SESSION['id']) . " has added an event: [" . $eventId . "][" . $_POST['eventName'] . "]", $_SESSION['id'], 13, convertDataToJSON("SELECT * FROM events WHERE id = '".$eventId."'"));
 
 			$array = array('success' => 'success', 'data' => 'Event created!', 'eventid' => $eventId);
 			echo json_encode($array);
