@@ -2923,13 +2923,18 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				foreach($clubArray as $club => $club_value)
 				{
 					$statement = $conn->prepare("UPDATE events SET " . $club_value['dbLimit'] . " = ? WHERE id = ?");
-					$statement->bind_param("iiii", $_POST[$club_value['dbLimit']], $_POST['eventIdE']);
+					$statement->bind_param("ii", $_POST[$club_value['dbLimit']], $_POST['eventIdE']);
 					$statement->execute();
 				}
 				
 				// Query the database - if not linked
 				$statement = $conn->prepare("UPDATE events SET name = ?, venue =  ?, website = ?, numberOfAttend = ?, requestedNumber = ?, requestedCharacter = ?, secureChanging = ?, blasters = ?, lightsabers = ?, parking = ?, mobility = ?, amenities = ?, referred = ?, poc = ?, comments = ?, location = ?, squad = ?, label = ?, limitedEvent = ?, limit501st = ?, limitTotalTroopers = ?, limitHandlers = ?, friendLimit = ?, allowTentative = ? WHERE id = ?");
-				$statement->bind_param("sssiisiiiiisssssisiiiiiiiii", $_POST['eventName'], $_POST['eventVenue'], $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['referred'], $_POST['poc'], $_POST['comments'], $_POST['location'], $_POST['squadm'], $_POST['label'], $_POST['limitedEvent'], $_POST['limit501st'], $_POST['limitTotalTroopers'], $_POST['limitHandlers'], $_POST['friendLimit'], $_POST['allowTentative'], $_POST['eventIdE']);
+				$statement->bind_param("sssiisiiiiisssssisiiiiiii", $_POST['eventName'], $_POST['eventVenue'], $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['referred'], $_POST['poc'], $_POST['comments'], $_POST['location'], $_POST['squadm'], $_POST['label'], $_POST['limitedEvent'], $_POST['limit501st'], $_POST['limitTotalTroopers'], $_POST['limitHandlers'], $_POST['friendLimit'], $_POST['allowTentative'], $_POST['eventIdE']);
+				$statement->execute();
+
+				// Update date
+				$statement = $conn->prepare("UPDATE events SET dateStart = ?, dateEnd = ? WHERE id = ?");
+				$statement->bind_param("ssi", $date1, $date2, $_POST['eventIdE']);
 				$statement->execute();
 
 				// Update if limited event
