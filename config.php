@@ -2745,7 +2745,7 @@ function sendNotification($message, $trooperid, $type = 0, $json = "")
 {
 	global $conn;
 	
-	$conn->query("INSERT INTO notifications (message, trooperid, type, json) VALUES ('".$message."', '".$trooperid."', '".$type."', '".$json."')");
+	$conn->query("INSERT INTO notifications (message, trooperid, type, json) VALUES ('".cleanInput($message)."', '".$trooperid."', '".$type."', '".cleanInput($json)."')");
 }
 
 /**

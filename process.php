@@ -2996,7 +2996,30 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			// For updating title, send date back
 			$newDate = "[" . date("l", strtotime($date1)) . " : " . date("m/d - h:i A", strtotime($date1)) . " - " . date("h:i A", strtotime($date2)) . "] ";
 
-			$array = array('success' => 'true', 'data' => 'Event has been updated!', 'newdate' => $newDate);
+			// Reload events - return data
+			$returnData = "";
+
+			$statement = $conn->prepare("SELECT * FROM events ORDER BY dateStart DESC LIMIT 500");
+			$statement->execute();
+
+			if ($result = $statement->get_result())
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					// Set up string to add to title if a linked event
+					$add = "";
+					
+					// If this a linked event?
+					if(isLink($db->id) > 0)
+					{
+						$add .= "[" . date("l", strtotime($db->dateStart)) . " : " . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "] ";
+					}
+
+					$returnData .= '<option value="'.$db->id.'" link="'.isLink($db->id).'" '.echoSelect($db->id, cleanInput($_POST['eventIdE'])).'>'.$add.''.$db->name.'</option>';
+				}
+			}
+
+			$array = array('success' => 'true', 'data' => 'Event has been updated!', 'returnData' => $returnData);
 			echo json_encode($array);
 		}
 		else

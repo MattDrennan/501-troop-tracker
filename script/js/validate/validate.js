@@ -315,25 +315,14 @@ $(function()
                         $("#limitChange").text("Change Limits");
                         $("[name=smileyarea]").html("");
 
-                        // Is linked event
-                        if($("#eventId option:selected").attr("link") != 0)
-                        {
-                            // Fix text when changing the title
-                            $("#eventId option:selected").text(json.newdate + $("#eventName").val());
-                        }
-                        else
-                        {
-                            // Fix text when changing the title
-                            $("#eventId option:selected").text($("#eventName").val());
+                        // Populate select with events
+                        $("#editEvents select").html(json.returnData);
+
+                        if(json.returnData == "") {
+                             $("#editEvents").html("No events to display.");
                         }
 
                         $("#eventId").select2();
-						
-						// Remove all shift boxes
-						$("div[name*='pair']").each(function()
-						{
-							$(this).remove();
-						});
 
                         // Alert to success
                         alert(json.data);
