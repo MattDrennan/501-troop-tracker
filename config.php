@@ -743,16 +743,24 @@ function countDonations($trooperid = "*", $dateStart = "1900-12-1", $dateEnd = "
 	if($trooperid != "*")
 	{
 		// Trooper ID specified
-		$getNumOfDonators = $conn->query("SELECT * FROM donations WHERE trooperid = ".$trooperid." AND datetime > '".$dateStart."' AND datetime < '".$dateEnd."'");
+		$statement = $conn->prepare("SELECT * FROM donations WHERE trooperid = ? AND datetime > ? AND datetime < ?");
+		$statement->bind_param("iss", $trooperid, $dateStart, $dateEnd);
+		$statement->execute();
+		$statement->store_result();
+		$getNumOfDonators = $statement->num_rows;
 	}
 	else
 	{
 		// Trooper ID not specified - wild card
-		$getNumOfDonators = $conn->query("SELECT * FROM donations WHERE datetime > '".$dateStart."' AND datetime < '".$dateEnd."'");
+		$statement = $conn->prepare("SELECT * FROM donations WHERE datetime > ? AND datetime < ?");
+		$statement->bind_param("ss", $dateStart, $dateEnd);
+		$statement->execute();
+		$statement->store_result();
+		$getNumOfDonators = $statement->num_rows;
 	}
 	
 	// Return rows
-	return $getNumOfDonators->num_rows;
+	return $getNumOfDonators;
 }
 
 /**
