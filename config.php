@@ -4905,7 +4905,7 @@ function isSignUpClosed()
 }
 
 /**
- * Returns if the TKID exists
+ * Returns if the TKID exists (NOTE: This is compatiable with 501st and Rebel Legion due to both clubs combining Troop Tracker data)
  *
  * @param int $tk The TKID of the trooper
  * @param int $squad The squad or club ID of the trooper
@@ -4936,7 +4936,7 @@ function doesTKExist($tk, $squad = 0)
 	else
 	{
 		// If a club
-		$statement = $conn->prepare("SELECT * FROM troopers WHERE tkid = ? AND squad = ?");
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE rebelforum = ? AND squad = ?");
 		$statement->bind_param("ii", $tkid, $squad);
 		$statement->execute();
 
@@ -4953,7 +4953,7 @@ function doesTKExist($tk, $squad = 0)
 }
 
 /**
- * Returns if the TKID is registered
+ * Returns if the TKID is registered (NOTE: This is compatiable with 501st and Rebel Legion due to both clubs combining Troop Tracker data)
  *
  * @param int $tk The TKID of the trooper
  * @param int $squad The squad or club ID of the trooper
@@ -4965,25 +4965,40 @@ function isTKRegistered($tk, $squad = 0)
 	
 	// Set up variables
 	$registered = false;
-	
+
 	// If a 501st squad
 	if($squad <= count($squadArray))
 	{
-		$query = "SELECT * FROM troopers WHERE tkid = '".$tk."' AND squad <= ".count($squadArray)."";
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE tkid = ? AND squad <= ".count($squadArray)."");
+		$statement->bind_param("i", $tkid);
+		$statement->execute();
+
+		if ($result = $statement->get_result())
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				if($db->password != '')
+				{
+					$registered = true;
+				}
+			}
+		}
 	}
 	else
 	{
 		// If a club
-		$query = "SELECT * FROM troopers WHERE rebelforum = '".$tk."' AND squad = ".$squad."";
-	}
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE rebelforum = ? AND squad = ?");
+		$statement->bind_param("ii", $tkid, $squad);
+		$statement->execute();
 
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
+		if ($result = $statement->get_result())
 		{
-			if($db->password != '')
+			while ($db = mysqli_fetch_object($result))
 			{
-				$registered = true;
+				if($db->password != '')
+				{
+					$registered = true;
+				}
 			}
 		}
 	}
