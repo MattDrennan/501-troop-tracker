@@ -5305,15 +5305,20 @@ function handlerEventCount($eventID)
 	$total = 0;
 
 	// Query database for roster info
-	$query = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid LEFT JOIN costumes ON costumes.id = event_sign_up.costume WHERE troopid = '".$eventID."' AND (event_sign_up.status = 0 OR event_sign_up.status = 2) AND costumes.costume LIKE '%handler%'";
+	$statement = $conn->prepare("SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid LEFT JOIN costumes ON costumes.id = event_sign_up.costume WHERE troopid = ? AND (event_sign_up.status = 0 OR event_sign_up.status = 2) AND costumes.costume LIKE '%handler%'");
+	$statement->bind_param("i", $eventID);
+	$statement->execute();
 
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
 			// Query costume database to add to club counts
-			$query2 = "SELECT * FROM costumes WHERE id = '".$db->costume."'";
-			if ($result2 = mysqli_query($conn, $query2))
+			$statement2 = $conn->prepare("SELECT * FROM costumes WHERE id = ?");
+			$statement2->bind_param("i", $db->costume);
+			$statement2->execute();
+
+			if ($result2 = $statement2->get_result())
 			{
 				while ($db2 = mysqli_fetch_object($result2))
 				{
