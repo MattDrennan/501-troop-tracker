@@ -2977,9 +2977,12 @@ function myTheme()
 function getEventTitle($id, $link = false)
 {
 	global $conn;
+
+	$statement = $conn->prepare("SELECT * FROM events WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
 	
-	$query = "SELECT * FROM events WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -3004,15 +3007,15 @@ function getEventTitle($id, $link = false)
 function getEventThreadID($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM events WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->thread_id;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT thread_id FROM events WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
