@@ -4658,9 +4658,12 @@ function mainCostumesBuild($trooperid)
 	global $conn;
 	
 	$returnQuery = "";
+
+	$statement = $conn->prepare("SELECT * FROM favorite_costumes WHERE trooperid = ?");
+	$statement->bind_param("i", $trooperid);
+	$statement->execute();
 	
-	$query = "SELECT * FROM favorite_costumes WHERE trooperid = '".$trooperid."'";
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -4686,7 +4689,10 @@ function isAdmin()
 	
 	if(isset($_SESSION['id']))
 	{
-		$query = "SELECT * FROM troopers WHERE id='".$_SESSION['id']."'";
+		$statement = $conn->prepare("SELECT permissions FROM troopers WHERE id = ?");
+		$statement->bind_param("i", $_SESSION['id']);
+		$statement->execute();
+
 		if ($result = mysqli_query($conn, $query))
 		{
 			while ($db = mysqli_fetch_object($result))
