@@ -3642,19 +3642,17 @@ function formatPhoneNumber($phoneNumber)
 function profileExist($id)
 {
 	global $conn;
-	
+
 	// Set up return var
 	$doesExist = false;
-	
-	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			// Found
-			$doesExist = true;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT id FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->store_result();
+	$doesExist = $statement->num_rows;
+
+	if($doesExist > 0) { $doesExist = true; }
 	
 	// Return
 	return $doesExist;
