@@ -3241,15 +3241,15 @@ function getTrooperSquad($id)
 function getTrooperForum($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM troopers WHERE id='".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->forum_id;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT forum_id FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
@@ -3261,15 +3261,15 @@ function getTrooperForum($id)
 function getCostumeClub($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM costumes WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->club;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT club FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
