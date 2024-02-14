@@ -3086,13 +3086,19 @@ function readTKNumber($tkid, $squad)
 			$prefix = "TK";
 			
 			// Get TK prefix from database
-			$getPrefix = $conn->query("SELECT prefix FROM 501st_costumes WHERE legionid = '".$tkid."' LIMIT 1");
-			$getPrefix_value = $getPrefix->fetch_row();
+			$statement = $conn->prepare("SELECT prefix FROM 501st_costumes WHERE legionid = ? LIMIT 1");
+			$statement->bind_param("i", $tkid);
+			$statement->execute();
+			$statement->bind_result($getPrefix_value);
+			$statement->fetch();
+			$statement->close();
+
+			return $value;
 			
 			// Make sure TK prefix was found
-			if(isset($getPrefix_value[0]) && $getPrefix_value[0] != "")
+			if(isset($getPrefix_value) && $getPrefix_value != "")
 			{
-				$prefix = $getPrefix_value[0];
+				$prefix = $getPrefix_value;
 			}
 			
 			$tkid = $prefix . $tkid;
