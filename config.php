@@ -4726,9 +4726,11 @@ function hasPermission($permissionLevel1, $permissionLevel2 = -1, $permissionLev
 	
 	if(isset($_SESSION['id']))
 	{
-		$query = "SELECT * FROM troopers WHERE id='".$_SESSION['id']."'";
+		$statement = $conn->prepare("SELECT permissions FROM troopers WHERE id = ?");
+		$statement->bind_param("i", $_SESSION['id']);
+		$statement->execute();
 
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
