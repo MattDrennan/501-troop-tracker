@@ -14,7 +14,7 @@ include 'config.php';
 if(isset($_GET['do']) && $_GET['do'] == "roster-trooper-confirmation" && loggedIn() && isAdmin())
 {
 	// Prevent changing status
-	if(cleanInput($_POST['status']) != 3 && cleanInput($_POST['status']) != 4) { return false; }
+	if($_POST['status'] != 3 && $_POST['status'] != 4) { return false; }
 
 	// Update trooper sign up
 	$statement = $conn->prepare("UPDATE event_sign_up SET status = ? WHERE id = ?");
@@ -92,7 +92,7 @@ if(isset($_GET['do']) && $_GET['do'] == "savedb3" && isAdmin())
 if(isset($_GET['do']) && $_GET['do'] == "savetkid" && isAdmin())
 {
 	// Check if TKID already exists
-	if(!doesTKExist(cleanInput($_POST['idvalue']), getSquadID(cleanInput($_POST['trooperid']))))
+	if(!doesTKExist($_POST['idvalue'], getSquadID($_POST['trooperid'])))
 	{
 		$statement = $conn->prepare("UPDATE troopers SET tkid = ? WHERE id = ?");
 		$statement->bind_param("si", $_POST['idvalue'], $_POST['trooperid']);
@@ -535,7 +535,7 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	else
 	{
 		// Handler check
-		if(($limitHandlers - handlerEventCount($_POST['troopid'])) <= 0 && $status != 4 && inEvent($_POST['trooperid'], cleanInput($_POST['troopid']))['inTroop'] != 1)
+		if(($limitHandlers - handlerEventCount($_POST['troopid'])) <= 0 && $status != 4 && inEvent($_POST['trooperid'], $_POST['troopid'])['inTroop'] != 1)
 		{
 			// Troop is full, set to stand by
 			$status = 1;
@@ -1532,7 +1532,7 @@ if(isset($_GET['do']) && $_GET['do'] == "changename" && loggedIn())
 	{
 		$failed = false;
 
-		if(cleanInput($_POST['name']) == "")
+		if($_POST['name'] == "")
 		{
 			$failed = true;
 			echo 'Please enter a name.';
@@ -1957,7 +1957,7 @@ if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin(
 				<h3>Admin Trooper Counts</h3>
 				
 				<ul style="display:inline-table;">
-					<li>501st: '.eventClubCount(cleanInput($_POST['eventid']), 0).' </li>';
+					<li>501st: '.eventClubCount($_POST['eventid'], 0).' </li>';
 					
 					// Set up club count
 					$clubID = count($squadArray) + 1;
@@ -1965,7 +1965,7 @@ if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin(
 					// Loop through clubs
 					foreach($clubArray as $club => $club_value)
 					{
-						$message2 .= '<li>' . $club_value['name'] . ': ' . eventClubCount(cleanInput($_POST['eventid']), $clubID) . '</li>';
+						$message2 .= '<li>' . $club_value['name'] . ': ' . eventClubCount($_POST['eventid'], $clubID) . '</li>';
 						
 						// Increment
 						$clubID++;
@@ -3258,8 +3258,6 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 			$statement->execute();
 			
 			// Send to database to send out notifictions later
-			$conn->query("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES ('".cleanInput($_POST['event'])."', '".cleanInput($_SESSION['id'])."', '1')");
-
 			$statement = $conn->prepare("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES (?, ?, '1')");
 			$statement->bind_param("ii", $_POST['event'], $_SESSION['id']);
 			$statement->execute();
