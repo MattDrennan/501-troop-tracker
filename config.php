@@ -811,18 +811,25 @@ function drawSupportGraph()
 	if(loggedIn())
 	{
 		// Count number of troopers supporting
-		$getNumOfSupport = $conn->query("SELECT SUM(amount) FROM donations WHERE datetime > date_add(date_add(LAST_DAY(NOW()),interval 1 DAY),interval -1 MONTH)");
-		$getSupportNum = $getNumOfSupport->fetch_row();
+		$statement = $conn->prepare("SELECT SUM(amount) FROM donations WHERE datetime > date_add(date_add(LAST_DAY(NOW()),interval 1 DAY),interval -1 MONTH)");
+		$statement->execute();
+		$statement->bind_result($getSupportNum);
+		$statement->fetch();
+		$statement->close();
 		
-		// Count times contributed
-		$didSupportCount = $conn->query("SELECT trooperid FROM donations WHERE datetime > date_add(date_add(LAST_DAY(NOW()),interval 1 DAY),interval -1 MONTH) AND trooperid = '".$_SESSION['id']."'");
+		// Count times contribute
+		$statement = $conn->prepare("SELECT trooperid FROM donations WHERE datetime > date_add(date_add(LAST_DAY(NOW()),interval 1 DAY),interval -1 MONTH) AND trooperid = ?");
+		$statement->bind_param("i", $_SESSION['id']);
+		$statement->execute();
+		$statement->store_result();
+		$didSupportCount = $statement->num_rows;
 		
-		// Get goal from site settings
-		$getGoal = $conn->query("SELECT supportgoal FROM settings");
-		$getGoal_value = $getGoal->fetch_row();
-		
-		// Set goal
-		$goal = $getGoal_value[0];
+		// Set goal from site settings
+		$statement = $conn->prepare("SELECT supportgoal FROM settings");
+		$statement->execute();
+		$statement->bind_result($goal);
+		$statement->fetch();
+		$statement->close();
 		
 		// Hide for command staff
 		if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
@@ -835,7 +842,7 @@ function drawSupportGraph()
 		if($goal != 0)
 		{			
 			// Find percent
-			$percent = floor(($getSupportNum[0]/$goal) * 100);
+			$percent = floor(($getSupportNum/$goal) * 100);
 			
 			// Don't allow over 100
 			if($percent > 100)
@@ -885,7 +892,7 @@ function drawSupportGraph()
 			else
 			{
 				// Don't show link if they are a supporter
-				if($didSupportCount->num_rows == 0)
+				if($didSupportCount == 0)
 				{
 					// If not 100%, show learn more
 					if($percent != 100)
