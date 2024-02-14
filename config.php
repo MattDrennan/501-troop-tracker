@@ -600,8 +600,11 @@ function costume_restrict_query($addWhere = false, $friendID = 0, $allowDualCost
 	// 501 member, prepare to add or statement if a dual member
 	$hit = false;
 	
-	$query = "SELECT * FROM troopers WHERE id = '".cleanInput($_SESSION['id'])."'";
-	if ($result = mysqli_query($conn, $query))
+	$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $_SESSION['id']);
+	$statement->execute();
+
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
