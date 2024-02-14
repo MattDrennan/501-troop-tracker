@@ -3328,23 +3328,35 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	if(getTrooperSquad($tkid) <= count($squadArray))
 	{
 		// Get 501st thumbnail Info
-		$thumbnail_get = $conn->query("SELECT thumbnail FROM 501st_troopers WHERE legionid = '".$tkid."'");
-		$thumbnail = $thumbnail_get->fetch_row();
+		$statement = $conn->prepare("SELECT thumbnail FROM 501st_troopers WHERE legionid = ?");
+		$statement->bind_param("i", $tkid);
+		$statement->execute();
+		$statement->bind_result($thumbnail);
+		$statement->fetch();
+		$statement->close();
 	}
 	
 	// Get Rebel Legion thumbnail info
-	$thumbnail_get_rebel = $conn->query("SELECT costumeimage FROM rebel_costumes WHERE rebelid = '".getRebelInfo(getRebelLegionUser(cleanInput($id)))['id']."' LIMIT 1");
-	$thumbnail_rebel = $thumbnail_get_rebel->fetch_row();
+	$statement = $conn->prepare("SELECT costumeimage FROM rebel_costumes WHERE rebelid = ? LIMIT 1");
+	$statement->bind_param("i", getRebelInfo(getRebelLegionUser($id))['id']);
+	$statement->execute();
+	$statement->bind_result($thumbnail_rebel);
+	$statement->fetch();
+	$statement->close();
 	
 	// Get permission type
-	$get_permission = $conn->query("SELECT permissions FROM troopers WHERE id = '".$id."'");
-	$permission = $get_permission->fetch_row();
+	$statement = $conn->prepare("SELECT permissions FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($permission);
+	$statement->fetch();
+	$statement->close();
 	
 	echo '
-	<h2 class="tm-section-header">'.($permission[0] == 3 ? 'In Memoriam...<br />' : '').''.$name.' - '.readTKNumber($tkid, $squad).'</h2>';
+	<h2 class="tm-section-header">'.($permission == 3 ? 'In Memoriam...<br />' : '').''.$name.' - '.readTKNumber($tkid, $squad).'</h2>';
 	
 	// RIP Member
-	if($permission[0] == 3) {
+	if($permission == 3) {
 		echo '
 		<p style="text-align: center;">
 			<b>No one\'s ever really gone - Thank you for your service. The Force will be with you. Always.</b>
@@ -3371,11 +3383,11 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	}
 	
 	// 501
-	if(isset($thumbnail[0]))
+	if(isset($thumbnail))
 	{
 		echo '
 		<p style="text-align: center;">
-			<img src="'.$thumbnail[0].'" />
+			<img src="'.$thumbnail.'" />
 		</p>';
 		
 		// Set
@@ -3383,11 +3395,11 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	}
 	
 	// Rebel
-	if(isset($thumbnail_rebel[0]))
+	if(isset($thumbnail_rebel))
 	{
 		echo '
 		<p style="text-align: center;">
-			<img src="'.str_replace("-A", "sm", $thumbnail_rebel[0]).'" />
+			<img src="'.str_replace("-A", "sm", $thumbnail_rebel).'" />
 		</p>';
 		
 		// Set
@@ -3424,10 +3436,13 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	</div>';
 	
 	// Ranks for members
-	$query2 = "SELECT * FROM troopers WHERE id = '".$id."'";
-	if ($result2 = mysqli_query($conn, $query2))
+	$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+
+	if ($result = $statement->get_result())
 	{
-		while ($db2 = mysqli_fetch_object($result2))
+		while ($db = mysqli_fetch_object($result))
 		{			
 			// Is a 501 member?
 			$is501Member = false;
@@ -3440,7 +3455,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 			
 			// 501
 			// Active
-			if($db2->p501 == 1)
+			if($db->p501 == 1)
 			{
 				echo '
 				<p>
@@ -3450,7 +3465,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 				$is501Member = true;
 			}
 			// Reserve
-			else if($db2->p501 == 2)
+			else if($db->p501 == 2)
 			{
 				echo '
 				<p>
@@ -3460,7 +3475,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 				$is501Member = true;
 			}
 			// Retired
-			else if($db2->p501 == 3)
+			else if($db->p501 == 3)
 			{
 				echo '
 				<p>
@@ -3470,7 +3485,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 				$is501Member = true;
 			}
 			// Handler
-			else if($db2->p501 == 4)
+			else if($db->p501 == 4)
 			{
 				$isHandler = true;
 			}
@@ -3482,7 +3497,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 			foreach($squadArray as $squad => $squad_value)
 			{
 				// Check
-				if($db2->squad == $squadCount)
+				if($db->squad == $squadCount)
 				{
 					echo '
 					<p>
@@ -3498,7 +3513,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 			foreach($clubArray as $club => $club_value)
 			{
 				// Check rank
-				if($db2->{$club_value['db']} == 1)
+				if($db->{$club_value['db']} == 1)
 				{
 					// If blank, don't show
 					if($club_value['rankRegular'] == "") { continue; }
@@ -3508,7 +3523,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 						<img src="images/ranks/'.$club_value['rankRegular'].'" class="rankTitle" />
 					</p>';
 				}
-				else if($db2->{$club_value['db']} == 2)
+				else if($db->{$club_value['db']} == 2)
 				{
 					// If blank, don't show
 					if($club_value['rankReserve'] == "") { continue; }
@@ -3518,7 +3533,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 						<img src="images/ranks/'.$club_value['rankReserve'].'" class="rankTitle" />
 					</p>';
 				}
-				else if($db2->{$club_value['db']} == 3)
+				else if($db->{$club_value['db']} == 3)
 				{
 					// If blank, don't show
 					if($club_value['rankRetired'] == "") { continue; }
@@ -3529,7 +3544,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 					</p>';
 				}
 				// Handler
-				else if($db2->{$club_value['db']} == 4)
+				else if($db->{$club_value['db']} == 4)
 				{
 					$isHandler = true;
 				}
