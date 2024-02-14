@@ -3168,9 +3168,12 @@ function isSquadActive($squad)
 function getTKNumber($id, $read = false)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM troopers WHERE id='".$id."'";
-	if ($result = mysqli_query($conn, $query))
+
+	$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -3197,18 +3200,16 @@ function getIDFromTKNumber($tkid)
 {
 	global $conn, $squadArray;
 
-	$returnVal = 0;
-	
-	$query = "SELECT * FROM troopers WHERE tkid='".$tkid."' AND squad <= ".count($squadArray)."";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			$returnVal = $db->id;
-		}
-	}
-	
-	return $returnVal;
+	$value = 0;
+
+	$statement = $conn->prepare("SELECT id FROM troopers WHERE tkid = ? AND squad <= ".count($squadArray)."");
+	$statement->bind_param("i", $tkid);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
