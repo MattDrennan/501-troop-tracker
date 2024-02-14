@@ -3727,8 +3727,11 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 	'.$roster.'';
 	
 	// Loop through all admin photos
-	$query = "SELECT * FROM uploads WHERE troopid = '".$eventId."' AND admin = '1' ORDER BY date ASC";
-	if ($result = mysqli_query($conn, $query))
+	$statement = $conn->prepare("SELECT * FROM uploads WHERE troopid = ? AND admin = '1' ORDER BY date ASC");
+	$statement->bind_param("i", $eventId);
+	$statement->execute();
+
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
