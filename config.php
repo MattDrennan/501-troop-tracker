@@ -978,16 +978,12 @@ function resetTrooperStatus($eventID, $link = 0)
 	global $conn, $clubArray;
 
 	// Get data
-	$query = "SELECT * FROM events WHERE closed = '0' AND id = '".$eventID."'";
-
-	// If link added, query link event as well
-	if($link > 0)
-	{
-		$query .= " OR link = '".$link."'";
-	}
+	$statement = $conn->prepare("SELECT * FROM events WHERE closed = '0' AND id = ?");
+	$statement->bind_param("i", $eventID);
+	$statement->execute();
 	
 	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -995,10 +991,12 @@ function resetTrooperStatus($eventID, $link = 0)
 			if($db->limit501st > 500 || $db->limit501st < 500)
 			{
 				// Reset event sign up
-				$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')."");
+				$statement = $conn->prepare("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')."");
+				$statement->execute();
 
 				// Update statuses to going if room
-				$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')." ORDER BY signuptime ASC LIMIT " . $db->limit501st);
+				$statement = $conn->prepare("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')." ORDER BY signuptime ASC LIMIT " . $db->limit501st);
+				$statement->execute();
 			}
 
 			// Loop through clubs to check limits
@@ -1007,10 +1005,12 @@ function resetTrooperStatus($eventID, $link = 0)
 				if($db->{$club_value['dbLimit']} > 500 || $db->{$club_value['dbLimit']} < 500)
 				{
 					// Reset event sign up
-					$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')."");
+					$statement = $conn->prepare("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')."");
+					$statement->execute();
 
 					// Update statuses to going if room
-					$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')." ORDER BY signuptime ASC LIMIT " . $db->{$club_value['dbLimit']});
+					$statement = $conn->prepare("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')." ORDER BY signuptime ASC LIMIT " . $db->{$club_value['dbLimit']});
+					$statement->execute();
 				}
 			}
 
@@ -1018,20 +1018,24 @@ function resetTrooperStatus($eventID, $link = 0)
 			if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
 			{
 				// Reset event sign up
-				$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')."");
+				$statement = $conn->prepare("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')."");
+				$statement->execute();
 
 				// Update statuses to going if room
-				$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')." ORDER BY signuptime ASC LIMIT " . $db->limitTotalTroopers);
+				$statement = $conn->prepare("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')." ORDER BY signuptime ASC LIMIT " . $db->limitTotalTroopers);
+				$statement->execute();
 			}
 			
 			// Check handler limit
 			if($db->limitHandlers > 500 || $db->limitHandlers < 500)
 			{
 				// Reset event sign up
-				$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) LIKE '%handler%'");
+				$statement = $conn->prepare("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) LIKE '%handler%'");
+				$statement->execute();
 
 				// Update statuses to going if room
-				$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) LIKE '%handler%' ORDER BY signuptime ASC LIMIT " . $db->limitHandlers);
+				$statement = $conn->prepare("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) LIKE '%handler%' ORDER BY signuptime ASC LIMIT " . $db->limitHandlers);
+				$statement->execute();
 			}
 		}
 	}
