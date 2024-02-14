@@ -3774,15 +3774,15 @@ function timeBetweenDates($datetime1, $datetime2)
 function getUserID($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->user_id;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT user_id FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
@@ -3794,15 +3794,15 @@ function getUserID($id)
 function getIDFromUserID($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM troopers WHERE user_id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->id;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT id FROM troopers WHERE user_id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
@@ -3814,15 +3814,15 @@ function getIDFromUserID($id)
 function getName($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->name;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT name FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
@@ -3834,15 +3834,15 @@ function getName($id)
 function getTrooperAddress($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->address;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT address FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
@@ -3854,15 +3854,15 @@ function getTrooperAddress($id)
 function getTrooperRadius($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->radius;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT radius FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
@@ -3874,15 +3874,15 @@ function getTrooperRadius($id)
 function getEmail($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->email;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT email FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
@@ -3894,15 +3894,15 @@ function getEmail($id)
 function getPhone($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->phone;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT phone FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
@@ -3914,15 +3914,15 @@ function getPhone($id)
 function getSquadID($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->squad;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT squad FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
