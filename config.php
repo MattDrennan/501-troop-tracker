@@ -4803,9 +4803,11 @@ function isClubMember($dbclub)
 	$returnValue = 0;
 	
 	// Check if the trooper is a moderator
-	$query = "SELECT * FROM troopers WHERE id = '".$_SESSION['id']."'";
+	$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
 
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -4826,15 +4828,12 @@ function getSiteMessage()
 	global $conn;
 	
 	$siteMessage = "";
-	
-	$query = "SELECT * FROM settings LIMIT 1";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			$siteMessage = $db->sitemessage;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT sitemessage FROM settings LIMIT 1");
+	$statement->execute();
+	$statement->bind_result($siteMessage);
+	$statement->fetch();
+	$statement->close();
 
 	// Check if site message is blank
 	if($siteMessage != "") {
@@ -4854,9 +4853,11 @@ function isWebsiteClosed()
 	global $conn;
 	
 	$isWebsiteClosed = false;
+
+	$statement = $conn->prepare("SELECT * FROM settings LIMIT 1");
+	$statement->execute();
 	
-	$query = "SELECT * FROM settings LIMIT 1";
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -4886,8 +4887,10 @@ function isSignUpClosed()
 	
 	$isWebsiteClosed = false;
 	
-	$query = "SELECT * FROM settings LIMIT 1";
-	if ($result = mysqli_query($conn, $query))
+	$statement = $conn->prepare("SELECT * FROM settings LIMIT 1");
+	$statement->execute();
+
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
