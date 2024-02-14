@@ -3221,15 +3221,15 @@ function getIDFromTKNumber($tkid)
 function getTrooperSquad($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM troopers WHERE id='".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->squad;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT squad FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
