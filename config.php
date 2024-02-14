@@ -2913,15 +2913,15 @@ function checkTroopCounts($count, $message, $trooperid, $club)
 function myEmail()
 {
 	global $conn;
-	
-	$query = "SELECT email FROM troopers WHERE id='".$_SESSION['id']."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->email;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT email FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $_SESSION['id']);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
