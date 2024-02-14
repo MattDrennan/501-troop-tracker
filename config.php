@@ -4577,18 +4577,18 @@ function ifEmpty($value, $message = "EMPTY")
  * @param int $value ID of costume
  * @return string Returns costume name
 */
-function getCostume($value)
+function getCostume($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM costumes WHERE id = '".$value."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->costume;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT costume FROM costumes WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
