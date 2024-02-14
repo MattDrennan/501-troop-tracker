@@ -4921,19 +4921,31 @@ function doesTKExist($tk, $squad = 0)
 	// If a 501st squad
 	if($squad <= count($squadArray))
 	{
-		$query = "SELECT * FROM troopers WHERE tkid = '".$tk."' AND squad <= ".count($squadArray)."";
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE tkid = ? AND squad <= ".count($squadArray)."");
+		$statement->bind_param("i", $tkid);
+		$statement->execute();
+
+		if ($result = $statement->get_result())
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				$exist = true;
+			}
+		}
 	}
 	else
 	{
 		// If a club
-		$query = "SELECT * FROM troopers WHERE rebelforum = '".$tk."' AND squad = ".$squad."";
-	}
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE tkid = ? AND squad = ?");
+		$statement->bind_param("ii", $tkid, $squad);
+		$statement->execute();
 
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
+		if ($result = $statement->get_result())
 		{
-			$exist = true;
+			while ($db = mysqli_fetch_object($result))
+			{
+				$exist = true;
+			}
 		}
 	}
 
