@@ -777,10 +777,12 @@ function drawSupportBadge($id)
 	$value = "";
 	
 	// Get data
-	$query = "SELECT supporter FROM troopers WHERE id = '".$id."' AND supporter = '1'";
+	$statement = $conn->prepare("SELECT supporter FROM troopers WHERE id = ? AND supporter = '1'");
+	$statement->bind_param("i", $id);
+	$statement->execute();
 	
 	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
