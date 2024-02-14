@@ -3372,7 +3372,9 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmList")
 if(isset($_GET['do']) && $_GET['do'] == "confirmfriend")
 {
 	// Query the database
-	$conn->query("UPDATE event_sign_up SET status = '3' WHERE trooperid = '".cleanInput($_POST['friendid'])."' AND troopid = '".cleanInput($_POST['troopid'])."' AND id = '".cleanInput($_POST['signid'])."' AND addedby = '".$_SESSION['id']."'");
+	$statement = $conn->prepare("UPDATE event_sign_up SET status = '3' WHERE trooperid = ? AND troopid = ? AND id = ? AND addedby = ?");
+	$statement->bind_param("iiii", $_POST['friendid'], $_POST['troopid'], $_POST['signid'], $_SESSION['id']);
+	$statement->execute();
 
 	// Send back AJAX data
 
@@ -3380,9 +3382,11 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmfriend")
 	$dataMain = "";
 
 	// Load events that need confirmation
-	$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.addedby, event_sign_up.costume, event_sign_up.note FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.addedby = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC";
+	$statement = $conn->prepare("SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.addedby, event_sign_up.costume, event_sign_up.note FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.addedby = ? AND events.dateEnd < NOW() AND status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC");
+	$statement->bind_param("i", $_SESSION['id']);
+	$statement->execute();
 
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		// Number of results total
 		$i = 0;
@@ -3436,7 +3440,9 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmfriend")
 if(isset($_GET['do']) && $_GET['do'] == "friendnoconfirm")
 {
 	// Query the database
-	$conn->query("UPDATE event_sign_up SET status = '4' WHERE trooperid = '".cleanInput($_POST['friendid'])."' AND troopid = '".cleanInput($_POST['troopid'])."' AND id = '".cleanInput($_POST['signid'])."' AND addedby = '".$_SESSION['id']."'");
+	$statement = $conn->prepare("UPDATE event_sign_up SET status = '4' WHERE trooperid = ? AND troopid = ? AND id = ? AND addedby = ?");
+	$statement->bind_param("iiii", $_POST['friendid'], $_POST['troopid'], $_POST['signid'], $_SESSION['id']);
+	$statement->execute();
 
 	// Send back AJAX data
 
@@ -3444,9 +3450,11 @@ if(isset($_GET['do']) && $_GET['do'] == "friendnoconfirm")
 	$dataMain = "";
 
 	// Load events that need confirmation
-	$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.addedby, event_sign_up.costume, event_sign_up.note FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.addedby = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC";
+	$statement = $conn->prepare("SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.addedby, event_sign_up.costume, event_sign_up.note FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.addedby = ? AND events.dateEnd < NOW() AND status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC");
+	$statement->bind_param("i", $_SESSION['id']);
+	$statement->execute();
 
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		// Number of results total
 		$i = 0;
