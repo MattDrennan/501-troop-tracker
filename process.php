@@ -3295,7 +3295,9 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmList")
 			for($i = 0; $i < $n; $i++)
 			{
 				// Query the database
-				$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costume'])."', status = '3' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($list[$i])."'");
+				$statement = $conn->prepare("UPDATE event_sign_up SET costume = ?, status = '3' WHERE trooperid = ? AND troopid = ?");
+				$statement->bind_param("iii", $_POST['costume'], $_SESSION['id'], $list[$i]);
+				$statement->execute();
 			}
 			
 			// Check troops for notification
@@ -3322,7 +3324,9 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmList")
 			for($i = 0; $i < $n; $i++)
 			{
 				// Query the database
-				$conn->query("UPDATE event_sign_up SET status = '4' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($list[$i])."'");
+				$statement = $conn->prepare("UPDATE event_sign_up SET status = '4' WHERE trooperid = ? AND troopid = ?");
+				$statement->bind_param("ii", $_SESSION['id'], $list[$i]);
+				$statement->execute();
 			}
 		}
 	}
@@ -3333,9 +3337,11 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmList")
 	$dataMain = "";
 
 	// Load events that need confirmation
-	$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC";
+	$statement = $conn->prepare("SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = ? AND events.dateEnd < NOW() AND status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC");
+	$statement->bind_param("i", $_SESSION['id']);
+	$statement->execute();
 
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		// Number of results total
 		$i = 0;
