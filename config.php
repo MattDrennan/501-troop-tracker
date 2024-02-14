@@ -4031,10 +4031,13 @@ function inEvent($id, $event)
 
 	$array = ["inTroop" => "0", "status" => ""];
 	$status = "";
-	
-	$query = "SELECT * FROM event_sign_up WHERE trooperid = '".$id."' AND troopid = '".$event."'";
+
+	$statement = $conn->prepare("SELECT * FROM event_sign_up WHERE trooperid = ? AND troopid = ?");
+	$statement->bind_param("ii", $id, $event);
+	$statement->execute();
+
 	$i = 0;
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
