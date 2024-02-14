@@ -262,14 +262,22 @@ function getTroopCounts($id)
 	$troopCountString = "";
 
 	// Get troop counts - All - 1 Year
-	$countAll = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' and events.dateStart > NOW() - INTERVAL 1 YEAR GROUP BY events.id, event_sign_up.id");
+	$statement = $conn->prepare("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = ? and events.dateStart > NOW() - INTERVAL 1 YEAR GROUP BY events.id, event_sign_up.id");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->store_result();
+	$countAll = $statement->num_rows;
 
 	// Get troop counts - 501st
-	$count = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ".getCostumeQueryValuesSquad(1)." GROUP BY events.id, event_sign_up.id");
+	$statement = $conn->prepare("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = ? AND ".getCostumeQueryValuesSquad(1)." GROUP BY events.id, event_sign_up.id");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->store_result();
+	$count = $statement->num_rows;
 
 	// Add to string
 	$troopCountString .= '
-	<p><b>501st Troops:</b> '.number_format($count->num_rows).'</p>';
+	<p><b>501st Troops:</b> '.number_format($count).'</p>';
 
 	// Set up Squad ID
 	$clubID = count($squadArray) + 1;
@@ -278,32 +286,56 @@ function getTroopCounts($id)
 	foreach($clubArray as $club => $club_value)
 	{
 		// Count query
-		$count = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ".getCostumeQueryValues($clubID)." GROUP BY events.id, event_sign_up.id");
+		$statement = $conn->prepare("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = ? AND ".getCostumeQueryValues($clubID)." GROUP BY events.id, event_sign_up.id");
+		$statement->bind_param("i", $id);
+		$statement->execute();
+		$statement->store_result();
+		$count = $statement->num_rows;
 
 		// Add to string
 		$troopCountString .= '
-		<p><b>'.$club_value['name'].' Troops:</b> '.number_format($count->num_rows).'</p>';
+		<p><b>'.$club_value['name'].' Troops:</b> '.number_format($count).'</p>';
 
 		// Increment club ID
 		$clubID++;
 	}
 
 	// Get total count
-	$count_total = $conn->query("SELECT id FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3'");
+	$statement = $conn->prepare("SELECT id FROM event_sign_up WHERE trooperid = ? AND status = '3'");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->store_result();
+	$count_total = $statement->num_rows;
 
 	// Get favorite costume
-	$favoriteCostume_get = $conn->query("SELECT costume, COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND costume != 706 AND costume != 720 AND costume != 721 GROUP BY costume ORDER BY COUNT(costume) DESC LIMIT 1");
-	$favoriteCostume = mysqli_fetch_array($favoriteCostume_get);
+	$statement = $conn->prepare("SELECT costume, COUNT(*) FROM event_sign_up WHERE trooperid = ? AND costume != 706 AND costume != 720 AND costume != 721 GROUP BY costume ORDER BY COUNT(costume) DESC LIMIT 1");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($favoriteCostume, $favoriteCostumeCount);
+	$statement->fetch();
+	$statement->close();
 
 	// Get total money raised
-	$charityDirectFunds_get = $conn->query("SELECT SUM(charityDirectFunds) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$id."'");
-	$charityDirectFunds = mysqli_fetch_array($charityDirectFunds_get);
+	$statement = $conn->prepare("SELECT SUM(charityDirectFunds) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($charityDirectFunds);
+	$statement->fetch();
+	$statement->close();
 
-	$charityIndirectFunds_get = $conn->query("SELECT SUM(charityIndirectFunds) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$id."'");
-	$charityIndirectFunds = mysqli_fetch_array($charityIndirectFunds_get);
+	$statement = $conn->prepare("SELECT SUM(charityIndirectFunds) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($charityIndirectFunds);
+	$statement->fetch();
+	$statement->close();
 
-	$charityHours_get = $conn->query("SELECT SUM(TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$id."'");
-	$chairtyHours = mysqli_fetch_array($charityHours_get);
+	$statement = $conn->prepare("SELECT SUM(TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($chairtyHours);
+	$statement->fetch();
+	$statement->close();
 
 	// Prevent notice error
 	if($favoriteCostume == "")
@@ -313,12 +345,12 @@ function getTroopCounts($id)
 
 	// Add to string
 	$troopCountString .= '
-	<p><b>Total Finished Troops:</b> ' . number_format($count_total->num_rows) . '</p>
-	<p><b>Total Troops Last 365 Days:</b> '.number_format($countAll->num_rows).'</p>
-	<p><b>Favorite Costume:</b> '.ifEmpty(getCostume($favoriteCostume['costume']), "N/A").'</p>
-	<p><b>Volunteer Hours:</b> '.number_format($chairtyHours[0]).'</p>
-	<p><b>Direct Donations Raised:</b> $'.number_format($charityDirectFunds[0]).'</p>
-	<p><b>Indirect Donations Raised:</b> $'.number_format($charityIndirectFunds[0]).'</p>';
+	<p><b>Total Finished Troops:</b> ' . number_format($count_total) . '</p>
+	<p><b>Total Troops Last 365 Days:</b> '.number_format($countAll).'</p>
+	<p><b>Favorite Costume:</b> '.ifEmpty(getCostume($favoriteCostume), "N/A").'</p>
+	<p><b>Volunteer Hours:</b> '.number_format($chairtyHours).'</p>
+	<p><b>Direct Donations Raised:</b> $'.number_format($charityDirectFunds).'</p>
+	<p><b>Indirect Donations Raised:</b> $'.number_format($charityIndirectFunds).'</p>';
 
 	// Return
 	return $troopCountString;

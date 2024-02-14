@@ -890,7 +890,6 @@ if(isset($_GET['do']) && $_GET['do'] == "eventsubscribe" && isset($_POST['events
 	$statement->bind_param("ii", $_SESSION['id'], $_POST['event']);
 	$statement->execute();
 	$statement->store_result();
-
 	$isSubscribed = $statement->num_rows;
 
 	// Check if subscribed
