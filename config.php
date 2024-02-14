@@ -2867,8 +2867,11 @@ function checkTroopCounts($count, $message, $trooperid, $club)
 	$counts = [1, 10, 25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 501];
 	
 	// Search notifications for previous notifications, so we don't duplicate - check message for club name
-	$query = "SELECT * FROM notifications WHERE trooperid = '".$trooperid."' AND message LIKE '%".$club."%'";
-	if ($result = mysqli_query($conn, $query))
+	$statement = $conn->prepare("SELECT * FROM notifications WHERE trooperid = ? AND message LIKE CONCAT('%', ?, '%')");
+	$statement->bind_param("is", $id, $club);
+	$statement->execute();
+
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -2895,7 +2898,9 @@ function checkTroopCounts($count, $message, $trooperid, $club)
 			$tempMessage = $message;
 			$tempMessage = str_replace("[COUNT]", $value, $tempMessage);
 			
-			$conn->query("INSERT INTO notifications (message, trooperid) VALUES ('".cleanInput($tempMessage)."', '".cleanInput($trooperid)."')");
+			$statement = $conn->prepare("INSERT INTO notifications (message, trooperid) VALUES (?, ?)");
+			$statement->bind_param("si", $tempMessage, $trooperid);
+			$statement->execute();
 		}
 	}
 }
