@@ -3027,15 +3027,15 @@ function getEventThreadID($id)
 function getEventPostID($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM events WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->post_id;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT post_id FROM events WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
