@@ -4075,17 +4075,23 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 	// Get data to send back - query the event data for the information
 
 	// Query database for event info
-	$query = "SELECT * FROM events WHERE id = '".$eventID."'";
-	if ($result = mysqli_query($conn, $query))
+	$statement = $conn->prepare("SELECT * FROM events WHERE id = ?");
+	$statement->bind_param("i", $eventID);
+	$statement->execute();
+
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
 
 			// Query database for roster info
-			$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.note, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, event_sign_up.status, event_sign_up.signuptime, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".$eventID."' ORDER BY event_sign_up.id ASC";
+			$statement2 = $conn->prepare("SELECT event_sign_up.id AS signId, event_sign_up.note, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, event_sign_up.status, event_sign_up.signuptime, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = ? ORDER BY event_sign_up.id ASC");
+			$statement2->bind_param("i", $eventID);
+			$statement2->execute();
+
 			$i = 0;
 
-			if ($result2 = mysqli_query($conn, $query2))
+			if ($result2 = $statement2->get_result())
 			{
 				while ($db2 = mysqli_fetch_object($result2))
 				{
@@ -4156,9 +4162,10 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 							<select name="modifysignupFormCostume" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
 
 							// Display costumes
-							$query3 = "SELECT * FROM costumes WHERE " . costume_restrict_query(false, $db2->trooperId, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
+							$statement3 = $conn->prepare("SELECT * FROM costumes WHERE " . costume_restrict_query(false, $db2->trooperId, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume");
+							$statement3->execute();
 							
-							if ($result3 = mysqli_query($conn, $query3))
+							if ($result3 = $statement3->get_result())
 							{
 								while ($db3 = mysqli_fetch_object($result3))
 								{
@@ -4183,15 +4190,16 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 						
 						<td name="trooperRosterBackup" id="trooperRosterBackup">
 							<select name="modiftybackupcostumeForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
-
-							// Display costumes
-							$query3 = "SELECT * FROM costumes WHERE " . costume_restrict_query(false, $db2->trooperId, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
 							
 							// Count results
 							$c = 0;
+
+							// Display costumes
+							$statement3 = $conn->prepare("SELECT * FROM costumes WHERE " . costume_restrict_query(false, $db2->trooperId, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume");
+							$statement3->execute();
 							
 							// Amount of costumes
-							if ($result3 = mysqli_query($conn, $query3))
+							if ($result3 = $statement3->get_result())
 							{
 								while ($db3 = mysqli_fetch_object($result3))
 								{
