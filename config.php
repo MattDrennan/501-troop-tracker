@@ -5212,23 +5212,28 @@ function eventClubCount($eventID, $clubID)
 	$returnVal = 0;
 
 	// Query database for roster info
-	$query = "SELECT events.limitHandlers, event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid LEFT JOIN events ON events.id = event_sign_up.troopid WHERE troopid = '".$eventID."' AND (event_sign_up.status = 0 OR event_sign_up.status = 2)";
+	$statement = $conn->prepare("SELECT events.limitHandlers, event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid LEFT JOIN events ON events.id = event_sign_up.troopid WHERE troopid = ? AND (event_sign_up.status = 0 OR event_sign_up.status = 2)");
+	$statement->bind_param("i", $eventID);
+	$statement->execute();
 
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
-			// Query costume database to add to club counts
-			$query2 = "SELECT * FROM costumes WHERE id = '".$db->costume."'";
-
 			// Prevent bug where if event does not limit handlers, handlers are not counted towards the total
 			if($db->limitHandlers > 500 || $db->limitHandlers < 500)
 			{
-				$query2 .= " AND costume NOT LIKE '%handler%'";
+				$statement2 = $conn->prepare("SELECT * FROM costumes WHERE id = ? AND costume NOT LIKE '%handler%'");
+				$statement2->bind_param("i", $db->costume);
+				$statement2->execute();
+			} else {
+				$statement2 = $conn->prepare("SELECT * FROM costumes WHERE id = ?");
+				$statement2->bind_param("i", $db->costume);
+				$statement2->execute();
 			}
 
 
-			if ($result2 = mysqli_query($conn, $query2))
+			if ($result2 = $statement2->get_result())
 			{
 				while ($db2 = mysqli_fetch_object($result2))
 				{
