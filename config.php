@@ -2804,7 +2804,9 @@ function sendNotification($message, $trooperid, $type = 0, $json = "")
 {
 	global $conn;
 	
-	$conn->query("INSERT INTO notifications (message, trooperid, type, json) VALUES ('".cleanInput($message)."', '".$trooperid."', '".$type."', '".cleanInput($json)."')");
+	$statement = $conn->prepare("INSERT INTO notifications (message, trooperid, type, json) VALUES (?, ?, ?, ?)");
+	$statement->bind_param("siss", cleanInput($message), $trooperid, $type, cleanInput($json));
+	$statement->execute();
 }
 
 /**
