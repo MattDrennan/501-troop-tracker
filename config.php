@@ -2820,11 +2820,14 @@ function troopCheck($id)
 	global $conn, $clubArray, $squadArray;
 	
 	// Notify how many troops did a trooper attend - 501st
-	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume))");
-	$count = $trooperCount_get->fetch_row();
+	$statement = $conn->prepare("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = ? AND status = '3' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume))");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->store_result();
+	$count = $statement->num_rows;
 	
 	// 501st
-	checkTroopCounts($count[0], "501ST: " . getName($id) . " now has [COUNT] troop(s)", $id, "501ST");
+	checkTroopCounts($count, "501ST: " . getName($id) . " now has [COUNT] troop(s)", $id, "501ST");
 	
 	// Set club ID
 	$clubID = count($squadArray) + 1;
@@ -2833,11 +2836,14 @@ function troopCheck($id)
 	foreach($clubArray as $club => $club_value)
 	{
 		// Notify how many troops did a trooper attend of club
-		$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ".getCostumeQueryValues($clubID)."");
-		$count = $trooperCount_get->fetch_row();
+		$statement = $conn->prepare("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = ? AND status = '3' AND ".getCostumeQueryValues($clubID)."");
+		$statement->bind_param("i", $id);
+		$statement->execute();
+		$statement->store_result();
+		$count = $statement->num_rows;
 		
 		// Check troop count of club
-		checkTroopCounts($count[0], strtoupper($club_value['name']) . ": " . getName($id) . " now has [COUNT] troop(s)", $id, strtoupper($club_value['name']));
+		checkTroopCounts($count, strtoupper($club_value['name']) . ": " . getName($id) . " now has [COUNT] troop(s)", $id, strtoupper($club_value['name']));
 		
 		// Increment club count
 		$clubID++;
