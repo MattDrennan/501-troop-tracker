@@ -4772,7 +4772,11 @@ function hasSpecialPermission($permission)
 	// Check if the trooper is a moderator
 	$query = "SELECT * FROM troopers WHERE id = '".$_SESSION['id']."' AND permissions = 2";
 
-	if ($result = mysqli_query($conn, $query))
+	$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ? AND permissions = 2");
+	$statement->bind_param("i", $_SESSION['id']);
+	$statement->execute();
+
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
