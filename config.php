@@ -4693,7 +4693,7 @@ function isAdmin()
 		$statement->bind_param("i", $_SESSION['id']);
 		$statement->execute();
 
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -5764,11 +5764,16 @@ if(!loggedIn() && !isset($_POST['loginWithTK']))
 		if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
 		{
 			// Update username if changed
-			$conn->query("UPDATE troopers SET forum_id = '".$forumLogin['user']['username']."' WHERE user_id = '".$forumLogin['user']['user_id']."'");
+			$statement = $conn->prepare("UPDATE troopers SET forum_id = ? WHERE user_id = ?");
+			$statement->bind_param("si", $forumLogin['user']['username'], $forumLogin['user']['user_id']);
+			$statement->execute();
 		}
 		
-		$query = "SELECT * FROM troopers WHERE forum_id = '".$_COOKIE['TroopTrackerUsername']."'";
-		if ($result = mysqli_query($conn, $query))
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE forum_id = ?");
+		$statement->bind_param("s", $_COOKIE['TroopTrackerUsername']);
+		$statement->execute();
+
+		if($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -5776,8 +5781,10 @@ if(!loggedIn() && !isset($_POST['loginWithTK']))
 				if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
 				{
 					// Update password, e-mail, and user ID
-
-					$conn->query("UPDATE troopers SET password = '".password_hash($_COOKIE['TroopTrackerPassword'], PASSWORD_DEFAULT)."', email = '".$forumLogin['user']['email']."', user_id = '".$forumLogin['user']['user_id']."' WHERE id = '".$db->id."'");
+					$password = password_hash($_COOKIE['TroopTrackerPassword'], PASSWORD_DEFAULT);
+					$statement2 = $conn->prepare("UPDATE troopers SET password = ?, email = ?, user_id = ? WHERE id = ?");
+					$statement2->bind_param("ssii", $password, $forumLogin['user']['email'], $forumLogin['user']['user_id'], $db->id);
+					$statement2->execute();
 				}
 
 				// Check if banned
@@ -5812,17 +5819,25 @@ ob_start();
 // If logged in, update active status
 if(loggedIn())
 {
-	$conn->query("UPDATE troopers SET last_active = NOW() WHERE id='".$_SESSION['id']."'");
+	$statement = $conn->prepare("UPDATE troopers SET last_active = NOW() WHERE id = ?");
+	$statement->bind_param("i", $_SESSION['id']);
+	$statement->execute();
 }
 
 // Check for events that need to be closed
-$query = "SELECT * FROM events WHERE dateEnd < '".date('Y-m-d H:i:s', strtotime('-1 HOUR'))."' AND closed != '2' AND closed != '1'";
-if ($result = mysqli_query($conn, $query))
+$date = date('Y-m-d H:i:s', strtotime('-1 HOUR'));
+$statement = $conn->prepare("SELECT * FROM events WHERE dateEnd < ? AND closed != '2' AND closed != '1'");
+$statement->bind_param("s", $date);
+$statement->execute();
+
+if ($result = $statement->get_result())
 {
 	while ($db = mysqli_fetch_object($result))
 	{
 		// Close them
-		$conn->query("UPDATE events SET closed = '1' WHERE id = '".$db->id."'");
+		$statement2 = $conn->prepare("UPDATE events SET closed = '1' WHERE id = ?");
+		$statement2->bind_param("i", $db->id);
+		$statement2->execute();
 	}
 }
 
