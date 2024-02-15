@@ -5488,9 +5488,12 @@ function canAccess($id)
 	
 	// Set up var
 	$canAccess = false;
-	
-	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
+
+	$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -5528,13 +5531,36 @@ function emailSettingStatus($column, $print = false)
 	
 	// Set status
 	$status = 0;
+
+	// Set up
+	$continue = false;
+
+	// Get a list of all columns to make sure data is validated
+	$statement = $conn->prepare("SELECT COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'troopers'");
+	$statement->execute();
+
+	if($result = $statement->get_result())
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Loop through results
+			foreach($db as $row)
+			{
+				if($row == $column)
+				{
+					$continue = true;
+				}
+			}
+		}
+	}
 	
 	// Get email setting
-	$getStatus = $conn->query("SELECT ".$column." FROM troopers WHERE id = '".$_SESSION['id']."'");
-	$getStatus_get = $getStatus->fetch_row();
-	
-	// Set status to query
-	$status = $getStatus_get[0];
+	$statement = $conn->prepare("SELECT ".$column." FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $_SESSION['id']);
+	$statement->execute();
+	$statement->bind_result($status);
+	$statement->fetch();
+	$statement->close();
 	
 	// If print not set, return status
 	if(!$print)
