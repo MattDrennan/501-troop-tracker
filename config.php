@@ -1768,23 +1768,18 @@ function getRebelLegionUser($id)
 	global $conn;
 	
 	// Set up value
-	$forumName = "";
+	$value = "";
 	
 	// Get data
-	$query = "SELECT rebelforum FROM troopers WHERE id = '".$id."'";
-	
-	// Run query...
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			// Set
-			$forumName = $db->rebelforum;
-		}
-	}
+	$statement = $conn->prepare("SELECT rebelforum FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
 	
 	// Return
-	return $forumName;
+	return $value;
 }
 
 /**
@@ -1803,10 +1798,12 @@ function getRebelInfo($forumid)
 	$array['name'] = '';
 	
 	// Get data
-	$query = "SELECT * FROM rebel_troopers WHERE rebelforum = '".$forumid."'";
+	$statement = $conn->prepare("SELECT * FROM rebel_troopers WHERE rebelforum = ?");
+	$statement->bind_param("i", $forumid);
+	$statement->execute();
 	
 	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -1830,23 +1827,18 @@ function getMandoLegionUser($id)
 	global $conn;
 	
 	// Set up value
-	$mandoid = 0;
+	$value = 0;
 	
 	// Get data
-	$query = "SELECT mandoid FROM troopers WHERE id = '".$id."'";
-	
-	// Run query...
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			// Set
-			$mandoid = $db->mandoid;
-		}
-	}
+	$statement = $conn->prepare("SELECT mandoid FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
 	
 	// Return
-	return $mandoid;
+	return $value;
 }
 
 /**
@@ -1865,10 +1857,12 @@ function getMandoInfo($mandoid)
 	$array['name'] = '';
 	
 	// Get data
-	$query = "SELECT * FROM mando_troopers WHERE mandoid = '".$mandoid."'";
+	$statement = $conn->prepare("SELECT * FROM mando_troopers WHERE mandoid = ?");
+	$statement->bind_param("i", $mandoid);
+	$statement->execute();
 	
 	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -1893,23 +1887,18 @@ function getSGUser($id)
 	global $conn;
 	
 	// Set up value
-	$sgid = 0;
+	$value = 0;
 	
 	// Get data
-	$query = "SELECT sgid FROM troopers WHERE id = '".$id."'";
-	
-	// Run query...
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			// Set
-			$sgid = $db->sgid;
-		}
-	}
+	$statement = $conn->prepare("SELECT sgid FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
 	
 	// Return
-	return $sgid;
+	return $value;
 }
 
 /**
@@ -1932,10 +1921,12 @@ function getSGINfo($sgid)
 	$array['rank'] = '';
 	
 	// Get data
-	$query = "SELECT * FROM sg_troopers WHERE sgid = 'SG-".$sgid."'";
-	
+	$statement = $conn->prepare("SELECT * FROM sg_troopers WHERE sgid = CONCAT('SG-', ?, '')");
+	$statement->bind_param("i", $sgid);
+	$statement->execute();
+
 	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -1971,10 +1962,12 @@ function get501Info($id, $squad)
 	if($squad <= count($squadArray))
 	{
 		// Get data
-		$query = "SELECT * FROM 501st_troopers WHERE legionid = '".$id."'";
+		$statement = $conn->prepare("SELECT * FROM 501st_troopers WHERE legionid = ?");
+		$statement->bind_param("i", $id);
+		$statement->execute();
 		
 		// Run query...
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -2002,10 +1995,12 @@ function getMyRebelCostumes($id)
 	$costume = "";
 	
 	// Get data
-	$query = "SELECT costumename FROM rebel_costumes WHERE rebelid = '".$id."'";
+	$statement = $conn->prepare("SELECT costumename FROM rebel_costumes WHERE rebelid = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
 	
 	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	if($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -2034,10 +2029,12 @@ function getMyCostumes($id, $squad)
 	if($squad <= count($squadArray))
 	{
 		// Get data
-		$query = "SELECT costumename FROM 501st_costumes WHERE legionid = '".$id."'";
+		$statement = $conn->prepare("SELECT costumename FROM 501st_costumes WHERE legionid = ?");
+		$statement->bind_param("i", $id);
+		$statement->execute();
 		
 		// Run query...
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -2061,13 +2058,15 @@ function showRebelCostumes($id)
 	global $conn;
 	
 	// Get data
-	$query = "SELECT * FROM rebel_costumes WHERE rebelid = '".$id."'";
+	$statement = $conn->prepare("SELECT * FROM rebel_costumes WHERE rebelid = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
 	
 	// Set up count
 	$i = 0;
 	
 	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -2105,13 +2104,15 @@ function showMandoCostumes($id)
 	global $conn;
 	
 	// Get data
-	$query = "SELECT * FROM mando_costumes WHERE mandoid = '".$id."'";
+	$statement = $conn->prepare("SELECT * FROM mando_costumes WHERE mandoid = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
 	
 	// Set up count
 	$i = 0;
 	
 	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -2148,13 +2149,15 @@ function showSGCostumes($id)
 	global $conn;
 	
 	// Get data
-	$query = "SELECT * FROM sg_troopers WHERE sgid = 'SG-".$id."' AND sgid > 0";
+	$statement = $conn->prepare("SELECT * FROM sg_troopers WHERE sgid = CONCAT('SG-', ?, '') AND sgid > 0");
+	$statement->bind_param("i", $id);
+	$statement->execute();
 	
 	// Set up count
 	$i = 0;
 	
 	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -2194,13 +2197,15 @@ function showDroids($forum)
 	global $conn;
 	
 	// Get data
-	$query = "SELECT * FROM droid_troopers WHERE forum_id = '".$forum."'";
+	$statement = $conn->prepare("SELECT * FROM droid_troopers WHERE forum_id = ?");
+	$statement->bind_param("s", $forum);
+	$statement->execute();
 	
 	// Set up count
 	$i = 0;
 	
 	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -2241,7 +2246,9 @@ function showCostumes($id, $squad)
 	global $conn, $squadArray;
 	
 	// Get data
-	$query = "SELECT * FROM 501st_costumes WHERE legionid = '".$id."'";
+	$statement = $conn->prepare("SELECT * FROM 501st_costumes WHERE legionid = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
 	
 	// Set up count
 	$i = 0;
@@ -2250,7 +2257,7 @@ function showCostumes($id, $squad)
 	if($squad <= count($squadArray))
 	{
 		// Run query...
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -2719,12 +2726,14 @@ function hasAward($trooperid, $awardid, $echo = false, $remove = false)
 	global $conn;
 	
 	// Get data
-	$query = "SELECT * FROM award_troopers WHERE trooperid = '".$trooperid."' AND awardid = '".$awardid."'";
+	$statement = $conn->prepare("SELECT * FROM award_troopers WHERE trooperid = ? AND awardid = ?");
+	$statement->bind_param("ii", $trooperid, $awardid);
+	$statement->execute();
 
 	// Set up return variable
 	$hasAward = false;
 	
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -2931,8 +2940,11 @@ function myTheme()
 
 	if(loggedIn())
 	{
-		$query = "SELECT theme FROM troopers WHERE id = '".$_SESSION['id']."'";
-		if ($result = mysqli_query($conn, $query))
+		$statement = $conn->prepare("SELECT theme FROM troopers WHERE id = ?");
+		$statement->bind_param("i", $_SESSION['id']);
+		$statement->execute();
+
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -4762,8 +4774,6 @@ function hasSpecialPermission($permission)
 	$hasPermission = false;
 	
 	// Check if the trooper is a moderator
-	$query = "SELECT * FROM troopers WHERE id = '".$_SESSION['id']."' AND permissions = 2";
-
 	$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ? AND permissions = 2");
 	$statement->bind_param("i", $_SESSION['id']);
 	$statement->execute();
