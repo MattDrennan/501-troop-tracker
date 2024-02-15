@@ -2777,38 +2777,24 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			
 			if(isset($_GET['squad']) && $_GET['squad'] != "all")
 			{
-				// Set up query add
-				$queryAdd = "";
-				
-				// Which club to get
-				if($_GET['squad'] <= count($squadArray))
-				{
-					$queryAdd = "p501";
-				}
-				
-				// Set up count
-				$clubCount = count($squadArray) + 1;
-				
-				// Loop through clubs
-				foreach($clubArray as $club => $club_value)
-				{
-					// Match
-					if($_GET['squad'] == $clubCount)
-					{
-						$queryAdd = "".$club_value['db']."";
-					}
-					
-					// Increment
-					$clubCount++;
-				}
-	
-				// Get data
-				$query = "SELECT * FROM troopers WHERE ".$queryAdd." = 0 AND id != ".placeholder." ORDER BY name";
-
 				// Amount of users
 				$i = 0;
 
-				if($result = mysqli_query($conn, $query))
+				// Which club to get
+				if($_GET['squad'] <= count($squadArray))
+				{
+					// 501
+					$statement = $conn->prepare("SELECT * FROM troopers WHERE p501 = 0 AND id != ".placeholder." ORDER BY name");
+				} else {
+					// Club
+					$dbValue = $clubArray[($_GET['squad'] - (count($squadArray) + 1))]['db'];
+
+					$statement = $conn->prepare("SELECT * FROM troopers WHERE " . $dbValue . " = 0 AND id != ".placeholder." ORDER BY name");
+				}
+
+				$statement->execute();
+
+				if($result = $statement->get_result())
 				{
 					while ($db = mysqli_fetch_object($result))
 					{
