@@ -1417,18 +1417,18 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		$troopArray = array();
 
 		// Format numbers to prevent errors - charity
-		if(!isset($charity_count[0]))
+		if(!isset($charity_count))
 		{
 			$charity_count = 0;
 		}
 
-		if(!isset($charity_count2[0]))
+		if(!isset($charity_count2))
 		{
 			$charity_count2 = 0;
 		}
 		
 		// Format numbers to prevent errors - troop
-		if(!isset($troop_count[0]))
+		if(!isset($troop_count))
 		{
 			$troop_count = 0;
 		}
@@ -1473,7 +1473,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 					$statement1 = $conn->prepare("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = ? AND events.dateStart >= ? AND events.dateEnd <= ?");
 					$statement1->bind_param("iss", $db->id, $dateStartQuery, $dateEndQuery);
 					$statement1->execute();
-					$statement1->bind_result($count);
+					$statement1->bind_result($count, $eventid);
 					$statement1->fetch();
 					$statement1->close();
 				}
@@ -1483,7 +1483,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 					$statement1 = $conn->prepare("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = ? AND events.dateStart >= ? AND events.dateEnd <= ? AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR EXISTS(SELECT events.id FROM events WHERE events.id = event_sign_up.troopid))");
 					$statement1->bind_param("iss", $db->id, $dateStartQuery, $dateEndQuery);
 					$statement1->execute();
-					$statement1->bind_result($count);
+					$statement1->bind_result($count, $eventid);
 					$statement1->fetch();
 					$statement1->close();
 				} else {
@@ -1491,7 +1491,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 					$statement1 = $conn->prepare("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = ? AND events.dateStart >= ? AND events.dateEnd <= ? AND ".getCostumeQueryValues($_POST['squad'])."");
 					$statement1->bind_param("iss", $db->id, $dateStartQuery, $dateEndQuery);
 					$statement1->execute();
-					$statement1->bind_result($count);
+					$statement1->bind_result($count, $eventid);
 					$statement1->fetch();
 					$statement1->close();
 				}
