@@ -259,7 +259,9 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 	// Theme Button Submit
 	if(isset($_POST['themeButton']))
 	{
-		$conn->query("UPDATE troopers SET theme = '".cleanInput($_POST['themeselect'])."' WHERE id = '".$_SESSION['id']."'");
+		$statement = $conn->prepare("UPDATE troopers SET theme = ? WHERE id = ?");
+		$statement->bind_param("ii", $_POST['themeselect'], $_SESSION['id']);
+		$statement->execute();
 		
 		echo '<p>Your theme has been changed. Please <a href="index.php?action=account">refresh</a> the page to see the changes.</p>';
 	}
@@ -580,8 +582,11 @@ if(isset($_GET['profile']) && loggedIn())
 		else
 		{
 			// Get count for awards
-			$troops_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE status = '3' AND trooperid = '".$profile."'");
-			$count = $troops_get->fetch_row();
+			$statement = $conn->prepare("SELECT id FROM event_sign_up WHERE status = '3' AND trooperid = ?");
+			$statement->bind_param("i", $profile);
+			$statement->execute();
+			$statement->store_result();
+			$count = $statement->num_rows;
 
 			// Set up award count
 			$j = 0;
@@ -603,68 +608,68 @@ if(isset($_GET['profile']) && loggedIn())
 			echo'
 			<ul>';
 
-			if($count[0] >= 1)
+			if($count >= 1)
 			{
 				echo '<li>First Troop Completed!</li>';
 				$j++;
 			}
 
-			if($count[0] >= 10)
+			if($count >= 10)
 			{
 				echo '<li>10 Troops</li>';
 			}
 
-			if($count[0] >= 25)
+			if($count >= 25)
 			{
 				echo '<li>25 Troops</li>';
 			}
 
-			if($count[0] >= 50)
+			if($count >= 50)
 			{
 				echo '<li>50 Troops</li>';
 			}
 
-			if($count[0] >= 75)
+			if($count >= 75)
 			{
 				echo '<li>75 Troops</li>';
 			}
 
-			if($count[0] >= 100)
+			if($count >= 100)
 			{
 				echo '<li>100 Troops</li>';
 			}
 
-			if($count[0] >= 150)
+			if($count >= 150)
 			{
 				echo '<li>150 Troops</li>';
 			}
 
-			if($count[0] >= 200)
+			if($count >= 200)
 			{
 				echo '<li>200 Troops</li>';
 			}
 
-			if($count[0] >= 250)
+			if($count >= 250)
 			{
 				echo '<li>250 Troops</li>';
 			}
 
-			if($count[0] >= 300)
+			if($count >= 300)
 			{
 				echo '<li>300 Troops</li>';
 			}
 
-			if($count[0] >= 400)
+			if($count >= 400)
 			{
 				echo '<li>400 Troops</li>';
 			}
 
-			if($count[0] >= 500)
+			if($count >= 500)
 			{
 				echo '<li>500 Troops</li>';
 			}
 
-			if($count[0] >= 501)
+			if($count >= 501)
 			{
 				echo '<li>501 Troops Award</li>';
 			}
@@ -803,10 +808,11 @@ if(isset($_GET['action']) && $_GET['action'] == "photos")
 	$i = 0;
 
 	// Build query
-	$query = "SELECT uploads.troopid, events.dateStart, events.dateEnd FROM uploads LEFT JOIN events ON uploads.troopid = events.id WHERE admin = '0' GROUP BY uploads.troopid ORDER BY events.dateEnd DESC LIMIT 100";
+	$statement = $conn->prepare("SELECT uploads.troopid, events.dateStart, events.dateEnd FROM uploads LEFT JOIN events ON uploads.troopid = events.id WHERE admin = '0' GROUP BY uploads.troopid ORDER BY events.dateEnd DESC LIMIT 100");
+	$statement->execute();
 
 	// Loop through query
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -817,11 +823,15 @@ if(isset($_GET['action']) && $_GET['action'] == "photos")
 				<ul>';
 			}
 
-			$troopCount = $conn->query("SELECT id FROM uploads WHERE troopid = '".$db->troopid."' AND admin = '0'");
+			$statement2 = $conn->prepare("SELECT id FROM uploads WHERE troopid = ? AND admin = '0'");
+			$statement2->bind_param("i", $db->troopid);
+			$statement2->execute();
+			$statement2->store_result();
+			$troopCount = $statement->num_rows;
 
 			echo '
 			<li>
-				<a href="index.php?event='.$db->troopid.'"><b>('.$troopCount->num_rows.')</b> ['.date("m-d-Y h:i A", strtotime($db->dateStart)).' - '.date("h:i A", strtotime($db->dateEnd)).'] - '.getEventTitle($db->troopid).'</a>
+				<a href="index.php?event='.$db->troopid.'"><b>('.$troopCount.')</b> ['.date("m-d-Y h:i A", strtotime($db->dateStart)).' - '.date("h:i A", strtotime($db->dateEnd)).'] - '.getEventTitle($db->troopid).'</a>
 			</li>';
 
 			// Increment photo count
@@ -846,12 +856,14 @@ if(isset($_GET['action']) && $_GET['action'] == "photos")
 if(isset($_GET['action']) && $_GET['action'] == "costume" && isset($_GET['costumeid']) && $_GET['costumeid'] >= 0)
 {
 	// Get data
-	$query = "SELECT (SELECT COUNT(event_sign_up.trooperid)) AS troopCount, troopers.name AS trooperName, troopers.tkid, troopers.squad, event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, (TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) AS charityHours FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE event_sign_up.costume = '".cleanInput($_GET['costumeid'])."' AND status = 3 AND events.closed = '1' GROUP BY event_sign_up.trooperid ORDER BY troopCount DESC";
+	$statement = $conn->prepare("SELECT (SELECT COUNT(event_sign_up.trooperid)) AS troopCount, troopers.name AS trooperName, troopers.tkid, troopers.squad, event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, (TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) AS charityHours FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE event_sign_up.costume = ? AND status = 3 AND events.closed = '1' GROUP BY event_sign_up.trooperid ORDER BY troopCount DESC");
+	$statement->bind_param("i", $_GET['costumeid']);
+	$statement->execute();
 
 	// Troop count
 	$i = 0;
 
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -953,9 +965,10 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				echo '
 				<select multiple style="height: 500px;" id="costumes_choice_search_box" name="costumes_choice_search_box[]">';
 				
-				$query = "SELECT costumes.id AS id, costumes.costume FROM costumes ORDER BY costume";
+				$statement = $conn->prepare("SELECT costumes.id AS id, costumes.costume FROM costumes ORDER BY costume");
+				$statement->execute();
 
-				if ($result = mysqli_query($conn, $query))
+				if ($result = $statement->get_result())
 				{
 					while ($db = mysqli_fetch_object($result))
 					{
