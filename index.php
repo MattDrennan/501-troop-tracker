@@ -2046,9 +2046,10 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn())
 			<div id="costumes_choice_search" style="display: none;">
 				<select multiple style="height: 500px;" id="costumes_choice_search_box" name="costumes_choice_search_box[]">';
 				
-				$query = "SELECT costumes.id AS id, costumes.costume FROM costumes ORDER BY costume";
+				$statement = $conn->prepare("SELECT costumes.id AS id, costumes.costume FROM costumes ORDER BY costume");
+				$statement->execute();
 
-				if ($result = mysqli_query($conn, $query))
+				if ($result = $statement->get_result())
 				{
 					while ($db = mysqli_fetch_object($result))
 					{
@@ -2131,9 +2132,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<h3>Site Settings</h3>';
 			
 			// Get data
-			$query = "SELECT * FROM settings LIMIT 1";
+			$statement = $conn->prepare("SELECT * FROM settings LIMIT 1");
+			$statement->execute();
 			$i = 0;
-			if ($result = mysqli_query($conn, $query))
+
+			if ($result = $statement->get_result())
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
@@ -2265,12 +2268,13 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<div class="stat-container">';
 
 			// Show all super admins
-			$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.note, troopers.squad FROM troopers WHERE (permissions = '1') ORDER BY name";
+			$statement = $conn->prepare("SELECT troopers.id, troopers.name, troopers.tkid, troopers.note, troopers.squad FROM troopers WHERE (permissions = '1') ORDER BY name");
+			$statement->execute();
 
 			// Trooper count set up
 			$i = 0;
 
-			if ($result = mysqli_query($conn, $query))
+			if ($result = $statement->get_result())
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
@@ -2298,12 +2302,13 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<div class="stat-container">';
 
 			// Show all super admins
-			$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.note, troopers.squad FROM troopers WHERE (permissions = '2') ORDER BY name";
+			$statement = $conn->prepare("SELECT troopers.id, troopers.name, troopers.tkid, troopers.note, troopers.squad FROM troopers WHERE (permissions = '2') ORDER BY name");
+			$statement->execute();
 
 			// Trooper count set up
 			$i = 0;
 
-			if ($result = mysqli_query($conn, $query))
+			if ($result = $statement->get_result())
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
@@ -2330,9 +2335,10 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<h2>Statistics</h2>';
 
 			// Get settings
-			$query = "SELECT * FROM settings";
+			$statement = $conn->prepare("SELECT * FROM settings");
+			$statement->execute();
 
-			if ($result = mysqli_query($conn, $query))
+			if ($result = $statement->get_result())
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
@@ -2448,69 +2454,49 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			
 			echo '<br /><hr />';
 			
-			// Set up
-			$queryAdd = "";
-			
+			// Query count
+			$i = 0;
+
+			// Set trooper name
+			$trooperName = "";
+
+			// Query
+
 			// Check if squad is requested
 			if(isset($_GET['squad']))
 			{
 				// Which club to get
 				if($_GET['squad'] <= count($squadArray))
 				{
-					$queryAdd .= "troopers.squad = '".cleanInput($_GET['squad'])."' AND";
+					$statement = $conn->prepare("SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, event_sign_up.costume, event_sign_up.note, troopers.name AS trooperName FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE troopers.squad = ? AND events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 AND troopers.id != 0 ORDER BY troopers.name");
+					$statement->bind_param("i", $_GET['squad']);
 
 					// Check if a member of club
-					if(getSquadID($_SESSION['id']) != cleanInput($_GET['squad']) && hasPermission(2))
+					if(getSquadID($_SESSION['id']) != $_GET['squad'] && hasPermission(2))
+					{
+						die("<p>Not a member of this squad / club.</p>");
+					}
+				} else {
+					$dbValue = $clubArray[($_GET['squad'] - (count($squadArray) + 1))]['db'];
+
+					$statement = $conn->prepare("SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, event_sign_up.costume, event_sign_up.note, troopers.name AS trooperName FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE (troopers.".$dbValue." > 0) AND events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 AND troopers.id != 0 ORDER BY troopers.name");
+
+					// Check if a member of club
+					if(isClubMember($club_value['db']) == 0 && hasPermission(2))
 					{
 						die("<p>Not a member of this squad / club.</p>");
 					}
 				}
-				
-				// Set up count
-				$clubCount = count($squadArray) + 1;
-				
-				// Loop through clubs
-				foreach($clubArray as $club => $club_value)
-				{
-					// Match
-					if($_GET['squad'] == $clubCount)
-					{
-						$queryAdd .= "(troopers.".$club_value['db']." > 0) AND";
-
-						// Check if a member of club
-						if(isClubMember($club_value['db']) == 0 && hasPermission(2))
-						{
-							die("<p>Not a member of this squad / club.</p>");
-						}
-					}
-					
-					// Increment
-					$clubCount++;
-				}
+			} else {
+				$statement = $conn->prepare("SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, event_sign_up.costume, event_sign_up.note, troopers.name AS trooperName FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 AND troopers.id != 0 ORDER BY troopers.name");
 			}
-			
-			// Query database
-			$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, event_sign_up.costume, event_sign_up.note, troopers.name AS trooperName FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE ".$queryAdd." events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 AND troopers.id != 0 ORDER BY troopers.name";
-			
-			// Query count
-			$i = 0;
 
-			// Set trooper name
-			$trooperName = "";
+			$statement->execute();
 			
-			if ($result = mysqli_query($conn, $query))
+			if ($result = $statement->get_result())
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
-					// Set up string to add to title if a linked event
-					$add = "";
-					
-					// If this a linked event?
-					if(isLink($db->eventId) > 0)
-					{
-						$add .= "[<b>" . date("l", strtotime($db->dateStart)) . "</b> : <i>" . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "</i>] ";
-					}
-
 					// Check if this is a different trooper
 					if($trooperName != $db->trooperName)
 					{
@@ -2529,7 +2515,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 					echo '
 					<p class="trooper-confirmation-box" signid="'.$db->signupId.'">
-						<a href="index.php?event='.$db->eventId.'" target="_blank">'.$add.''.$db->name.' '.$db->trooperName.' '.($db->note != '' ? 'noted as ' . $db->note : '').'</a>
+						<a href="index.php?event='.$db->eventId.'" target="_blank">'. (isLink($db->eventId) > 0 ? '[<b>" . date("l", strtotime($db->dateStart)) . "</b> : <i>" . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "</i>] ' : '') .''.$db->name.' '.$db->trooperName.' '.($db->note != '' ? 'noted as ' . $db->note : '').'</a>
 						<br />
 						<b>Attended As:</b> '.getCostume($db->costume).'
 						<br /><br />
