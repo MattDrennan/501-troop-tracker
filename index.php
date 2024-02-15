@@ -2887,54 +2887,41 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			
 			echo '<br /><hr />';
 			
-			// Set up
-			$queryAdd = "";
-			
 			// Check if squad is requested
 			if(isset($_GET['squad']))
 			{
 				// Which club to get
 				if($_GET['squad'] <= count($squadArray))
 				{
-					$queryAdd .= "troopers.squad = '".cleanInput($_GET['squad'])."' AND (p501 = 1 OR p501 = 2) AND";
+					$statement = $conn->prepare("SELECT * FROM troopers WHERE troopers.squad = ? AND (p501 = 1 OR p501 = 2) AND approved = '1' AND troopers.permissions = 0 AND troopers.id NOT IN (SELECT event_sign_up.trooperid FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.dateEnd > NOW() - INTERVAL 1 YEAR) ORDER BY troopers.name");
+					$statement->bind_param("i", $_GET['squad']);
 
 					// Check if a member of club
-					if(getSquadID($_SESSION['id']) != cleanInput($_GET['squad']) && hasPermission(2))
+					if(getSquadID($_SESSION['id']) != $_GET['squad'] && hasPermission(2))
+					{
+						die("<p>Not a member of this squad / club.</p>");
+					}
+				} else {
+					$dbValue = $clubArray[($_GET['squad'] - (count($squadArray) + 1))]['db'];
+
+					$statement = $conn->prepare("SELECT * FROM troopers WHERE (troopers." . $dbValue . " = 1 OR troopers." .  $dbValue . " = 2) AND approved = '1' AND troopers.permissions = 0 AND troopers.id NOT IN (SELECT event_sign_up.trooperid FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.dateEnd > NOW() - INTERVAL 1 YEAR) ORDER BY troopers.name");
+
+					// Check if a member of club
+					if(isClubMember($dbValue) == 0 && hasPermission(2))
 					{
 						die("<p>Not a member of this squad / club.</p>");
 					}
 				}
-				
-				// Set up count
-				$clubCount = count($squadArray) + 1;
-				
-				// Loop through clubs
-				foreach($clubArray as $club => $club_value)
-				{
-					// Match
-					if($_GET['squad'] == $clubCount)
-					{
-						$queryAdd .= "(troopers.".$club_value['db']." = 1 OR troopers.".$club_value['db']." = 2) AND";
-
-						// Check if a member of club
-						if(isClubMember($club_value['db']) == 0 && hasPermission(2))
-						{
-							die("<p>Not a member of this squad / club.</p>");
-						}
-					}
-					
-					// Increment
-					$clubCount++;
-				}
+			} else {
+				$statement = $conn->prepare("SELECT * FROM troopers WHERE approved = '1' AND troopers.permissions = 0 AND troopers.id NOT IN (SELECT event_sign_up.trooperid FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.dateEnd > NOW() - INTERVAL 1 YEAR) ORDER BY troopers.name");
 			}
-			
-			// Query database
-			$query = "SELECT * FROM troopers WHERE ".$queryAdd." approved = '1' AND troopers.permissions = 0 AND troopers.id NOT IN (SELECT event_sign_up.trooperid FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.dateEnd > NOW() - INTERVAL 1 YEAR) ORDER BY troopers.name";
 			
 			// Query count
 			$i = 0;
+
+			$statement->execute();
 			
-			if ($result = mysqli_query($conn, $query))
+			if ($result = $statement->get_result())
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
@@ -3087,41 +3074,40 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			// Add to query if in URL
 			if(isset($_GET['s']) && $_GET['s'] == "system")
 			{
-				// Get data
-				$query = "SELECT * FROM notifications WHERE message NOT LIKE '%now has%' ORDER BY id DESC ";
-				
 				// Get total results - query
-				$sqlPage = "SELECT COUNT(id) AS total FROM notifications WHERE message NOT LIKE '%now has%'";
+				$statement2 = $conn->prepare("SELECT COUNT(id) AS total FROM notifications WHERE message NOT LIKE '%now has%'");
+				$statement2->execute();
+				$statement2->bind_result($rowPage);
+				$statement2->fetch();
+				$statement2->close();
 			}
 			else if(isset($_GET['s']) && $_GET['s'] == "troopers")
 			{
-				// Get data
-				$query = "SELECT * FROM notifications WHERE message LIKE '%now has%' ORDER BY id DESC ";
-				
 				// Get total results - query
-				$sqlPage = "SELECT COUNT(id) AS total FROM notifications WHERE message LIKE '%now has%'";
+				$statement2 = $conn->prepare("SELECT COUNT(id) AS total FROM notifications WHERE message LIKE '%now has%'");
+				$statement2->execute();
+				$statement2->bind_result($rowPage);
+				$statement2->fetch();
+				$statement2->close();
 			}
 			else
 			{
-				// Get data
-				$query = "SELECT * FROM notifications ORDER BY id DESC ";
-				
 				// Get total results - query
-				$sqlPage = "SELECT COUNT(id) AS total FROM notifications";
+				$statement2 = $conn->prepare("SELECT COUNT(id) AS total FROM notifications");
+				$statement2->execute();
+				$statement2->bind_result($rowPage);
+				$statement2->fetch();
+				$statement2->close();
 			}
 			
-			// Page SQL
-			$resultPage = $conn->query($sqlPage);
-			$rowPage = $resultPage->fetch_assoc();
-			
 			// Set total pages
-			$total_pages = ceil($rowPage["total"] / $results);
+			$total_pages = ceil($rowPage / $results);
 			
 			// If page set
 			if(isset($_GET['page']))
 			{
 				// Get page
-				$page = cleanInput($_GET['page']);
+				$page = $_GET['page'];
 				
 				// Start from
 				$startFrom = ($page - 1) * $results;
@@ -3134,14 +3120,30 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				// Start from - default
 				$startFrom = 0;
 			}
-			
-			// Add to query
-			$query .= "LIMIT ".$startFrom.", ".$results."";
+
+			// Add to query if in URL
+			if(isset($_GET['s']) && $_GET['s'] == "system")
+			{
+				// Get data
+				$statement = $conn->prepare("SELECT * FROM notifications WHERE message NOT LIKE '%now has%' ORDER BY id DESC LIMIT ".$startFrom.", ".$results."");
+			}
+			else if(isset($_GET['s']) && $_GET['s'] == "troopers")
+			{
+				// Get data
+				$statement = $conn->prepare("SELECT * FROM notifications WHERE message LIKE '%now has%' ORDER BY id DESC LIMIT ".$startFrom.", ".$results."");
+			}
+			else
+			{
+				// Get data
+				$statement = $conn->prepare("SELECT * FROM notifications ORDER BY id DESC LIMIT ".$startFrom.", ".$results."");
+			}
 			
 			// Set notification count
 			$i = 0;
+
+			$statement->execute();
 			
-			if ($result = mysqli_query($conn, $query))
+			if ($result = $statement->get_result())
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
