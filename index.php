@@ -1122,16 +1122,14 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			// If All
 
 			// Loop through clubs // This is to get active member column values
-			$checkClubsQuery = "";
+			$checkClubsQuery = "(p501 = 1 OR p501 = 2) ";
 			foreach($clubArray as $club => $club_value)
 			{
-				$checkClubsQuery .= "(" . $club_value['db'] . " = 1 OR " . $club_value['db'] . " = 2) OR ";
+				$checkClubsQuery .= "OR (" . $club_value['db'] . " = 1 OR " . $club_value['db'] . " = 2)";
 			}
 
-			$checkClubsQuery = substr($checkClubsQuery, 0, -4);
-
 			// Add to query
-			$statement = $conn->prepare("SELECT * FROM troopers WHERE troopers.id != ".placeholder." " . (isset($_POST['activeonly']) && $_POST['activeonly'] == 1 ? 'AND ' . $checkClubsQuery : '') . "");
+			$statement = $conn->prepare("SELECT * FROM troopers WHERE troopers.id != ".placeholder." " . (isset($_POST['activeonly']) && $_POST['activeonly'] == 1 ? 'AND ' . '(' . $checkClubsQuery . ')' : '') . "");
 
 			// Get troop counts
 			$statement1 = $conn->prepare("SELECT id FROM events WHERE dateStart >= ? AND dateEnd <= ?");
@@ -1277,7 +1275,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 					$statement1 = $conn->prepare("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = ? AND events.dateStart >= ? AND events.dateEnd <= ? AND event_sign_up.status = '3' AND events.closed = '1'");
 					$statement1->bind_param("iss", $db->id, $dateStartQuery, $dateEndQuery);
 					$statement1->execute();
-					$statement1->bind_result($count);
+					$statement1->bind_result($count, $eventid);
 					$statement1->fetch();
 					$statement1->close();
 				}
@@ -1288,7 +1286,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 					$statement1 = $conn->prepare("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.closed = '1' AND event_sign_up.trooperid = ? AND events.dateStart >= ? AND events.dateEnd <= ? AND ".getCostumeQueryValuesSquad($_POST['squad'])."");
 					$statement1->bind_param("iss", $db->id, $dateStartQuery, $dateEndQuery);
 					$statement1->execute();
-					$statement1->bind_result($count);
+					$statement1->bind_result($count, $eventid);
 					$statement1->fetch();
 					$statement1->close();
 				} else {
@@ -1296,7 +1294,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 					$statement1 = $conn->prepare("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.closed = '1' AND event_sign_up.trooperid = ? AND events.dateStart >= ? AND events.dateEnd <= ? AND ".getCostumeQueryValues($_POST['squad'])."");
 					$statement1->bind_param("iss", $db->id, $dateStartQuery, $dateEndQuery);
 					$statement1->execute();
-					$statement1->bind_result($count);
+					$statement1->bind_result($count, $eventid);
 					$statement1->fetch();
 					$statement1->close();
 				}
@@ -1319,7 +1317,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			// Display
 			echo '
 			<tr>
-				<td><a href="index.php?profile='.$value[3].'">'.readTKNumber($value[0], $value[4]).'</a> - '.$value[2].'</td>	<td>'.$value[1].'</td>
+				<td><a href="index.php?profile='.$value[3].'">'.readTKNumber($value[0], $value[4]).' - '.$value[2].'</a></td>	<td>'.$value[1].'</td>
 			</tr>';
 		}
 	}
