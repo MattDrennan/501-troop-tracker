@@ -1185,8 +1185,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			// Any other club
 			$dbValue = $clubArray[($_POST['squad'] - (count($squadArray) + 1))]['db'];
 
-			$statement = $conn->prepare("SELECT * FROM troopers WHERE squad = ? AND troopers.id != ".placeholder." " . (isset($_POST['activeonly']) && $_POST['activeonly'] == 1 ? 'AND ('. $dbValue .' = \'1\' OR ' . $dbValue . ' = \'2\')' : '') . "");
-			$statement->bind_param("i", $_POST['squad']);
+			$statement = $conn->prepare("SELECT * FROM troopers WHERE troopers.id != ".placeholder." " . (isset($_POST['activeonly']) && $_POST['activeonly'] == 1 ? 'AND ('. $dbValue .' = \'1\' OR ' . $dbValue . ' = \'2\')' : 'AND (' . $dbValue . ' > 0)') . "");
 
 			// Get troop counts
 			$statement1 = $conn->prepare("SELECT COUNT(total) FROM (SELECT event_sign_up.troopid AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= ? AND events.dateEnd <= ? AND ".getCostumeQueryValues($_POST['squad'])." GROUP BY event_sign_up.troopid) AS ABC");
