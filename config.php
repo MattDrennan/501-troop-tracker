@@ -5591,23 +5591,31 @@ function isLink($id)
 	$link = 0;
 	
 	// Get number of events with link
-	$getNumOfLinks = $conn->query("SELECT id FROM events WHERE link = '".$id."'");
+	$statement = $conn->prepare("SELECT id FROM events WHERE link = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->store_result();
+	$getNumOfLinks = $statement->num_rows;
 	
 	// Get link ID
-	$getLinkID = $conn->query("SELECT link FROM events WHERE id = '".$id."'");
-	$getLinkID_get = $getLinkID->fetch_row();
+	$statement = $conn->prepare("SELECT link FROM events WHERE id = ?");
+	$statement->bind_param("i", $getLinkID_get);
+	$statement->execute();
+	$statement->bind_result($status);
+	$statement->fetch();
+	$statement->close();
 	
 	// If has links to event, or is linked, show shift data
-	if($getNumOfLinks->num_rows > 0 || $id != 0)
+	if($getNumOfLinks > 0 || $id != 0)
 	{
 		// If this event is the link
-		if($getNumOfLinks->num_rows > 0)
+		if($getNumOfLinks > 0)
 		{
 			$link = $id;
 		}
-		else if($getLinkID_get[0] != 0)
+		else if($getLinkID_get != 0)
 		{
-			$link = $getLinkID_get[0];
+			$link = $getLinkID_get;
 		}
 	}
 	
