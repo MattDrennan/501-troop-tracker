@@ -3092,8 +3092,6 @@ function readTKNumber($tkid, $squad)
 			$statement->bind_result($getPrefix_value);
 			$statement->fetch();
 			$statement->close();
-
-			return $value;
 			
 			// Make sure TK prefix was found
 			if(isset($getPrefix_value) && $getPrefix_value != "")
