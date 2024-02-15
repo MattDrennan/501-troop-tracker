@@ -5368,11 +5368,12 @@ function isEventFull($eventID, $costumeID)
 		$clubCount++;
 	}
 
-	// Query to get limits
-	$query = "SELECT * FROM events WHERE id = '".$eventID."'";
+	// Query - get limiuts // output
+	$statement = $conn->prepare("SELECT * FROM events WHERE id = ?");
+	$statement->bind_param("i", $eventID);
+	$statement->execute();
 
-	// Output
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
