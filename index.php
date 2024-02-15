@@ -1001,10 +1001,12 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 	<br /><br />';
 
 	// Format dates
-	$dateStart = strtotime($_POST['dateStart']);
-	$dateEnd = strtotime($_POST['dateEnd']);
-	$dateStartQuery = date('Y-m-d H:i:s', $dateStart);
-	$dateEndQuery = date('Y-m-d H:i:s', $dateEnd);
+	if(isset($_POST['submitSearch'])) {
+		$dateStart = strtotime(($_POST['dateStart'] != "" ? $_POST['dateStart'] : '1990-01-01'));
+		$dateEnd = strtotime(($_POST['dateStart'] != "" ? $_POST['dateEnd'] : '3000-01-01'));
+		$dateStartQuery = date('Y-m-d H:i:s', $dateStart);
+		$dateEndQuery = date('Y-m-d H:i:s', $dateEnd);
+	}
 
 	// Get our search type, and show certain fields
 	// Regular search
