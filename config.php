@@ -1745,19 +1745,13 @@ function isSupporter($id)
 	
 	// Set up value
 	$value = 0;
-	
-	// Get data
-	$query = "SELECT supporter FROM troopers WHERE id = '".$id."'";
-	
-	// Run query...
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			// Set
-			$value = $db->supporter;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT supporter FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
 	
 	// Return
 	return $value;
