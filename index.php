@@ -2482,7 +2482,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					$statement = $conn->prepare("SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, event_sign_up.costume, event_sign_up.note, troopers.name AS trooperName FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE (troopers.".$dbValue." > 0) AND events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 AND troopers.id != 0 ORDER BY troopers.name");
 
 					// Check if a member of club
-					if(isClubMember($club_value['db']) == 0 && hasPermission(2))
+					if(isClubMember($dbValue) == 0 && hasPermission(2))
 					{
 						die("<p>Not a member of this squad / club.</p>");
 					}
@@ -2588,61 +2588,45 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<a href="#addtrooper" class="button">Add Trooper</a>';
 			}
 			
-			// Set up
-			$queryAdd = "WHERE ";
-			
 			// Check if squad is requested
 			if(isset($_GET['squad']))
 			{	
 				// Which club to get
 				if($_GET['squad'] == "all")
 				{
-					$queryAdd .= "p501 > 0";
+					$statement = $conn->prepare("SELECT * FROM troopers WHERE p501 > 0 AND id != ".placeholder." AND approved = '1' ORDER BY name");
 				}
 				else if($_GET['squad'] <= count($squadArray))
 				{
-					$queryAdd .= "squad = '".cleanInput($_GET['squad'])."' AND p501 > 0";
+					$statement = $conn->prepare("SELECT * FROM troopers WHERE p501 > 0 AND squad = ? AND id != ".placeholder." AND approved = '1' ORDER BY name");
+					$statement->bind_param("i", $_GET['squad']);
 
 					// Check if a member of club
-					if(getSquadID($_SESSION['id']) != cleanInput($_GET['squad']) && hasPermission(2))
+					if(getSquadID($_SESSION['id']) != $_GET['squad'] && hasPermission(2))
+					{
+						die("<p>Not a member of this squad / club.</p>");
+					}
+				} else {
+					$dbValue = $clubArray[($_GET['squad'] - (count($squadArray) + 1))]['db'];
+
+					$statement = $conn->prepare("SELECT * FROM troopers WHERE ".$dbValue." > 0 AND id != ".placeholder." AND approved = '1' ORDER BY name");
+
+					// Check if a member of club
+					if(isClubMember($dbValue) == 0 && hasPermission(2))
 					{
 						die("<p>Not a member of this squad / club.</p>");
 					}
 				}
-				
-				// Set up count
-				$clubCount = count($squadArray) + 1;
-				
-				// Loop through clubs
-				foreach($clubArray as $club => $club_value)
-				{
-					// Match
-					if($_GET['squad'] == $clubCount)
-					{
-						// Add to query
-						$queryAdd .= " ".$club_value['db']." > 0";
-
-						// Check if a member of club
-						if(isClubMember($club_value['db']) == 0 && hasPermission(2))
-						{
-							die("<p>Not a member of this squad / club.</p>");
-						}
-					}
-					
-					// Increment
-					$clubCount++;
-				}
-				
-				$queryAdd .= " AND";
+			} else {
+				$statement = $conn->prepare("SELECT * FROM troopers WHERE id != ".placeholder." AND approved = '1' ORDER BY name");
 			}
-			
-			// Query database
-			$query = "SELECT * FROM troopers ".$queryAdd." id != ".placeholder." AND approved = '1' ORDER BY name";
 			
 			// Query count
 			$i = 0;
+
+			$statement->execute();
 			
-			if ($result = mysqli_query($conn, $query))
+			if ($result = $statement->get_result())
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
