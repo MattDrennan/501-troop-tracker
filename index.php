@@ -3323,10 +3323,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<h3>Edit Costume</h3>';
 
 			// Get data
-			$query = "SELECT * FROM costumes ORDER BY costume";
+			$statement = $conn->prepare("SELECT * FROM costumes ORDER BY costume");
+			$statement->execute();
 
 			$i = 0;
-			if ($result = mysqli_query($conn, $query))
+			if ($result = $statement->get_result())
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
@@ -3404,10 +3405,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<h3>Delete Costume</h3>';
 
 			// Get data
-			$query = "SELECT * FROM costumes ORDER BY costume";
+			$statement = $conn->prepare("SELECT * FROM costumes ORDER BY costume");
+			$statement->execute();
 
 			$i = 0;
-			if ($result = mysqli_query($conn, $query))
+			if ($result = $statement->get_result())
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
@@ -3454,13 +3456,14 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<div name="assignarea" id="assignarea">';
 
 			// Get data
-			$query = "SELECT * FROM troopers WHERE approved = 1 ORDER BY name";
+			$statement = $conn->prepare("SELECT * FROM troopers WHERE approved = 1 ORDER BY name");
+			$statement->execute();
 
 			// Amount of users
 			$i = 0;
 			$getId = 0;
 
-			if ($result = mysqli_query($conn, $query))
+			if ($result = $statement->get_result())
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
@@ -3556,10 +3559,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<h3>Edit Award</h3>';
 
 			// Get data
-			$query = "SELECT * FROM awards ORDER BY title";
+			$statement = $conn->prepare("SELECT * FROM awards ORDER BY title");
+			$statement->execute();
 
 			$i = 0;
-			if ($result = mysqli_query($conn, $query))
+			if ($result = $statement->get_result())
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
@@ -3613,10 +3617,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			echo '<br /><hr /><br /><h3>Delete Award</h3>';
 
 			// Get data
-			$query = "SELECT * FROM awards ORDER BY title";
+			$statement = $conn->prepare("SELECT * FROM awards ORDER BY title");
+			$statement->execute();
 
 			$i = 0;
-			if ($result = mysqli_query($conn, $query))
+			if ($result = $statement->get_result())
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
@@ -3675,16 +3680,19 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			// If edid set - this makes sure that old events are shown in the edit screen
 			if($eid >= 0)
 			{
-				$query = "(SELECT * FROM events WHERE id = ".$eid." LIMIT 1) UNION (SELECT * FROM events ORDER BY dateStart DESC LIMIT 500)";
+				$statement = $conn->prepare("(SELECT * FROM events WHERE id = ? LIMIT 1) UNION (SELECT * FROM events ORDER BY dateStart DESC LIMIT 500)");
+				$statement->bind_param("i", $eid);
 			}
 			else
 			{
 				// If eid is not set
-				$query = "SELECT * FROM events ORDER BY dateStart DESC LIMIT 500";
+				$statement = $conn->prepare("SELECT * FROM events ORDER BY dateStart DESC LIMIT 500");
 			}
 
 			// Amount of events
 			$i = 0;
+
+			$statement->get_result();
 
 			if ($result = mysqli_query($conn, $query))
 			{
@@ -3988,12 +3996,13 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<h3>Approve Trooper Requests</h3>';
 
 			// Get data
-			$query = "SELECT * FROM troopers WHERE approved = 0 ORDER BY datecreated";
+			$statement = $conn->prepare("SELECT * FROM troopers WHERE approved = 0 ORDER BY datecreated");
+			$statement->execute();
 
 			// Amount of users
 			$i = 0;
 
-			if ($result = mysqli_query($conn, $query))
+			if ($result = $statement->get_result())
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
