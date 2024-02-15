@@ -4559,7 +4559,7 @@ function validate_url($url)
 function ifEmpty($value, $message = "EMPTY")
 {
 	// Check for blank HTML
-	$valueClean = strip_tags($value);
+	$valueClean = @strip_tags($value);
 
 	if($valueClean == "")
 	{
