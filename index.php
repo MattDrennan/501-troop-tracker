@@ -4071,12 +4071,13 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<h3>Manage Troopers</h3>';
 
 			// Get data
-			$query = "SELECT * FROM troopers ORDER BY name";
+			$statement = $conn->prepare("SELECT * FROM troopers ORDER BY name");
+			$statement->execute();
 
 			// Amount of users
 			$i = 0;
 
-			if ($result = mysqli_query($conn, $query))
+			if ($result = $statement->get_result())
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
@@ -4294,14 +4295,16 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			if(isset($_GET['eid']) && $_GET['eid'] >= 0)
 			{
 				// Get data for copy troop
-				$eid = cleanInput($_GET['eid']);
+				$eid = $_GET['eid'];
 				
-				$query = "SELECT * FROM events WHERE id = '".$eid."' LIMIT 1";
+				$statement = $conn->prepare("SELECT * FROM events WHERE id = ? LIMIT 1");
+				$statement->bind_param("i", $eid);
+				$statement->execute();
 				
 				// Event found
 				$i = 0;
 
-				if ($result = mysqli_query($conn, $query))
+				if ($result = $statement->get_result())
 				{
 					while ($db = mysqli_fetch_object($result))
 					{
@@ -4752,9 +4755,12 @@ if(isset($_GET['action']) && $_GET['action'] == "faq")
 if(isset($_GET['action']) && $_GET['action'] == "editphoto")
 {
 	// Get data
-	$query = "SELECT * FROM uploads WHERE id = '".cleanInput($_GET['id'])."'";
+	$statement = $conn->prepare("SELECT * FROM uploads WHERE id = ?");
+	$statement->bind_param("i", $_GET['id']);
+	$statement->execute();
+
 	$i = 0;
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -4826,12 +4832,15 @@ if(isset($_GET['action']) && $_GET['action'] == "login" && !loggedIn())
 		}
 
 		// Get data
-		$query = "SELECT * FROM troopers WHERE forum_id = '".filter_var($_POST['tkid'], FILTER_SANITIZE_ADD_SLASHES)."' LIMIT 1";
+		$username = filter_var($_POST['tkid'], FILTER_SANITIZE_ADD_SLASHES);
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE forum_id = ? LIMIT 1");
+		$statement->bind_param("s", $username);
+		$statement->execute();
 		
 		// Trooper count
 		$i = 0;
 
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -5096,7 +5105,9 @@ if(isset($_GET['event']) && loggedIn())
 		deletePost(getCommentPostID(cleanInput($_POST['comment'])), true);
 
 		// Delete
-		$conn->query("DELETE FROM comments WHERE id = '".cleanInput($_POST['comment'])."'");
+		$statement = $conn->prepare("DELETE FROM comments WHERE id = ?");
+		$statement->bind_param("i", $_POST['comment']);
+		$statement->execute();
 	}
 
 	// Globals
@@ -5113,8 +5124,11 @@ if(isset($_GET['event']) && loggedIn())
 	$eventExist = false;
 			
 	// Query database for event info
-	$query = "SELECT * FROM events WHERE id = '".cleanInput($_GET['event'])."'";
-	if ($result = mysqli_query($conn, $query))
+	$statement = $conn->prepare("SELECT * FROM events WHERE id = ?");
+	$statement->bind_param("i", $_GET['event']);
+	$statement->execute();
+
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
