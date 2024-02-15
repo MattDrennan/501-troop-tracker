@@ -1000,151 +1000,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 	<hr />
 	<br /><br />';
 	
-	// Regular search
-	if(isset($_POST['searchType']) && $_POST['searchType'] == "regular")
-	{
-		// Query for search
-		$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id != ".placeholder." AND ";
-		
-		if(strlen($_POST['tkID']) > 0)
-		{
-			$query .= " troopers.tkid = '".cleanInput($_POST['tkID'])."'";
-		}
-
-		if(strlen($_POST['searchName']) > 0)
-		{
-			if(strlen($_POST['tkID']) > 0)
-			{
-				$query .= " AND";
-			}
-
-			$query .= " events.name LIKE '%".cleanInput($_POST['searchName'])."%'";
-		}
-
-		if(strlen($_POST['dateStart']) > 0)
-		{
-			if(strlen($_POST['searchName']) > 0)
-			{
-				$query .= " AND";
-			}
-
-			$date = strtotime(cleanInput($_POST['dateStart']));
-			$dateF = date('Y-m-d H:i:s', $date);
-
-			$query .= " events.dateStart >= '".$dateF."'";
-		}
-
-		if(strlen($_POST['dateEnd']) > 0)
-		{
-			if(strlen($_POST['dateStart']) > 0)
-			{
-				$query .= " AND";
-			}
-
-			$date = strtotime(cleanInput($_POST['dateEnd']));
-			$dateF = date('Y-m-d H:i:s', $date);
-
-			$query .= " events.dateEnd <= '".$dateF."'";
-		}
-		
-		if(strlen($_POST['searchTrooperName']) > 0)
-		{
-			if(strlen($_POST['dateEnd']) > 0)
-			{
-				$query .= " AND";
-			}
-
-			$query .= " troopers.name LIKE '%".cleanInput($_POST['searchTrooperName'])."%'";
-		}
-	}
-	else if(isset($_POST['searchType']) && $_POST['searchType'] == "trooper")
-	{	
-		// Format date start
-		$date = strtotime(cleanInput($_POST['dateStart']));
-		$dateF = date('Y-m-d H:i:s', $date);
-		
-		// Format date end
-		$date = strtotime(cleanInput($_POST['dateEnd']));
-		$dateE = date('Y-m-d H:i:s', $date);
-
-		// Query for search
-		$query = "SELECT * FROM troopers";
-		
-		// Get the squad search type
-		// If All
-		if($_POST['squad'] == 0)
-		{
-			// Add to query
-			$query .= " WHERE troopers.id != ".placeholder."";
-
-			// Get troop counts
-			$troops_get = $conn->query("SELECT COUNT(id) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."'");
-			$troop_count = $troops_get->fetch_row();
-			
-			// Get charity counts
-			$charity_get = $conn->query("SELECT SUM(charityDirectFunds) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."'");
-			$charity_count = $charity_get->fetch_row();
-
-			$charity_get2 = $conn->query("SELECT SUM(charityIndirectFunds) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."'");
-			$charity_count2 = $charity_get2->fetch_row();
-		}
-		
-		// If 501st
-		if(($_POST['squad'] >= 1 && $_POST['squad'] <= count($squadArray)))
-		{
-			// Add to query
-			$query .= " WHERE squad = '".cleanInput($_POST['squad'])."' AND troopers.id != ".placeholder."";
-			
-			// Get troop counts
-			$troops_get = $conn->query("SELECT COUNT(id) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."' AND squad = '".cleanInput($_POST['squad'])."'");
-			$troop_count = $troops_get->fetch_row();
-			
-			// Get charity counts
-			$charity_get = $conn->query("SELECT SUM(charityDirectFunds) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."' AND squad = '".cleanInput($_POST['squad'])."'");
-			$charity_count = $charity_get->fetch_row();
-
-			$charity_get2 = $conn->query("SELECT SUM(charityIndirectFunds) FROM events WHERE dateStart >= '".$dateF."' AND dateEnd <= '".$dateE."' AND squad = '".cleanInput($_POST['squad'])."'");
-			$charity_count2 = $charity_get2->fetch_row();
-			
-			// If active only set
-			if(isset($_POST['activeonly']) && $_POST['activeonly'] == 1)
-			{
-				$query .= " AND (p501 = '1' OR p501 = '2')";
-			}
-		}
-		
-		// Set up Squad ID
-		$clubID = count($squadArray) + 1;
-		
-		// Loop through clubs
-		foreach($clubArray as $club => $club_value)
-		{
-			// Check if squad ID matches value of search
-			if($clubID == $_POST['squad'])
-			{
-				// Get troop counts
-				$troops_get = $conn->query("SELECT COUNT(total) FROM (SELECT event_sign_up.troopid AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ".getCostumeQueryValues($clubID)." GROUP BY event_sign_up.troopid) AS ABC");
-				$troop_count = $troops_get->fetch_row();
-				
-				// Get charity counts
-				$charity_get = $conn->query("SELECT SUM(total) FROM (SELECT events.charityDirectFunds AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ".getCostumeQueryValues($clubID)." GROUP BY event_sign_up.troopid) AS ABC");
-				$charity_count = $charity_get->fetch_row();
-
-				$charity_get2 = $conn->query("SELECT SUM(total) FROM (SELECT events.charityIndirectFunds AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ".getCostumeQueryValues($clubID)." GROUP BY event_sign_up.troopid) AS ABC");
-				$charity_count2 = $charity_get2->fetch_row();
-				
-				// If active only set
-				if(isset($_POST['activeonly']) && $_POST['activeonly'] == 1)
-				{
-					$query .= " WHERE (".$club_value['db']." = '1' OR ".$club_value['db']." = '2') AND troopers.id != ".placeholder." ";
-				}
-			}
-			
-			// Increment
-			$clubID++;
-		}
-	}
-	else if(isset($_POST['searchType']) && $_POST['searchType'] == "donations")
+	if(isset($_POST['searchType']) && $_POST['searchType'] == "donations")
 	{	
 		// Format date start
 		$date = strtotime(cleanInput($_POST['dateStart']));
@@ -1221,67 +1077,12 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 
 		$query .= " GROUP BY events.id";
 	}
-	else if(isset($_POST['searchType']) && $_POST['searchType'] == "costumecount")
-	{	
-		// Format date start
-		$date = strtotime(cleanInput($_POST['dateStart']));
-		$dateF = date('Y-m-d H:i:s', $date);
-		
-		// Format date end
-		$date = strtotime(cleanInput($_POST['dateEnd']));
-		$dateE = date('Y-m-d H:i:s', $date);
 
-		// Loop through clubs
-		foreach($_POST['costumes_choice_search_box'] as $costume)
-		{
-			echo '
-			<h2 class="tm-section-header">'.getCostume($costume).'</h2>';
-
-			// Get data
-			$query = "SELECT (SELECT COUNT(event_sign_up.trooperid)) AS troopCount, troopers.name AS trooperName, troopers.tkid, troopers.squad, event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, (TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) AS charityHours FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE event_sign_up.costume = '".cleanInput($costume)."' AND status = 3 AND events.closed = '1' AND events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' GROUP BY event_sign_up.trooperid ORDER BY troopCount DESC";
-
-			// Troop count
-			$i = 0;
-
-			if ($result = mysqli_query($conn, $query))
-			{
-				while ($db = mysqli_fetch_object($result))
-				{
-					if($i == 0)
-					{
-						echo '
-						<div style="overflow-x: auto;">
-						<table border="1">
-						<tr>
-							<th>Trooper Name</th>	<th>Trooper TKID</th>	<th>Costume Troop Count</th>
-						</tr>';
-					}
-
-					echo '
-					<tr>
-						<td><a href="index.php?profile='.$db->trooperid.'">'.$db->trooperName.'</a></td>	<td>'.readTKNumber($db->tkid, $db->squad).'</td>	<td>'.$db->troopCount.'</td>
-					</tr>';
-
-					$i++;
-				}
-			}
-
-			if($i == 0)
-			{
-				echo '
-				<p style="text-align: center;">
-					No troops found.
-				</p>';
-			}
-
-			if($i > 0)
-			{
-				echo '
-				</table>
-				</div>';
-			}
-		}
-	}
+	// Format dates
+	$dateStart = strtotime($_POST['dateStart']);
+	$dateEnd = strtotime($_POST['dateEnd']);
+	$dateStartQuery = date('Y-m-d H:i:s', $dateStart);
+	$dateEndQuery = date('Y-m-d H:i:s', $dateEnd);
 
 	// Get our search type, and show certain fields
 	// Regular search
@@ -1289,7 +1090,11 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 	{
 		// Get data
 		$i = 0;
-		if ($result = mysqli_query($conn, $query))
+		$statement = $conn->prepare("SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id != ".placeholder." AND troopers.tkid LIKE CONCAT('%', ?, '%') AND events.name LIKE CONCAT('%', ?, '%') AND events.dateStart >= ? AND events.dateEnd <= ? AND troopers.name LIKE CONCAT('%', ?, '%')");
+		$statement->bind_param("sssss", $_POST['tkID'], $_POST['searchName'], $dateStartQuery, $dateEndQuery, $_POST['searchTrooperName']);
+		$statement->execute();
+
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -1329,9 +1134,164 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			}
 		}
 	}
+	else if(isset($_POST['searchType']) && $_POST['searchType'] == "costumecount")
+	{	
+		// Loop through clubs
+		foreach($_POST['costumes_choice_search_box'] as $costume)
+		{
+			echo '
+			<h2 class="tm-section-header">'.getCostume($costume).'</h2>';
+
+			// Get data
+			$statement = $conn->prepare("SELECT (SELECT COUNT(event_sign_up.trooperid)) AS troopCount, troopers.name AS trooperName, troopers.tkid, troopers.squad, event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, (TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) AS charityHours FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE event_sign_up.costume = ? AND status = 3 AND events.closed = '1' AND events.dateStart >= '".$dateStartQuery."' AND events.dateEnd <= '".$dateEndQuery."' GROUP BY event_sign_up.trooperid ORDER BY troopCount DESC");
+			$statement->bind_param("i", $costume);
+			$statement->execute();
+
+			// Troop count
+			$i = 0;
+
+			if ($result = $statement->get_result())
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					if($i == 0)
+					{
+						echo '
+						<div style="overflow-x: auto;">
+						<table border="1">
+						<tr>
+							<th>Trooper Name</th>	<th>Trooper TKID</th>	<th>Costume Troop Count</th>
+						</tr>';
+					}
+
+					echo '
+					<tr>
+						<td><a href="index.php?profile='.$db->trooperid.'">'.$db->trooperName.'</a></td>	<td>'.readTKNumber($db->tkid, $db->squad).'</td>	<td>'.$db->troopCount.'</td>
+					</tr>';
+
+					$i++;
+				}
+			}
+
+			if($i == 0)
+			{
+				echo '
+				<p style="text-align: center;">
+					No troops found.
+				</p>';
+			}
+
+			if($i > 0)
+			{
+				echo '
+				</table>
+				</div>';
+			}
+		}
+	}
 	// Trooper search
 	else if(isset($_POST['searchType']) && $_POST['searchType'] == "trooper")
 	{
+		// Get the squad search type
+		if($_POST['squad'] == 0)
+		{
+			// If All
+
+			// Loop through clubs // This is to get active member column values
+			$checkClubsQuery = "";
+			foreach($clubArray as $club => $club_value)
+			{
+				$checkClubsQuery .= "(" . $club_value['db'] . " = 1 OR " . $club_value['db'] . " = 2) AND ";
+			}
+
+			$checkClubsQuery = substr($checkClubsQuery, 0, -4);
+
+			// Add to query
+			$statement = $conn->prepare("SELECT * FROM troopers WHERE troopers.id != ".placeholder." " . (isset($_POST['activeonly']) && $_POST['activeonly'] == 1 ? 'AND ' . $checkClubsQuery : '') . "");
+
+			// Get troop counts
+			$statement1 = $conn->prepare("SELECT id FROM events WHERE dateStart >= ? AND dateEnd <= ?");
+			$statement1->bind_param("ss", $dateStartQuery, $dateEndQuery);
+			$statement1->execute();
+			$statement1->store_result();
+			$troop_count = $statement1->num_rows;
+			
+			// Get charity counts
+			$statement1 = $conn->prepare("SELECT SUM(charityDirectFunds) FROM events WHERE dateStart >= ? AND dateEnd <= ?");
+			$statement1->bind_param("ss", $dateStartQuery, $dateEndQuery);
+			$statement1->execute();
+			$statement1->bind_result($charity_count);
+			$statement1->fetch();
+			$statement1->close();
+
+			$statement1 = $conn->prepare("SELECT SUM(charityIndirectFunds) FROM events WHERE dateStart >= ? AND dateEnd <= ?");
+			$statement1->bind_param("ss", $dateStartQuery, $dateEndQuery);
+			$statement1->execute();
+			$statement1->bind_result($charity_count2);
+			$statement1->fetch();
+			$statement1->close();
+		}
+		else if(($_POST['squad'] >= 1 && $_POST['squad'] <= count($squadArray)))
+		{
+			// If 501st
+			// Add to query
+			$statement = $conn->prepare("SELECT * FROM troopers WHERE squad = ? AND troopers.id != ".placeholder." " . (isset($_POST['activeonly']) && $_POST['activeonly'] == 1 ? 'AND (p501 = \'1\' OR p501 = \'2\')' : '') . "");
+			$statement->bind_param("i", $_POST['squad']);
+			
+			// Get troop counts
+			$statement1 = $conn->prepare("SELECT id FROM events WHERE dateStart >= ? AND dateEnd <= ? AND squad = ?");
+			$statement1->bind_param("ssi", $dateStartQuery, $dateEndQuery, $_POST['squad']);
+			$statement1->execute();
+			$statement1->store_result();
+			$troop_count = $statement1->num_rows;
+			
+			// Get charity counts
+			$statement1 = $conn->prepare("SELECT SUM(charityDirectFunds) FROM events WHERE dateStart >= ? AND dateEnd <= ? AND squad = ?");
+			$statement1->bind_param("ssi", $dateStartQuery, $dateEndQuery, $_POST['squad']);
+			$statement1->execute();
+			$statement1->bind_result($charity_count);
+			$statement1->fetch();
+			$statement1->close();
+
+			$statement1 = $conn->prepare("SELECT SUM(charityIndirectFunds) FROM events WHERE dateStart >= ? AND dateEnd <= ? AND squad = ?");
+			$statement1->bind_param("ssi", $dateStartQuery, $dateEndQuery, $_POST['squad']);
+			$statement1->execute();
+			$statement1->bind_result($charity_count2);
+			$statement1->fetch();
+			$statement1->close();
+		}
+		
+		// Set up Squad ID
+		$clubID = count($squadArray) + 1;
+		
+		// Loop through clubs
+		foreach($clubArray as $club => $club_value)
+		{
+			// Check if squad ID matches value of search
+			if($clubID == $_POST['squad'])
+			{
+				// Get troop counts
+				$troops_get = $conn->query("SELECT COUNT(total) FROM (SELECT event_sign_up.troopid AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ".getCostumeQueryValues($clubID)." GROUP BY event_sign_up.troopid) AS ABC");
+				$troop_count = $troops_get->fetch_row();
+				
+				// Get charity counts
+				$charity_get = $conn->query("SELECT SUM(total) FROM (SELECT events.charityDirectFunds AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ".getCostumeQueryValues($clubID)." GROUP BY event_sign_up.troopid) AS ABC");
+				$charity_count = $charity_get->fetch_row();
+
+				$charity_get2 = $conn->query("SELECT SUM(total) FROM (SELECT events.charityIndirectFunds AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= '".$dateF."' AND events.dateEnd <= '".$dateE."' AND ".getCostumeQueryValues($clubID)." GROUP BY event_sign_up.troopid) AS ABC");
+				$charity_count2 = $charity_get2->fetch_row();
+				
+				// If active only set
+				if(isset($_POST['activeonly']) && $_POST['activeonly'] == 1)
+				{
+					$query .= " WHERE (".$club_value['db']." = '1' OR ".$club_value['db']." = '2') AND troopers.id != ".placeholder." ";
+				}
+			}
+			
+			// Increment
+			$clubID++;
+		}
+
 		// Get data
 		$i = 0;
 		
@@ -1354,9 +1314,11 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		{
 			$troop_count[0] = 0;
 		}
+
+		$statement->execute();
 		
 		// Start going through troopers
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
