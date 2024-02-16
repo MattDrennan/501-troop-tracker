@@ -1756,7 +1756,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn())
 		}
 		
 		// Set total pages
-		$total_pages = ceil($row["total"] / $results);
+		$total_pages = ceil($row / $results);
 		
 		// If page set
 		if(isset($_GET['page']))
@@ -1837,7 +1837,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn())
 
 			echo '
 			<tr>
-				<td><a href="index.php?event='.$db->eventId.'">'. (isLink($db->eventId) > 0 ? '[<b>" . date("l", strtotime($db->dateStart)) . "</b> : ".date("m/d - h:i A", strtotime($db->dateStart))." - ".date("h:i A", strtotime($db->dateEnd))."] ' : '') .''.$db->eventName.'</a></td>	<td>'.$count.'</td>	<td>Direct: $'.number_format($db->charityDirectFunds).'<br />Indirect: $'.number_format($db->charityIndirectFunds).'<br />Hours: '.number_format($db->charityHours).'</td>
+				<td><a href="index.php?event='.$db->eventId.'">'. (isLink($db->eventId) > 0 ? '[<b>' . date("l", strtotime($db->dateStart)) . '</b> : '.date("m/d - h:i A", strtotime($db->dateStart)).' - '.date("h:i A", strtotime($db->dateEnd)).'] ' : '') .''.$db->eventName.'</a></td>	<td>'.$count.'</td>	<td>Direct: $'.number_format($db->charityDirectFunds).'<br />Indirect: $'.number_format($db->charityIndirectFunds).'<br />Hours: '.number_format($db->charityHours).'</td>
 			</tr>';
 
 			$i++;
