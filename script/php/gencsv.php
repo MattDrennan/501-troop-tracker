@@ -17,8 +17,11 @@ if(!isset($_GET['troopid'])) {
 $list = array();
 
 // Query database for event info
-$query = "SELECT * FROM events WHERE id = '".cleanInput($_GET['troopid'])."'";
-if ($result = mysqli_query($conn, $query))
+$statement = $conn->prepare("SELECT * FROM events WHERE id = ?");
+$statement->bind_param("i", $_GET['troopid']);
+$statement->execute();
+
+if ($result = $statement->get_result())
 {
     while ($db = mysqli_fetch_object($result))
     {
@@ -26,9 +29,11 @@ if ($result = mysqli_query($conn, $query))
         array_push($list, ['Trooper Name', 'TKID', 'Forum Name', 'Costume', 'Status']);
 
         // Query database for roster info
-        $query2 = "SELECT event_sign_up.id AS signId, event_sign_up.note, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, event_sign_up.status, event_sign_up.signuptime, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.forum_id, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".cleanInput($_GET['troopid'])."' ORDER BY event_sign_up.id ASC";
+        $statement2 = $conn->prepare("SELECT event_sign_up.id AS signId, event_sign_up.note, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, event_sign_up.status, event_sign_up.signuptime, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.forum_id, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = ? ORDER BY event_sign_up.id ASC");
+        $statement2->bind_param("i", $_GET['troopid']);
+        $statement2->execute();
 
-        if ($result2 = mysqli_query($conn, $query2))
+        if ($result2 = $statement2->get_result())
         {
             while ($db2 = mysqli_fetch_object($result2))
             {
