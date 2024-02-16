@@ -2085,7 +2085,10 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 	// If the user is logged in and is an admin
 	if(loggedIn() && isAdmin())
 	{
-		$getTrooperNotifications = $conn->query("SELECT id FROM troopers WHERE approved = '0'");
+		$statement = $conn->prepare("SELECT id FROM troopers WHERE approved = '0'");
+		$statement->execute();
+		$statement->store_result();
+		$getTrooperNotifications = $statement->num_rows;
 
 		echo '
 		<h2 class="tm-section-header">Command Staff Welcome Area</h2>
@@ -2095,7 +2098,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<a href="index.php?action=commandstaff&do=editevent" class="button">Edit an Event</a> 
 			<a href="index.php?action=commandstaff&do=roster" class="button">Roster</a> 
 			<a href="index.php?action=commandstaff&do=notifications" class="button">Notifications</a> 
-			<a href="index.php?action=commandstaff&do=approvetroopers" class="button" id="trooperRequestButton" name="trooperRequestButton">Approve Trooper Requests - ('.$getTrooperNotifications->num_rows.')</a> ';
+			<a href="index.php?action=commandstaff&do=approvetroopers" class="button" id="trooperRequestButton" name="trooperRequestButton">Approve Trooper Requests - ('.$getTrooperNotifications.')</a> ';
 			
 			if(hasPermission(1))
 			{
@@ -2216,7 +2219,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				$squadName = str_replace(" ", "", $squad_value['name']);
 				
 				// Set variable
-				${"totalAccountsSetUp" . $squadName} = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = ".$squadCount."");
+				$statement = $conn->prepare("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = ?");
+				$statement->bind_param("i", $squadCount);
+				$statement->execute();
+				$statement->store_result();
+				${"totalAccountsSetUp" . $squadName} = $statement->num_rows;
 				
 				// Increment
 				$squadCount++;
@@ -2232,41 +2239,73 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				$clubName = str_replace(" ", "", $club_value['name']);
 				
 				// Set variable
-				${"totalAccountsSetUp" . $clubName} = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = ".$clubCount."");
+				$statement = $conn->prepare("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = ?");
+				$statement->bind_param("i", $clubCount);
+				$statement->execute();
+				$statement->store_result();
+				${"totalAccountsSetUp" . $clubName} = $statement->num_rows;
 				
 				// Count active members
-				${"totalActive" . $clubName} = $conn->query("SELECT id FROM troopers WHERE ".$club_value['db']." = '1'");
+				$statement = $conn->prepare("SELECT id FROM troopers WHERE ".$club_value['db']." = '1'");
+				$statement->execute();
+				$statement->store_result();
+				${"totalActive" . $clubName} = $statement->num_rows;
 				
 				// Count reserve members
-				${"totalReserve" . $clubName} = $conn->query("SELECT id FROM troopers WHERE ".$club_value['db']." = '2'");
+				$statement = $conn->prepare("SELECT id FROM troopers WHERE ".$club_value['db']." = '2'");
+				$statement->execute();
+				$statement->store_result();
+				${"totalReserve" . $clubName} = $statement->num_rows;
 				
 				// Count retired members
-				${"totalRetired" . $clubName} = $conn->query("SELECT id FROM troopers WHERE ".$club_value['db']." = '3'");
+				$statement = $conn->prepare("SELECT id FROM troopers WHERE ".$club_value['db']." = '3'");
+				$statement->execute();
+				$statement->store_result();
+				${"totalRetired" . $clubName} = $statement->num_rows;
 				
 				// Increment
 				$clubCount++;
 			}
 			
 			// Count number of users with set up accounts - 501
-			$totalAccountsSetUp501 = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad <= ".count($squadArray)."");
+			$statement = $conn->prepare("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad <= ?");
+			$statement->bind_param("i", count($squadArray));
+			$statement->execute();
+			$statement->store_result();
+			$totalAccountsSetUp501 = $statement->num_rows;
 			
 			// Count number of users with set up accounts (TOTAL)
-			$totalAccountsSetUp = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1'");
+			$statement = $conn->prepare("SELECT id FROM troopers WHERE password != '' AND approved = '1'");
+			$statement->execute();
+			$statement->store_result();
+			$totalAccountsSetUp = $statement->num_rows;
 
 			// Total number of accounts
-			$totalAccounts = $conn->query("SELECT id FROM troopers");
+			$statement = $conn->prepare("SELECT id FROM troopers");
+			$statement->execute();
+			$statement->store_result();
+			$totalAccounts = $statement->num_rows;
 
 			// Total accounts not set up
-			$totalNotSet = $totalAccounts->num_rows - $totalAccountsSetUp->num_rows;
+			$totalNotSet = $totalAccounts - $totalAccountsSetUp;
 			
 			// Count active members - 501
-			$totalActive501 = $conn->query("SELECT id FROM troopers WHERE p501 = '1'");
+			$statement = $conn->prepare("SELECT id FROM troopers WHERE p501 = '1'");
+			$statement->execute();
+			$statement->store_result();
+			$totalActive501 = $statement->num_rows;
 			
 			// Count reserve members - 501
-			$totalReserve501 = $conn->query("SELECT id FROM troopers WHERE p501 = '2'");
+			$statement = $conn->prepare("SELECT id FROM troopers WHERE p501 = '2'");
+			$statement->execute();
+			$statement->store_result();
+			$totalReserve501 = $statement->num_rows;
 			
 			// Count retired members - 501
-			$totalRetired501 = $conn->query("SELECT id FROM troopers WHERE p501 = '3'");
+			$statement = $conn->prepare("SELECT id FROM troopers WHERE p501 = '3'");
+			$statement->execute();
+			$statement->store_result();
+			$totalRetired501 = $statement->num_rows;
 
 			echo '
 			<h2>Important People</h2>
@@ -2361,7 +2400,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			echo '
 			<h3>Troop Tracker Usage</h3>
 
-			<p><b>501st Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUp501->num_rows).'</p>';
+			<p><b>501st Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUp501).'</p>';
 			
 			// Loop through squads
 			foreach($squadArray as $squad => $squad_value)
@@ -2370,10 +2409,14 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				$squadName = str_replace(" ", "", $squad_value['name']);
 				
 				echo '
-				<p><b>'.$squad_value['name'].' Total Accounts (Set Up):</b> '.number_format(${"totalAccountsSetUp" . $squadName}->num_rows).'</p>';
+				<p><b>'.$squad_value['name'].' Total Accounts (Set Up):</b> '.number_format(${"totalAccountsSetUp" . $squadName}).'</p>';
 				
 				// Set variable
-				${"totalAccountsSetUp" . $squadName} = $conn->query("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = ".$squadCount."");
+				$statement = $conn->prepare("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad = ?");
+				$statement->bind_param("i", $squadCount);
+				$statement->execute();
+				$statement->store_result();
+				${"totalAccountsSetUp" . $squadName} = $statement->num_rows;
 			}
 			
 			echo '
@@ -2386,23 +2429,23 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				$clubName = str_replace(" ", "", $club_value['name']);
 				
 				echo '
-				<p><b>'.$club_value['name'].' Total Accounts (Set Up):</b> ' . number_format(${"totalAccountsSetUp" . $clubName}->num_rows) . '</p>';
+				<p><b>'.$club_value['name'].' Total Accounts (Set Up):</b> ' . number_format(${"totalAccountsSetUp" . $clubName}) . '</p>';
 			}
 			
 			echo '
 			<br />
 			
-			<p><b>Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUp->num_rows).'</p>
+			<p><b>Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUp).'</p>
 			<p><b>Total Accounts (Not Set Up):</b> '.number_format($totalNotSet).'</p>
-			<p><b>Total Accounts:</b> '.number_format($totalAccounts->num_rows).'</p>
+			<p><b>Total Accounts:</b> '.number_format($totalAccounts).'</p>
 			
 			<br />
 			
 			<h3>Active/Reserve/Retired Members</h3>
 			
-			<p><b>501st Total Accounts (Active):</b> '.number_format($totalActive501->num_rows).'</p>
-			<p><b>501st Total Accounts (Reserve):</b> '.number_format($totalReserve501->num_rows).'</p>
-			<p><b>501st Total Accounts (Retired):</b> '.number_format($totalRetired501->num_rows).'</p>
+			<p><b>501st Total Accounts (Active):</b> '.number_format($totalActive501).'</p>
+			<p><b>501st Total Accounts (Reserve):</b> '.number_format($totalReserve501).'</p>
+			<p><b>501st Total Accounts (Retired):</b> '.number_format($totalRetired501).'</p>
 			
 			<br />';
 			
@@ -2413,9 +2456,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				$clubName = str_replace(" ", "", $club_value['name']);
 				
 				echo '
-				<p><b>'.$club_value['name'].' Total Accounts (Active):</b> ' . number_format(${"totalActive" . $clubName}->num_rows) . '</p>
-				<p><b>'.$club_value['name'].' Total Accounts (Reserve):</b> ' . number_format(${"totalReserve" . $clubName}->num_rows) . '</p>
-				<p><b>'.$club_value['name'].' Total Accounts (Retired):</b> ' . number_format(${"totalRetired" . $clubName}->num_rows) . '</p>
+				<p><b>'.$club_value['name'].' Total Accounts (Active):</b> ' . number_format(${"totalActive" . $clubName}) . '</p>
+				<p><b>'.$club_value['name'].' Total Accounts (Reserve):</b> ' . number_format(${"totalReserve" . $clubName}) . '</p>
+				<p><b>'.$club_value['name'].' Total Accounts (Retired):</b> ' . number_format(${"totalRetired" . $clubName}) . '</p>
 				
 				<br />';
 			}
@@ -4835,7 +4878,9 @@ if(isset($_GET['action']) && $_GET['action'] == "login" && !loggedIn())
 		if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
 		{
 			// Update username if changed
-			$conn->query("UPDATE troopers SET forum_id = '".$forumLogin['user']['username']."' WHERE user_id = '".$forumLogin['user']['user_id']."'");
+			$statement = $conn->prepare("UPDATE troopers SET forum_id = ? WHERE user_id = ?");
+			$statement->bind_param("si", $forumLogin['user']['username'], $forumLogin['user']['user_id']);
+			$statement->execute();
 		}
 
 		// Get data
@@ -4879,7 +4924,11 @@ if(isset($_GET['action']) && $_GET['action'] == "login" && !loggedIn())
 							if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
 							{
 								// Update password, e-mail, and user ID
-								$conn->query("UPDATE troopers SET password = '".password_hash($_POST['password'], PASSWORD_DEFAULT)."', email = '".$forumLogin['user']['email']."', user_id = '".$forumLogin['user']['user_id']."' WHERE id = '".$db->id."'");
+								$password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+
+								$statement = $conn->prepare("UPDATE troopers SET password = ?, email = ?, user_id = ? WHERE id = ?");
+								$statement->bind_param("ssii", $password, $forumLogin['user']['email'], $forumLogin['user']['user_id'], $db->id);
+								$statement->execute();
 							}
 							
 							// Set log in cookie, if set to keep logged in
@@ -4994,22 +5043,37 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed() && 
 					if(cleanInput($_POST['squad']) <= count($squadArray))
 					{
 						// Query the database
-						$conn->query("UPDATE troopers SET user_id = '".$forumLogin['user']['user_id']."', email = '".$forumLogin['user']['email']."', password = '".password_hash($_POST['password'], PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE forum_id = '".filter_var($_POST['forum_id'], FILTER_SANITIZE_ADD_SLASHES)."'");
+						$password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+						$forum_id = filter_var($_POST['forum_id'], FILTER_SANITIZE_ADD_SLASHES);
+
+						$statement = $conn->prepare("UPDATE troopers SET user_id = ?, email = ?, password = ?, squad = ? WHERE forum_id = ?");
+						$statement->bind_param("issis", $forumLogin['user']['user_id'], $forumLogin['user']['email'], $password, $_POST['squad'], $forum_id);
+						$statement->execute();
 						
 						// Display output
 						echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';
 					}
 					else
 					{
-						$tkIDTaken = $conn->query("SELECT id FROM troopers WHERE tkid = '".cleanInput($_POST['tkid2'])."' AND squad = '".cleanInput($_POST['squad'])."'");
+						$statement = $conn->prepare("SELECT id FROM troopers WHERE tkid = ? AND squad = ?");
+						$statement->bind_param("ii", $_POST['tkid2'], $_POST['squad']);
+						$statement->execute();
+						$statement->store_result();
+						$tkIDTaken = $statement->num_rows;
+
 						
-						if($tkIDTaken->num_rows == 0)
+						if($tkIDTaken == 0)
 						{
-							if(cleanInput($_POST['tkid2']) != "")
+							if($_POST['tkid2'] != "")
 							{
 								// If a club
 								// Query the database
-								$conn->query("UPDATE troopers SET user_id = '".$forumLogin['user']['user_id']."', email = '".$forumLogin['user']['email']."', tkid = '".cleanInput($_POST['tkid2'])."', password = '".password_hash($_POST['password'], PASSWORD_DEFAULT)."', squad = '".cleanInput($_POST['squad'])."' WHERE rebelforum = '".filter_var($_POST['tkid'], FILTER_SANITIZE_ADD_SLASHES)."'");
+								$password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+								$rebelforum = filter_var($_POST['tkid'], FILTER_SANITIZE_ADD_SLASHES);
+
+								$statement = $conn->prepare("UPDATE troopers SET user_id = ?, email = ?, tkid = ?, password = ?, squad = ? WHERE rebelforum = ?");
+								$statement->bind_param("isisis", $forumLogin['user']['user_id'], $forumLogin['user']['email'], $_POST['tkid2'], $password, $_POST['squad'], $_POST['squad'], $rebelforum);
+								$statement->execute();
 								
 								// Display output
 								echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';
@@ -5181,13 +5245,17 @@ if(isset($_GET['event']) && loggedIn())
 			$date2 = date("m/d/Y - h:i A", strtotime($db->dateEnd));
 
 			// Query to see if trooper is subscribed
-			$isSubscribed = $conn->query("SELECT * FROM event_notifications WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($_GET['event'])."'");
+			$statement = $conn->prepare("SELECT * FROM event_notifications WHERE trooperid = ? AND troopid = ?");
+			$statement->bind_param("ii", $_SESSION['id'], $_GET['event']);
+			$statement->execute();
+			$statement->store_result();
+			$isSubscribed = $statement->num_rows;
 
 			// Set default subscribe button text
 			$subscribeText = "Subscribe Updates";
 
 			// Check if we are subscribed
-			if($isSubscribed->num_rows > 0)
+			if($isSubscribed > 0)
 			{
 				$subscribeText = "Unsubscribe Updates";
 			}
@@ -5597,7 +5665,11 @@ if(isset($_GET['event']) && loggedIn())
 								}
 
 								// Get troop count
-								$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".strip_tags(addslashes($_GET['event']))."' AND status != '4' AND status != '1'");
+								$statement = $conn->prepare("SELECT id FROM event_sign_up WHERE troopid = ? AND status != '4' AND status != '1'");
+								$statement->bind_param("i", $_GET['event']);
+								$statement->execute();
+								$statement->store_result();
+								$getNumOfTroopers = $statement->num_rows;
 
 								// Set up total troopers
 								$totalTroopers = $db->limit501st;
@@ -5609,7 +5681,7 @@ if(isset($_GET['event']) && loggedIn())
 								}
 
 								// Is the event full?
-								if($getNumOfTroopers->num_rows >= $totalTroopers)
+								if($getNumOfTroopers >= $totalTroopers)
 								{
 									echo '
 									<b>This event is full, you will be placed on the stand by list.</b>';
