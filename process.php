@@ -3244,7 +3244,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 				
 				// Send to database to send out notifictions later
 				$statement = $conn->prepare("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES (?, ?, '1')");
-				$statement->bind_param("ii", $_POST['trooperSelect']);
+				$statement->bind_param("ii", $_POST['event'], $_POST['trooperSelect']);
 				$statement->execute();
 			}
 		}
