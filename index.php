@@ -665,8 +665,11 @@ if(isset($_GET['profile']) && loggedIn())
 			}
 
 			// Get data from custom awards - load award user data
-			$query2 = "SELECT award_troopers.awardid, award_troopers.trooperid, awards.id, awards.title, awards.icon FROM award_troopers LEFT JOIN awards ON awards.id = award_troopers.awardid WHERE award_troopers.trooperid = '".$profile."'";
-			if ($result2 = mysqli_query($conn, $query2))
+			$statement = $conn->prepare("SELECT award_troopers.awardid, award_troopers.trooperid, awards.id, awards.title, awards.icon FROM award_troopers LEFT JOIN awards ON awards.id = award_troopers.awardid WHERE award_troopers.trooperid = ?");
+			$statement->bind_param("i", $profile);
+			$statement->execute();
+
+			if ($result2 = $statement->get_result())
 			{
 				while ($db2 = mysqli_fetch_object($result2))
 				{
@@ -703,8 +706,11 @@ if(isset($_GET['profile']) && loggedIn())
 			$j = 0;
 		
 			// Get data from custom awards - load award user data
-			$query2 = "SELECT * FROM donations WHERE trooperid = '".cleanInput($_GET['profile'])."' ORDER BY datetime DESC";
-			if ($result2 = mysqli_query($conn, $query2))
+			$statement = $conn->prepare("SELECT * FROM donations WHERE trooperid = ? ORDER BY datetime DESC");
+			$statement->bind_param("i", $profile);
+			$statement->execute();
+
+			if ($result2 = $statement->get_result())
 			{
 				while ($db2 = mysqli_fetch_object($result2))
 				{
@@ -3498,12 +3504,13 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<br /><br />';
 
 				// Get data
-				$query2 = "SELECT * FROM awards ORDER BY title";
+				$statement = $conn->prepare("SELECT * FROM awards ORDER BY title");
+				$statement->execute();
 
 				// Amount of awards
 				$j = 0;
 
-				if ($result2 = mysqli_query($conn, $query2))
+				if ($result2 = $statement->get_result())
 				{
 					while ($db = mysqli_fetch_object($result2))
 					{
@@ -5319,9 +5326,11 @@ if(isset($_GET['event']) && loggedIn())
 					<h2 class="tm-section-header">Other Shifts</h2>';
 					
 					// Query database for photos
-					$query2 = "SELECT * FROM events WHERE (id = '".$link."' OR link = '".$link."') AND id != '".$db->id."' ORDER BY dateStart DESC";
+					$statement = $conn->prepare("SELECT * FROM events WHERE (id = ? OR link = ?) AND id != ? ORDER BY dateStart DESC");
+					$statement->bind_param("iii", $link, $link, $db->id);
+					$statement->execute();
 					
-					if ($result2 = mysqli_query($conn, $query2))
+					if ($result2 = $statement->get_result())
 					{
 						while ($db2 = mysqli_fetch_object($result2))
 						{
@@ -5335,26 +5344,19 @@ if(isset($_GET['event']) && loggedIn())
 						}
 					}
 				}
-
-				// Set up add to query
-				$add = "";
-
-				// Add to query if this is a linked event
-				if($link > 0)
-				{
-					$add = " OR troopid = '".$link."'";
-				}
 				
 				// Don't show photos, if merged data
 				if(!$isMerged)
 				{
-					// Query database for photos
-					$query2 = "SELECT * FROM uploads WHERE admin = '1' AND (troopid = '".cleanInput($_GET['event'])."'".$add.") ORDER BY date DESC";
-					
 					// Query count
 					$j = 0;
+
+					// Query for photos
+					$statement = $conn->prepare("SELECT * FROM uploads WHERE admin = '1' AND (troopid = ? " . ($link > 0 ? 'OR troopid = '.$link.'' : '') . ") ORDER BY date DESC");
+					$statement->bind_param("i", $_GET['event']);
+					$statement->execute();
 					
-					if ($result2 = mysqli_query($conn, $query2))
+					if ($result2 = $statement->get_result())
 					{
 						while ($db2 = mysqli_fetch_object($result2))
 						{
@@ -5621,9 +5623,10 @@ if(isset($_GET['event']) && loggedIn())
 										<select name="costume" id="costume">
 											<option value="null" SELECTED>Please choose an option...</option>';
 
-										$query3 = "SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND " . costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
-										
-										if ($result3 = mysqli_query($conn, $query3))
+										$statement = $conn->prepare("SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND " . costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume");
+										$statement->execute();
+																				
+										if ($result3 = $statement->get_result())
 										{
 											while ($db3 = mysqli_fetch_object($result3))
 											{
@@ -5668,10 +5671,12 @@ if(isset($_GET['event']) && loggedIn())
 										<select name="backupcostume" id="backupcostume">';
 
 										// Display costumes
-										$query2 = "SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND " . costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
+										$statement = $conn->prepare("SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND " . costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume");
+										$statement->execute();
+
 										// Amount of costumes
 										$c = 0;
-										if ($result2 = mysqli_query($conn, $query2))
+										if ($result2 = $statement->get_result())
 										{
 											while ($db2 = mysqli_fetch_object($result2))
 											{
@@ -6205,7 +6210,6 @@ else
 				
 				<p style="text-align: center;">
 					<a href="index.php?squad=mytroops" class="button">My Troops</a>
-					<a href="index.php?squad=troopsnearme" class="button">Troops Near Me</a>
 				</p>
 
 				<hr /><br />
@@ -6248,30 +6252,6 @@ else
 					// Query
 					$statement = $conn->prepare("SELECT events.id AS id, events.name, events.location, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, ".$addToQuery."events.limitTotalTroopers, events.limitHandlers, events.closed FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = ? AND events.dateEnd > NOW() - INTERVAL 1 DAY AND (event_sign_up.status < 3 OR event_sign_up.status = 2) AND (events.closed = 0 OR events.closed = 3 OR events.closed = 4) ORDER BY events.dateStart");
 					$statement->bind_param("i", $_SESSION['id']);
-				}
-				// Troops near me
-				else if(isset($_GET['squad']) && $_GET['squad'] == "troopsnearme")
-				{
-					// Query
-					$statement = $conn->prepare("SELECT * FROM events WHERE dateStart >= CURDATE() AND (closed = '0' OR closed = '3' OR closed = '4') ORDER BY dateStart");
-
-					// Get post submit address
-					if(isset($_POST['submitAddress']))
-					{
-						$statement2 = $conn->prepare("UPDATE troopers SET address = ?, radius = ? WHERE id = ?");
-						$statement2->bind_param("sii", $_POST['address'], $_POST['radius'], $_SESSION['id']);
-						$statement2->execute();
-					}
-
-					$trooperAddress = getTrooperAddress($_SESSION['id']);
-					$trooperRadius = getTrooperRadius($_SESSION['id']);
-
-					echo '
-					<form action="" method="POST">
-						<input type="text" name="address" value="'.$trooperAddress.'" placeholder="Your address" />
-						<input type="number" value="'.$trooperRadius.'" name="radius" placeholder="Miles from address" />
-						<input type="submit" name="submitAddress" />
-					</form>';
 				}
 				else if(isset($_GET['squad']) && $_GET['squad'] == "canceledtroops")
 				{
@@ -6341,68 +6321,6 @@ else
 				
 				// Event calendar
 				$events = array();
-				
-				// Troops near me
-				if(isset($_GET['squad']) && $_GET['squad'] == "troopsnearme" && isset($trooperAddress) && $trooperAddress != "")
-				{
-					// Within range events
-					$destination_addresses_array = array();
-				
-					// Loop count
-					$addressCount = 0;
-					
-					// URL String Builder
-					$urlStringBuild = "";
-					
-					// Load events that are today or in the future
-					if ($result = mysqli_query($conn, $query))
-					{
-						while ($db = mysqli_fetch_object($result))
-						{
-							$urlStringBuild .= urlencode($db->location) . '|';
-							
-							// Increment
-							$addressCount++;
-							
-							if($addressCount >= 24)
-							{
-								$distance_data = file_get_contents('https://maps.googleapis.com/maps/api/distancematrix/json?&units=imperial&origins='.urlencode($trooperAddress).'&destinations='.$urlStringBuild.'&key=' . googleKey);
-								$distance_arr = json_decode($distance_data);
-							
-								if ($distance_arr->status=='OK')
-								{
-									$destination_addresses = $distance_arr->destination_addresses[0];
-									$origin_addresses = $distance_arr->origin_addresses[0];
-								}
-								
-								array_push($destination_addresses_array, $distance_arr);
-								
-								// Reset
-								$urlStringBuild = "";
-								$addressCount = 0;
-							}
-						}
-						
-						// Locations that are left over, lets check those
-						$distance_data = file_get_contents('https://maps.googleapis.com/maps/api/distancematrix/json?&units=imperial&origins='.urlencode($trooperAddress).'&destinations='.$urlStringBuild.'&key=' . googleKey);
-						$distance_arr = json_decode($distance_data);
-					
-						if ($distance_arr->status=='OK')
-						{
-							$destination_addresses = $distance_arr->destination_addresses[0];
-							$origin_addresses = $distance_arr->origin_addresses[0];
-						}
-						
-						array_push($destination_addresses_array, $distance_arr);
-						
-						// Reset
-						$urlStringBuild = "";
-						$addressCount = 0;
-					}
-				}
-				
-				// Set up location count
-				$locationCount = 0;
 
 				$statement->execute();
 
@@ -6410,19 +6328,7 @@ else
 				if ($result = $statement->get_result())
 				{
 					while($db = mysqli_fetch_object($result))
-					{
-						if(isset($_GET['squad']) && $_GET['squad'] == "troopsnearme" && isset($trooperAddress) && $trooperAddress != "")
-						{
-							// Increment location
-							$locationCount++;
-							
-							// Check distance
-							if(intval(@$destination_addresses_array[floor(($locationCount - 1) / 24)]->rows[0]->elements[($locationCount - 1) - ((floor(($locationCount - 1) / 24)) * 24)]->distance->text) > intval($trooperRadius))
-							{
-								continue;
-							}
-						}
-						
+					{	
 						// Get number of troopers at event
 						$statement2 = $conn->prepare("SELECT id FROM event_sign_up WHERE troopid = ? AND (status = '0' OR status = '2')");
 						$statement2->bind_param("i", $db->id);
