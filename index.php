@@ -3692,9 +3692,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			// Amount of events
 			$i = 0;
 
-			$statement->get_result();
+			$statement->execute();
 
-			if ($result = mysqli_query($conn, $query))
+			if ($result = $statement->get_result())
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
