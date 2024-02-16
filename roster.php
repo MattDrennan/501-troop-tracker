@@ -58,7 +58,6 @@ h1 {
 <div class="container">';
 
 // Show all super admins
-$query = "";
 $statement = $conn->prepare("SELECT troopers.id, troopers.name, troopers.tkid, troopers.squad FROM troopers WHERE p501 = '1' AND troopers.id != ".placeholder." ORDER BY name");
 $statement->execute();
 
