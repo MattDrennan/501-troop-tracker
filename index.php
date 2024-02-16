@@ -384,7 +384,7 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 		<form action="index.php?action=account" method="POST" name="changethemeForm" id="changethemeForm">
 			<select name="themeselect" id="themeselect">';
 
-			$statement = $conn->prepare("SELECT theme FROM troopers WHERE ?");
+			$statement = $conn->prepare("SELECT theme FROM troopers WHERE id = ?");
 			$statement->bind_param("i", $_SESSION['id']);
 			$statement->execute();
 
