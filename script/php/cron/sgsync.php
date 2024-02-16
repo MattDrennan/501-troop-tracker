@@ -16,13 +16,15 @@ include(dirname(__DIR__) . '/../../config.php');
 include(dirname(__DIR__) . '/../../tool/dom/simple_html_dom.php');
 
 // Purge SG troopers
-$conn->query("DELETE FROM sg_troopers");
+$statement = $conn->prepare("DELETE FROM sg_troopers");
+$statement->execute();
 
 // Pull extra data from spreadsheet
 $values = getSheet("1PcveycMujakkKeG2m4y8iFunrFbo2KVpQJ00GyPI3b8", "Sheet1");
 
 // Reset Saber Guild Status
-$conn->query("UPDATE troopers SET pSG = 0");
+$statement = $conn->prepare("UPDATE troopers SET pSG = 0");
+$statement->execute();
 
 // Set up count
 $i = 0;
@@ -43,10 +45,15 @@ foreach($values as $value)
 		}
 
 		// Insert into database
-		$conn->query("INSERT INTO sg_troopers (sgid, name, image, ranktitle, costumename, link) VALUES ('".cleanInput($value[2])."', '".cleanInput($value[0])."', '".cleanInput($image)."', '".cleanInput($value[1])."', '".cleanInput($value[3])."', '')");
+		$statement = $conn->prepare("INSERT INTO sg_troopers (sgid, name, image, ranktitle, costumename, link) VALUES (?, ?, ?, ?, ?, '')");
+		$statement->bind_param("isssss", $value[2], $value[0], $image, $value[1], $value[3]);
+		$statement->execute();
 		
 		// Update status to regular member
-		$conn->query("UPDATE troopers SET pSG = 1 WHERE sgid = '".str_replace("SG-", "", $value[2])."' AND sgid > 0");
+		$sgid = str_replace("SG-", "", $value[2]);
+		$statement = $conn->prepare("UPDATE troopers SET pSG = 1 WHERE sgid = ? AND sgid > 0");
+		$statement->bind_param("i", $sgid);
+		$statement->execute();
 	}
 
 	// Increment
