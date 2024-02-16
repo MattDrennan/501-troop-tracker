@@ -1172,8 +1172,9 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 		$statement = $conn->prepare("SELECT count(*) FROM award_troopers WHERE trooperid = ? AND awardid = ?");
 		$statement->bind_param("ii", $_POST['userIDAward'], $_POST['awardIDAssign']);
 		$statement->execute();
-		$statement->store_result();
-		$num_rows = $statement->num_rows;
+		$statement->bind_result($num_rows);
+		$statement->fetch();
+		$statement->close();
 
 		$message = "The award was awarded successfully!";
 
@@ -1249,7 +1250,7 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 	{
 		// Query the database
 		$statement = $conn->prepare("UPDATE awards SET title = ?, icon = ? WHERE id = ?");
-		$statement->bind_param("iii", $_POST['editAwardTitle'], $_POST['editAwardImage'], $_POST['awardIDEdit']);
+		$statement->bind_param("ssi", $_POST['editAwardTitle'], $_POST['editAwardImage'], $_POST['awardIDEdit']);
 		$statement->execute();
 
 		// Send notification to command staff

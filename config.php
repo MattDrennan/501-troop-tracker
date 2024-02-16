@@ -2806,9 +2806,12 @@ function hasAward($trooperid, $awardid, $echo = false, $remove = false)
 function sendNotification($message, $trooperid, $type = 0, $json = "")
 {
 	global $conn;
+
+	$message = cleanInput($message);
+	$json = cleanInput($json);
 	
 	$statement = $conn->prepare("INSERT INTO notifications (message, trooperid, type, json) VALUES (?, ?, ?, ?)");
-	$statement->bind_param("siss", cleanInput($message), $trooperid, $type, cleanInput($json));
+	$statement->bind_param("siss", $message, $trooperid, $type, $json);
 	$statement->execute();
 }
 
