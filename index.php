@@ -1431,6 +1431,8 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		// Start going through troopers
 		$statement->execute();
 
+		$list = array();
+
 		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
@@ -1438,6 +1440,13 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				// Show table
 				if($i == 0)
 				{
+					array_push($list, ['', '', $dateStartQuery . ' - ' . $dateEndQuery . ' Charity', '']);
+					array_push($list, ['Total Troops: ', $troop_count]);
+					array_push($list, ['Direct Charity: ', '$' . number_format($charity_count)]);
+					array_push($list, ['Indirect Charity: ', '$' . number_format($charity_count2)]);
+					array_push($list, ['']);
+					array_push($list, ['Event', 'Direct', 'Indirect', 'Charity Name', 'Hours', 'Notes']);
+
 					echo '
 					<p>
 						Total Troops: '.$troop_count.'
@@ -1496,6 +1505,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				
 				// Create an array of our count
 				$tempArray = array($db->id, $db->name, $db->charityDirectFunds, $db->charityIndirectFunds, $db->charityName, $hours, $db->charityNote);
+				array_push($list, [$db->name, $db->charityDirectFunds, $db->charityIndirectFunds, $db->charityName, $hours, $db->charityNote]);
 				
 				// Push to main array
 				array_push($troopArray, $tempArray);
@@ -1525,7 +1535,12 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		{
 			echo '
 			</table>
-			</div>';
+			</div>
+
+			<form action="script/php/gencsv.php" method="POST" target="_blank">
+				<input type="hidden" name="charity" value="'.htmlspecialchars(serialize($list)).'" />
+				<input type="submit" value="Download CSV" />
+			</form>';
 		}
 		else
 		{

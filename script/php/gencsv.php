@@ -10,6 +10,11 @@
 
 include '../../config.php';
 
+if(isset($_POST['charity'])) {
+    array_to_csv_download(unserialize($_POST['charity']));
+    die("Finished");
+}
+
 if(!isset($_GET['troopid'])) {
     die("Must include troop ID.");
 }
