@@ -76,6 +76,11 @@ Search.appendIndex(
             "summary": "Draws\u0020a\u0020visual\u0020graph\u0020for\u0020troopers\u0020to\u0020see\u0020what\u0020we\u0020need\u0020to\u0020support\u0020the\u0020garrison",
             "url": "namespaces/default.html#function_drawSupportGraph"
         },                {
+            "fqsen": "\\getTrooperRanking\u0028\u0029",
+            "name": "getTrooperRanking",
+            "summary": "Returns\u0020the\u0020troopers\u0020ranking",
+            "url": "namespaces/default.html#function_getTrooperRanking"
+        },                {
             "fqsen": "\\resetTrooperStatus\u0028\u0029",
             "name": "resetTrooperStatus",
             "summary": "If\u0020a\u0020limited\u0020event,\u0020resets\u0020all\u0020troopers\u0020attendance\u0020status\u0020in\u0020an\u0020event,\u0020and\u0020recalculates\u0020status",
@@ -563,12 +568,12 @@ Search.appendIndex(
         },                {
             "fqsen": "\\doesTKExist\u0028\u0029",
             "name": "doesTKExist",
-            "summary": "Returns\u0020if\u0020the\u0020TKID\u0020exists",
+            "summary": "Returns\u0020if\u0020the\u0020TKID\u0020exists\u0020\u0028NOTE\u003A\u0020This\u0020is\u0020compatiable\u0020with\u0020501st\u0020and\u0020Rebel\u0020Legion\u0020due\u0020to\u0020both\u0020clubs\u0020combining\u0020Troop\u0020Tracker\u0020data\u0029",
             "url": "namespaces/default.html#function_doesTKExist"
         },                {
             "fqsen": "\\isTKRegistered\u0028\u0029",
             "name": "isTKRegistered",
-            "summary": "Returns\u0020if\u0020the\u0020TKID\u0020is\u0020registered",
+            "summary": "Returns\u0020if\u0020the\u0020TKID\u0020is\u0020registered\u0020\u0028NOTE\u003A\u0020This\u0020is\u0020compatiable\u0020with\u0020501st\u0020and\u0020Rebel\u0020Legion\u0020due\u0020to\u0020both\u0020clubs\u0020combining\u0020Troop\u0020Tracker\u0020data\u0029",
             "url": "namespaces/default.html#function_isTKRegistered"
         },                {
             "fqsen": "\\cleanInput\u0028\u0029",
@@ -581,6 +586,11 @@ Search.appendIndex(
             "summary": "Converts\u0020cleanInput\u0020into\u0020readable\u0020text",
             "url": "namespaces/default.html#function_readInput"
         },                {
+            "fqsen": "\\createEvent\u0028\u0029",
+            "name": "createEvent",
+            "summary": "Inserts\u0020a\u0020new\u0020event\u0020into\u0020the\u0020database",
+            "url": "namespaces/default.html#function_createEvent"
+        },                {
             "fqsen": "\\sendEventUpdate\u0028\u0029",
             "name": "sendEventUpdate",
             "summary": "Send\u0027s\u0020an\u0020e\u002Dmail\u0020if\u0020trooper\u0020is\u0020subscribed\u0020to\u0020an\u0020event",
@@ -590,16 +600,6 @@ Search.appendIndex(
             "name": "sendEmail",
             "summary": "Send\u0027s\u0020an\u0020e\u002Dmail\u0020to\u0020a\u0020specified\u0020trooper",
             "url": "namespaces/default.html#function_sendEmail"
-        },                {
-            "fqsen": "\\getEra\u0028\u0029",
-            "name": "getEra",
-            "summary": "Returns\u0020string\u0020of\u0020Era\u0020ID",
-            "url": "namespaces/default.html#function_getEra"
-        },                {
-            "fqsen": "\\eraCheck\u0028\u0029",
-            "name": "eraCheck",
-            "summary": "Returns\u0020if\u0020costume\u0020is\u0020allowed\u0020at\u0020the\u0020event\u0020based\u0020off\u0020era\u0020allowed",
-            "url": "namespaces/default.html#function_eraCheck"
         },                {
             "fqsen": "\\troopersRemaining\u0028\u0029",
             "name": "troopersRemaining",
