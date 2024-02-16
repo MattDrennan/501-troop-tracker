@@ -58,12 +58,14 @@ h1 {
 <div class="container">';
 
 // Show all super admins
-$query = "SELECT troopers.id, troopers.name, troopers.tkid, troopers.squad FROM troopers WHERE p501 = '1' AND troopers.id != ".placeholder." ORDER BY name";
+$query = "";
+$statement = $conn->prepare("SELECT troopers.id, troopers.name, troopers.tkid, troopers.squad FROM troopers WHERE p501 = '1' AND troopers.id != ".placeholder." ORDER BY name");
+$statement->execute();
 
 // Trooper count set up
 $i = 0;
 
-if ($result = mysqli_query($conn, $query))
+if ($result = $statement->get_result())
 {
 	while ($db = mysqli_fetch_object($result))
 	{
