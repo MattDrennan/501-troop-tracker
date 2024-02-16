@@ -16,7 +16,11 @@ $data = array();
 if(isset($_GET['trooperid']) || isset($_GET['tkid']))
 {
 	// Query - Suppress
-	@$query = "SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.moneyRaised, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.forum_id, troopers.rebelforum, troopers.tkid, troopers.squad FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE (troopers.id = '".cleanInput($_GET['trooperid'])."' OR (troopers.tkid = '".cleanInput($_GET['tkid'])."') AND troopers.squad = '".cleanInput($_GET['squad'])."') AND events.closed = '1' AND event_sign_up.status = '3' ORDER BY events.dateEnd DESC";
+	@$query = "";
+
+	$statement = $conn->prepare("SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.dateStart, events.dateEnd, troopers.id, troopers.name, troopers.forum_id, troopers.rebelforum, troopers.tkid, troopers.squad FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE (troopers.id = ? OR (troopers.tkid = ?) AND troopers.squad = ?) AND events.closed = '1' AND event_sign_up.status = '3' ORDER BY events.dateEnd DESC");
+	$statement->bind_param("iii", $_GET['trooperid'], $_GET['tkid'], $_GET['squad']);
+	$statement->execute();
 
 	// Start count
 	$i = 0;
@@ -29,7 +33,7 @@ if(isset($_GET['trooperid']) || isset($_GET['tkid']))
 	$troopCount = 0;
 	$eventArray = array();
 
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -62,12 +66,14 @@ if(isset($_GET['trooperid']) || isset($_GET['tkid']))
 else if(isset($_GET['photos']) && isset($_GET['amount']))
 {
 	// Query
-	$query = "SELECT * FROM uploads WHERE admin = '0' ORDER BY RAND() LIMIT ".cleanInput($_GET['amount'])."";
+	$statement = $conn->prepare("SELECT * FROM uploads WHERE admin = '0' ORDER BY RAND() LIMIT ?");
+	$statement->bind_param("i", $_GET['amount']);
+	$statement->execute();
 	
 	// Set variables
 	$uploadArray = array();
 
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
