@@ -554,11 +554,6 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	$statement = $conn->prepare("UPDATE event_sign_up SET costume = ?, costume_backup = ?, status = ? WHERE trooperid = ? AND troopid = ? AND id = ?");
 	$statement->bind_param("iiiiii", $_POST['costume'], $_POST['costume_backup'], $status, $_POST['trooperid'], $_POST['troopid'], $_POST['signid']);
 	$statement->execute();
-
-	error_log("HI");
-	error_log($_POST['costume']);
-	error_log($status);
-
 	
 	// Update notifications
 	// Going
