@@ -27,7 +27,9 @@ foreach($values as $value)
 	if($i != 0)
 	{
 		// Insert into database
-		$conn->query("INSERT INTO droid_troopers (forum_id, droidname, imageurl) VALUES ('".$value[0]."', '".$value[1]."', '".$value[2]."')");
+		$statement = $conn->prepare("INSERT INTO droid_troopers (forum_id, droidname, imageurl) VALUES (?, ?, ?)");
+		$statement->bind_param("sss", $value[0], $value[1], $value[2]);
+		$statement->execute();
 	}
 
 	// Increment
