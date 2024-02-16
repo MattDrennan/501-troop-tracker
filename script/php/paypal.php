@@ -25,24 +25,33 @@ if ($verified)
 	$txn_type = $_POST["txn_type"];
 
 	// Execute query
-	$conn->query("UPDATE troopers SET supporter = '1' WHERE id = '".$custom."'");
+	$statement = $conn->prepare("UPDATE troopers SET supporter = '1' WHERE id = ?");
+	$statement->bind_param("i", $custom);
+	$statement->execute();
 	
 	// Don't allow duplicates
-	$txn_count = $conn->query("SELECT * FROM donations WHERE txn_id = '".$txn_id."'");
+	$statement = $conn->prepare("SELECT * FROM donations WHERE txn_id = ?");
+	$statement->bind_param("s", $txn_id);
+	$statement->execute();
+	$statement->store_result();
+	$txn_count = $statement->num_rows;
 	
 	// If custom is not set
 	if($custom == 0 || $custom == "")
 	{
 		if(!isset($_GET['trooperid'])) { die(""); }
 		
-		$custom = cleanInput($_GET['trooperid']);
+		$custom = $_GET['trooperid'];
 	}
 	
 	// Make sure there isn't a duplicate transaction
-	if($txn_count->num_rows == 0)
+	if($txn_count == 0)
 	{
 		// Update donations
-		$conn->query("INSERT INTO donations (trooperid, amount, txn_id, txn_type) VALUES ('".$custom."', '".$mc_gross."', '".$txn_id."', '".$txn_type."')");
+		$statement = $conn->prepare("INSERT INTO donations (trooperid, amount, txn_id, txn_type) VALUES (?, ?, ?, ?)");
+		$statement->bind_param("idss", $custom, $mc_gross, $txn_id, $txn_type);
+		$statement->execute();
+
 		sendNotification(getName($custom) . " donated $" . $mc_gross . "", $custom);
 	}
 }
