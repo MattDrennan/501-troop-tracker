@@ -6616,44 +6616,32 @@ else
 						}
 
 						// Query
-						$query = "SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, events.link, ".$addToQuery."events.limit501st FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.closed = 1 ORDER BY dateEnd DESC LIMIT 20";
+						$statement = $conn->prepare("SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, events.link, ".$addToQuery."events.limit501st FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = ? AND events.closed = 1 ORDER BY dateEnd DESC LIMIT 20");
+						$statement->bind_param("i", $_SESSION['id']);
 					}
 					// If on squad
 					else if(isset($_GET['squad']))
 					{
 						// Get recently closed troops by squad
-						$query = "SELECT * FROM events WHERE closed = '1' AND squad = '".cleanInput($_GET['squad'])."' ORDER BY dateEnd DESC LIMIT 20";
+						$statement = $conn->prepare("SELECT * FROM events WHERE closed = '1' AND squad = ? ORDER BY dateEnd DESC LIMIT 20");
+						$statement->bind_param("i", $_GET['squad']);
 					}
 					// If on default
 					else
 					{
 						// Get recently closed troops
-						$query = "SELECT * FROM events WHERE closed = '1' ORDER BY dateEnd DESC LIMIT 20";
+						$statement = $conn->prepare("SELECT * FROM events WHERE closed = '1' ORDER BY dateEnd DESC LIMIT 20");
 					}
+
+					$statement->execute();
 					
 					// Load events that are today or in the future
-					if ($result = mysqli_query($conn, $query))
+					if ($result = $statement->get_result())
 					{
 						while ($db = mysqli_fetch_object($result))
 						{
-							// Set up string to add to title if a linked event
-							$add = "";
-							
-							// If this a linked event?
-							if(isLink($db->id) > 0)
-							{
-								$add .= "[<b>" . date("l", strtotime($db->dateStart)) . "</b> : <i>" . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "</i>] ";
-							}
-
-							// Show strikethrough if troop is canceled
-							$add2 = "";
-
-							if(isset($db->status) && $db->status == 4) {
-								$add2 = 'class = "canceled-troop"';
-							}
-							
 							echo '
-							<li><a href="index.php?event='.$db->id.'" '.$add2.'>'.$add.''.$db->name.'</a></li>';
+							<li><a href="index.php?event='.$db->id.'" '. (isset($db->status) && $db->status == 4 ? 'class = "canceled-troop"' : '') .'>'. (isLink($db->id) > 0 ? '[<b>' . date("l", strtotime($db->dateStart)) . '</b> : <i>' . date("m/d - h:i A", strtotime($db->dateStart)) . ' - ' . date("h:i A", strtotime($db->dateEnd)) . '</i>] ' : '') .''.$db->name.'</a></li>';
 						}
 					}
 					
@@ -6662,9 +6650,11 @@ else
 				}
 				
 				// Load events that need confirmation
-				$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC";
+				$statement = $conn->prepare("SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = ? AND events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC");
+				$statement->bind_param("i", $_SESSION['id']);
+				$statement->execute();
 
-				if ($result = mysqli_query($conn, $query))
+				if ($result = $statement->get_result())
 				{
 					// Number of results total
 					$i = 0;
@@ -6682,19 +6672,10 @@ else
 							<form action="process.php?do=confirmList" method="POST" name="confirmListForm" id="confirmListForm">
 							<div name="confirmArea2" id="confirmArea2">';
 						}
-						
-						// Set up string to add to title if a linked event
-						$add = "";
-						
-						// If this a linked event?
-						if(isLink($db->eventId) > 0)
-						{
-							$add .= "[<b>" . date("l", strtotime($db->dateStart)) . "</b> : <i>" . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "</i>] ";
-						}
 
 						echo '
 						<div name="confirmListBox_'.$db->eventId.'" id="confirmListBox_'.$db->eventId.'">
-							<input type="checkbox" name="confirmList[]" id="confirmList_'.$db->eventId.'" value="'.$db->eventId.'" /> '.$add.''.$db->name.'<br /><br />
+							<input type="checkbox" name="confirmList[]" id="confirmList_'.$db->eventId.'" value="'.$db->eventId.'" /> ' . (isLink($db->eventId) > 0 ? '[<b>' . date("l", strtotime($db->dateStart)) . '</b> : <i>' . date("m/d - h:i A", strtotime($db->dateStart)) . ' - ' . date("h:i A", strtotime($db->dateEnd)) . '</i>] ' : '') . ''.$db->name.'<br /><br />
 						</div>';
 						
 						// If a shift exists to attest to
@@ -6712,10 +6693,11 @@ else
 						<p>Attended Costume:</p>
 						<select name="costume" id="costumeChoice">';
 
-						$query3 = "SELECT * FROM costumes " . costume_restrict_query(true) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume";
+						$statement = $conn->prepare("SELECT * FROM costumes " . costume_restrict_query(true) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume");
+						$statement->execute();
 						
 						$l = 0;
-						if ($result3 = mysqli_query($conn, $query3))
+						if ($result3 = $statement->get_result())
 						{
 							while ($db3 = mysqli_fetch_object($result3))
 							{
@@ -6740,9 +6722,11 @@ else
 				}
 				
 				// Load events that need confirmation
-				$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, event_sign_up.addedby, event_sign_up.costume, event_sign_up.note FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.addedby = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC";
+				$statement = $conn->prepare("SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, event_sign_up.addedby, event_sign_up.costume, event_sign_up.note FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.addedby = ? AND events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC");
+				$statement->bind_param("i", $_SESSION['id']);
+				$statement->execute();
 
-				if ($result = mysqli_query($conn, $query))
+				if ($result = $statement->get_result())
 				{
 					// Number of results total
 					$i = 0;
@@ -6806,13 +6790,14 @@ else
 			<h2 class="tm-section-header">Recent Photos</h2>';
 			
 			// Load photos
-			$query = "SELECT * FROM uploads WHERE admin = '0' ORDER BY id DESC LIMIT 10";
+			$statement = $conn->prepare("SELECT * FROM uploads WHERE admin = '0' ORDER BY id DESC LIMIT 10");
+			$statement->execute();
 			
 			// Setup count
 			$i = 0;
 			
 			// Loop through photos
-			if ($result = mysqli_query($conn, $query))
+			if ($result = $statement->get_result())
 			{
 				while ($db = mysqli_fetch_object($result))
 				{
@@ -6870,8 +6855,10 @@ if(!isWebsiteClosed())
 		<p style="text-align: center;">';
 
 		// Load users online
-		$query = "SELECT * FROM troopers WHERE last_active >= NOW() - INTERVAL 5 MINUTE ORDER BY tkid";
-		if ($result = mysqli_query($conn, $query))
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE last_active >= NOW() - INTERVAL 5 MINUTE ORDER BY tkid");
+		$statement->execute();
+
+		if ($result = $statement->get_result())
 		{
 			$i = 0;
 			while ($db = mysqli_fetch_object($result))
