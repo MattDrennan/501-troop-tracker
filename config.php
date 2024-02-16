@@ -3266,7 +3266,7 @@ function getCostumeClub($id)
 {
 	global $conn;
 
-	$statement = $conn->prepare("SELECT club FROM troopers WHERE id = ?");
+	$statement = $conn->prepare("SELECT club FROM costumes WHERE id = ?");
 	$statement->bind_param("i", $id);
 	$statement->execute();
 	$statement->bind_result($value);
@@ -4533,8 +4533,9 @@ function getStatus($value)
 function validate_url($url)
 {
 	$path = parse_url($url, PHP_URL_PATH);
-	$encoded_path = array_map('urlencode', explode('/', $path));
-	$url = str_replace($path, implode('/', $encoded_path), $url);
+
+	$encoded_path = array_map('urlencode', @explode('/', $path));
+	$url = @str_replace($path, implode('/', $encoded_path), $url);
 
 	if(filter_var(addHttp($url), FILTER_VALIDATE_URL) && strpos($url, "."))
 	{
@@ -4671,7 +4672,7 @@ function mainCostumesBuild($trooperid)
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
-			$returnQuery .= ", '".addslashes(getCostume($db->costumeid))."'";
+			$returnQuery .= ", '".@addslashes(getCostume($db->costumeid))."'";
 		}
 	}
 	

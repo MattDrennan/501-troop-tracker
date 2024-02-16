@@ -2333,13 +2333,13 @@ $(document).ready(function()
 	});
 	
 	// Modify Sign Up Form Change
-	$("body").on("change", "select[name=modifysignupFormCostume], select[name=modiftybackupcostumeForm], select[name=modifysignupStatusForm]", function(e)
+	$(document.body).on("change", "select[name=modifysignupFormCostume], select[name=modiftybackupcostumeForm], select[name=modifysignupStatusForm]", function(e)
 	{
 		var trooperid = $(this).attr("trooperid");
 		var signid = $(this).attr("signid");
-		var signupForm1 = $("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "]");
-		var signupForm2 = $("select[name=modiftybackupcostumeForm][trooperid=" + trooperid + "][signid=" + signid + "]");
-		var signupForm3 = $("select[name=modifysignupStatusForm][trooperid=" + trooperid + "][signid=" + signid + "]");
+		var signupForm1 = $(this).parents("tr").find("select[name=modifysignupFormCostume]");
+		var signupForm2 = $(this).parents("tr").find("select[name=modiftybackupcostumeForm]");
+		var signupForm3 = $(this).parents("tr").find("select[name=modifysignupStatusForm]");
 		
 		$.ajax({
 			type: "POST",
@@ -2370,6 +2370,9 @@ $(document).ready(function()
 					
 					// Update troopers remaining on the page
 					$("div[name=troopersRemainingDisplay]").html(json.troopersRemaining);
+
+					// Update select2
+					selectAdd();
 					
 					alert("Status Updated!");
 				}

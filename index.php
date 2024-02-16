@@ -823,7 +823,7 @@ if(isset($_GET['action']) && $_GET['action'] == "photos")
 			$statement2->bind_param("i", $db->troopid);
 			$statement2->execute();
 			$statement2->store_result();
-			$troopCount = $statement->num_rows;
+			$troopCount = $statement2->num_rows;
 
 			echo '
 			<li>
@@ -6194,50 +6194,56 @@ if(isset($_GET['event']) && loggedIn())
 					
 					// Get thread
 					$thread = getThreadPosts($thread_id, 1);
-					
-					for($page = $thread['pagination']['last_page']; $page >= 1; $page--)
-					{
-						$thread = getThreadPosts($thread_id, $page);
-						
-						// Remove first post from thread
-						if($page == 1)
+
+					if(!isset($thread['errors'])) {
+						for($page = $thread['pagination']['last_page']; $page >= 1; $page--)
 						{
-							array_shift($thread['posts']);
-						}
-						
-						// Loop through posts
-						foreach(array_reverse($thread['posts']) as $key => $post)
-						{
-							// Only show messages that are visible // Example: We don't want to show messages that are hidden from public view
-							if($post['message_state'] == "visible")
+							$thread = getThreadPosts($thread_id, $page);
+							
+							// Remove first post from thread
+							if($page == 1)
 							{
-								echo '
-								<table border="1" style="width: 100%">
-								<tr>
-									<td>
-										<a href="index.php?profile='.$post['User']['custom_fields']['trackerid'].'">'.$post['User']['custom_fields']['fullname'].' - '.$post['User']['custom_fields']['tkid'].'<br />'.$post['username'].'</a>'.($post['User']['avatar_urls']['m'] != '' ? '<br /><img src="'.$post['User']['avatar_urls']['m'].'" />' : '').'
-										<br />
-										'.date("F j, Y, g:i a", $post['post_date']).'
-									</td>
-								</tr>
-								
-								<tr>
-									<td>'.$post['message_parsed'].'</td>
-								</tr>
+								array_shift($thread['posts']);
+							}
+						
+							// Loop through posts
+							foreach(array_reverse($thread['posts']) as $key => $post)
+							{
+								// Only show messages that are visible // Example: We don't want to show messages that are hidden from public view
+								if($post['message_state'] == "visible")
+								{
+									echo '
+									<table border="1" style="width: 100%">
+									<tr>
+										<td>
+											<a href="index.php?profile='.$post['User']['custom_fields']['trackerid'].'">'.$post['User']['custom_fields']['fullname'].' - '.$post['User']['custom_fields']['tkid'].'<br />'.$post['username'].'</a>'.($post['User']['avatar_urls']['m'] != '' ? '<br /><img src="'.$post['User']['avatar_urls']['m'].'" />' : '').'
+											<br />
+											'.date("F j, Y, g:i a", $post['post_date']).'
+										</td>
+									</tr>
+									
+									<tr>
+										<td>'.$post['message_parsed'].'</td>
+									</tr>
 
-								</table>
+									</table>
 
-								<br />';
+									<br />';
+								}
 							}
 						}
-					}
 
-					// If no posts
-					if(count($thread['posts']) == 0)
-					{
-						echo '
-						<br />
-						<b>No discussion to display.</b>';
+						// If no posts
+						if(count($thread['posts']) == 0)
+						{
+							echo '
+							<br />
+							<b>No discussion to display.</b>';
+						}
+					} else {
+							echo '
+							<br />
+							<b>Thread for this event, not found.</b>';
 					}
 				}
 				else

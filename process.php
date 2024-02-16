@@ -555,6 +555,10 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	$statement->bind_param("iiiiii", $_POST['costume'], $_POST['costume_backup'], $status, $_POST['trooperid'], $_POST['troopid'], $_POST['signid']);
 	$statement->execute();
 
+	error_log("HI");
+	error_log($_POST['costume']);
+	error_log($status);
+
 	
 	// Update notifications
 	// Going
@@ -624,7 +628,7 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 	{
 		// Query the database
 		$statement = $conn->prepare("INSERT INTO comments (troopid, trooperid, comment) VALUES (?, ?, ?)");
-		$statement->bind_param("iis", $_POST['troopid'], $_POST['trooperid'], $_POST['comment']);
+		$statement->bind_param("iis", $_POST['eventId'], $_SESSION['id'], $_POST['comment']);
 		$statement->execute();
 	}
 	
