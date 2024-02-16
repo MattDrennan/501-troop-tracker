@@ -2281,10 +2281,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				// Increment
 				$clubCount++;
 			}
+
+			$squadCount = count($squadArray);
 			
 			// Count number of users with set up accounts - 501
 			$statement = $conn->prepare("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad <= ?");
-			$statement->bind_param("i", count($squadArray));
+			$statement->bind_param("i", $squadCount);
 			$statement->execute();
 			$statement->store_result();
 			$totalAccountsSetUp501 = $statement->num_rows;
