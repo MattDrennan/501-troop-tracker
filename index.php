@@ -3753,7 +3753,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			else
 			{
 				// If eid is not set
-				$statement = $conn->prepare("SELECT * FROM events WHERE link = 0 ORDER BY dateStart DESC LIMIT 500");
+				$statement = $conn->prepare("SELECT * FROM events ORDER BY dateStart DESC LIMIT 500");
 			}
 
 			// Amount of events
@@ -5361,7 +5361,7 @@ if(isset($_GET['event']) && loggedIn())
 					$hours += intval($db->charityAddHours);
 
 					echo '
-					<div class="charitybox"><b>Event Raised:</b><br />Direct: $'.number_format($db->charityDirectFunds).'<br />Indirect: $'.number_format($db->charityIndirectFunds).'<br />Charity Name: '.ifEmpty($db->charityName, "N/A").'<br />Charity Hours: '.$hours.'<br />Charity Note:<br />'.ifEmpty(nl2br($db->charityNote), "N/A").'</div>';
+					<div class="charitybox"><b>Event Raised:</b><br />Direct: $'.number_format($db->charityDirectFunds).'<br />Indirect: $'.number_format($db->charityIndirectFunds).'<br />Charity Name: '.ifEmpty($db->charityName, "N/A").'<br />Charity Hours: '.$hours.'<br />Charity Note:<br />'.ifEmpty(@nl2br($db->charityNote), "N/A").'</div>';
 				}
 
 				// Set up show options
@@ -5403,8 +5403,6 @@ if(isset($_GET['event']) && loggedIn())
 			
 				// Get linked event
 				$link = isLink($db->id);
-
-				echo $link;
 				
 				// If has links to event, or is linked, show shift data
 				if($link > 0)
