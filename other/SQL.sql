@@ -2,8 +2,8 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Generation Time: Aug 30, 2023 at 02:55 PM
--- Server version: 8.0.28
+-- Generation Time: Feb 17, 2024 at 04:26 PM
+-- Server version: 8.0.33
 -- PHP Version: 7.4.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -102,7 +102,7 @@ CREATE TABLE `comments` (
 
 CREATE TABLE `costumes` (
   `id` int UNSIGNED NOT NULL,
-  `costume` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `costume` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `club` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
@@ -176,10 +176,10 @@ CREATE TABLE `events` (
   `allowTentative` tinyint NOT NULL DEFAULT '1',
   `closed` tinyint(1) NOT NULL DEFAULT '0',
   `charityDirectFunds` int NOT NULL DEFAULT '0',
-  `charityIndirectFunds` int NOT NULL,
-  `charityName` varchar(255) NOT NULL,
-  `charityAddHours` int NOT NULL,
-  `charityNote` text NOT NULL,
+  `charityIndirectFunds` int NOT NULL DEFAULT '0',
+  `charityName` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `charityAddHours` int DEFAULT NULL,
+  `charityNote` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
   `squad` int NOT NULL,
   `link` int NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
@@ -205,11 +205,11 @@ CREATE TABLE `event_sign_up` (
   `id` int UNSIGNED NOT NULL,
   `trooperid` int DEFAULT NULL,
   `troopid` int NOT NULL,
-  `costume` varchar(50) DEFAULT NULL,
-  `costume_backup` varchar(50) NOT NULL DEFAULT '0',
+  `costume` int DEFAULT NULL,
+  `costume_backup` int NOT NULL DEFAULT '0',
   `status` int NOT NULL DEFAULT '0',
   `addedby` int NOT NULL DEFAULT '0',
-  `note` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
+  `note` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '',
   `signuptime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
@@ -386,8 +386,8 @@ CREATE TABLE `troopers` (
   `pSG` int DEFAULT '0',
   `tkid` varchar(20) NOT NULL,
   `forum_id` varchar(255) NOT NULL,
-  `rebelforum` varchar(255) NOT NULL,
-  `mandoid` int NOT NULL,
+  `rebelforum` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `mandoid` int DEFAULT NULL,
   `sgid` varchar(10) NOT NULL DEFAULT '0',
   `password` varchar(255) DEFAULT NULL,
   `last_active` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -409,8 +409,6 @@ CREATE TABLE `troopers` (
   `efast` tinyint(1) DEFAULT '0',
   `ecommandnotify` tinyint(1) DEFAULT '1',
   `econfirm` tinyint(1) DEFAULT '1',
-  `address` varchar(255) DEFAULT NULL,
-  `radius` int NOT NULL DEFAULT '15',
   `note` varchar(255) DEFAULT NULL,
   `datecreated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
