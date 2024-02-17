@@ -5045,10 +5045,10 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed() && 
 	if(isset($_POST['registerAccount']))
 	{
 		// Does this TK ID exist?
-		if(doesTKExist(cleanInput($_POST['tkid']), cleanInput($_POST['squad'])))
+		if(doesTKExist($_POST['tkid'], $_POST['squad']))
 		{
 			// Is this TK ID registered?
-			if(!isTKRegistered(cleanInput($_POST['forum_id']), cleanInput($_POST['squad'])))
+			if(!isTKRegistered($_POST['forum_id'], $_POST['squad']))
 			{
 				// Login with forum
 				$forumLogin = loginWithForum($_POST['forum_id'], $_POST['password']);
@@ -5089,7 +5089,7 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed() && 
 								$rebelforum = filter_var($_POST['tkid'], FILTER_SANITIZE_ADD_SLASHES);
 
 								$statement = $conn->prepare("UPDATE troopers SET user_id = ?, email = ?, tkid = ?, password = ?, squad = ? WHERE rebelforum = ?");
-								$statement->bind_param("isisis", $forumLogin['user']['user_id'], $forumLogin['user']['email'], $_POST['tkid2'], $password, $_POST['squad'], $_POST['squad'], $rebelforum);
+								$statement->bind_param("isisis", $forumLogin['user']['user_id'], $forumLogin['user']['email'], $_POST['tkid2'], $password, $_POST['squad'], $rebelforum);
 								$statement->execute();
 								
 								// Display output

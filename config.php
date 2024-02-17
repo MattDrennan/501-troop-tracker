@@ -4928,7 +4928,7 @@ function doesTKExist($tk, $squad = 0)
 	if($squad <= count($squadArray))
 	{
 		$statement = $conn->prepare("SELECT * FROM troopers WHERE tkid = ? AND squad <= ".count($squadArray)."");
-		$statement->bind_param("i", $tkid);
+		$statement->bind_param("i", $tk);
 		$statement->execute();
 
 		if ($result = $statement->get_result())
@@ -4943,7 +4943,7 @@ function doesTKExist($tk, $squad = 0)
 	{
 		// If a club
 		$statement = $conn->prepare("SELECT * FROM troopers WHERE rebelforum = ? AND squad = ?");
-		$statement->bind_param("ii", $tkid, $squad);
+		$statement->bind_param("ii", $tk, $squad);
 		$statement->execute();
 
 		if ($result = $statement->get_result())
