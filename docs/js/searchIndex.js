@@ -566,6 +566,11 @@ Search.appendIndex(
             "summary": "Returns\u0020if\u0020the\u0020website\u0020sign\u0020ups\u0020are\u0020open\u0020or\u0020closed",
             "url": "namespaces/default.html#function_isSignUpClosed"
         },                {
+            "fqsen": "\\validPhone\u0028\u0029",
+            "name": "validPhone",
+            "summary": "Returns\u0020whether\u0020a\u0020phone\u0020number\u0020is\u0020valid\u0020\u0028https\u003A\/\/gist.github.com\/gh\u002Do\u002Dst\/8126326\u0029",
+            "url": "namespaces/default.html#function_validPhone"
+        },                {
             "fqsen": "\\doesTKExist\u0028\u0029",
             "name": "doesTKExist",
             "summary": "Returns\u0020if\u0020the\u0020TKID\u0020exists\u0020\u0028NOTE\u003A\u0020This\u0020is\u0020compatiable\u0020with\u0020501st\u0020and\u0020Rebel\u0020Legion\u0020due\u0020to\u0020both\u0020clubs\u0020combining\u0020Troop\u0020Tracker\u0020data\u0029",

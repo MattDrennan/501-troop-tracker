@@ -1491,6 +1491,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 
 			// Query the database
 			$_POST['phone'] = cleanInput($_POST['phone']);
+			$_POST['phone'] = preg_replace('/\D/', '', $_POST['phone']);
 			$_POST['note'] = cleanInput($_POST['note']);
 			$statement = $conn->prepare("UPDATE troopers SET name = ?, phone = ?, squad = ?, p501 = ?, tkid = ?, forum_id = ?, note = ?, supporter = ? WHERE id = ?");
 			$statement->bind_param("ssiiissii", $_POST['user'], $_POST['phone'], $_POST['squad'], $_POST['p501'], $tkid, $_POST['forumid'], $_POST['note'], $_POST['supporter'], $_POST['userIDE']);
@@ -1526,11 +1527,17 @@ if(isset($_GET['do']) && $_GET['do'] == "changephone" && loggedIn())
 {
 	if(isset($_POST['phoneButton']))
 	{
-		$_POST['phone'] = cleanInput($_POST['phone']);
-		$statement = $conn->prepare("UPDATE troopers SET phone = ? WHERE id = ?");
-		$statement->bind_param("si", $_POST['phone'], $_SESSION['id']);
-		$statement->execute();
-		echo 'Phone number updated sucessfully!';
+		if(@validPhone($_POST['phone']) || empty($_POST['phone']))
+		{
+			$_POST['phone'] = cleanInput($_POST['phone']);
+			$_POST['phone'] = preg_replace('/\D/', '', $_POST['phone']);
+			$statement = $conn->prepare("UPDATE troopers SET phone = ? WHERE id = ?");
+			$statement->bind_param("si", $_POST['phone'], $_SESSION['id']);
+			$statement->execute();
+			echo 'Phone number updated sucessfully!';
+		} else {
+			echo 'Invalid phone number.';
+		}
 	}
 }
 
@@ -1777,7 +1784,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			}
 		}
 
-		if(strlen($_POST['phone']) < 10 && $_POST['phone'] != "")
+		if(!@validPhone($_POST['phone']) && !empty($_POST['phone']))
 		{
 			$failed = true;
 			echo '<li>Enter a valid phone number.</li>';
@@ -1808,6 +1815,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 
 			// Insert
 			$_POST['phone'] = cleanInput($_POST['phone']);
+			$_POST['phone'] = preg_replace('/\D/', '', $_POST['phone']);
 			$statement = $conn->prepare("INSERT INTO troopers (user_id, name, tkid, email, forum_id, p501, phone, squad, password) VALUES (?, ?, ?, ?, ?,?, ?, ?, ?)");
 			$statement->bind_param("isissisis", $forumLogin['user']['user_id'], $_POST['name'], $tkid, $forumLogin['user']['email'], $_POST['forumid'], $p501, $_POST['phone'], $squad, $password);
 			$statement->execute();

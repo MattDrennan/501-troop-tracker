@@ -4911,6 +4911,72 @@ function isSignUpClosed()
 }
 
 /**
+ * Returns whether a phone number is valid (https://gist.github.com/gh-o-st/8126326)
+ * 
+ * @ return boolean Returns whether a phone number is valid
+*/
+function validPhone($phone) {
+  $format_pattern = '/^(?:(?:\((?=\d{3}\)))?(\d{3})(?:(?<=\(\d{3})\))?[\s.\/-]?)?(\d{3})[\s\.\/-]?(\d{4})\s?(?:(?:(?:(?:e|x|ex|ext)\.?\:?|extension\:?)\s?)(?=\d+)(\d+))?$/';
+  $nanpa_pattern = '/^(?:1)?(?(?!(37|96))[2-9][0-8][0-9](?<!(11)))?[2-9][0-9]{2}(?<!(11))[0-9]{4}(?<!(555(01([0-9][0-9])|1212)))$/';
+ 
+  //Set array of variables to false initially
+  $valid = array(
+    'format' => false,
+    'nanpa' => false,
+    'ext' => false,
+    'all' => false
+  );
+ 
+  //Check data against the format analyzer
+  if(preg_match($format_pattern, $phone, $matchset)) {
+    $valid['format'] = true;    
+  }
+ 
+  //If formatted properly, continue
+  if($valid['format']) {
+ 
+    //Set array of new components
+    $components = array(
+      'ac' => $matchset[1], //area code
+      'xc' => $matchset[2], //exchange code
+      'sn' => $matchset[3], //subscriber number
+      'xn' => $matchset[4], //extension number
+    );
+ 
+    //Set array of number variants
+    $numbers = array(
+      'original' => $matchset[0],
+      'stripped' => substr(preg_replace('[\D]', '', $matchset[0]), 0, 10)
+    );
+ 
+    //Now let's check the first ten digits against NANPA standards
+    if(preg_match($nanpa_pattern, $numbers['stripped'])) {
+      $valid['nanpa'] = true;
+    }
+ 
+    //If the NANPA guidelines have been met, continue
+    if($valid['nanpa']) {
+      if(!empty($components['xn'])) {
+        if(preg_match('/^[\d]{1,6}$/', $components['xn'])) {
+          $valid['ext'] = true;
+        }
+      }
+      else {
+        $valid['ext'] = true;
+      }
+    }
+   
+    //If the extension number is valid or non-existent, continue
+    if($valid['ext']) {
+      if(strlen($components['ac'].$components['xc'].$components['sn']) == 10) {
+        $valid['all'] = true;
+      }
+    }
+  }
+  return $valid['all'];
+}
+
+/**
  * Returns if the TKID exists (NOTE: This is compatiable with 501st and Rebel Legion due to both clubs combining Troop Tracker data)
  *
  * @param int $tk The TKID of the trooper

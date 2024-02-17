@@ -358,9 +358,15 @@ $(function()
     {
         rules:
         {
+            phone:
+            {
+                required: false,
+                phoneUS: true,
+            },
         },
         messages:
         {
+            phone: "Please enter a valid phone number.",
         },
         submitHandler: function(form)
         {
@@ -419,12 +425,10 @@ $(function()
 					// Handler account - check if TKID is required
 					if($("[name=accountType]:checked").val() == 1)
 					{
-						console.log("aa");
 						return true;
 					}
 					else
 					{
-						console.log("bb");
 						return false;
 					}
 				},
@@ -445,7 +449,12 @@ $(function()
             },
             forumid: "required",
             forumpassword: "required",
-            name: "required"
+            name: "required",
+            phone:
+            {
+                required: false,
+                phoneUS: true,
+            },
         },
         messages:
         {
@@ -454,7 +463,8 @@ $(function()
             forumpassword: "Please enter your password.",
             name: "Please enter your name.",
 			rebelforum: "Please enter your Rebel Legion forum username.",
-			mandoid: "Please enter your Mando Mercs CAT #."
+			mandoid: "Please enter your Mando Mercs CAT #.",
+            phone: "Please enter a valid phone number.",
         },
         submitHandler: function(form)
         {
