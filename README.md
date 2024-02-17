@@ -1,5 +1,5 @@
 # 501st Legion Troop Tracker
-A troop tracker for the 501st Legion developed for the Florida Garrison.
+A troop tracker for the 501st Legion developed for the Florida Garrison. Xenforo (https://xenforo.com/) is required to use Troop Tracker.
 
 ## Use
 You are free to download, modify, and use freely for non-commerical purposes.
@@ -44,6 +44,12 @@ define('dbPassword2', 'DB_PASSWORD_HERE');
 define('dbName2', 'DB_NAME_HERE');
 
 /**
+ * forumURL: The forum endpoint for the API
+*/
+
+$forumURL = "index.php?api";
+
+/**
  * placeholder: This variable is used for assigning a user account to be a placeholder account. A placeholder account can be signed up multiple times for the same event, and is used to sign up non-members.
 */
 
@@ -71,21 +77,6 @@ define('emailUser', 'SMTP_USER');
 define('emailPassword', 'SMTP_PASSWORD');
 define('emailServer', 'SMTP_SERVER');
 define('emailPort', SMTP_PORT);
-
-/**
- * consumerKey: This is the consumer key for Twitter API
- * consumerSecret: This is the consumer secret for Twitter API
- * bearerToken: This is the bearer token for Twitter API
- * accessToken: This is the access token for Twitter API
- * accessTokenSecret: This is the access token secret for Twitter API
- * https://developer.twitter.com/en/docs/twitter-api
-*/
-
-define('consumerKey', 'consumer_key_here');
-define('consumerSecret', 'consumer_secret_here');
-define('bearerToken', 'bearer_token_here');
-define('accessToken', 'access_token_here');
-define('accessTokenSecret', 'access_secret_here');
 
 /**
  * googleKey: This is a Google API key which is used to access Google services. This is used for automatically detecting where an event is located, and it will automatically assign a squad based on the location.
@@ -116,14 +107,115 @@ define('discordWeb1', 'WEBHOOK_HERE');
 define('garrison', 'Florida Garrison');
 define('garrisonImage', 'garrison_emblem.png');
 
-// Please note: Do not change the order of squads and clubs after your set up your troop tracker, otherwise you will mess up the squad IDs
-// Make sure you run queries on your database if you need to change the order after installation.
-
 /**
- * dualCostume: This variable is used to determine which costume club ID should be counted as a dual costume.
+ * virtualTroop: This variable is used to determine which forum to post virtual troops
 */
 
-$dualCostume = 5;
+$virtualTroop = 445;
+
+/**
+ * conventionTroop: This variable is used to determine which forum to post convention troops
+*/
+
+$conventionTroop = 213;
+
+/**
+ * lflTroop: This variable is used to determine which forum to post LFL troops
+*/
+
+$lflTroop = 212;
+
+/**
+ * disneyTroop: This variable is used to determine which forum to post Disney troops
+*/
+
+$disneyTroop = 211;
+
+/**
+ * dualCostume: This array is used to determine which costume club ID should be counted as a dual costume.
+*/
+
+$dualCostume = array(5, 7, 8, 9, 10, 11);
+
+/**
+ * dualNA: This variable is used to determine which costume ID is the dual N/A
+*/
+
+$dualNA = 721;
+
+/**
+ * userGroupGarrison: The Xenforo user group ID for the garrison
+*/
+
+$userGroupGarrison = 18;
+
+/**
+ * userGroup501st: The Xenforo user group ID for the 501st or other group
+*/
+
+$userGroup501st = 1415;
+
+/**
+ * userGroupRetired: The Xenforo user group ID for retired members
+*/
+
+$userGroupRetired = 1429;
+
+/**
+ * troopTrackerUserGroup: The Xenforo user group ID for Troop Tracker connected troopers
+*/
+
+$troopTrackerUserGroup = 1489;
+
+/**
+ * handlerUserGroup: The Xenforo user group ID for Troop Tracker handler
+*/
+
+$handlerUserGroup = 1490;
+
+/**
+ * userGroupRIP: The Xenforo user group ID for RIP members
+*/
+
+$userGroupRIP = 1496;
+
+/**
+ * userGroupRankImages: These get matched with Xenforo secondary groups and will show images on Troop Tracker profile
+*/
+
+$userGroupRankImages = array(
+	1479 => '<img src="https://www.nightshiftsabers.com/images/GML/gmlteambanner3.png" class="rankTitle" />',
+	1480 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/everglades_charity.png" class="rankTitle" />',
+	1464 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/everglades_sl.png" class="rankTitle" />',
+	1465 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/everglades_xo.png" class="rankTitle" />',
+	1434 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/gcr.png" class="rankTitle" />',
+	1466 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/commander.png" class="rankTitle" />',
+	1495 => '<img src="https://www.nightshiftsabers.com/images/GML/garrisonmembership.png" class="rankTitle" />',
+	1435 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/gmo.png" class="rankTitle" />',
+	1493 => '<img src="https://fl501st.com/troop-tracker/images/ranks/qm.png" class="rankTitle" />',
+	1498 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/gwl.png" class="rankTitle" />',
+	1467 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/gwm.png" class="rankTitle" />',
+	1468 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/xo.png" class="rankTitle" />',
+	1481 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/gktw.png" class="rankTitle" />',
+	1482 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/hospital.png" class="rankTitle" />',
+	1469 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/makaze_sl.png" class="rankTitle" />',
+	1483 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/makaze_staff.png" class="rankTitle" />',
+	1470 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/makaze_xo.png" class="rankTitle" />',
+	1471 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/parjai_sl.png" class="rankTitle" />',
+	1472 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/parjai_xo.png" class="rankTitle" />',
+	1492 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/mushu.png" class="rankTitle" />',
+	1473 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/ra_kura.png" class="rankTitle" />',
+	1474 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/saberguildcs.png" class="rankTitle" />',
+	1497 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/s7_charity_tracker.png.png" class="rankTitle" />',
+	1475 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/s7_sl.png" class="rankTitle" />',
+	1476 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/s7_XO.png" class="rankTitle" />',
+	1477 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/tampa_sl.png" class="rankTitle" />',
+	1478 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/tampa_xo.png" class="rankTitle" />',
+	1494 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/tt-guru.png" class="rankTitle" />',
+);
+
+// Please note: Do not change the order of squads and clubs after your set up your troop tracker, otherwise you will mess up the squad IDs
+// Make sure you run queries on your database if you need to change the order after installation.
 
 /**
  * squadArray
@@ -136,61 +228,66 @@ $dualCostume = 5;
  * rankReserve: An image file that will show on troopers profiles of this squad (Reserve Members)
  * rankRetired: An image file that will show on troopers profiles of this squad (Inactive Retired Members)
  * eventForum: The forum ID in Xenforo that corresponds to the event forum for this squad
+ * userGroup: The Xenforo user group ID assigned to this squad
  */
-
 
 // Squads
 $squadArray = array(
 	array(
 		"name" => "Everglades Squad",
 		"logo" => "everglades_emblem.png",
-		"costumes" => array(0, 5),
+		"costumes" => array(0, 5, 7, 9, 11),
 		"db" => "p501",
 		"db2" => "",
 		"rankRegular" => "everglades_sm.png",
 		"rankReserve" => "",
 		"rankRetired" => "",
-		"eventForum" => 9),
+		"eventForum" => 9,
+		"userGroup" => 44),
 	array(
 		"name" => "Makaze Squad",
 		"logo" => "makaze_emblem.png",
-		"costumes" => array(0, 5),
+		"costumes" => array(0, 5, 7, 9, 11),
 		"db" => "p501",
 		"db2" => "",
 		"rankRegular" => "makaze_sm.png",
 		"rankReserve" => "",
 		"rankRetired" => "",
-		"eventForum" => 8),
+		"eventForum" => 8,
+		"userGroup" => 45),
 	array(
 		"name" => "Parjai Squad",
 		"logo" => "parjai_emblem.png",
-		"costumes" => array(0, 5),
+		"costumes" => array(0, 5, 7, 9, 11),
 		"db" => "p501",
 		"db2" => "",
 		"rankRegular" => "parjai_sm.png",
 		"rankReserve" => "",
 		"rankRetired" => "",
-		"eventForum" => 186),
+		"eventForum" => 186,
+		"userGroup" => 250),
 	array(
 		"name" => "Squad 7",
 		"logo" => "squad7_emblem.png",
-		"costumes" => array(0, 5),
+		"costumes" => array(0, 5, 7, 9, 11),
 		"db" => "p501",
 		"db2" => "",
 		"rankRegular" => "s7_sm.png",
 		"rankReserve" => "",
 		"rankRetired" => "",
-		"eventForum" => 7),
+		"eventForum" => 7,
+		"userGroup" => 683),
 	array(
 		"name" => "Tampa Bay Squad",
 		"logo" => "tampabay_emblem.png",
-		"costumes" => array(0, 5),
+		"costumes" => array(0, 5, 7, 9, 11),
 		"db" => "p501",
 		"db2" => "",
 		"rankRegular" => "tampa_sm.png",
 		"rankReserve" => "",
 		"rankRetired" => "",
-		"eventForum" => 73)
+		"eventForum" => 73,
+		"userGroup" => 43)
 );
 
 /**
@@ -207,13 +304,16 @@ $squadArray = array(
  * rankRegular: An image file that will show on troopers profiles of this club (Active Regular Members)
  * rankReserve: An image file that will show on troopers profiles of this club (Reserve Members)
  * rankRetired: An image file that will show on troopers profiles of this club (Inactive Retired Members)
+ * naCostume: The ID of the costume that is the clubs other or N/A
+ * userGroup: The Xenforo user group ID assigned to this club
  */
 
+// Clubs
 $clubArray = array(
 	array(
 		"name" => "Rebel Legion",
 		"logo" => "test",
-		"costumes" => array(1, 5),
+		"costumes" => array(1, 5, 8, 10, 11),
 		"db" => "pRebel",
 		"db2" => "",
 		"db3" => "rebelforum",
@@ -222,7 +322,9 @@ $clubArray = array(
 		"dbLimit" => "limitRebels",
 		"rankRegular" => "rebel.png",
 		"rankReserve" => "rebel_reserve.png",
-		"rankRetired" => "rebel_retired.png"),
+		"rankRetired" => "rebel_retired.png",
+		"naCostume" => 720,
+		"userGroup" => 1486),
 	array(
 		"name" => "Droid Builders",
 		"logo" => "test", "costumes" => array(3),
@@ -234,11 +336,13 @@ $clubArray = array(
 		"dbLimit" => "limitDroid",
 		"rankRegular" => "r2.png",
 		"rankReserve" => "r2_reserve.png",
-		"rankRetired" => "r2_retired.png"),
+		"rankRetired" => "r2_retired.png",
+		"naCostume" => 716,
+		"userGroup" => 1487),
 	array(
 		"name" => "Mando Mercs",
 		"logo" => "test",
-		"costumes" => array(2),
+		"costumes" => array(2, 7, 8),
 		"db" => "pMando",
 		"db2" => "",
 		"db3" => "mandoid",
@@ -248,21 +352,41 @@ $clubArray = array(
 		"dbLimit" => "limitMando",
 		"rankRegular" => "mercs.png",
 		"rankReserve" => "mercs_reserve.png",
-		"rankRetired" => "mercs_retired.png"), 
+		"rankRetired" => "mercs_retired.png",
+		"naCostume" => 715,
+		"userGroup" => 1488),
 	array(
 		"name" => "Other",
 		"logo" => "test",
 		"costumes" => array(4),
 		"db" => "pOther",
 		"db2" => "",
+		"db3" => "",
+		"db3Name" => "",
+		"db3Require" => "0,digits,0",
+		"db3Link" => "",
+		"dbLimit" => "limitOther",
+		"rankRegular" => "",
+		"rankReserve" => "",
+		"rankRetired" => "",
+		"naCostume" => 717,
+		"userGroup" => 1415),
+	array(
+		"name" => "Saber Guild",
+		"logo" => "test",
+		"costumes" => array(6, 9, 10, 11),
+		"db" => "pSG",
+		"db2" => "",
 		"db3" => "sgid",
 		"db3Name" => "Saber Guild SG #",
 		"db3Require" => "0,digits,0",
 		"db3Link" => "",
-		"dbLimit" => "limitOther",
+		"dbLimit" => "limitSG",
 		"rankRegular" => "saberguildmember.png",
 		"rankReserve" => "",
-		"rankRetired" => "")
+		"rankRetired" => "",
+		"naCostume" => 724,
+		"userGroup" => 1491)
 );
 
 ?>
@@ -274,19 +398,7 @@ $clubArray = array(
 <li>Set up a Google Cloud API for Google Sheets, then create a service account under "Credentials"</li>
 <li>Download the JSON file from the service account, rename it to "sheets_api_secret.json", and upload it the root directory"</li>
 <li>On a live server, set up cron jobs located in other/cron.txt</li>
-<li>To use 'nodescraper', create a '.env' file in same directory. Add the following:</li>
 </ol>
-
-```
-USERNAME_FORUM=
-PASSWORD_FORUM=
-MYSQL_HOST=
-MYSQL_USER=
-MYSQL_PASSWORD=
-MYSQL_TABLE=
-GOOGLE_SHEET_KEY=
-```
-
 
 ## Please contact me with any questions, comments, or concerns
 drennanmattheww@gmail.com

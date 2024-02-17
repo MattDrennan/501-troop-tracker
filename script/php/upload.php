@@ -50,17 +50,57 @@ if (!empty($_FILES))
 	$targetPath = dirname( __FILE__ ) . $ds. $storeFolder . $ds;
 	$targetFile =  $targetPath . $fileName;
 	move_uploaded_file($tempFile, $targetFile);
+
+	/**
+	 * Add a smaller image for faster page loads
+	 */
+
+	// Get path info
+	$info = pathinfo($targetFile);
+
+	// Get image size
+	list($width, $height) = getimagesize($targetFile);
+
+	// Limit size
+	if($width > 500 || $height > 500) { $width = 500; $height = 500; }
+
+	// Get file type
+	$fileType = mime_content_type($targetFile);
+
+	// Check file type to convert image
+	if($fileType == "image/png")
+	{
+		$image = imagecreatefrompng($targetFile);
+	}
+	else if($fileType == "image/jpeg")
+	{
+		$image = imagecreatefromjpeg($targetFile);
+	}
+	else if($fileType == "image/gif")
+	{
+		$image = imagecreatefromgif($targetFile);
+	}
+
+	// Resize image
+	$imgResized = imagescale($image , $width, $height);
+
+	// Make new image
+	imagejpeg($imgResized, $storeFolder . "resize/" . $info['filename'] . ".jpg");
 	
 	// Check if troop instruction image
 	if($_POST['admin'] == 0)
 	{
 		// Insert file into database
-		$conn->query("INSERT INTO uploads (troopid, trooperid, filename) VALUES ('".cleanInput($_POST['troopid'])."', '".cleanInput($_POST['trooperid'])."', '".addslashes($fileName)."')");
+		$statement = $conn->prepare("INSERT INTO uploads (troopid, trooperid, filename) VALUES (?, ?, ?)");
+		$statement->bind_param("iis", $_POST['troopid'], $_POST['trooperid'], $fileName);
+		$statement->execute();
 	}
 	else
 	{
 		// Insert file into database - admin
-		$conn->query("INSERT INTO uploads (troopid, trooperid, filename, admin) VALUES ('".cleanInput($_POST['troopid'])."', '".cleanInput($_POST['trooperid'])."', '".addslashes($fileName)."', '1')");
+		$statement = $conn->prepare("INSERT INTO uploads (troopid, trooperid, filename, admin) VALUES (?, ?, ?, '1')");
+		$statement->bind_param("iis", $_POST['troopid'], $_POST['trooperid'], $fileName);
+		$statement->execute();
 	}
 }
 

@@ -1,5 +1,8 @@
-*/2 * * * * php /htdocs/troop-tracker/script/php/cron/checknotifications.php
-0 15 * * * php /htdocs/troop-tracker/script/php/cron/checktroops.php
-0 * * * * php /htdocs/troop-tracker/script/php/cron/501sync.php
-0 0 * * 0 php /htdocs/troop-tracker/script/php/cron/rebelsync.php
-0 1 * * 0 php /htdocs/troop-tracker/script/php/cron/sgsync.php
+*/2 * * * * /opt/bitnami/php/bin/php /opt/bitnami/apache/htdocs/troop-tracker/script/php/cron/checknotifications.php
+0 15 * * * /opt/bitnami/php/bin/php /opt/bitnami/apache/htdocs/troop-tracker/script/php/cron/checktroops.php
+0 * * * 0 /opt/bitnami/php/bin/php /opt/bitnami/apache/htdocs/troop-tracker/script/php/cron/501sync.php
+0 * * * 0 /opt/bitnami/php/bin/php /opt/bitnami/apache/htdocs/troop-tracker/script/php/cron/rebelsync.php
+0 1 * * 0 /opt/bitnami/php/bin/php /opt/bitnami/apache/htdocs/troop-tracker/script/php/cron/sgsync.php
+*/2 * * * * /opt/bitnami/php/bin/php /opt/bitnami/apache/htdocs/troop-tracker/script/php/cron/updateboards.php
+0 * * * * /opt/bitnami/php/bin/php /opt/bitnami/apache/htdocs/troop-tracker/script/php/cron/updateforumusers.php
+0 * * * * /opt/bitnami/php/bin/php /opt/bitnami/apache/htdocs/troop-tracker/script/php/cron/autoconfirm.php

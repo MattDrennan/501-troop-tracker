@@ -177,7 +177,7 @@ function didAttend(value)
 	return returnValue;
 }
 
-// getStatus: gets status of trooper - 0 = Going, 1 = Stand by, 2 = Tentative, 3 = Attended, 4 = Canceled, 5 = Pending, 6 = Not Picked
+// getStatus: gets status of trooper - 0 = Going, 1 = Stand by, 2 = Tentative, 3 = Attended, 4 = Canceled, 5 = Pending, 6 = Not Picked, 7 = No Show
 function getStatus(value)
 {
 	var returnValue = "";
@@ -210,6 +210,10 @@ function getStatus(value)
 	{
 		returnValue = "Not Picked";
 	}
+	else if(value == 7)
+	{
+		returnValue = "No Show";
+	}
 
 	return returnValue;
 }
@@ -238,10 +242,6 @@ function selectAdd()
 	$("#awardIDAssign").select2();
 	$("#awardIDEdit").select2();
 	$("#awardID").select2();
-	$("#userIDTitle").select2();
-	$("#titleIDAssign").select2();
-	$("#titleIDEdit").select2();
-	$("#titleID").select2();
 	$("select[name^=eventId]").select2();
 	$("select[name^=userID]").select2();
 	$("select[name^=modifysignupFormCostume]").select2();
@@ -262,6 +262,74 @@ $(document).ready(function()
 {
 	// Add select2 to DOM
 	selectAdd();
+
+	// Placeholder save note
+	$(document).on('blur', '[name=placeholdertext]', function()
+	{
+		var placeholder = $(this);
+
+		$.ajax({
+			type: "POST",
+			url: "process.php?do=saveplaceholder",
+			data: "note=" + placeholder.val() + "&signid=" + placeholder.attr("signid"),
+			success: function(data)
+			{
+				// Nothing
+			}
+		});
+	});
+
+	// DB3 save note
+	$(document).on('blur', '[name=changedb3]', function()
+	{
+		var db3 = $(this);
+
+		// If DB3 was changed
+		if(db3.attr("db3value") != db3.val())
+		{
+			$.ajax({
+				type: "POST",
+				url: "process.php?do=savedb3",
+				data: "idvalue=" + db3.val() + "&trooperid=" + db3.attr("trooperid") + "&db3=" + db3.attr("db3"),
+				success: function(data)
+				{
+					db3.attr("db3value", db3.val());
+				}
+			});
+		}
+	});
+
+	// TKID change save note
+	$(document).on('blur', '[name=changetkid]', function()
+	{
+		var tkid = $(this);
+
+		// If TKID was changed
+		if(tkid.attr("tkid") != tkid.val())
+		{
+			$.ajax({
+				type: "POST",
+				url: "process.php?do=savetkid",
+				data: "idvalue=" + tkid.val() + "&trooperid=" + tkid.attr("trooperid"),
+				success: function(data)
+				{
+					// Get JSON
+					var json = JSON.parse(data);
+
+					if(json.success)
+					{
+						tkid.attr("tkid", tkid.val());
+						alert("Saved!");
+					}
+					else
+					{
+						tkid.val(tkid.attr("tkid"));
+						alert("This TKID is already assigned.");
+					}
+				}
+			});
+		}
+	});
 
     // Add rules to clubs - clubs
     $('.clubs').each(function()
@@ -293,6 +361,52 @@ $(document).ready(function()
 		$.LoadingOverlay("hide");
 	});
 
+	// Request Account - Account Type
+	$("body").on("click", "[name=accountType]", function(e)
+	{
+		if($(this).val() == "4") {
+			$("#tkid").val(0);
+			$("#tkid").prop("readonly", true);
+		}
+		else
+		{
+			$("#tkid").prop("readonly", false);
+		}
+	})
+
+	// Roster - Trooper Confirmation - Y / N Button
+	$("body").on("click", "[name=attend-button]", function(e)
+	{
+		var signid = $(this).attr("signid");
+		var status = $(this).attr("status");
+
+		// Save
+		$.ajax({
+			type: "POST",
+			url: "process.php?do=roster-trooper-confirmation",
+			data: "signid=" + signid + "&status=" + status,
+			success: function(data)
+			{
+				// Delete HTML
+				$("p[class=trooper-confirmation-box][signid=" + signid + "]").remove();
+			}
+		});
+	})
+	
+	// Favorite Costume - Save favorite costumes
+	$("body").on("change", "#favoriteCostumeSelect", function(e)
+	{
+		$.ajax({
+			type: "POST",
+			url: "process.php?do=savefavoritecostumes",
+			data: "costumes=" + $("#favoriteCostumeSelect").val(),
+			success: function(data)
+			{
+				// Save
+			}
+		});
+	})
+
 	// Limit Change - Total Troopers (Prevent admin from adding a total limit for a club and a total limit)
 	$("body").on("input", "#limitTotalTroopers", function(e)
 	{
@@ -308,6 +422,27 @@ $(document).ready(function()
 			}
 		}
 	})
+	
+	// Limit Change - Total Troopers (Prevent admin from adding a total limit for a club and a total limit)
+	$("body").on("input", "#limit501st", function(e)
+	{
+		if($("#limitTotalTroopers").val() != 500)
+		{
+			$("#limitTotalTroopers").val(500);
+		}
+	})
+
+	// Limit Change - Total Troopers (Prevent admin from adding a total limit for a club and a total limit) (Loop through clubs)
+	for(var i = 0; i <= (clubArray.length - 1); i++)
+	{
+		$("body").on("input", "#" + clubDBLimitArray[i], function(e)
+		{
+			if($("#limitTotalTroopers").val() != 500)
+			{
+				$("#limitTotalTroopers").val(500);
+			}
+		})
+	}
 
 	// Image Upload - Change Upload Type
 	$("body").on("click", "#trooperInformationButton", function(e)
@@ -341,6 +476,11 @@ $(document).ready(function()
 			var trooperid = $("#userID option:selected").val();
 			var troopername = $("#userID option:selected").attr("troopername");
 			var tkid = $("#userID option:selected").attr("tkid");
+			var tkidBasic = $("#userID option:selected").attr("tkidBasic");
+			var forum_id = $("#userID option:selected").attr("forum_id");
+			var db3 = $("#userID option:selected").attr("db3");
+			var idvalue = $("#userID option:selected").attr("idvalue");
+			var squad = $("#addMasterRosterForm input[name='squad']").val();
 
 			$.ajax({
 				type: "POST",
@@ -355,13 +495,20 @@ $(document).ready(function()
 					$("#userID option:selected").remove();
 					
 					// Add to table
-					$("#masterRosterTable").append('<tr name="row_' + trooperid + '"><td><a href="index.php?profile=' + trooperid + '" target="_blank">' + troopername + '</a></td><td>' + tkid + '</td><td><select name="changepermission" trooperid="' + trooperid + '"><option value="0">Not A Member</option><option value="1" SELECTED>Regular Member</option><option value="2">Reserve Member</option><option value="3">Retired Member</option><option value="4">Handler</option></select></td></tr>');
+					$("#masterRosterTable").append('<tr name="row_' + trooperid + '"><td><a href="index.php?profile=' + trooperid + '" target="_blank">' + troopername + '</a></td><td>' + forum_id + '</td>' + ((db3 != undefined) ? '<td><input type="text" name="changedb3" db3="' + db3 + '" trooperid="' + trooperid + '" value="' + idvalue + '" /></td>' : '') + ((squadCount >= squad) ? '<td><input type="number" name="changetkid" tkid="' + tkidBasic + '" trooperid="' + trooperid + '" value="' + tkidBasic + '" /></td>' : '') + '<td><select name="changepermission" trooperid="' + trooperid + '"><option value="0">Not A Member</option><option value="1" SELECTED>Regular Member</option><option value="2">Reserve Member</option><option value="3">Retired Member</option><option value="4">Handler</option></select></td></tr>');
 					
 					// Alert user
 					alert(json.data);
 				}
 			});
 		}
+	})
+	
+	// Add friend without an account button
+	$("body").on("click", "#withoutAccount", function(e)
+	{
+		$("#trooperSelect").val(placeholder);
+		$("#trooperSelect").select2();
 	})
 	
 	// Roster - Update member status
@@ -457,6 +604,21 @@ $(document).ready(function()
 		});
 	})
 
+	// Top Troops Button
+	$("body").on("click", "#show-top-troops", function(e)
+	{
+		if($("#top-troops").is(":hidden"))
+		{
+			$(this).text("Hide");
+			$("#top-troops").show();
+		}
+		else
+		{
+			$(this).text("Top Troopers");
+			$("#top-troops").hide();
+		}
+	})
+
 	// Change Limits - Shows / Hide Change Limits
 	$("body").on("click", "#limitChange", function(e)
 	{
@@ -481,10 +643,12 @@ $(document).ready(function()
 
 		// Reset
 		$("#postToBoards").val(1);
-		$("#era").val(4);
 		$("#limit501st").val(500);
 		$("#limitedEvent").val(0);
+		$("#limitHandlers").val(500);
 		$("#limitTotalTroopers").val(500);
+		$("#friendLimit").val(4);
+		$("#allowTentative").val(1);
 
 		// On index.php, clear all fields
 		clearLimit();
@@ -497,9 +661,19 @@ $(document).ready(function()
 		
 		// Load data from form
 		var trooperid = $(this).attr("trooperid");
-		var eventid = $("#troopidC").val();
+		var eventid = $("#troopid").val();
 		var signid = $(this).attr("signid");
 		var buttonid = $(this).attr("buttonid");
+
+		// Set class based on button press
+		if(buttonid == 0)
+		{
+			$(this).closest("tr").addClass("canceled-troop");
+		}
+		else
+		{
+			$(this).closest("tr").removeClass("canceled-troop");
+		}
 		
 		// Get AJAX data
 		$.ajax({
@@ -681,7 +855,7 @@ $(document).ready(function()
 	$("body").on("input", "input[id='trooperSearch']", function(e)
 	{
 		// Loop through options
-		$("#trooperSelect option, #userID option, #userIDAward option, #userIDTitle option").each(function(index)
+		$("#trooperSelect option, #userID option, #userIDAward option").each(function(index)
 		{	
 			// If contains search query
 			if($(this).is(":contains(" + $("input[id='trooperSearch']").val() + ")"))
@@ -707,13 +881,75 @@ $(document).ready(function()
 			$("#searchNameDiv").show();
 			$("#tkIDDiv").show();
 			$("#trooper_count_radio").hide();
+			$("[name=activeRadios]").hide();
+			$("#costumes_choice_search").hide();
 		}
-		else
+		else if($("input[name='searchType']:checked").val() == "trooper")
 		{
 			$("#searchNameDiv").hide();
 			$("#tkIDDiv").hide();
 			$("#trooper_count_radio").show();
+			$("[name=activeRadios]").show();
+			$("#costumes_choice_search").hide();
 		}
+		else if($("input[name='searchType']:checked").val() == "donations")
+		{
+			$("#searchNameDiv").hide();
+			$("#tkIDDiv").hide();
+			$("#trooper_count_radio").show();
+			$("[name=activeRadios]").hide();
+			$("#costumes_choice_search").hide();
+		}
+		else if($("input[name='searchType']:checked").val() == "costumecount")
+		{
+			$("#searchNameDiv").hide();
+			$("#tkIDDiv").hide();
+			$("#trooper_count_radio").hide();
+			$("[name=activeRadios]").hide();
+			$("#costumes_choice_search").show();
+		}
+	})
+
+	// For sort-roster to determine member type
+	var rosterMemberType = 0;
+
+	// Roster - Sort
+	$("#sort-roster").click(function(e)
+	{
+		e.preventDefault();
+
+		if(rosterMemberType < 4) {
+			rosterMemberType++;
+		} else {
+			rosterMemberType = 0;
+		}
+		
+		$("td[name=permission-box] select").each(function() {
+			if(rosterMemberType == 0) {
+				// Show all
+				$(this).closest("tr").show();
+			} else {
+				if($("option:selected", this).val() == rosterMemberType) {
+					$(this).closest("tr").show();
+				} else {
+					$(this).closest("tr").hide();
+				}
+			}
+		});
+
+		$("td[name=permission-box]").each(function() {
+			if(rosterMemberType != 0 && rosterMemberType != 4) {
+				if($(this).text().includes("Super Admin") || $(this).text().includes("Moderator")) {
+					$(this).closest("tr").hide();
+				}
+			}
+			else
+			{
+				if($(this).text().includes("Super Admin") || $(this).text().includes("Moderator")) {
+					$(this).closest("tr").show();
+				}
+			}
+		});
 	})
 	
 	// Trooper Check - Reserve Member Button
@@ -898,24 +1134,36 @@ $(document).ready(function()
 		var form = $("#changeSettingsForm");
 		var url = form.attr("action");
 
-		$.ajax({
-			type: "POST",
-			url: url,
-			data: form.serialize()  + "&submitCloseSite=1",
-			success: function(data)
-			{
-				if($("#submitCloseSite").prop("value") == "Close Website")
+		// Prompt based on button status
+		var sitemessage = null;
+
+		if($("#submitCloseSite").prop("value") == "Close Website") {
+			sitemessage = prompt("What would you like the site message to be? (optional)");
+		} else {
+			sitemessage = "";
+		}
+
+		// Get site message first
+		if (sitemessage != null) {
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize()  + "&submitCloseSite=1&sitemessage=" + sitemessage,
+				success: function(data)
 				{
-					$("#submitCloseSite").prop("value", "Open Website");
+					if($("#submitCloseSite").prop("value") == "Close Website")
+					{
+						$("#submitCloseSite").prop("value", "Open Website");
+					}
+					else
+					{
+						$("#submitCloseSite").prop("value", "Close Website");
+					}
+					
+					alert("Changes submitted!");
 				}
-				else
-				{
-					$("#submitCloseSite").prop("value", "Close Website");
-				}
-				
-				alert("Changes submitted!");
-			}
-		});
+			});
+		}
 	})
 	
 	// Change Site Settings - Close Sign Ups
@@ -1024,6 +1272,8 @@ $(document).ready(function()
 		});
 	})
 
+	/************************* EDIT EVENT OPTIONS *******************************/
+
 	$("#submitEditUser").button().click(function(e)
 	{
 		e.preventDefault();
@@ -1041,6 +1291,8 @@ $(document).ready(function()
 				{
 					$("#submitEditUser").val("Close");
 					$("#editUserInfo").show();
+					$("[name=trooperInformation]").hide();
+					$("#trooperInformationButton").text("Show Trooper Information");
 
 					var json = JSON.parse(data);
 					$("#userIDE").val(json.id);
@@ -1048,6 +1300,7 @@ $(document).ready(function()
 					$("#phone").val(json.phone);
 					$("#squad").val(json.squad);
 					$("#permissions").val(json.permissions);
+					$("#note").val(json.note);
 
 					// Special permissions
 
@@ -1063,6 +1316,9 @@ $(document).ready(function()
 					if(json.spTrooper == 1) { $("[name=spTrooper]").prop("checked", true); $("[name=spTrooper]").val(1); }
 					if(json.spCostume == 1) { $("[name=spCostume]").prop("checked", true); $("[name=spCostume]").val(1); }
 					if(json.spAward == 1) { $("[name=spAward]").prop("checked", true); $("[name=spAward]").val(1); }
+					
+					// Set 501st
+					$("#p501").val(json.p501);
 
 					// Loop through clubs
 					for(var i = 0; i <= (clubArray.length - 1); i++)
@@ -1126,7 +1382,7 @@ $(document).ready(function()
 				{
 					// Hide Charity
 					$("#charityAmount").hide();
-					$("#submitCharity").val("Set Charity Amount");
+					$("#submitCharity").val("Charity");
 				}
 
 				// If advanced options visible
@@ -1135,6 +1391,13 @@ $(document).ready(function()
 					// Hide Charity
 					$("#advancedOptions").hide();
 					$("#submitCharity").val("Advanced Options");
+				}
+
+				// Hide event status info
+				if($("#editEventStatus").is(":visible"))
+				{
+					$("#submitEventStatus").val("Event Status");
+					$("#editEventStatus").hide();
 				}
 
 				// If edit event is hidden
@@ -1167,10 +1430,12 @@ $(document).ready(function()
 					$("#comments").val(json.comments);
 					$("#label").val(json.label);
 					$("#limitedEvent").val(json.limitedEvent);
-					$("#era").val(json.limitTo);
 					$("#limitRebels").val(json.limitRebels);
 					$("#limit501st").val(json.limit501st);
+					$("#limitHandlers").val(json.limitHandlers);
 					$("#limitTotalTroopers").val(json.limitTotalTroopers);
+					$("#friendLimit").val(json.friendLimit);
+					$("#allowTentative").val(json.allowTentative);
 
 					// Loop through clubs
 					for(var i = 0; i <= (clubArray.length - 1); i++)
@@ -1179,6 +1444,7 @@ $(document).ready(function()
 					}
 
 					$("#referred").val(json.referred);
+					$("#poc").val(json.poc);
 
 					// Hide options if armor party
 					if(json.label == 10)
@@ -1203,6 +1469,103 @@ $(document).ready(function()
 					$("#submitEdit").val("Edit");
 					$("#editEventInfo").hide();
 				}
+			}
+		});
+	})
+
+	/************************* EDIT EVENT STATUS *******************************/
+
+	// Event Status Button
+	$("#submitEventStatus").button().click(function(e)
+	{
+		e.preventDefault();
+			
+		// Hide event info
+		if($("#editEventInfo").is(":visible"))
+		{
+			$("#editEventInfo").hide();
+			$("#submitEdit").val("Edit");
+		}
+
+		// Hide roster info
+		if($("#rosterInfo").is(":visible"))
+		{
+			$("#submitRoster").val("Roster");
+			$("#rosterInfo").html("");
+			$("#rosterInfo").hide();
+		}
+
+		// Hide charity info
+		if($("#charityAmount").is(":visible"))
+		{
+			$("#submitCharity").val("Charity");
+			$("#charityAmount").hide();
+		}
+
+		// Hide advanced info
+		if($("#advancedOptions").is(":visible"))
+		{
+			$("#submitAdvanced").val("Advanced Options");
+			$("#advancedOptions").hide();
+		}
+		
+		// Show advanced options button, when pressed
+		if($("#editEventStatus").is(":hidden"))
+		{
+			// Show advanced options
+			$("#editEventStatus").show();
+			
+			// Change button to close
+			$("#submitEventStatus").val("Close");
+			
+			// Get form info
+			var form = $("#editEvents");
+			var url = form.attr("action");
+
+			// Request event data
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitEdit=1",
+				success: function(data)
+				{
+					var json = JSON.parse(data);
+					
+					// Set advanced fields
+					$("#editEventStatus select[name=eventStatus]").val(json.closed);
+				}
+			});
+		}
+		else
+		{
+			// Hide status form
+			$("#editEventStatus").hide();
+			$("#submitEventStatus").val("Event Status");
+		}
+	})
+
+	// Set Event Status Save button
+	$("#editEventStatusSave").button().click(function(e)
+	{
+		e.preventDefault();
+		
+		// Get form info
+		var form = $("#editEvents");
+		var url = form.attr("action");
+
+		// Save
+		$.ajax({
+			type: "POST",
+			url: url,
+			data: form.serialize() + "&eventStatus=" + $("#editEventStatus select[name=eventStatus]").val(),
+			success: function(data)
+			{
+				// Hide edit event status form
+				$("#editEventStatus").hide();
+				$("#submitEventStatus").val("Event Status");
+		
+				// Send success message
+				alert("Success!");
 			}
 		});
 	})
@@ -1232,8 +1595,15 @@ $(document).ready(function()
 		// Hide charity info
 		if($("#charityAmount").is(":visible"))
 		{
-			$("#submitCharity").val("Set Charity Amount");
+			$("#submitCharity").val("Charity");
 			$("#charityAmount").hide();
+		}
+
+		// Hide event status info
+		if($("#editEventStatus").is(":visible"))
+		{
+			$("#submitEventStatus").val("Event Status");
+			$("#editEventStatus").hide();
 		}
 		
 		// Show advanced options button, when pressed
@@ -1266,7 +1636,7 @@ $(document).ready(function()
 		}
 		else
 		{
-			// Hide charity form
+			// Hide advanced form
 			$("#advancedOptions").hide();
 			$("#submitAdvanced").val("Advanced Options");
 		}
@@ -1335,6 +1705,13 @@ $(document).ready(function()
 			$("#submitAdvanced").val("Advanced Options");
 			$("#advancedOptions").hide();
 		}
+
+		// Hide event status info
+		if($("#editEventStatus").is(":visible"))
+		{
+			$("#submitEventStatus").val("Event Status");
+			$("#editEventStatus").hide();
+		}
 		
 		// Show charity button, when pressed
 		if($("#charityAmount").is(":hidden"))
@@ -1359,7 +1736,11 @@ $(document).ready(function()
 					var json = JSON.parse(data);
 					
 					// Set charity field
-					$("#charityAmountField").val(json.moneyRaised);
+					$("#charityDirectFunds").val(json.charityDirectFunds);
+					$("#charityIndirectFunds").val(json.charityIndirectFunds);
+					$("#charityName").val(json.charityName);
+					$("#charityAddHours").val(json.charityAddHours);
+					$("#charityNote").val(json.charityNote);
 				}
 			});
 		}
@@ -1367,40 +1748,7 @@ $(document).ready(function()
 		{
 			// Hide charity form
 			$("#charityAmount").hide();
-			$("#submitCharity").val("Set Charity Amount");
-		}
-	})
-	
-	// Set charity amount button
-	$("#charityAmountSave").button().click(function(e)
-	{
-		e.preventDefault();
-		
-		// Get form info
-		var form = $("#editEvents");
-		var url = form.attr("action");
-
-		if(parseInt($("#charityAmountField").val()) || parseInt($("#charityAmountField").val()) === 0)
-		{
-			// Save
-			$.ajax({
-				type: "POST",
-				url: url,
-				data: form.serialize() + "&submitCharity=1&charity=" + $("#charityAmountField").val(),
-				success: function(data)
-				{
-					// Hide charity form
-					$("#charityAmount").hide();
-					$("#submitCharity").val("Set Charity Amount");
-			
-					// Send success message
-					alert("Success!");
-				}
-			});
-		}
-		else
-		{
-			alert("Enter a valid number.");
+			$("#submitCharity").val("Charity");
 		}
 	})
 	
@@ -1431,7 +1779,7 @@ $(document).ready(function()
 				{
 					// Hide Charity
 					$("#charityAmount").hide();
-					$("#submitCharity").val("Set Charity Amount");
+					$("#submitCharity").val("Charity");
 				}
 
 				// Hide advanced info
@@ -1439,6 +1787,13 @@ $(document).ready(function()
 				{
 					$("#submitAdvanced").val("Advanced Options");
 					$("#advancedOptions").hide();
+				}
+
+				// Hide event status info
+				if($("#editEventStatus").is(":visible"))
+				{
+					$("#submitEventStatus").val("Event Status");
+					$("#editEventStatus").hide();
 				}
 
 				if($("#rosterInfo").is(":hidden"))
@@ -1517,33 +1872,6 @@ $(document).ready(function()
 			}
 		});
 	});
-	
-	// When admin clicks delete comment icon
-	$("body").on("click", "[id^=deleteComment]", function(e)
-	{
-		e.preventDefault();
-
-		var r = confirm("Are you sure you want to delete this comment?");
-
-		var id = $(this).attr("name");
-
-		if (r == true)
-		{
-			$.ajax({
-				type: "POST",
-				url: "index.php?event=" + $(this).attr("name"),
-				data: "comment=" + id + "&deleteComment=1",
-				success: function(data)
-				{
-					// Remove comment
-					$("#comment_" + id).remove();
-
-					// Alert to success
-			  		alert("The comment was removed successfully!");
-				}
-			});
-		}
-	});
 
 	// When trooper clicks button to add smiley
 	$("body").on("click", "[name=addSmiley]", function(e)
@@ -1592,54 +1920,8 @@ $(document).ready(function()
 		});
 
 		// Add comment to comment text area
-		$("#comment").val($("#comment").val() + "[quotec trooperid=" + $(this).attr("trooperid") + " name=" + $(this).attr("troopername") + " tkid=" + $(this).attr("tkid") + " commentid=" + id + "]" + $(changeThis).text() + "[/quotec]\n\n");
+		$("#comment").val($("#comment").val() + "[QUOTE=\"" + $(this).attr("troopername") + ", post: " + $(this).attr("post_id") + ", member: " + $(this).attr("user_id") + "\"]" + $(changeThis).text() + "[/QUOTE]\n\n");
 
-	});
-	
-	// When trooper quotes a comment
-	$("body").on("click", "[id^=editComment]", function(e)
-	{
-		e.preventDefault();
-
-		// Get ID of comment
-		var id = $(this).attr("name");
-
-		// Replace smileys with code
-		$("table[name=comment_" + id + "] td[name=insideComment] img").each(function() {
-			$(this).replaceWith($(this).attr("code"));
-		});
-		
-		// Add comment to comment text area with HTML for display purposes
-		$("table[name=comment_" + id + "] td[name=insideComment]").html('<a href="javascript:void(0);" onclick="javascript:bbcoder(\'B\', \'textcomment_' + id + '\')" class="button">Bold</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'I\', \'textcomment_' + id + '\')" class="button">Italic</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'U\', \'textcomment_' + id + '\')" class="button">Underline</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'Q\', \'textcomment_' + id + '\')" class="button">Quote</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'COLOR\', \'textcomment_' + id + '\')" class="button">Color</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'SIZE\', \'textcomment_' + id + '\')" class="button">Size</a> <a href="javascript:void(0);" onclick="javascript:bbcoder(\'URL\', \'textcomment_' + id + '\')" class="button">URL</a> <a href="#/" name="addSmiley" class="button">Add Smiley</a><textarea id="textcomment_' + id + '" commentid="' + id + '">' + $("table[name=comment_" + id + "] td[name=insideComment]").text().replace('<br/>', '\n').replace('<br />', '\n') + '</textarea><span name="smileyarea"></span><br /><input type="submit" name="editCommentSubmit" commentid="' + id + '" value="Save" />');
-	});
-	
-	// When trooper quotes a comment
-	$("body").on("click", "[name=editCommentSubmit]", function(e)
-	{
-		e.preventDefault();
-
-		// Get ID of comment
-		var id = $(this).attr("commentid");
-		
-		// Get comment
-		var comment = $("table[name=comment_" + id + "] td[name=insideComment] textarea").val().replace(/\n/g, '\n<br />')
-		
-		// Save comment
-		$.ajax({
-			type: "POST",
-			url: "process.php?do=editcomment",
-			data: "commentid=" + id + "&comment=" + comment,
-			success: function(data)
-			{
-				var json = JSON.parse(data);
-
-				// Add text area to comment
-				$("table[name=comment_" + id + "] td[name=insideComment]").html(json.data);
-
-				// Alert to success
-				alert("Comment updated!");
-			}
-		});
 	});
 
 	$("#changephoneLink").click(function(e)
@@ -1649,6 +1931,7 @@ $(document).ready(function()
 		$("#changename").hide();
 		$("#unsubscribe").hide();
 		$("#changetheme").hide();
+		$("#favoriteCostumesArea").hide();
 	});
 	
 	$("#changethemeLink").click(function(e)
@@ -1658,6 +1941,7 @@ $(document).ready(function()
 		$("#changename").hide();
 		$("#unsubscribe").hide();
 		$("#changetheme").show();
+		$("#favoriteCostumesArea").hide();
 	});
 
 	$("#changenameLink").click(function(e)
@@ -1667,6 +1951,7 @@ $(document).ready(function()
 		$("#changename").show();
 		$("#unsubscribe").hide();
 		$("#changetheme").hide();
+		$("#favoriteCostumesArea").hide();
 	});
 
 
@@ -1677,6 +1962,17 @@ $(document).ready(function()
 		$("#changename").hide();
 		$("#unsubscribe").show();
 		$("#changetheme").hide();
+		$("#favoriteCostumesArea").hide();
+	});
+	
+	$("#favoriteCostumes").click(function(e)
+	{
+		e.preventDefault();
+		$("#changephone").hide();
+		$("#changename").hide();
+		$("#unsubscribe").hide();
+		$("#changetheme").hide();
+		$("#favoriteCostumesArea").show();
 	});
 
 	$("#submitDelete").button().click(function(e)
@@ -1975,6 +2271,9 @@ $(document).ready(function()
 						$(this).prop("disabled", true);
 					}
 				});
+
+				// Refresh select 2
+				selectAdd();
 			}
 			else
 			{
@@ -2037,13 +2336,13 @@ $(document).ready(function()
 	});
 	
 	// Modify Sign Up Form Change
-	$("body").on("change", "select[name=modifysignupFormCostume], select[name=modiftybackupcostumeForm], select[name=modifysignupStatusForm]", function(e)
+	$(document.body).on("change", "select[name=modifysignupFormCostume], select[name=modiftybackupcostumeForm], select[name=modifysignupStatusForm]", function(e)
 	{
 		var trooperid = $(this).attr("trooperid");
 		var signid = $(this).attr("signid");
-		var signupForm1 = $("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "]");
-		var signupForm2 = $("select[name=modiftybackupcostumeForm][trooperid=" + trooperid + "][signid=" + signid + "]");
-		var signupForm3 = $("select[name=modifysignupStatusForm][trooperid=" + trooperid + "][signid=" + signid + "]");
+		var signupForm1 = $(this).parents("tr").find("select[name=modifysignupFormCostume]");
+		var signupForm2 = $(this).parents("tr").find("select[name=modiftybackupcostumeForm]");
+		var signupForm3 = $(this).parents("tr").find("select[name=modifysignupStatusForm]");
 		
 		$.ajax({
 			type: "POST",
@@ -2059,67 +2358,6 @@ $(document).ready(function()
 				// If JSON did not fail
 				if(json.success != "failed")
 				{
-					// Adjust options based on costume - 501
-					if(($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 0 && (json.limit501st - json.limit501stTotal) > 0) && json.staus != 4)
-					{
-							// Empty select
-							signupForm3.empty();
-
-							// Refill
-							signupForm3.append("<option value='0'>I'll be there</option> <option value='2'>Tentative</option> <option value='4'>Cancel</option>");
-
-							// Set selected value
-							signupForm3.val(json.status);
-
-							// Set
-							shouldElse = false;
-					}
-
-					// Loop through clubs
-					for(var i = 0; i <= (clubArray.length - 1); i++)
-					{
-						// Adjust options based on costumes - other clubs
-						if(($("select[name=modifysignupFormCostume][trooperid=" + trooperid + "][signid=" + signid + "] option:selected").attr("club") == 1 && (json[clubArray[i]] - json[clubArray[i] + "Total"]) > 0) && json.staus != 4)
-						{
-							// Empty select
-							signupForm3.empty();
-
-							// Refill
-							signupForm3.append("<option value='0'>I'll be there</option> <option value='2'>Tentative</option> <option value='4'>Cancel</option>");
-
-							// Set selected value
-							signupForm3.val(json.status);
-
-							// Set
-							shouldElse = false;
-						}
-					}
-
-					if(shouldElse)
-					{
-						// Empty select
-						signupForm3.empty();
-
-						// If not stand by
-						if(json.status != 1)
-						{
-							// Refill
-							signupForm3.append("<option value='0'>I'll be there</option> <option value='2'>Tentative</option> <option value='4'>Cancel</option>");
-						}
-						// Troop is full, show stand by
-						else
-						{
-							// Refill
-							signupForm3.append("<option value='1'>Stand By</option> <option value='4'>Cancel</option>");
-						}
-
-						// Set selected value
-						signupForm3.val(json.status);
-					}
-
-					// Update troopers remaining on the page
-					$("div[name=troopersRemainingDisplay]").html(json.troopersRemaining);
-
 					// Change text on page
 					if(signupForm3.val() == 4)
 					{
@@ -2129,6 +2367,15 @@ $(document).ready(function()
 					{
 						$("#signeduparea").html("<p><b>You are signed up for this troop!</b></p>");
 					}
+					
+					// Put data in html
+					$("#signuparea1").html(json.rosterData);
+					
+					// Update troopers remaining on the page
+					$("div[name=troopersRemainingDisplay]").html(json.troopersRemaining);
+
+					// Update select2
+					selectAdd();
 					
 					alert("Status Updated!");
 				}
@@ -2171,7 +2418,7 @@ $(document).ready(function()
 		if(!$("#charityAmount").is(":hidden"))
 		{
 			$("#charityAmount").hide();
-			$("#submitCharity").val("Set Charity Amount");
+			$("#submitCharity").val("Charity");
 		}
 
 		// Hide advanced info
@@ -2240,7 +2487,7 @@ $(document).ready(function()
 					var json = JSON.parse(data);
 					$("#nameTable").html('<a href="index.php?action=commandstaff&do=managetroopers&uid=' + $("#userID2").val() + '">' + ifEmpty(json.name) + '</a>');
 					$("#emailTable").html(ifEmpty(json.email));
-					$("#forumTable").html('<a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un=' + json.forum + '" target="_blank">' + json.forum + '</a>');
+					$("#forumTable").html('<a href="https://www.fl501st.com/boards/index.php?members/' + json.forum + '.' + json.user_id + '" target="_blank">' + json.forum + '</a>');
 
 					// Loop through clubs
 					for(var i = 0; i <= (clubDB3Array.length - 1); i++)
@@ -2279,6 +2526,14 @@ $(document).ready(function()
 					{
 						$("#tkTable").html(ifEmpty(json.tkid));	
 					}
+
+					// If TKID is 0, show as handler request
+					if(json.tkid == "TK0")
+					{
+						$("#tkTable").html("**Handler Request**");
+					}
+
+					$("#approveButtons").show();
 				}
 			});
 		}
@@ -2288,6 +2543,8 @@ $(document).ready(function()
 			$("#nameTable").html("");
 			$("#emailTable").html("");
 			$("#forumTable").html("");
+
+			$("#approveButtons").hide();
 
 			// Loop through clubs
 			for(var i = 0; i <= (clubDB3Array.length - 1); i++)
@@ -2317,7 +2574,6 @@ $(document).ready(function()
 		}
 
 		$("#costumeNameEdit").val($(this).find('option:selected').attr("costumeName"));
-		$("#costumeEraEdit").val($(this).find('option:selected').attr("costumeEra"));
 		$("#costumeClubEdit").val($(this).find('option:selected').attr("costumeClub"));
 	});
 	
@@ -2346,7 +2602,6 @@ $(document).ready(function()
 					// Change values for edit form
 					$("#costumeIDEdit :selected").text($("#costumeNameEdit").val());
 					$("#costumeIDEdit :selected").attr("costumeName", $("#costumeNameEdit").val());
-					$("#costumeIDEdit :selected").attr("costumeEra", $("#costumeEraEdit").val());
 					$("#costumeIDEdit :selected").attr("costumeClub", $("#costumeClubEdit").val());
 					$("#costumeIDEdit").select2();
 
@@ -2383,11 +2638,10 @@ $(document).ready(function()
 					
 					// Add to lists
 					$("#costumeID").append("<option value='" + json[0].id + "'>" + $("#costumeName").val() + "</option>");
-					$("#costumeIDEdit").append("<option value='" + json[0].id + "' costumeName='" + $("#costumeName").val() + "' costumeID='" + json[0].id + "' costumeEra='" + $("#costumeEra").val() + "' costumeClub='" + $("#costumeClub").val() + "'>" + $("#costumeName").val() + "</option>");
+					$("#costumeIDEdit").append("<option value='" + json[0].id + "' costumeName='" + $("#costumeName").val() + "' costumeID='" + json[0].id + "' costumeClub='" + $("#costumeClub").val() + "'>" + $("#costumeName").val() + "</option>");
 
 					// Clear form
 					$("#costumeName").val("");
-					$("#costumeEra").val("1");
 					$("#costumeClub").val("0");
 					
 					if($("#costumeID option").length <= 1)
@@ -2422,30 +2676,40 @@ $(document).ready(function()
 				data: form.serialize() + "&submitDeleteCostume=1",
 				success: function(data)
 				{
-					// Delete from edit list
-					$("#costumeIDEdit").children("option[value='" + $("#costumeID :selected").val() + "']").remove();
+					// Get JSON
+					var json = JSON.parse(data);
 
-					// Clear
-					$("#costumeID").find("option:selected").remove();
-					
-					// Alert to success
-			  		alert("The costume was deleted successfully!");
+					if(json.success == "pass")
+					{
+						// Delete from edit list
+						$("#costumeIDEdit").children("option[value='" + $("#costumeID :selected").val() + "']").remove();
 
-			  		// Clear edit area
-			  		$("#editCostumeList").hide();
-
-			  		// Show message if empty
-			  		if($("#costumeID option").length <= 0)
-			  		{
-			  			$("#costumeDeleteForm").html("No costume to display.");
+						// Clear
+						$("#costumeID").find("option:selected").remove();
 						
-			  		}
-					
-			  		// Show message if empty - edit
-			  		if($("#costumeIDEdit option").length <= 1)
-			  		{
-			  			$("#costumeEditForm").html("No costume to display.");
-			  		}
+						// Alert to success
+						alert("The costume was deleted successfully!");
+
+						// Clear edit area
+						$("#editCostumeList").hide();
+
+						// Show message if empty
+						if($("#costumeID option").length <= 0)
+						{
+							$("#costumeDeleteForm").html("No costume to display.");
+							
+						}
+						
+						// Show message if empty - edit
+						if($("#costumeIDEdit option").length <= 1)
+						{
+							$("#costumeEditForm").html("No costume to display.");
+						}
+					}
+					else
+					{
+						alert("Unable to delete this costume.");
+					}
 				}
 			});
 
@@ -2460,266 +2724,11 @@ $(document).ready(function()
 			alert("Please select a costume.");
 		}
 	})
-
-	/************ TITLES ********************/
-	
-	// Titles - select change
-	$("body").on("change", "#userIDTitle", function(e)
-	{
-		// Get trooper ID
-		var trooperid = $("#userIDTitle option:selected").val();
-		var titleid = $("#titleIDAssign option:selected").val();
-		
-		$.ajax({
-			type: "POST",
-			url: "process.php?do=assigntitles",
-			data: "gettitle=1&titleid=" + titleid + "&trooperid=" + trooperid,
-			success: function(data)
-			{
-				// Get JSON
-				var json = JSON.parse(data);
-				
-				// Check if has award
-				if(json.hasTitle == 0)
-				{
-					$("#title").show();
-					$("#titleRemove").hide();
-				}
-				else
-				{
-					$("#title").hide();
-					$("#titleRemove").show();
-				}
-			}
-		});
-	});
-
-	// Titles - Edit select change
-	$("body").on("change", "#titleIDEdit", function(e)
-	{
-		// If click please select, hide list
-		if($("#titleIDEdit :selected").val() == 0)
-		{
-			$("#editTitleList").hide();
-		}
-		else
-		{
-			$("#editTitleList").show();
-		}
-
-		$("#editTitle").val($("#titleIDEdit :selected").attr("title"));
-		$("#editTitleImage").val($("#titleIDEdit :selected").attr("titleImage"));
-		$("#editTitleForumID").val($("#titleIDEdit :selected").attr("titleForumID"));
-	});
-
-	// Titles - Finsih Edit
-	$("body").on("click", "#submitEditTitle", function(e)
-	{
-		e.preventDefault();
-
-		var form = $("#titleEdit");
-		var url = form.attr("action");
-
-		var r = confirm("Are you sure you want to edit this title?");
-
-		if (r == true)
-		{
-			$.ajax({
-				type: "POST",
-				url: url,
-				data: form.serialize() + "&submitEditTitle=1",
-				success: function(data)
-				{
-					// Change values for delete form
-					$("#titleID").children("option[value='" + $("#titleIDEdit :selected").val() + "']").text($("#editTitle").val());
-					$("#titleID").select2();
-
-					$("#titleIDAssign").children("option[value='" + $("#titleIDEdit :selected").val() + "']").text($("#editTitle").val());
-					$("#titleIDAssign").select2();
-					
-					// Change values in edit form select
-					$("#titleIDEdit :selected").text($("#editTitle").val());
-					$("#titleIDEdit :selected").attr("title", $("#editTitle").val());
-					$("#titleIDEdit :selected").attr("titleImage", $("#editTitleImage").val());
-					$("#titleIDEdit :selected").attr("titleForumID", $("#editTitleForumID").val());
-					$("#titleIDEdit").select2();
-
-					$("#editTitleList").hide();
-
-					$("#titleIDEdit").val(0);
-
-					// Alert to success
-			  		alert("The title was edited successfully!");
-				}
-			});
-		}
-	})
-
-	// Titles - Add title
-	$("body").on("click", "#submitTitleAdd", function(e)
-	{
-		e.preventDefault();
-
-		var form = $("#addTitle");
-		var url = form.attr("action");
-
-		var r = confirm("Are you sure you want to add this title?");
-
-		if (r == true)
-		{
-			$.ajax({
-				type: "POST",
-				url: url,
-				data: form.serialize() + "&submitAddTitle=1",
-				success: function(data)
-				{
-					var json = JSON.parse(data);
-
-					// Clear form
-					$("#titleName").val("");
-					$("#titleImage").val("");
-					$("#titleForumID").val(0);
-
-					// Alert to success
-			  		alert(json[0].message);
-					
-					// Populate result
-					$("#titlearea").html(json[0].result);
-					$("#assignarea").html(json[0].result2);
-					selectAdd();
-				}
-			});
-		}
-	})
-	
-
-	// Titles - Give title
-	$("body").on("click", "#title", function(e)
-	{
-		e.preventDefault();
-
-		var form = $("#titleUser");
-		var url = form.attr("action");
-
-		var r = confirm("Are you sure you want to give this title to this trooper?");
-
-		if (r == true)
-		{
-			$.ajax({
-				type: "POST",
-				url: url,
-				data: form.serialize() + "&submitTitle=1",
-				success: function(data)
-				{
-					var json = JSON.parse(data);
-					
-					// Show / Hide
-					$("#title").hide();
-					$("#titleRemove").show();
-
-					// Alert to success
-			  		alert(json[0].message);
-				}
-			});
-		}
-	})
-	
-	// Titles - Remove title
-	$("body").on("click", "#titleRemove", function(e)
-	{
-		e.preventDefault();
-
-		var form = $("#titleUser");
-		var url = form.attr("action");
-
-		var r = confirm("Are you sure you want to remove this title from this trooper?");
-
-		if (r == true)
-		{
-			$.ajax({
-				type: "POST",
-				url: url,
-				data: form.serialize() + "&removeTitle=1",
-				success: function(data)
-				{
-					var json = JSON.parse(data);
-					
-					// Show / Hide
-					$("#title").show();
-					$("#titleRemove").hide();
-
-					// Alert to success
-			  		alert(json[0].message);
-				}
-			});
-		}
-	})
-
-	// Titles - Delete Title
-	$("body").on("click", "#submitDeleteTitle", function(e)
-	{
-		e.preventDefault();
-
-		var form = $("#titleUserDelete");
-		var url = form.attr("action");
-
-		var r = confirm("Are you sure you want to delete this title?");
-
-		if (r == true)
-		{
-			$.ajax({
-				type: "POST",
-				url: url,
-				data: form.serialize() + "&submitDeleteTitle=1",
-				success: function(data)
-				{
-					// Delete from title list
-					$("#titleIDEdit").children("option[value='" + $("#titleID :selected").val() + "']").remove();
-
-					// Delete from title assign list
-					$("#titleIDAssign").children("option[value='" + $("#titleID :selected").val() + "']").remove();
-					
-					// Clear
-					$("#titleID").find("option:selected").remove();
-
-					// Clear edit area
-					$("#editTitleList").hide();
-
-					// Alert to success
-			  		alert("The title was deleted successfully!");
-
-			  		// Show message if empty
-			  		if($("#titleID option").length <= 0)
-			  		{
-			  			$("#titleUserDelete").html("No title to display.");
-			  		}
-					
-			  		// Show message if empty - edit
-			  		if($("#titleIDEdit option").length <= 1)
-			  		{
-			  			$("#titleEdit").html("No title to display.");
-			  		}
-					
-			  		// Show message if empty - assign
-			  		if($("#titleIDAssign option").length <= 0)
-			  		{
-			  			$("#assignarea").html("No title to display.");
-			  		}
-				}
-			});
-
-	  		// Show message if empty
-	  		if($("#titleID option").length <= 0)
-	  		{
-	  			$("#titleUserDelete").html("No title to display.");
-	  		}
-		}
-	})
 	
 	/************ AWARD ********************/
 	
 	// Awards - select change
-	$("body").on("change", "#userIDAward", function(e)
+	$("body").on("change", "#userIDAward, #awardIDAssign", function(e)
 	{
 		// Get trooper ID
 		var trooperid = $("#userIDAward option:selected").val();
@@ -3080,6 +3089,9 @@ $(document).ready(function()
 				            {
 				            	// Hide whole area
 				            	$("#confirmArea").html("");
+
+	 				            // Top notification
+								$("#confirmTroopNotification").hide();
 				            }
 				            else
 				            {
@@ -3130,6 +3142,9 @@ $(document).ready(function()
 			            {
 			            	// Hide whole area
 			            	$("#confirmArea").html("");
+
+				            // Top notification
+							$("#confirmTroopNotification").hide();
 			            }
 			            else
 			            {
@@ -3145,7 +3160,80 @@ $(document).ready(function()
 			});
 		}
 	})
+	
+	// Confirm Friend: Attended
+	$("body").on("click", "[name=attendFriend]", function(e)
+	{
+		e.preventDefault();
 
+		var trooperid = $(this).attr('trooperid');
+		var troopid = $(this).attr('troopid');
+		var signid = $(this).attr('signid');
+		
+		var r = confirm("Are you sure you want to confirm these events for your friend?");
+
+		if (r == true)
+		{
+			$.ajax({
+				type: "POST",
+				url: "process.php?do=confirmfriend",
+				data: "do=confirmfriend&friendid=" + trooperid + "&troopid=" + troopid + "&signid=" + signid,
+				success: function(data)
+				{
+					// If there is still data
+					var json = JSON.parse(data);
+					
+					$("#confirmArea4").html(json.data);
+					
+					// If no data
+					if(json.count <= 0)
+					{
+						$("#confirmArea3").html('');
+					}
+
+					alert("Troops confirmation submitted!");
+				}
+			});
+		}
+	})
+	
+	// Confirm Friend: Did Not Attend
+	$("body").on("click", "[name=didNotFriend]", function(e)
+	{
+		e.preventDefault();
+
+		var trooperid = $(this).attr('trooperid');
+		var troopid = $(this).attr('troopid');
+		var signid = $(this).attr('signid');
+		
+		var r = confirm("Are you sure your friend DID NOT attend?");
+
+		if (r == true)
+		{
+			$.ajax({
+				type: "POST",
+				url: "process.php?do=friendnoconfirm",
+				data: "do=friendnoconfirm&friendid=" + trooperid + "&troopid=" + troopid + "&signid=" + signid,
+				success: function(data)
+				{
+					// If there is still data
+					var json = JSON.parse(data);
+					
+					$("#confirmArea4").html(json.data);
+					
+					// If no data
+					if(json.count <= 0)
+					{
+						$("#confirmArea3").html('');
+					}
+
+					alert("Troops confirmation submitted!");
+				}
+			});
+		}
+	})
+
+	// Button to autofill create event form
 	$("#easyFillButton").button().click(function(e)
 	{
 		e.preventDefault();

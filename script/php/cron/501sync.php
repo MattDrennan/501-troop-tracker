@@ -14,7 +14,7 @@ include(dirname(__DIR__) . '/../../config.php');
 
 // Check date time for sync
 $query = "SELECT syncdate FROM settings";
-if ($result = mysqli_query($conn, $query) or die($conn->error))
+if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))
 	{
@@ -38,60 +38,41 @@ $obj = json_decode($json);
 // Loop through all members
 foreach($obj->unit->members as $value)
 {
-	// Get specific data on member
-	$json2 = file_get_contents("https://www.501st.com/memberAPI/v3/legionId/" . $value->legionId);
-	$obj2 = json_decode($json2);
+	try {
+		// Get specific data on member
+		$json2 = file_get_contents("https://www.501st.com/memberAPI/v3/legionId/" . $value->legionId);
+		$obj2 = json_decode($json2);
 
-	$conn->query("INSERT INTO 501st_troopers (legionid, name, thumbnail, link, squad, approved, status, standing, joindate) VALUES ('".$value->legionId."', '".$value->fullName."', '".$value->thumbnail."', '".$value->link."', '".convertSquadId($value->squadId)."', '".convertMemberApproved($obj2->memberApproved)."', '".convertMemberStatus($obj2->memberStatus)."', '".convertMemberStanding($obj2->memberStanding)."', '".$obj2->joinDate."')");
+		$conn->query("INSERT INTO 501st_troopers (legionid, name, thumbnail, link, squad, approved, status, standing, joindate) VALUES ('".$value->legionId."', '".$value->fullName."', '".$value->thumbnail."', '".$value->link."', '".convertSquadId($value->squadId)."', '".convertMemberApproved($obj2->memberApproved)."', '".convertMemberStatus($obj2->memberStatus)."', '".convertMemberStanding($obj2->memberStanding)."', '".$obj2->joinDate."')");
+	} catch (Exception $ex) {
+		die("Failed!");
+	}
 }
+
+// Wait
+sleep(10);
 
 // Loop through all members
 foreach($obj->unit->members as $value)
 {
-	// Get specific data on member - costumes
-	$json2 = file_get_contents("https://www.501st.com/memberAPI/v3/legionId/" . $value->legionId . "/costumes");
-	$obj2 = json_decode($json2);
-	
-	// Loop through all costumes
-	foreach($obj2->costumes as $costume)
-	{
-		// Insert into database
-		$conn->query("INSERT INTO 501st_costumes (legionid, costumeid, prefix, costumename, photo, thumbnail, bucketoff) VALUES ('".$value->legionId."', '".$costume->costumeId."', '".$costume->prefix."', '".$costume->costumeName."', '".$costume->photoURL."', '".$costume->thumbnail."', '".$costume->bucketOffPhoto."')");
+	try {
+		// Get specific data on member - costumes
+		$json2 = file_get_contents("https://www.501st.com/memberAPI/v3/legionId/" . $value->legionId . "/costumes");
+		$obj2 = json_decode($json2);
+		
+		// Loop through all costumes
+		foreach($obj2->costumes as $costume)
+		{
+			// Insert into database
+			$conn->query("INSERT INTO 501st_costumes (legionid, costumeid, prefix, costumename, photo, thumbnail, bucketoff) VALUES ('".$value->legionId."', '".$costume->costumeId."', '".$costume->prefix."', '".$costume->costumeName."', '".$costume->photoURL."', '".$costume->thumbnail."', '".$costume->bucketOffPhoto."')");
+		}
+		
+		// Wait
+		sleep(5);
+	} catch (Exception $ex) {
+		die("Failed!");
 	}
 }
-
-// Pull extra data from spreadsheet
-/*$values = getSheet("10_w4Fz41iUCYe3G1bQSqHDY6eK4fXP0Ue3pnfA4LoZg", "Roster");
-
-// Set up count
-$i = 0;
-
-foreach($values as $value)
-{
-	// If not first
-	if($i != 0)
-	{
-		// Query
-		if($value[1] == "Retired")
-		{
-			$conn->query("UPDATE troopers SET p501 = 3 WHERE tkid = '".get_numerics(cleanInput($value[6]))."' AND squad <= ".count($squadArray)."") or die($conn->error);
-			echo get_numerics(cleanInput($value[6])) . ' - Retired<br /><br />';
-		}
-		else if($value[1] == "Reserve")
-		{
-			$conn->query("UPDATE troopers SET p501 = 2 WHERE tkid = '".get_numerics(cleanInput($value[6]))."' AND squad <= ".count($squadArray)."") or die($conn->error);
-			echo get_numerics(cleanInput($value[6])) . ' - Reserve<br /><br />';
-		}
-		else if($value[1] == "Active")
-		{
-			$conn->query("UPDATE troopers SET p501 = 1 WHERE tkid = '".get_numerics(cleanInput($value[6]))."' AND squad <= ".count($squadArray)."") or die($conn->error);
-			echo get_numerics(cleanInput($value[6])) . ' - Active<br /><br />';
-		}
-	}
-	
-	// Increment count
-	$i++;
-}*/
 
 $getNumOfTroopers = $conn->query("SELECT legionid FROM 501st_troopers");
 $getNumOfTroopersFL = $conn->query("SELECT legionid FROM 501st_troopers WHERE squad = '0'");

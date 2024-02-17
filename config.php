@@ -22,9 +22,6 @@ set_time_limit(0);
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// Twitter namespace
-use DG\Twitter\Twitter;
-
 // Calendar links - namespace
 use Spatie\CalendarLinks\Link;
 
@@ -90,7 +87,7 @@ function formatTime($date, $format)
 function dailyTip()
 {
 	// Get a random number
-	$randomNumber = rand(0, 14);
+	$randomNumber = rand(0, 15);
 
 	// Set tip
 	$tip = '';
@@ -169,10 +166,15 @@ function dailyTip()
 		case 13:
 			$tip = 'Did you know you can type when selecting a costume to find it easier?';
 			$link = 'https://youtu.be/YLjiVGgqe-Y';
+		
+		case 14:
+			$tip = 'Did you know you can add someone to a troop that is not a member and does not have tracker access?';
+			$link = 'https://www.youtube.com/watch?v=mDeJaANqLIk';
+		break;
 
 		default:
-			$tip = 'Did you know you can add a shortcut on your phone? <a href="https://www.youtube.com/watch?v=_UhtyHbL8uY" target="_blank">IOS</a> / <a href="https://www.youtube.com/watch?v=S4Xu_N4ByBs" target="_blank">Android</a>';
-			$link = '';
+			$tip = 'Did you know you can add someone to the tracker that does not have an account?';
+			$link = 'https://www.youtube.com/watch?v=mDeJaANqLIk';
 		break;
 	}
 
@@ -212,7 +214,7 @@ function showCalendarLinks($name, $location, $description, $date1, $date2)
 	
 	// Show link
 	return '
-	<p style="text-align: center;">
+	<p class="calendar-links">
 		<b>Add to calendar:</b>
 		<br />
 		<a href="'.$link->google().'" target="_blank"><img src="images/google.png" alt="Google Calendar" /></a> <a href="'.$link->yahoo().'" target="_blank"><img src="images/yahoo.png" alt="Yahoo Calendar" /></a> <a href="'.$link->webOutlook().'" target="_blank"><img src="images/outlook.png" alt="Outlook Calendar" /></a> <a href="'.$link->ics().'" target="_blank"><img src="images/ics.png" alt="ICS Calendar" /></a>
@@ -265,12 +267,23 @@ function getTroopCounts($id)
 	// Set up string
 	$troopCountString = "";
 
+	// Get troop counts - All - 1 Year
+	$statement = $conn->prepare("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = ? and events.dateStart > NOW() - INTERVAL 1 YEAR GROUP BY events.id, event_sign_up.id");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->store_result();
+	$countAll = $statement->num_rows;
+
 	// Get troop counts - 501st
-	$count = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '".$dualCostume."' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)) GROUP BY events.id, event_sign_up.id") or die($conn->error);
+	$statement = $conn->prepare("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = ? AND ".getCostumeQueryValuesSquad(1)." GROUP BY events.id, event_sign_up.id");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->store_result();
+	$count = $statement->num_rows;
 
 	// Add to string
 	$troopCountString .= '
-	<p><b>501st Troops:</b> '.number_format($count->num_rows).'</p>';
+	<p><b>501st Troops:</b> '.number_format($count).'</p>';
 
 	// Set up Squad ID
 	$clubID = count($squadArray) + 1;
@@ -279,26 +292,56 @@ function getTroopCounts($id)
 	foreach($clubArray as $club => $club_value)
 	{
 		// Count query
-		$count = $conn->query("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = '".$id."' AND ".getCostumeQueryValues($clubID)." GROUP BY events.id, event_sign_up.id") or die($conn->error);
+		$statement = $conn->prepare("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = ? AND ".getCostumeQueryValues($clubID)." GROUP BY events.id, event_sign_up.id");
+		$statement->bind_param("i", $id);
+		$statement->execute();
+		$statement->store_result();
+		$count = $statement->num_rows;
 
 		// Add to string
 		$troopCountString .= '
-		<p><b>'.$club_value['name'].' Troops:</b> '.number_format($count->num_rows).'</p>';
+		<p><b>'.$club_value['name'].' Troops:</b> '.number_format($count).'</p>';
 
 		// Increment club ID
 		$clubID++;
 	}
 
 	// Get total count
-	$count_total = $conn->query("SELECT id FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3'");
+	$statement = $conn->prepare("SELECT id FROM event_sign_up WHERE trooperid = ? AND status = '3'");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->store_result();
+	$count_total = $statement->num_rows;
 
 	// Get favorite costume
-	$favoriteCostume_get = $conn->query("SELECT costume, COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND costume != 706 AND costume != 720 AND costume != 721 GROUP BY costume ORDER BY COUNT(costume) DESC LIMIT 1") or die($conn->error);
-	$favoriteCostume = mysqli_fetch_array($favoriteCostume_get);
+	$statement = $conn->prepare("SELECT costume, COUNT(*) FROM event_sign_up WHERE trooperid = ? AND costume != 706 AND costume != 720 AND costume != 721 GROUP BY costume ORDER BY COUNT(costume) DESC LIMIT 1");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($favoriteCostume, $favoriteCostumeCount);
+	$statement->fetch();
+	$statement->close();
 
 	// Get total money raised
-	$moneyRaised_get = $conn->query("SELECT SUM(moneyRaised) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = '".$id."'") or die($conn->error);
-	$moneyRaised = mysqli_fetch_array($moneyRaised_get);
+	$statement = $conn->prepare("SELECT SUM(charityDirectFunds) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($charityDirectFunds);
+	$statement->fetch();
+	$statement->close();
+
+	$statement = $conn->prepare("SELECT SUM(charityIndirectFunds) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($charityIndirectFunds);
+	$statement->fetch();
+	$statement->close();
+
+	$statement = $conn->prepare("SELECT SUM(TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($chairtyHours);
+	$statement->fetch();
+	$statement->close();
 
 	// Prevent notice error
 	if($favoriteCostume == "")
@@ -308,9 +351,12 @@ function getTroopCounts($id)
 
 	// Add to string
 	$troopCountString .= '
-	<p><b>Total Finished Troops:</b> ' . number_format($count_total->num_rows) . '</p>
-	<p><b>Favorite Costume:</b> '.ifEmpty(getCostume($favoriteCostume['costume']), "N/A").'</p>
-	<p><b>Money Raised:</b> $'.number_format($moneyRaised[0]).'</p>';
+	<p><b>Total Finished Troops:</b> ' . number_format($count_total) . '</p>
+	<p><b>Total Troops Last 365 Days:</b> '.number_format($countAll).'</p>
+	<p><b>Favorite Costume:</b> '.ifEmpty(getCostume($favoriteCostume), "N/A").'</p>
+	<p><b>Volunteer Hours:</b> '.number_format($chairtyHours).'</p>
+	<p><b>Direct Donations Raised:</b> $'.number_format($charityDirectFunds).'</p>
+	<p><b>Indirect Donations Raised:</b> $'.number_format($charityIndirectFunds).'</p>';
 
 	// Return
 	return $troopCountString;
@@ -440,6 +486,65 @@ function squadSelectList($clubs = true, $insideElement = "", $eid = 0, $squadP =
 }
 
 /**
+ * Returns an HTML results of pending troops
+ * 
+ * @param int $trooperid The trooper ID of the trooper to get pending troops
+ * @return string Returns an HTML results of pending troops
+*/
+function pendingTroopsDisplay($trooperid)
+{
+	global $conn;
+
+	// Set up return string
+	$returnString = "";
+
+	// Set up increment
+	$i = 0;
+
+	// Get data
+	$statement = $conn->prepare("SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.dateStart, events.dateEnd, troopers.id, troopers.name FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = ? AND troopers.id != ".placeholder." AND events.closed = '0' AND event_sign_up.status = '0' ORDER BY events.dateEnd ASC");
+	$statement->bind_param("i", $trooperid);
+	$statement->execute();
+	
+	if ($result = $statement->get_result())
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Format date
+			$dateFormat = date('m-d-Y', strtotime($db->dateEnd));
+
+			if($i == 0)
+			{
+				$returnString .= '
+				<h2 class="tm-section-header">Upcoming Troops</h2>
+				<table border="1" class="space-content">
+				<tr>
+					<th>Event Name</th>	<th>Date</th>	<th>Pending Costume</th>
+				</tr>';
+			}
+
+			$returnString .= '
+			<tr>
+				<td><a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.$dateFormat.'</td>	<td>'.ifEmpty('<a href="index.php?action=costume&costumeid='.$db->costume.'">' . getCostume($db->costume) . '</a>', "N/A").'</td>
+			</tr>';
+
+			// Increment
+			$i++;
+		}
+	}
+
+	// If results
+	if($i > 0)
+	{
+		$returnString .= '
+		</table>
+		<br />';
+	}
+
+	return $returnString;
+}
+
+/**
  * Returns a link for a squad based on selection
  * 
  * @param int $squad The squad that is to be linked
@@ -470,9 +575,11 @@ function addSquadLink($squad, $match, $name)
  * Restricts the trooper's costume based on there membership to certain clubs
  * 
  * @param boolean $addWhere Optional. This is used to add a "where" to the MySQL query.
+ * @param int $friendID Optional. This is used to determine which costumes to display. If this interval does not match the session interval, then all costumes will display.
+ * @param boolean $allowDualCostume Optional. This is used to disable/enable allowing dual costumes to show.
  * @return string Returns a query to restrict costumes of clubs a trooper is not a member of
 */
-function costume_restrict_query($addWhere = false)
+function costume_restrict_query($addWhere = false, $friendID = 0, $allowDualCostume = true)
 {
 	global $conn, $clubArray, $dualCostume;
 	
@@ -487,86 +594,68 @@ function costume_restrict_query($addWhere = false)
 	
 	$returnQuery .= "(";
 
-	// Club detected
-	$hit = false;
+	// Set up query to check add a friend
+	$friendQuery = "";
 
-	// Count dual costume hit
-	$dualHit = 0;
+	// Check if friend ID
+	if($friendID != $_SESSION['id'] && $friendID != 0)
+	{
+		$friendQuery = " OR (costumes.club >= 0) AND (costumes.club NOT IN (".implode(",", $dualCostume)."))";
+	}
+
+	// 501 member, prepare to add or statement if a dual member
+	$hit = false;
 	
-	$query = "SELECT * FROM troopers WHERE id = '".cleanInput($_SESSION['id'])."'";
-	if ($result = mysqli_query($conn, $query))
+	$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $_SESSION['id']);
+	$statement->execute();
+
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
 			// 501
-			if($db->p501 == 1 || $db->p501 == 2)
+			if($db->p501 == 1 || $db->p501 == 2 || $db->p501 == 4)
 			{
 				$returnQuery .= "costumes.club = 0";
-				
-				// Set
-				$hit = true;
 
-				// Add to dual count
-				$dualHit++;
+				// 501 member
+				$hit = true;
 			}
+
+			// Set up step count
+			$i = 0;
 
 			// Loop through clubs
 			foreach($clubArray as $club => $club_value)
 			{
 				// Check club member status
-				if($db->{$club_value['db']} == 1 || $db->{$club_value['db']} == 2)
+				if($db->{$club_value['db']} == 1 || $db->{$club_value['db']} == 2 || $db->{$club_value['db']} == 4)
 				{
-					// If club from previous hit, add OR
-					if($hit)
+					// First step and a 501 member, add the OR to prevent issues
+					if($i == 0 && $hit)
 					{
 						$returnQuery .= " OR ";
-						$hit = false;
 					}
-
-					// Set even check
-					$i = 1;
 
 					foreach($club_value['costumes'] as $costume)
 					{
-						// Don't add dual costume yet
-						if($costume != $dualCostume)
+						if(!$allowDualCostume && in_array($costume, $dualCostume))
 						{
-							// Add costome to query
-							$returnQuery .= "costumes.club = ".$costume."";
-
-							// Increment even count
-							$i++;
-
-							if($i % 2 == 0)
-							{
-								$returnQuery .= " OR ";
-							}
+							continue;
 						}
-						else
+						
+						// Passed first step, keep adding OR
+						if($i > 0)
 						{
-							$dualHit++;
+							$returnQuery .= " OR ";
 						}
+
+						$returnQuery .= "costumes.club = ".$costume."";
+
+						// Increment step
+						$i++;
 					}
-
-					// Set hit
-					$hit = true;
-				}
-			}
-			
-			// Check if dual hit has been hit at least twice
-			if($dualHit >= 2)
-			{	
-				$returnQuery .= "costumes.club = ".$dualCostume."";
-			}
-			else
-			{
-				// Trim query
-				$returnQueryCheck = substr($returnQuery, -3);
-
-				// If ends with OR, trim off
-				if($returnQueryCheck == "OR ")
-				{
-					$returnQuery = substr($returnQuery, 0, -3);
 				}
 			}
 		}
@@ -574,7 +663,7 @@ function costume_restrict_query($addWhere = false)
 	
 	$returnQuery .= ")";
 	
-	return $returnQuery;
+	return $returnQuery . $friendQuery;
 }
 
 /**
@@ -617,7 +706,7 @@ function showBBcodes($text)
 		'~\[b\](.*?)\[/b\]~s',
 		'~\[i\](.*?)\[/i\]~s',
 		'~\[u\](.*?)\[/u\]~s',
-		'~\[quote\](.*?)\[/quote\]~s',
+		'~\[QUOTE=(.*?)\](.*?)\[/QUOTE\]~s',
 		'~\[quotec trooperid=(.*?) name=(.*?) tkid=(.*?) commentid=(.*?)\](.*?)\[/quotec\]~s',
 		'~\[size=(.*?)\](.*?)\[/size\]~s',
 		'~\[color=(.*?)\](.*?)\[/color\]~s',
@@ -630,7 +719,7 @@ function showBBcodes($text)
 		'<b>$1</b>',
 		'<i>$1</i>',
 		'<span style="text-decoration:underline;">$1</span>',
-		'<pre>$1</'.'pre>',
+		'<pre>$2</pre><br />',
 		'<a href="#comment_$4">$2 - $3</a><br /><span class="quotec">$5</'.'span><br />',
 		'<span style="font-size:$1px;">$2</span>',
 		'<span style="color:$1;">$2</span>',
@@ -660,16 +749,24 @@ function countDonations($trooperid = "*", $dateStart = "1900-12-1", $dateEnd = "
 	if($trooperid != "*")
 	{
 		// Trooper ID specified
-		$getNumOfDonators = $conn->query("SELECT * FROM donations WHERE trooperid = ".$trooperid." AND datetime > '".$dateStart."' AND datetime < '".$dateEnd."'");
+		$statement = $conn->prepare("SELECT * FROM donations WHERE trooperid = ? AND datetime > ? AND datetime < ?");
+		$statement->bind_param("iss", $trooperid, $dateStart, $dateEnd);
+		$statement->execute();
+		$statement->store_result();
+		$getNumOfDonators = $statement->num_rows;
 	}
 	else
 	{
 		// Trooper ID not specified - wild card
-		$getNumOfDonators = $conn->query("SELECT * FROM donations WHERE datetime > '".$dateStart."' AND datetime < '".$dateEnd."'");
+		$statement = $conn->prepare("SELECT * FROM donations WHERE datetime > ? AND datetime < ?");
+		$statement->bind_param("ss", $dateStart, $dateEnd);
+		$statement->execute();
+		$statement->store_result();
+		$getNumOfDonators = $statement->num_rows;
 	}
 	
 	// Return rows
-	return $getNumOfDonators->num_rows;
+	return $getNumOfDonators;
 }
 
 /**
@@ -686,10 +783,12 @@ function drawSupportBadge($id)
 	$value = "";
 	
 	// Get data
-	$query = "SELECT supporter FROM troopers WHERE id = '".$id."' AND supporter = '1'";
+	$statement = $conn->prepare("SELECT supporter FROM troopers WHERE id = ? AND supporter = '1'");
+	$statement->bind_param("i", $id);
+	$statement->execute();
 	
 	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -718,18 +817,25 @@ function drawSupportGraph()
 	if(loggedIn())
 	{
 		// Count number of troopers supporting
-		$getNumOfSupport = $conn->query("SELECT SUM(amount) FROM donations WHERE datetime > date_add(date_add(LAST_DAY(NOW()),interval 1 DAY),interval -1 MONTH)");
-		$getSupportNum = $getNumOfSupport->fetch_row();
+		$statement = $conn->prepare("SELECT SUM(amount) FROM donations WHERE datetime > date_add(date_add(LAST_DAY(NOW()),interval 1 DAY),interval -1 MONTH)");
+		$statement->execute();
+		$statement->bind_result($getSupportNum);
+		$statement->fetch();
+		$statement->close();
 		
-		// Count times contributed
-		$didSupportCount = $conn->query("SELECT trooperid FROM donations WHERE datetime > date_add(date_add(LAST_DAY(NOW()),interval 1 DAY),interval -1 MONTH) AND trooperid = '".$_SESSION['id']."'");
+		// Count times contribute
+		$statement = $conn->prepare("SELECT trooperid FROM donations WHERE datetime > date_add(date_add(LAST_DAY(NOW()),interval 1 DAY),interval -1 MONTH) AND trooperid = ?");
+		$statement->bind_param("i", $_SESSION['id']);
+		$statement->execute();
+		$statement->store_result();
+		$didSupportCount = $statement->num_rows;
 		
-		// Get goal from site settings
-		$getGoal = $conn->query("SELECT supportgoal FROM settings");
-		$getGoal_value = $getGoal->fetch_row();
-		
-		// Set goal
-		$goal = $getGoal_value[0];
+		// Set goal from site settings
+		$statement = $conn->prepare("SELECT supportgoal FROM settings");
+		$statement->execute();
+		$statement->bind_result($goal);
+		$statement->fetch();
+		$statement->close();
 		
 		// Hide for command staff
 		if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
@@ -740,15 +846,19 @@ function drawSupportGraph()
 		
 		// If goal is 0, there is no goal and do not show
 		if($goal != 0)
-		{
+		{			
 			// Find percent
-			$percent = floor(($getSupportNum[0]/$goal) * 100);
+			$percent = floor(($getSupportNum/$goal) * 100);
 			
 			// Don't allow over 100
 			if($percent > 100)
 			{
 				$percent = 100;
 			}
+			
+			// Format to currency
+			$formatter = new NumberFormatter('en_US', NumberFormatter::CURRENCY);
+			$goal = $formatter->formatCurrency($goal, 'USD');
 			
 			$return .= '
 			<style>
@@ -772,7 +882,7 @@ function drawSupportGraph()
 				}
 			</style>
 			
-			<h2 class="tm-section-header">'.date("F").' - Donation Goal</h2>
+			<h2 class="tm-section-header">'.date("F").' - Donation Goal - '.$goal.' </h2>
 			
 			<p style="text-align: center;">
 				<div class="bargraph">
@@ -788,7 +898,7 @@ function drawSupportGraph()
 			else
 			{
 				// Don't show link if they are a supporter
-				if($didSupportCount->num_rows == 0)
+				if($didSupportCount == 0)
 				{
 					// If not 100%, show learn more
 					if($percent != 100)
@@ -828,6 +938,41 @@ function drawSupportGraph()
 }
 
 /**
+ * Returns the troopers ranking
+ * 
+ * @param int $trooperID The ID of the trooper
+ * @return int
+*/
+
+function getTrooperRanking($trooperID)
+{
+	global $conn;
+
+	// Get rank of trooper
+	$i = 0;
+
+	$statement = $conn->prepare("SELECT trooperid, COUNT(trooperid) AS total FROM event_sign_up LEFT JOIN events ON event_sign_up.trooperid = events.id WHERE event_sign_up.trooperid != ".placeholder." AND events.closed = '1' AND event_sign_up.status = '3' GROUP BY trooperid ORDER BY total DESC");
+	$statement->execute();
+
+	if ($result = $statement->get_result())
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Increment
+			$i++;
+
+			// Found trooper
+			if($db->trooperid == $trooperID)
+			{
+				break;
+			}
+		}
+	}
+
+	return $i;
+}
+
+/**
  * If a limited event, resets all troopers attendance status in an event, and recalculates status
  * 
  * @param int $eventID The event ID to check
@@ -839,16 +984,12 @@ function resetTrooperStatus($eventID, $link = 0)
 	global $conn, $clubArray;
 
 	// Get data
-	$query = "SELECT * FROM events WHERE id = '".$eventID."'";
-
-	// If link added, query link event as well
-	if($link > 0)
-	{
-		$query .= " OR link = '".$link."'";
-	}
+	$statement = $conn->prepare("SELECT * FROM events WHERE closed = '0' AND id = ?");
+	$statement->bind_param("i", $eventID);
+	$statement->execute();
 	
 	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -856,10 +997,12 @@ function resetTrooperStatus($eventID, $link = 0)
 			if($db->limit501st > 500 || $db->limit501st < 500)
 			{
 				// Reset event sign up
-				$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume)");
+				$statement = $conn->prepare("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')."");
+				$statement->execute();
 
 				// Update statuses to going if room
-				$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ORDER BY signuptime ASC LIMIT " . $db->limit501st);
+				$statement = $conn->prepare("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')." ORDER BY signuptime ASC LIMIT " . $db->limit501st);
+				$statement->execute();
 			}
 
 			// Loop through clubs to check limits
@@ -868,10 +1011,12 @@ function resetTrooperStatus($eventID, $link = 0)
 				if($db->{$club_value['dbLimit']} > 500 || $db->{$club_value['dbLimit']} < 500)
 				{
 					// Reset event sign up
-					$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume)");
+					$statement = $conn->prepare("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')."");
+					$statement->execute();
 
 					// Update statuses to going if room
-					$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ORDER BY signuptime ASC LIMIT " . $db->{$club_value['dbLimit']});
+					$statement = $conn->prepare("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')." ORDER BY signuptime ASC LIMIT " . $db->{$club_value['dbLimit']});
+					$statement->execute();
 				}
 			}
 
@@ -879,10 +1024,24 @@ function resetTrooperStatus($eventID, $link = 0)
 			if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
 			{
 				// Reset event sign up
-				$conn->query("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."'");
+				$statement = $conn->prepare("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')."");
+				$statement->execute();
 
 				// Update statuses to going if room
-				$conn->query("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1) AND troopid = '".$db->id."' ORDER BY signuptime ASC LIMIT " . $db->limitTotalTroopers);
+				$statement = $conn->prepare("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')." ORDER BY signuptime ASC LIMIT " . $db->limitTotalTroopers);
+				$statement->execute();
+			}
+			
+			// Check handler limit
+			if($db->limitHandlers > 500 || $db->limitHandlers < 500)
+			{
+				// Reset event sign up
+				$statement = $conn->prepare("UPDATE event_sign_up SET status = '1' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) LIKE '%handler%'");
+				$statement->execute();
+
+				// Update statuses to going if room
+				$statement = $conn->prepare("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) LIKE '%handler%' ORDER BY signuptime ASC LIMIT " . $db->limitHandlers);
+				$statement->execute();
 			}
 		}
 	}
@@ -891,17 +1050,43 @@ function resetTrooperStatus($eventID, $link = 0)
 /*********************** XENFORO ***********************/
 
 /**
- * getAuthForum: Get's auth data from Xenforo for logging in
+ * Return's the forum profile of the trooper, if available
+ * 
+ * @param int $id The Troop Tracker ID of the trooper
+ * @return string Returns the HTML needed to display the trooper avatar
+*/
+function getForumAvatar($id)
+{
+	// Xenforo
+	$xenforo = @getUserForumID(getUserID($id))['user']['avatar_urls']['m'];
+
+	if($xenforo != "")
+	{
+		return '
+		<p style="text-align: center;">
+			<img src="'.$xenforo.'" />
+		</p>';
+	}
+	else
+	{
+		return '<br />';
+	}
+}
+
+/**
+ * Get's auth data from Xenforo for logging in
  * 
  * @param int $user_id The Xenforo user ID
  * @return json Returns JSON data of login token
 */
 function getAuthForum($user_id)
 {
+	global $forumURL;
+	
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/auth/login-token",
+	  CURLOPT_URL => $forumURL . "/auth/login-token",
 	  CURLOPT_POST => 1,
 	  CURLOPT_POSTFIELDS => "user_id=" . $user_id,
 	  CURLOPT_CUSTOMREQUEST => "POST",
@@ -930,12 +1115,49 @@ function getAuthForum($user_id)
 */
 function loginWithForum($username, $password)
 {
+	global $forumURL;
+	
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/auth",
+	  CURLOPT_URL => $forumURL . "api/auth",
 	  CURLOPT_POST => 1,
-	  CURLOPT_POSTFIELDS => "login=" . $username . "&password=" . $password . "",
+	  CURLOPT_POSTFIELDS => "login=" . urlencode($username) . "&password=" . urlencode($password) . "",
+	  CURLOPT_CUSTOMREQUEST => "POST",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+/**
+ * Create's an alert in Xenforo
+ * 
+ * @param int $to The forum ID the alert is to be sent to
+ * @param string $message The message of the alert to be sent
+ * @return json Return alert success
+*/
+function createAlert($to, $message)
+{
+	global $forumURL;
+	
+	// Create Thread
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => $forumURL . "api/alerts",
+	  CURLOPT_POST => 1,
+	  CURLOPT_POSTFIELDS => "from_user_id=0&to_user_id=" . urlencode($to) . "&alert=" . urlencode($message) . "&link_url=https%3A%2F%2Ffl501st.com%2Ftroop-tracker%2F&link_title=From Troop%20Tracker",
 	  CURLOPT_CUSTOMREQUEST => "POST",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
@@ -959,17 +1181,55 @@ function loginWithForum($username, $password)
  * @param int $id The forum ID to be posted in
  * @param string $title The title of the thread
  * @param string $message The body of the thread
+ * @param int $userID (optional) The user ID of the user you want to post
  * @return json Return's the thread data if success
 */
-function createThread($id, $title, $message)
+function createThread($id, $title, $message, $userID = xenforoAPI_userID)
 {
+	global $forumURL;
+	
 	// Create Thread
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/threads",
+	  CURLOPT_URL => $forumURL . "api/threads",
 	  CURLOPT_POST => 1,
-	  CURLOPT_POSTFIELDS => "node_id=" . $id . "&title=" . urlencode($title) . "&message=" . urlencode($message),
+	  CURLOPT_POSTFIELDS => "node_id=" . $id . "&title=" . urlencode($title) . "&message=" . urlencode($message) . "&api_bypass_permissions=1",
+	  CURLOPT_CUSTOMREQUEST => "POST",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . $userID,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+/**
+ * Edits a thread in Xenforo
+ * 
+ * @param int $id The thread ID to be edited
+ * @param string $title The title of the thread
+ * @return json Return's the Xenforo thread data if success
+*/
+function editThread($id, $title)
+{
+	global $forumURL;
+	
+	// Edit Post
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => $forumURL . "api/threads/" . $id,
+	  CURLOPT_POST => 1,
+	  CURLOPT_POSTFIELDS => "title=" . urlencode($title) . "&api_bypass_permissions=1",
 	  CURLOPT_CUSTOMREQUEST => "POST",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
@@ -995,13 +1255,15 @@ function createThread($id, $title, $message)
 */
 function lockThread($id)
 {
+	global $forumURL;
+	
 	// Edit Thread
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/threads/" . $id,
+	  CURLOPT_URL => $forumURL . "api/threads/" . $id,
 	  CURLOPT_POST => 1,
-	  CURLOPT_POSTFIELDS => "discussion_open=" . false,
+	  CURLOPT_POSTFIELDS => "discussion_open=" . false . "&api_bypass_permissions=1",
 	  CURLOPT_CUSTOMREQUEST => "POST",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
@@ -1029,13 +1291,15 @@ function lockThread($id)
 */
 function createPost($id, $message, $userID = xenforoAPI_userID)
 {
+	global $forumURL;
+	
 	// Create Post
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/posts",
+	  CURLOPT_URL => $forumURL . "api/posts",
 	  CURLOPT_POST => 1,
-	  CURLOPT_POSTFIELDS => "thread_id=" . $id . "&message=" . urlencode($message),
+	  CURLOPT_POSTFIELDS => "thread_id=" . $id . "&message=" . urlencode($message) . "&api_bypass_permissions=1",
 	  CURLOPT_CUSTOMREQUEST => "POST",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
@@ -1062,13 +1326,15 @@ function createPost($id, $message, $userID = xenforoAPI_userID)
 */
 function editPost($id, $message)
 {
+	global $forumURL;
+	
 	// Edit Post
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/posts/" . $id,
+	  CURLOPT_URL => $forumURL . "api/posts/" . $id,
 	  CURLOPT_POST => 1,
-	  CURLOPT_POSTFIELDS => "message=" . urlencode($message),
+	  CURLOPT_POSTFIELDS => "message=" . urlencode($message) . "&api_bypass_permissions=1",
 	  CURLOPT_CUSTOMREQUEST => "POST",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
@@ -1095,13 +1361,15 @@ function editPost($id, $message)
 */
 function moveThread($id, $forum)
 {
+	global $forumURL;
+	
 	// Edit Post
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/threads/" . $id . "/move",
+	  CURLOPT_URL => $forumURL . "api/threads/" . $id . "/move",
 	  CURLOPT_POST => 1,
-	  CURLOPT_POSTFIELDS => "target_node_id=" . $forum,
+	  CURLOPT_POSTFIELDS => "target_node_id=" . $forum . "&api_bypass_permissions=1",
 	  CURLOPT_CUSTOMREQUEST => "POST",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
@@ -1127,11 +1395,13 @@ function moveThread($id, $forum)
 */
 function getUserForum($username)
 {
+	global $forumURL;
+	
 	// Get user forum info by forum name
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/users/find-name&username=" . $username,
+	  CURLOPT_URL => $forumURL . "api/users/find-name&username=" . urlencode($username),
 	  CURLOPT_CUSTOMREQUEST => "GET",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
@@ -1150,6 +1420,141 @@ function getUserForum($username)
 }
 
 /**
+ * Reply to Xenforo thread
+ * 
+ * @param int $threadid The ID of the thread
+ * @param int $userid The ID of the Xenforo user
+ * @param int $message Message of the reply
+ * @return json Success response
+*/
+function replyThread($threadid, $userid, $message)
+{
+	global $forumURL;
+	
+	// Update user by forum groups by ID
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => $forumURL . "api/posts",
+	  CURLOPT_POST => 1,
+	  CURLOPT_POSTFIELDS => "thread_id=" . $threadid . "&message=" . $message,
+	  CURLOPT_CUSTOMREQUEST => "POST",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . $userid,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+	
+	echo curl_error($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+/**
+ * Get's Xenforo forum posts from thread
+ * 
+ * @param int $threadid The ID of the thread
+ * @param int $page Return posts on page
+ * @return json Return's the Xenforo user data if success
+*/
+function getThreadPosts($threadid, $page)
+{
+	global $forumURL;
+	
+	// Get user forum info by forum name
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => $forumURL . "api/threads/".$threadid."&with_posts=true&page=".$page."",
+	  CURLOPT_CUSTOMREQUEST => "GET",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+/**
+ * Get user alerts
+ * 
+ * @param int $userid The ID of the user
+ * @return json Success response
+*/
+function getAlerts($userid)
+{
+	global $forumURL;
+	
+	// Get user forum info by forum name
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => $forumURL . "api/alerts&unread=1",
+	  CURLOPT_CUSTOMREQUEST => "GET",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . $userid,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+/**
+ * Get user private messages (unread)
+ * 
+ * @param int $userid The ID of the user
+ * @return json Success response
+*/
+function getConversations($userid)
+{
+	global $forumURL;
+	
+	// Get user forum info by forum name
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => $forumURL . "api/conversations&unread=1",
+	  CURLOPT_CUSTOMREQUEST => "GET",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . $userid,
+	  ],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+/**
  * Get's Xenforo forum user by ID
  * 
  * @param int $id The user ID of the Xenforo user
@@ -1157,11 +1562,13 @@ function getUserForum($username)
 */
 function getUserForumID($id)
 {
+	global $forumURL;
+	
 	// Get user forum info by forum ID
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/users/" . $id,
+	  CURLOPT_URL => $forumURL . "api/users/" . $id,
 	  CURLOPT_CUSTOMREQUEST => "GET",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
@@ -1189,11 +1596,13 @@ function getUserForumID($id)
 */
 function updateUserCustom($id, $custom, $value)
 {
+	global $forumURL;
+	
 	// Update user by forum groups by ID
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/users/" . $id,
+	  CURLOPT_URL => $forumURL . "api/users/" . $id,
 	  CURLOPT_POST => 1,
 	  CURLOPT_POSTFIELDS => "custom_fields[".$custom."]=" . $value,
 	  CURLOPT_CUSTOMREQUEST => "POST",
@@ -1223,6 +1632,8 @@ function updateUserCustom($id, $custom, $value)
 */
 function updateUserForumGroup($id, $groupid, $group_ids)
 {
+	global $forumURL;
+	
 	// Update user by forum groups by ID
 	$curl = curl_init();
 
@@ -1238,7 +1649,7 @@ function updateUserForumGroup($id, $groupid, $group_ids)
 	$groupString = substr($groupString, 0, -1);
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/users/" . $id,
+	  CURLOPT_URL => $forumURL . "api/users/" . $id,
 	  CURLOPT_POST => 1,
 	  CURLOPT_POSTFIELDS => "user_group_id=" . $groupid . "&" . $groupString,
 	  CURLOPT_CUSTOMREQUEST => "POST",
@@ -1267,13 +1678,15 @@ function updateUserForumGroup($id, $groupid, $group_ids)
 */
 function deletePost($id, $hard_delete = false)
 {
+	global $forumURL;
+	
 	// Delete Post
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/posts/" . $id,
+	  CURLOPT_URL => $forumURL . "api/posts/" . $id,
 	  CURLOPT_CUSTOMREQUEST => "DELETE",
-	  CURLOPT_POSTFIELDS => "hard_delete=" . $hard_delete,
+	  CURLOPT_POSTFIELDS => "hard_delete=" . $hard_delete . "&api_bypass_permissions=1",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
@@ -1299,13 +1712,15 @@ function deletePost($id, $hard_delete = false)
 */
 function deleteThread($id, $hard_delete = false)
 {
+	global $forumURL;
+	
 	// Delete Thread
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => "https://www.fl501st.com/forums/index.php?api/threads/" . $id,
+	  CURLOPT_URL => $forumURL . "api/threads/" . $id,
 	  CURLOPT_CUSTOMREQUEST => "DELETE",
-	  CURLOPT_POSTFIELDS => "hard_delete=" . $hard_delete,
+	  CURLOPT_POSTFIELDS => "hard_delete=" . $hard_delete . "&api_bypass_permissions=1",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
@@ -1336,19 +1751,13 @@ function isSupporter($id)
 	
 	// Set up value
 	$value = 0;
-	
-	// Get data
-	$query = "SELECT supporter FROM troopers WHERE id = '".$id."'";
-	
-	// Run query...
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			// Set
-			$value = $db->supporter;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT supporter FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
 	
 	// Return
 	return $value;
@@ -1365,23 +1774,18 @@ function getRebelLegionUser($id)
 	global $conn;
 	
 	// Set up value
-	$forumName = "";
+	$value = "";
 	
 	// Get data
-	$query = "SELECT rebelforum FROM troopers WHERE id = '".$id."'";
-	
-	// Run query...
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			// Set
-			$forumName = $db->rebelforum;
-		}
-	}
+	$statement = $conn->prepare("SELECT rebelforum FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
 	
 	// Return
-	return $forumName;
+	return $value;
 }
 
 /**
@@ -1400,10 +1804,12 @@ function getRebelInfo($forumid)
 	$array['name'] = '';
 	
 	// Get data
-	$query = "SELECT * FROM rebel_troopers WHERE rebelforum = '".$forumid."'";
+	$statement = $conn->prepare("SELECT * FROM rebel_troopers WHERE rebelforum = ?");
+	$statement->bind_param("i", $forumid);
+	$statement->execute();
 	
 	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -1427,23 +1833,18 @@ function getMandoLegionUser($id)
 	global $conn;
 	
 	// Set up value
-	$mandoid = 0;
+	$value = 0;
 	
 	// Get data
-	$query = "SELECT mandoid FROM troopers WHERE id = '".$id."'";
-	
-	// Run query...
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			// Set
-			$mandoid = $db->mandoid;
-		}
-	}
+	$statement = $conn->prepare("SELECT mandoid FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
 	
 	// Return
-	return $mandoid;
+	return $value;
 }
 
 /**
@@ -1462,10 +1863,12 @@ function getMandoInfo($mandoid)
 	$array['name'] = '';
 	
 	// Get data
-	$query = "SELECT * FROM mando_troopers WHERE mandoid = '".$mandoid."'";
+	$statement = $conn->prepare("SELECT * FROM mando_troopers WHERE mandoid = ?");
+	$statement->bind_param("i", $mandoid);
+	$statement->execute();
 	
 	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -1490,23 +1893,18 @@ function getSGUser($id)
 	global $conn;
 	
 	// Set up value
-	$sgid = 0;
+	$value = 0;
 	
 	// Get data
-	$query = "SELECT sgid FROM troopers WHERE id = '".$id."'";
-	
-	// Run query...
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			// Set
-			$sgid = $db->sgid;
-		}
-	}
+	$statement = $conn->prepare("SELECT sgid FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
 	
 	// Return
-	return $sgid;
+	return $value;
 }
 
 /**
@@ -1529,10 +1927,12 @@ function getSGINfo($sgid)
 	$array['rank'] = '';
 	
 	// Get data
-	$query = "SELECT * FROM sg_troopers WHERE sgid = 'SG-".$sgid."'";
-	
+	$statement = $conn->prepare("SELECT * FROM sg_troopers WHERE sgid = CONCAT('SG-', ?, '')");
+	$statement->bind_param("i", $sgid);
+	$statement->execute();
+
 	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -1568,10 +1968,12 @@ function get501Info($id, $squad)
 	if($squad <= count($squadArray))
 	{
 		// Get data
-		$query = "SELECT * FROM 501st_troopers WHERE legionid = '".$id."'";
+		$statement = $conn->prepare("SELECT * FROM 501st_troopers WHERE legionid = ?");
+		$statement->bind_param("i", $id);
+		$statement->execute();
 		
 		// Run query...
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -1599,10 +2001,12 @@ function getMyRebelCostumes($id)
 	$costume = "";
 	
 	// Get data
-	$query = "SELECT costumename FROM rebel_costumes WHERE rebelid = '".$id."'";
+	$statement = $conn->prepare("SELECT costumename FROM rebel_costumes WHERE rebelid = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
 	
 	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	if($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -1631,14 +2035,16 @@ function getMyCostumes($id, $squad)
 	if($squad <= count($squadArray))
 	{
 		// Get data
-		$query = "SELECT costumename FROM 501st_costumes WHERE legionid = '".$id."'";
+		$statement = $conn->prepare("SELECT costumename FROM 501st_costumes WHERE legionid = ?");
+		$statement->bind_param("i", $id);
+		$statement->execute();
 		
 		// Run query...
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$costume .= ", '501st: " . $db->costumename . "'";
+				$costume .= ", '501st: " . addslashes($db->costumename) . "'";
 			}
 		}
 	}
@@ -1658,13 +2064,15 @@ function showRebelCostumes($id)
 	global $conn;
 	
 	// Get data
-	$query = "SELECT * FROM rebel_costumes WHERE rebelid = '".$id."'";
+	$statement = $conn->prepare("SELECT * FROM rebel_costumes WHERE rebelid = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
 	
 	// Set up count
 	$i = 0;
 	
 	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -1702,13 +2110,15 @@ function showMandoCostumes($id)
 	global $conn;
 	
 	// Get data
-	$query = "SELECT * FROM mando_costumes WHERE mandoid = '".$id."'";
+	$statement = $conn->prepare("SELECT * FROM mando_costumes WHERE mandoid = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
 	
 	// Set up count
 	$i = 0;
 	
 	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -1745,13 +2155,15 @@ function showSGCostumes($id)
 	global $conn;
 	
 	// Get data
-	$query = "SELECT * FROM sg_troopers WHERE sgid = 'SG-".$id."'";
+	$statement = $conn->prepare("SELECT * FROM sg_troopers WHERE sgid = CONCAT('SG-', ?, '') AND sgid > 0");
+	$statement->bind_param("i", $id);
+	$statement->execute();
 	
 	// Set up count
 	$i = 0;
 	
 	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -1791,13 +2203,15 @@ function showDroids($forum)
 	global $conn;
 	
 	// Get data
-	$query = "SELECT * FROM droid_troopers WHERE forum_id = '".$forum."'";
+	$statement = $conn->prepare("SELECT * FROM droid_troopers WHERE forum_id = ?");
+	$statement->bind_param("s", $forum);
+	$statement->execute();
 	
 	// Set up count
 	$i = 0;
 	
 	// Run query...
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -1838,7 +2252,9 @@ function showCostumes($id, $squad)
 	global $conn, $squadArray;
 	
 	// Get data
-	$query = "SELECT * FROM 501st_costumes WHERE legionid = '".$id."'";
+	$statement = $conn->prepare("SELECT * FROM 501st_costumes WHERE legionid = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
 	
 	// Set up count
 	$i = 0;
@@ -1847,7 +2263,7 @@ function showCostumes($id, $squad)
 	if($squad <= count($squadArray))
 	{
 		// Run query...
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -1905,29 +2321,6 @@ function showCostumes($id, $squad)
 }
 
 /**
- * Posts a tweet to Twitter using Twitter API
- * 
- * @param string $message The message to post to Twitter
- * @return void
-*/
-function postTweet($message)
-{
-	// Credentials
-	$twitter = new Twitter(consumerKey, consumerSecret, accessToken, accessTokenSecret);
-
-	try
-	{
-		// Send tweet
-		$tweet = $twitter->send($message);
-	}
-	catch (DG\Twitter\TwitterException $e)
-	{
-		// Do nothing
-	}
-}
-
-
-/**
  * Converts squad ID to Discord role ID
  * 
  * @param int $squad The ID of the squad
@@ -1937,7 +2330,7 @@ function squadToDiscord($squad)
 {
 	if($squad == 0)
 	{
-		return '<@948046239956627506>';
+		return '<@&948046239956627506>';
 	}
 	else if($squad == 1)
 	{
@@ -2201,6 +2594,66 @@ function getCostumeQueryValues($clubid)
 }
 
 /**
+ * Returns query for costume values for squad. This will display costumes from the squad specified.
+ * 
+ * @param int $squadid The ID of the squad
+ * @return string Returns query
+*/
+function getCostumeQueryValuesSquad($squadid)
+{
+	global $squadArray, $clubArray;
+	
+	// Set up count
+	$squadCount = 0;
+	
+	// Query set up
+	$query = "";
+	
+	// Loop through clubs
+	foreach($squadArray as $squad => $squad_value)
+	{
+		// Check if club matches
+		if($squadid == $squadCount)
+		{
+			// Get costume count
+			$costumeCount = count($squad_value['costumes']);
+			
+			// Step count
+			$i = 0;
+			
+			// Add to query
+			$query .= "(";
+			
+			// Match
+			foreach($squad_value['costumes'] as $costume)
+			{
+				// Add to query
+				$query .= "'".$costume."' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume)";
+
+				// Increment step
+				$i++;
+				
+				// Check if need to add OR
+				if($i < $costumeCount)
+				{
+					// Add OR
+					$query .= " OR ";
+				}
+			}
+			
+			// Close query
+			$query .= ")";
+		}
+		
+		// Increment
+		$squadCount++;
+	}
+	
+	// Return
+	return $query;
+}
+
+/**
  * Returns the comment in a red color if it is marked as important
  * 
  * @param int $value The comment ID
@@ -2279,12 +2732,14 @@ function hasAward($trooperid, $awardid, $echo = false, $remove = false)
 	global $conn;
 	
 	// Get data
-	$query = "SELECT * FROM award_troopers WHERE trooperid = '".$trooperid."' AND awardid = '".$awardid."'";
+	$statement = $conn->prepare("SELECT * FROM award_troopers WHERE trooperid = ? AND awardid = ?");
+	$statement->bind_param("ii", $trooperid, $awardid);
+	$statement->execute();
 
 	// Set up return variable
 	$hasAward = false;
 	
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -2306,57 +2761,6 @@ function hasAward($trooperid, $awardid, $echo = false, $remove = false)
 			return 'style = "display: none;"';
 		}
 		else if(!$hasAward && $remove)
-		{
-			return 'style = "display: none;"';
-		}
-		else
-		{
-			return '';
-		}
-	}
-}
-
-/**
- * Returns if the trooper has a title
- * 
- * @param int $trooperid The ID of the trooper
- * @param int $awardid The ID of the award
- * @param boolean $echo Optional. Returns text to output
- * @param boolean $remove Optional. When set, will hide or show element
- * @return string Returns HTML string
-*/
-function hasTitle($trooperid, $awardid, $echo = false, $remove = false)
-{
-	global $conn;
-	
-	// Get data
-	$query = "SELECT * FROM title_troopers WHERE trooperid = '".$trooperid."' AND titleid = '".$awardid."'";
-
-	// Set up return variable
-	$hasTitle = false;
-	
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			// Set
-			$hasTitle = true;
-		}
-	}
-	
-	// Does not print
-	if(!$echo)
-	{
-		return $hasTitle;
-	}
-	else
-	{
-		// Does not have title
-		if($hasTitle && !$remove)
-		{
-			return 'style = "display: none;"';
-		}
-		else if(!$hasTitle && $remove)
 		{
 			return 'style = "display: none;"';
 		}
@@ -2408,8 +2812,13 @@ function hasTitle($trooperid, $awardid, $echo = false, $remove = false)
 function sendNotification($message, $trooperid, $type = 0, $json = "")
 {
 	global $conn;
+
+	$message = cleanInput($message);
+	$json = cleanInput($json);
 	
-	$conn->query("INSERT INTO notifications (message, trooperid, type, json) VALUES ('".$message."', '".$trooperid."', '".$type."', '".$json."')");
+	$statement = $conn->prepare("INSERT INTO notifications (message, trooperid, type, json) VALUES (?, ?, ?, ?)");
+	$statement->bind_param("siss", $message, $trooperid, $type, $json);
+	$statement->execute();
 }
 
 /**
@@ -2423,11 +2832,14 @@ function troopCheck($id)
 	global $conn, $clubArray, $squadArray;
 	
 	// Notify how many troops did a trooper attend - 501st
-	$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR EXISTS(SELECT events.id, events.oldid FROM events WHERE events.oldid != 0 AND events.id = event_sign_up.troopid))") or die($conn->error);
-	$count = $trooperCount_get->fetch_row();
+	$statement = $conn->prepare("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = ? AND status = '3' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume))");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->store_result();
+	$count = $statement->num_rows;
 	
 	// 501st
-	checkTroopCounts($count[0], "501ST: " . getName($id) . " now has [COUNT] troop(s)", $id, "501ST");
+	checkTroopCounts($count, "501ST: " . getName($id) . " now has [COUNT] troop(s)", $id, "501ST");
 	
 	// Set club ID
 	$clubID = count($squadArray) + 1;
@@ -2436,11 +2848,14 @@ function troopCheck($id)
 	foreach($clubArray as $club => $club_value)
 	{
 		// Notify how many troops did a trooper attend of club
-		$trooperCount_get = $conn->query("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$id."' AND status = '3' AND ".getCostumeQueryValues($clubID)."") or die($conn->error);
-		$count = $trooperCount_get->fetch_row();
+		$statement = $conn->prepare("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = ? AND status = '3' AND ".getCostumeQueryValues($clubID)."");
+		$statement->bind_param("i", $id);
+		$statement->execute();
+		$statement->store_result();
+		$count = $statement->num_rows;
 		
 		// Check troop count of club
-		checkTroopCounts($count[0], strtoupper($club_value['name']) . ": " . getName($id) . " now has [COUNT] troop(s)", $id, strtoupper($club_value['name']));
+		checkTroopCounts($count, strtoupper($club_value['name']) . ": " . getName($id) . " now has [COUNT] troop(s)", $id, strtoupper($club_value['name']));
 		
 		// Increment club count
 		$clubID++;
@@ -2464,8 +2879,11 @@ function checkTroopCounts($count, $message, $trooperid, $club)
 	$counts = [1, 10, 25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 501];
 	
 	// Search notifications for previous notifications, so we don't duplicate - check message for club name
-	$query = "SELECT * FROM notifications WHERE trooperid = '".$trooperid."' AND message LIKE '%".$club."%'";
-	if ($result = mysqli_query($conn, $query))
+	$statement = $conn->prepare("SELECT * FROM notifications WHERE trooperid = ? AND message LIKE CONCAT('%', ?, '%')");
+	$statement->bind_param("is", $id, $club);
+	$statement->execute();
+
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -2492,7 +2910,9 @@ function checkTroopCounts($count, $message, $trooperid, $club)
 			$tempMessage = $message;
 			$tempMessage = str_replace("[COUNT]", $value, $tempMessage);
 			
-			$conn->query("INSERT INTO notifications (message, trooperid) VALUES ('".cleanInput($tempMessage)."', '".cleanInput($trooperid)."')");
+			$statement = $conn->prepare("INSERT INTO notifications (message, trooperid) VALUES (?, ?)");
+			$statement->bind_param("si", $tempMessage, $trooperid);
+			$statement->execute();
 		}
 	}
 }
@@ -2505,15 +2925,15 @@ function checkTroopCounts($count, $message, $trooperid, $club)
 function myEmail()
 {
 	global $conn;
-	
-	$query = "SELECT email FROM troopers WHERE id='".$_SESSION['id']."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->email;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT email FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $_SESSION['id']);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
@@ -2525,19 +2945,22 @@ function myTheme()
 {
 	global $conn;
 	
-	$theme = "florida";
+	$theme = "floridadark";
 
 	if(loggedIn())
 	{
-		$query = "SELECT theme FROM troopers WHERE id = '".$_SESSION['id']."'";
-		if ($result = mysqli_query($conn, $query))
+		$statement = $conn->prepare("SELECT theme FROM troopers WHERE id = ?");
+		$statement->bind_param("i", $_SESSION['id']);
+		$statement->execute();
+
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
 				switch($db->theme)
 				{
 					case 0:
-						$theme = "florida";
+						$theme = "floridadark";
 					break;
 					
 					case 1:
@@ -2549,7 +2972,7 @@ function myTheme()
 					break;
 					
 					case 3:
-						$theme = "parjai";
+						$theme = "florida";
 					break;
 				}
 			}
@@ -2569,19 +2992,22 @@ function myTheme()
 function getEventTitle($id, $link = false)
 {
 	global $conn;
+
+	$statement = $conn->prepare("SELECT * FROM events WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
 	
-	$query = "SELECT * FROM events WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
 			if($link)
 			{
-				return '<a href=\'index.php?event='. $db->id .'\'>' . $db->name . '</a>';
+				return '<a href=\'index.php?event='. $db->id .'\'>' . readInput($db->name) . '</a>';
 			}
 			else
 			{
-				return $db->name;
+				return readInput($db->name);
 			}
 		}
 	}
@@ -2596,15 +3022,15 @@ function getEventTitle($id, $link = false)
 function getEventThreadID($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM events WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->thread_id;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT thread_id FROM events WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
@@ -2616,35 +3042,15 @@ function getEventThreadID($id)
 function getEventPostID($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM events WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->post_id;
-		}
-	}
-}
 
-/**
- * Returns the event Xenforo comment ID on the forum
- * 
- * @param int $id The ID of the event
- * @return int Returns comment ID
-*/
-function getCommentPostID($id)
-{
-	global $conn;
-	
-	$query = "SELECT * FROM comments WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->post_id;
-		}
-	}
+	$statement = $conn->prepare("SELECT post_id FROM events WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
@@ -2668,39 +3074,48 @@ function removeLetters($string)
 function readTKNumber($tkid, $squad)
 {
 	global $conn, $clubArray, $squadArray;
-	
-	// Is the trooper in a club?
-	$inClub = false;
 
-	// Based on squad ID, is the trooper in a club
-	if($squad > count($squadArray))
+	if($tkid == 0)
 	{
-		// Get first letter of club
-		$firstLetter = strtoupper(substr(getSquadName($squad), 0, 1));
-		
-		// Set TKID return
-		$tkid = $firstLetter . $tkid;
-		
-		// Set inClub
-		$inClub = true;
-	}
-	
-	// If not in club, set default
-	if(!$inClub)
-	{
-		$prefix = "TK";
-		
-		// Get TK prefix from database
-		$getPrefix = $conn->query("SELECT prefix FROM 501st_costumes WHERE legionid = '".$tkid."' LIMIT 1");
-		$getPrefix_value = $getPrefix->fetch_row();
-		
-		// Make sure TK prefix was found
-		if(isset($getPrefix_value[0]) && $getPrefix_value[0] != "")
+		$tkid = "Not Assigned";
+	} else {
+		// Is the trooper in a club?
+		$inClub = false;
+
+		// Based on squad ID, is the trooper in a club
+		if($squad > count($squadArray))
 		{
-			$prefix = $getPrefix_value[0];
+			// Get first letter of club
+			$firstLetter = strtoupper(substr(getSquadName($squad), 0, 1));
+			
+			// Set TKID return
+			$tkid = $firstLetter . $tkid;
+			
+			// Set inClub
+			$inClub = true;
 		}
 		
-		$tkid = $prefix . $tkid;
+		// If not in club, set default
+		if(!$inClub)
+		{
+			$prefix = "TK";
+			
+			// Get TK prefix from database
+			$statement = $conn->prepare("SELECT prefix FROM 501st_costumes WHERE legionid = ? LIMIT 1");
+			$statement->bind_param("i", $tkid);
+			$statement->execute();
+			$statement->bind_result($getPrefix_value);
+			$statement->fetch();
+			$statement->close();
+			
+			// Make sure TK prefix was found
+			if(isset($getPrefix_value) && $getPrefix_value != "")
+			{
+				$prefix = $getPrefix_value;
+			}
+			
+			$tkid = $prefix . $tkid;
+		}
 	}
 
 	return $tkid;
@@ -2766,9 +3181,12 @@ function isSquadActive($squad)
 function getTKNumber($id, $read = false)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM troopers WHERE id='".$id."'";
-	if ($result = mysqli_query($conn, $query))
+
+	$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -2795,16 +3213,16 @@ function getIDFromTKNumber($tkid)
 {
 	global $conn, $squadArray;
 
-	$returnVal = 0;
-	
-	$query = "SELECT * FROM troopers WHERE tkid='".$tkid."' AND squad <= ".count($squadArray)."";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			$returnVal = $db->id;
-		}
-	}
+	$value = 0;
+
+	$statement = $conn->prepare("SELECT id FROM troopers WHERE tkid = ? AND squad <= ".count($squadArray)."");
+	$statement->bind_param("i", $tkid);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
@@ -2816,15 +3234,15 @@ function getIDFromTKNumber($tkid)
 function getTrooperSquad($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM troopers WHERE id='".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->squad;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT squad FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
@@ -2836,15 +3254,15 @@ function getTrooperSquad($id)
 function getTrooperForum($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM troopers WHERE id='".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->forum_id;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT forum_id FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
@@ -2856,15 +3274,45 @@ function getTrooperForum($id)
 function getCostumeClub($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM costumes WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->club;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT club FROM costumes WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
+}
+
+/**
+ * Replaces the costume ID with an N/A costume
+ * 
+ * @param int $id The costume ID
+ * @return int Returns the N/A costume for the club
+ */
+function replaceCostumeID($id)
+{
+	global $clubArray, $dualCostume, $dualNA;
+
+	$club = getCostumeClub($id);
+
+	if($club == 0) { return 0; }
+	//if(in_array($club, $dualCostume)) { return $dualNA; }
+
+	return intval($clubArray[$club - 1]['naCostume']);
+}
+
+/**
+ * Get's the file name of the file
+ * 
+ * @param string $file The path to file
+ * @return string Returns the file name without the extension
+ */
+function getFileName($file)
+{
+	$info = pathinfo($file);
+	return $info['filename'];
 }
 
 /**
@@ -2879,7 +3327,7 @@ function getCostumeClub($id)
 */
 function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 {
-	global $conn, $squadArray, $clubArray;
+	global $conn, $squadArray, $clubArray, $userGroupRankImages;
 	
 	// Command Staff Edit Link
 	if(isAdmin())
@@ -2893,16 +3341,40 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	if(getTrooperSquad($tkid) <= count($squadArray))
 	{
 		// Get 501st thumbnail Info
-		$thumbnail_get = $conn->query("SELECT thumbnail FROM 501st_troopers WHERE legionid = '".$tkid."'");
-		$thumbnail = $thumbnail_get->fetch_row();
+		$statement = $conn->prepare("SELECT thumbnail FROM 501st_troopers WHERE legionid = ?");
+		$statement->bind_param("i", $tkid);
+		$statement->execute();
+		$statement->bind_result($thumbnail);
+		$statement->fetch();
+		$statement->close();
 	}
 	
 	// Get Rebel Legion thumbnail info
-	$thumbnail_get_rebel = $conn->query("SELECT costumeimage FROM rebel_costumes WHERE rebelid = '".getRebelInfo(getRebelLegionUser(cleanInput($id)))['id']."' LIMIT 1");
-	$thumbnail_rebel = $thumbnail_get_rebel->fetch_row();
+	$statement = $conn->prepare("SELECT costumeimage FROM rebel_costumes WHERE rebelid = ? LIMIT 1");
+	$statement->bind_param("i", getRebelInfo(getRebelLegionUser($id))['id']);
+	$statement->execute();
+	$statement->bind_result($thumbnail_rebel);
+	$statement->fetch();
+	$statement->close();
+	
+	// Get permission type
+	$statement = $conn->prepare("SELECT permissions FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($permission);
+	$statement->fetch();
+	$statement->close();
 	
 	echo '
-	<h2 class="tm-section-header">'.$name.' - '.readTKNumber($tkid, $squad).'</h2>';
+	<h2 class="tm-section-header">'.($permission == 3 ? 'In Memoriam...<br />' : '').''.$name.' - '.readTKNumber($tkid, $squad).'</h2>';
+	
+	// RIP Member
+	if($permission == 3) {
+		echo '
+		<p style="text-align: center;">
+			<b>No one\'s ever really gone - Thank you for your service. The Force will be with you. Always.</b>
+		</p>';
+	}
 	
 	// Avatar
 	
@@ -2924,11 +3396,11 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	}
 	
 	// 501
-	if(isset($thumbnail[0]))
+	if(isset($thumbnail))
 	{
 		echo '
 		<p style="text-align: center;">
-			<img src="'.$thumbnail[0].'" />
+			<img src="'.$thumbnail.'" />
 		</p>';
 		
 		// Set
@@ -2936,11 +3408,11 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	}
 	
 	// Rebel
-	if(isset($thumbnail_rebel[0]))
+	if(isset($thumbnail_rebel))
 	{
 		echo '
 		<p style="text-align: center;">
-			<img src="'.str_replace("-A", "sm", $thumbnail_rebel[0]).'" />
+			<img src="'.str_replace("-A", "sm", $thumbnail_rebel).'" />
 		</p>';
 		
 		// Set
@@ -2956,61 +3428,79 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 		</p>';
 	}
 
-	// Title ranks
-	$query2 = "SELECT title_troopers.titleid, title_troopers.trooperid, titles.id, titles.title, titles.icon FROM title_troopers LEFT JOIN titles ON titles.id = title_troopers.titleid WHERE title_troopers.trooperid = '".cleanInput($_GET['profile'])."'";
-	if ($result2 = mysqli_query($conn, $query2))
+	echo '
+	<div style="text-align: center;">';
+
+	// Show rank images
+	$xenforo = @getUserForumID(getUserID($id))['user']['secondary_group_ids'];
+
+	if($xenforo != "")
 	{
-		while ($db2 = mysqli_fetch_object($result2))
+		foreach($xenforo as $value)
 		{
-			echo '
-			<p style="text-align: center;">
-				<img src="images/ranks/'.$db2->icon.'" />
-			</p>';
+			if(array_key_exists($value, $userGroupRankImages))
+			{
+				echo $userGroupRankImages[$value];
+			}
 		}
 	}
+
+	echo '
+	</div>';
 	
 	// Ranks for members
-	$query2 = "SELECT * FROM troopers WHERE id = '".cleanInput($_GET['profile'])."'";
-	if ($result2 = mysqli_query($conn, $query2))
+	$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+
+	if ($result = $statement->get_result())
 	{
-		while ($db2 = mysqli_fetch_object($result2))
-		{
+		while ($db = mysqli_fetch_object($result))
+		{			
 			// Is a 501 member?
 			$is501Member = false;
+
+			// Is a handler
+			$isHandler = false;
 
 			echo '
 			<div style="text-align: center;">';
 			
 			// 501
 			// Active
-			if($db2->p501 == 1)
+			if($db->p501 == 1)
 			{
 				echo '
 				<p>
-					<img src="images/ranks/legion_member.png" />
+					<img src="images/ranks/legion_member.png" class="rankTitle" />
 				</p>';
 
 				$is501Member = true;
 			}
 			// Reserve
-			else if($db2->p501 == 2)
+			else if($db->p501 == 2)
 			{
 				echo '
 				<p>
-					<img src="images/ranks/legion_reserve.png" />
+					<img src="images/ranks/legion_reserve.png" class="rankTitle" />
 				</p>';
 
 				$is501Member = true;
 			}
 			// Retired
-			else if($db2->p501 == 3)
+			else if($db->p501 == 3)
 			{
 				echo '
 				<p>
-					<img src="images/ranks/legion_retired.png" />
+					<img src="images/ranks/legion_retired.png" class="rankTitle" />
 				</p>';
 
 				$is501Member = true;
+			}
+			// Handler
+			else if($db->p501 == 4)
+			{
+				$isHandler = true;
 			}
 
 			// Set up squad count
@@ -3020,11 +3510,11 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 			foreach($squadArray as $squad => $squad_value)
 			{
 				// Check
-				if($db2->squad == $squadCount)
+				if($db->squad == $squadCount)
 				{
 					echo '
 					<p>
-						<img src="images/ranks/'.$squad_value['rankRegular'].'" />
+						<img src="images/ranks/'.$squad_value['rankRegular'].'" class="rankTitle" />
 					</p>';
 				}
 
@@ -3036,27 +3526,50 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 			foreach($clubArray as $club => $club_value)
 			{
 				// Check rank
-				if($db2->{$club_value['db']} == 1)
+				if($db->{$club_value['db']} == 1)
 				{
+					// If blank, don't show
+					if($club_value['rankRegular'] == "") { continue; }
+					
 					echo '
 					<p>
-						<img src="images/ranks/'.$club_value['rankRegular'].'" />
+						<img src="images/ranks/'.$club_value['rankRegular'].'" class="rankTitle" />
 					</p>';
 				}
-				else if($db2->{$club_value['db']} == 2)
+				else if($db->{$club_value['db']} == 2)
 				{
+					// If blank, don't show
+					if($club_value['rankReserve'] == "") { continue; }
+					
 					echo '
 					<p>
-						<img src="images/ranks/'.$club_value['rankReserve'].'" />
+						<img src="images/ranks/'.$club_value['rankReserve'].'" class="rankTitle" />
 					</p>';
 				}
-				else if($db2->{$club_value['db']} == 3)
+				else if($db->{$club_value['db']} == 3)
 				{
+					// If blank, don't show
+					if($club_value['rankRetired'] == "") { continue; }
+					
 					echo '
 					<p>
-						<img src="images/ranks/'.$club_value['rankRetired'].'" />
+						<img src="images/ranks/'.$club_value['rankRetired'].'" class="rankTitle" />
 					</p>';
 				}
+				// Handler
+				else if($db->{$club_value['db']} == 4)
+				{
+					$isHandler = true;
+				}
+			}
+
+			// Handler set
+			if($isHandler)
+			{
+				echo '
+				<p>
+					<img src="images/ranks/handler.png" class="rankTitle" />
+				</p>';
 			}
 			
 			echo '
@@ -3064,10 +3577,21 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 		}
 	}
 	
-	echo '
-	<p style="text-align: center;"><a href="https://www.fl501st.com/boards/memberlist.php?mode=viewprofile&un='.urlencode($forum).'" target="_blank" class="button">View Boards Profile</a></p>';
+	// Check if the username was found
+	if(isset(getUserForum($forum)['exact']['user_id'])) {
+		echo '
+		<p style="text-align: center;"><a href="https://www.fl501st.com/boards/index.php?members/'.$forum.'.'.getUserForum($forum)['exact']['user_id'].'" target="_blank" class="button">View Boards Profile</a></p>';
+	} else {
+		echo '
+		<p style="text-align: center;">Boards Name: '.$forum.'</p>';
+	}
 
-	if($is501Member && !is_null(get501Info($tkid, $squad)['joindate']))
+	echo '
+	<p style="text-align: center;">
+		<b>Troop Tracker Rank:</b><br />#'.getTrooperRanking($id).'
+	</p>';
+
+	if(isset(get501Info($tkid, $squad)['joindate']) && $is501Member && !is_null(get501Info($tkid, $squad)['joindate']))
 	{
 		echo '
 		<p style="text-align: center;">
@@ -3131,19 +3655,17 @@ function formatPhoneNumber($phoneNumber)
 function profileExist($id)
 {
 	global $conn;
-	
+
 	// Set up return var
 	$doesExist = false;
-	
-	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			// Found
-			$doesExist = true;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT id FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->store_result();
+	$doesExist = $statement->num_rows;
+
+	if($doesExist > 0) { $doesExist = true; }
 	
 	// Return
 	return $doesExist;
@@ -3170,35 +3692,90 @@ function profileExist($id)
  * @param string $comments Additional information on the troop - BB Code supported
  * @param string $referred Who referred the event
  * @param int $eventId ID for the event
+ * @param int $eventType The ID of the event type for the event
  * @param string $roster A string of the troopers attending the troop
  * @return string
 */
-function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $website, $numberOfAttend, $requestedNumber, $requestedCharacter, $secure, $blasters, $lightsabers, $parking, $mobility, $amenities, $comments, $referred, $eventId, $roster = "")
+function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $website, $numberOfAttend, $requestedNumber, $requestedCharacter, $secure, $blasters, $lightsabers, $parking, $mobility, $amenities, $comments, $referred, $eventId, $eventType = 0, $roster = "")
 {
-	return '
-	[b]Event Name:[/b] '.$eventName.'
-	[b]Venue:[/b] '.$eventVenue.'
-	[b]Venue address:[/b] '.$location.'
+	global $conn;
+	
+	$returnString = '';
+
+	$returnString .= '
+	[b]Event Name:[/b] '.readInput($eventName).'
+	[b]Venue:[/b] '.readInput($eventVenue).'
+	[b]Venue address:[/b] '.readInput($location).'
 	[b]Event Start:[/b] '.date("m/d/y h:i A", strtotime($date1)).'
-	[b]Event End:[/b] '.date("m/d/y h:i A", strtotime($date2)).'
-	[b]Event Website:[/b] '.$website.'
-	[b]Expected number of attendees:[/b] '.$numberOfAttend.'
-	[b]Requested number of characters:[/b] '.$requestedNumber.'
-	[b]Requested character types:[/b] '.$requestedCharacter.'
-	[b]Secure changing/staging area:[/b] '.yesNo($secure).'
-	[b]Can troopers carry blasters:[/b] '.yesNo($blasters).'
-	[b]Can troopers carry/bring props like lightsabers and staffs:[/b] '.yesNo($lightsabers).'
-	[b]Is parking available:[/b] '.yesNo($parking).'
-	[b]Is venue accessible to those with limited mobility:[/b] '.yesNo($mobility).'
-	[b]Amenities available at venue:[/b] '.ifEmpty($amenities, "No amenities for this event.").'
-	[b]Comments:[/b] '.ifEmpty($comments, "No comments for this event.").'
-	[b]Referred by:[/b] '.ifEmpty($referred, "Not available").'
+	[b]Event End:[/b] '.date("m/d/y h:i A", strtotime($date2)).'';
 
-	'.$roster.'
+	// Exclude unimportant information from armor party events
+	if($eventType != 10 && $eventType != 7)
+	{
+		$returnString .= '
+		[b]Event Website:[/b] '.readInput($website).'
+		[b]Expected number of attendees:[/b] '.$numberOfAttend.'
+		[b]Requested number of characters:[/b] '.$requestedNumber.'
+		[b]Requested character types:[/b] '.readInput($requestedCharacter).'
+		[b]Secure changing/staging area:[/b] '.yesNo($secure).'
+		[b]Can troopers carry blasters:[/b] '.yesNo($blasters).'
+		[b]Can troopers carry/bring props like lightsabers and staffs:[/b] '.yesNo($lightsabers).'
+		[b]Is parking available:[/b] '.yesNo($parking).'
+		[b]Is venue accessible to those with limited mobility:[/b] '.yesNo($mobility).'';
+	}
 
+	// Exclude unimportant information from virtual troops
+	if($eventType != 7)
+	{
+		$returnString .= '
+		[b]Amenities available at venue:[/b] '.ifEmpty(readInput($amenities), "No amenities for this event.").'';
+	}
+
+
+	$returnString .= '
+	[b]Comments:[/b]
+	'.ifEmpty(readInput($comments), "No comments for this event.").'
+	[b]Referred by:[/b] '.ifEmpty(readInput($referred), "Not available").'
+
+	'.$roster.'';
+	
+	// Loop through all admin photos
+	$statement = $conn->prepare("SELECT * FROM uploads WHERE troopid = ? AND admin = '1' ORDER BY date ASC");
+	$statement->bind_param("i", $eventId);
+	$statement->execute();
+
+	if ($result = $statement->get_result())
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			$returnString .= '
+			[IMG]https://fl501st.com/troop-tracker/images/uploads/'.$db->filename.'[/IMG]
+			';
+		}
+	}
+
+	$returnString .= '
 	[b][u]Sign Up / Event Roster:[/u][/b]
 
 	[url]https://fl501st.com/troop-tracker/index.php?event=' . $eventId . '[/url]';
+
+	return $returnString;
+}
+
+/**
+ * Returns the hours between two date times
+ * 
+ * @param string $datetime1 The first date to check
+ * @param string $datetime2 The second date to check
+ */
+function timeBetweenDates($datetime1, $datetime2)
+{
+	$date1 = new DateTime($datetime1);
+	$date2 = new DateTime($datetime2);
+	
+	$diff = $date2->diff($date1);
+	
+	return $diff->h;
 }
 
 /**
@@ -3210,15 +3787,35 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 function getUserID($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM troopers WHERE id='".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->user_id;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT user_id FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
+}
+
+/**
+ * Return's the tracker ID based on Xenforo Forum ID
+ * 
+ * @param int $userid ID of the trooper on forum
+ * @return int Returns ID from tracker
+*/
+function getIDFromUserID($id)
+{
+	global $conn;
+
+	$statement = $conn->prepare("SELECT id FROM troopers WHERE user_id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
@@ -3230,15 +3827,55 @@ function getUserID($id)
 function getName($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->name;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT name FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
+}
+
+/**
+ * Return's the troopers's address
+ * 
+ * @param int $id ID of the trooper
+ * @return string Returns trooper's address
+*/
+function getTrooperAddress($id)
+{
+	global $conn;
+
+	$statement = $conn->prepare("SELECT address FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
+}
+
+/**
+ * Return's the troopers's radius
+ * 
+ * @param int $id ID of the trooper
+ * @return string Returns trooper's radius
+*/
+function getTrooperRadius($id)
+{
+	global $conn;
+
+	$statement = $conn->prepare("SELECT radius FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
@@ -3250,15 +3887,15 @@ function getName($id)
 function getEmail($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->email;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT email FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
@@ -3270,15 +3907,15 @@ function getEmail($id)
 function getPhone($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->phone;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT phone FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
@@ -3290,15 +3927,15 @@ function getPhone($id)
 function getSquadID($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->squad;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT squad FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
@@ -3407,10 +4044,13 @@ function inEvent($id, $event)
 
 	$array = ["inTroop" => "0", "status" => ""];
 	$status = "";
-	
-	$query = "SELECT * FROM event_sign_up WHERE trooperid = '".$id."' AND troopid = '".$event."'";
+
+	$statement = $conn->prepare("SELECT * FROM event_sign_up WHERE trooperid = ? AND troopid = ?");
+	$statement->bind_param("ii", $id, $event);
+	$statement->execute();
+
 	$i = 0;
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -3429,9 +4069,426 @@ function inEvent($id, $event)
 }
 
 /**
+* Returns an updated roster
+*
+* @param int $eventID The event ID to fetch
+* @param int $limitTotal The limit total for the event
+* @param boolean $totalTrooperEvent If the event is an event that checks the total limit
+* @param boolean $signedUp If the trooper is signed up for this event. Default: false
+* @array Returns an HTML string of the updated roster and HTML string of the current trooper counts remaining
+*/
+function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp = false)
+{
+	global $conn, $mainCostumes, $clubArray;
+	
+	// Define data variable for below code
+	$data = "";
+	$data2 = "";
+
+	// Get data to send back - query the event data for the information
+
+	// Query database for event info
+	$statement = $conn->prepare("SELECT * FROM events WHERE id = ?");
+	$statement->bind_param("i", $eventID);
+	$statement->execute();
+
+	if ($result = $statement->get_result())
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+
+			// Query database for roster info
+			$statement2 = $conn->prepare("SELECT event_sign_up.id AS signId, event_sign_up.note, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, event_sign_up.status, event_sign_up.signuptime, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = ? ORDER BY event_sign_up.id ASC");
+			$statement2->bind_param("i", $eventID);
+			$statement2->execute();
+
+			$i = 0;
+
+			if ($result2 = $statement2->get_result())
+			{
+				while ($db2 = mysqli_fetch_object($result2))
+				{
+					// Use this for later to determine which select box to show...
+					$status = $db2->status;
+
+					// If no events to show...
+					if($i == 0)
+					{
+						$data .= '
+						<form action="process.php?do=modifysignup" method="POST" name="modifysignupForm" id="modifysignupForm">
+						
+						<!-- Hidden variables -->
+						<input type="hidden" name="modifysignupTroopIdForm" id="modifysignupTroopIdForm" value="'.$db->id.'" />
+						<input type="hidden" name="limitedEventCancel" id="limitedEventCancel" value="'.$db->limitedEvent.'" />
+						<input type="hidden" name="troopid" id="troopid" value="'.$eventID.'" />
+						<input type="hidden" name="myId" id="myId" value="'.(isset($_SESSION['id']) ? $_SESSION['id'] : '0').'" />
+
+						<div style="overflow-x: auto;">
+						<table border="1">
+						<tr>
+							<th>Trooper Name</th>	<th>TKID</th>	<th>Costume</th>	<th>Backup Costume</th>	<th>Status</th>
+						</tr>';
+					}
+					
+					// Create row, change based on status
+					if($db2->status == 4 || $db2->status == 6 || $db2->status == 7)
+					{
+						$data .= '
+						<tr class="canceled-troop">';
+					}
+					else
+					{
+						$data .= '
+						<tr>';
+					}
+
+					// Allow for users to edit their status from the event, and make sure the event is not closed, and the user did not cancel
+					if(loggedIn() && ($db2->trooperId == $_SESSION['id'] || $_SESSION['id'] == $db2->addedby) && ($db->closed == 0 || $db->closed == 4))
+					{
+						$data .= '
+						<td>
+							'.drawSupportBadge($db2->trooperId).'
+							<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
+
+							// If a placeholder account, allow edit name
+							if($db2->trooperId == placeholder)
+							{
+								$data .= '
+								<input type="text" name="placeholdertext" signid="'.$db2->signId.'" value="'.$db2->note.'" />';
+							}
+
+							// Show who added the trooper
+							if($db2->addedby != 0)
+							{
+								$data .= '
+								<br /><small>Added by:<br />' . getName($db2->addedby) . '</small>';
+							}
+
+						$data .= '
+						</td>
+							
+						<td>
+							'.readTKNumber($db2->tkid, $db2->squad).'
+						</td>
+						
+						<td name="trooperRosterCostume" id="trooperRosterCostume">
+							<select name="modifysignupFormCostume" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
+
+							// Display costumes
+							$statement3 = $conn->prepare("SELECT * FROM costumes WHERE " . costume_restrict_query(false, $db2->trooperId, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume");
+							$statement3->execute();
+							
+							if ($result3 = $statement3->get_result())
+							{
+								while ($db3 = mysqli_fetch_object($result3))
+								{
+									if($db2->costume == $db3->id)
+									{
+										// If this is the selected costume, make it selected
+										$data .= '
+										<option value="'. $db3->id .'" SELECTED>'.$db3->costume.'</option>';
+									}
+									else
+									{
+										// Default
+										$data .= '
+										<option value="'. $db3->id .'">'.$db3->costume.'</option>';
+									}
+								}
+							}
+
+							$data .= '
+							</select>
+						</td>
+						
+						<td name="trooperRosterBackup" id="trooperRosterBackup">
+							<select name="modiftybackupcostumeForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
+							
+							// Count results
+							$c = 0;
+
+							// Display costumes
+							$statement3 = $conn->prepare("SELECT * FROM costumes WHERE " . costume_restrict_query(false, $db2->trooperId, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume");
+							$statement3->execute();
+							
+							// Amount of costumes
+							if ($result3 = $statement3->get_result())
+							{
+								while ($db3 = mysqli_fetch_object($result3))
+								{
+									// If costume set to backup and first result
+									if($db2->costume_backup == 0 && $c == 0)
+									{
+										$data .= '
+										<option value="0" SELECTED>N/A</option>';
+									}
+									// Make sure this is a first result otherwise
+									else if($c == 0)
+									{
+										$data .= '
+										<option value="0">N/A</option>';
+									}
+									
+									
+									// If a costume matches
+									if($db2->costume_backup == $db3->id)
+									{
+										$data .= '
+										<option value="'.$db3->id.'" SELECTED>'.$db3->costume.'</option>';
+									}
+									// Start showing costumes
+									else
+									{
+										$data .= '
+										<option value="'.$db3->id.'">'.$db3->costume.'</option>';
+									}
+									
+									// Increment
+									$c++;
+								}
+							}
+
+							$data .= '
+							</select>
+						</td>
+						
+						<td id="'.$db2->trooperId.'Status" aria-label="'.formatTime($db2->signuptime, 'F j, Y, g:i a').'" data-balloon-pos="up">
+						<div name="trooperRosterStatus">';
+						
+							if($db->limitedEvent != 1)
+							{
+								// If on stand by
+								if($db2->status == 1)
+								{
+									$data .= '
+									<select name="modifysignupStatusForm" id="modifysignupStatusForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
+										<option value="0" '.echoSelect(1, $db2->status).'>Stand By</option>
+										<option value="4" '.echoSelect(4, $db2->status).'>Cancel</option>
+									</select>';
+								}
+								// Regular
+								else
+								{
+									$data .= '
+									<select name="modifysignupStatusForm" id="modifysignupStatusForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
+										<option value="0" '.echoSelect(0, $db2->status).'>I\'ll be there!</option>
+										<option value="2" '.echoSelect(2, $db2->status).'>Tentative</option>
+										<option value="4" '.echoSelect(4, $db2->status).'>Cancel</option>
+									</select>';
+								}
+							}
+							else
+							{
+								// Limited event - If pending approval
+								if($db2->status == 5)
+								{
+									$data .= '
+									<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
+									(Pending Command Staff Approval)';
+
+									// If is admin and limited event
+									if(isAdmin() && $db->limitedEvent == 1 && $db->closed == 0)
+									{
+										// Set status
+										$data .= '
+										<br />
+										<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>
+										<br />
+										<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
+									}
+
+									$data .= '</div>';
+								}
+								else
+								{
+									$data .= '
+									<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
+
+									$data .= getStatus($db2->status);
+
+									// If is admin and limited event
+									if(isAdmin() && $db->limitedEvent == 1 && $db->closed == 0)
+									{
+										// If set to going
+										if($db2->status == 0)
+										{
+											// Set status
+											$data .= '
+											<br />
+											<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
+										}
+										// If set to not picked
+										else if($db2->status == 6)
+										{
+											// Set status
+											$data .= '
+											<br />
+											<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>';
+										}
+									}
+
+									$data .= '</div>';
+								}							
+							}
+
+						$data .= '
+						</div>
+						</td>';
+					}
+					else
+					{
+						// If a user other than the current user
+						$data .= '
+						<td>
+							'.drawSupportBadge($db2->trooperId).'
+							<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
+
+							// If a placeholder account, allow edit name
+							if($db2->trooperId == placeholder)
+							{
+								$data .= '
+								<b>'.$db2->note.'</b>';
+							}
+
+							// Show who added the trooper
+							if($db2->addedby != 0)
+							{
+								$data .= '
+								<br /><small>Added by:<br />' . getName($db2->addedby) . '</small>';
+							}
+
+						$data .= '
+						</td>
+							
+						<td>
+							'.readTKNumber($db2->tkid, $db2->squad).'
+						</td>
+						
+						<td>
+							'.ifEmpty('<a href="index.php?action=costume&costumeid='.$db2->costume.'">' . getCostume($db2->costume) . '</a>', "N/A").'
+						</td>
+						
+						<td>
+							'.ifEmpty('<a href="index.php?action=costume&costumeid='.$db2->costume_backup.'">' . getCostume($db2->costume_backup) . '</a>', "N/A").'
+						</td>
+						
+						<td id="'.$db2->trooperId.'Status" aria-label="'.formatTime($db2->signuptime, 'F j, Y, g:i a').'" data-balloon-pos="up">
+							<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
+							'.getStatus($db2->status);
+
+							// If is admin and limited event
+							if(isAdmin() && $db->limitedEvent == 1)
+							{
+								// If set to going
+								if($db2->status == 0)
+								{
+									// Set status
+									$data .= '
+									<br />
+									<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
+								}
+								else if($db2->status == 5) {
+									$data .= '
+									<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
+									(Pending Command Staff Approval)';
+
+									// If is admin and limited event
+									if(isAdmin() && $db->limitedEvent == 1 && $db->closed == 0)
+									{
+										// Set status
+										$data .= '
+										<br />
+										<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>
+										<br />
+										<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
+									}
+								}
+								// If set to not picked
+								else if($db2->status == 6)
+								{
+									// Set status
+									$data .= '
+									<br />
+									<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>';
+								}
+							}
+
+						$data .= '
+						</div>
+						</td>';
+					}
+					
+					$data .= '
+					</tr>';
+
+					// Increment trooper count
+					$i++;
+				}
+			}
+
+			if($i == 0)
+			{
+				$data .= '
+				<b>No troopers have signed up for this event!</b>
+				<br />
+				<br />';
+			}
+			else
+			{
+				$data .= '</table>
+				</div>
+				</form>';
+			}
+
+			// Update troopers remaining
+			$data2 = '
+			<ul>
+				<li>This event is limited to '.$limitTotal.' troopers. ';
+
+				// Check for total limit set, if it is, add remaining troopers
+				if($totalTrooperEvent)
+				{
+					$data2 .= '
+					' . troopersRemaining($limitTotal, eventClubCount($db->id, "all")) . '</li>';
+				}
+				else
+				{
+					$data2 .= '
+					<li>This event is limited to '.$db->limit501st.' 501st troopers. '.troopersRemaining($db->limit501st, eventClubCount($db->id, 0)).' </li>';
+
+					// Set up club count
+					$clubCount = 1;
+
+					// Loop through clubs
+					foreach($clubArray as $club => $club_value)
+					{
+						$data2 .= '
+						<li>This event is limited to '.$db->{$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining($db->{$club_value['dbLimit']}, eventClubCount($db->id, $clubCount)).'</li>';
+
+						// Increment club count
+						$clubCount++;
+					}
+				}
+				
+				// Check for total limit set, if it is, set event as limited
+				if($db->limitHandlers > 500 || $db->limitHandlers < 500)
+				{
+					$data2 .= '
+					<li>This event is limited to '.$db->limitHandlers.' handlers. <b>'.($db->limitHandlers - handlerEventCount($db->id)).' handlers remaining.</b></li>';
+				}
+
+			$data2 .= '
+			</ul>';
+		}
+	}
+	
+	return [$data, $data2];
+}
+
+/**
  * Returns the status of the trooper
  * 
- * 0 = Going / 1 = Stand By / 2 = Tentative / 3 = Attended / 4 = Canceled / 5 = Pending / 6 = Not Picked
+ * 0 = Going / 1 = Stand By / 2 = Tentative / 3 = Attended / 4 = Canceled / 5 = Pending / 6 = Not Picked / 7 = No Show
  * 
  * @param int $value The ID of the status
  * @return string Returns string of the status
@@ -3468,6 +4525,10 @@ function getStatus($value)
 	{
 		$returnValue = "Not Picked";
 	}
+	else if($value == 7)
+	{
+		$returnValue = "No Show";
+	}
 
 	return $returnValue;
 }
@@ -3481,8 +4542,9 @@ function getStatus($value)
 function validate_url($url)
 {
 	$path = parse_url($url, PHP_URL_PATH);
-	$encoded_path = array_map('urlencode', explode('/', $path));
-	$url = str_replace($path, implode('/', $encoded_path), $url);
+
+	$encoded_path = array_map('urlencode', @explode('/', $path));
+	$url = @str_replace($path, implode('/', $encoded_path), $url);
 
 	if(filter_var(addHttp($url), FILTER_VALIDATE_URL) && strpos($url, "."))
 	{
@@ -3506,11 +4568,14 @@ function validate_url($url)
 */
 function ifEmpty($value, $message = "EMPTY")
 {
-	if($value == "")
+	// Check for blank HTML
+	$valueClean = @strip_tags($value);
+
+	if($valueClean == "")
 	{
 		return $message;
 	}
-	else if(is_null($value))
+	else if(is_null($valueClean))
 	{
 		return $message;
 	}
@@ -3526,18 +4591,18 @@ function ifEmpty($value, $message = "EMPTY")
  * @param int $value ID of costume
  * @return string Returns costume name
 */
-function getCostume($value)
+function getCostume($id)
 {
 	global $conn;
-	
-	$query = "SELECT * FROM costumes WHERE id = '".$value."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			return $db->costume;
-		}
-	}
+
+	$statement = $conn->prepare("SELECT costume FROM costumes WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
@@ -3597,6 +4662,33 @@ function addHttp($url)
 }
 
 /**
+ * Returns a string of costumes that were favorited by the trooper
+ *
+ * @param int $trooperid The trooper ID of the trooper to query
+ * @return string Returns a query string
+*/
+function mainCostumesBuild($trooperid)
+{
+	global $conn;
+	
+	$returnQuery = "";
+
+	$statement = $conn->prepare("SELECT * FROM favorite_costumes WHERE trooperid = ?");
+	$statement->bind_param("i", $trooperid);
+	$statement->execute();
+	
+	if ($result = $statement->get_result())
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			$returnQuery .= ", '".@addslashes(getCostume($db->costumeid))."'";
+		}
+	}
+	
+	return $returnQuery;
+}
+
+/**
  * Returns if trooper is an admin or moderator
  * 
  * 1 = Super Admin / 2 = Moderator
@@ -3611,8 +4703,11 @@ function isAdmin()
 	
 	if(isset($_SESSION['id']))
 	{
-		$query = "SELECT * FROM troopers WHERE id='".$_SESSION['id']."'";
-		if ($result = mysqli_query($conn, $query))
+		$statement = $conn->prepare("SELECT permissions FROM troopers WHERE id = ?");
+		$statement->bind_param("i", $_SESSION['id']);
+		$statement->execute();
+
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -3630,7 +4725,7 @@ function isAdmin()
 /**
  * Determines if trooper has permission to access
  * 
- * 0 = Regular Member, 1 = Super Admin, 2 = Moderator
+ * 0 = Regular Member, 1 = Super Admin, 2 = Moderator, 3 = RIP Member
  * 
  * @param int $permissionLevel1 First permission to check
  * @param int $permissionLevel2 Optional. Second permission to check
@@ -3645,9 +4740,11 @@ function hasPermission($permissionLevel1, $permissionLevel2 = -1, $permissionLev
 	
 	if(isset($_SESSION['id']))
 	{
-		$query = "SELECT * FROM troopers WHERE id='".$_SESSION['id']."'";
+		$statement = $conn->prepare("SELECT permissions FROM troopers WHERE id = ?");
+		$statement->bind_param("i", $_SESSION['id']);
+		$statement->execute();
 
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -3687,9 +4784,11 @@ function hasSpecialPermission($permission)
 	$hasPermission = false;
 	
 	// Check if the trooper is a moderator
-	$query = "SELECT * FROM troopers WHERE id = '".$_SESSION['id']."' AND permissions = 2";
+	$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ? AND permissions = 2");
+	$statement->bind_param("i", $_SESSION['id']);
+	$statement->execute();
 
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -3716,9 +4815,11 @@ function isClubMember($dbclub)
 	$returnValue = 0;
 	
 	// Check if the trooper is a moderator
-	$query = "SELECT * FROM troopers WHERE id = '".$_SESSION['id']."'";
+	$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
 
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -3727,6 +4828,31 @@ function isClubMember($dbclub)
 	}
 	
 	return $returnValue;
+}
+
+/**
+ * Returns site message when closed
+ *
+ * @return string Returns the site closed message
+*/
+function getSiteMessage()
+{
+	global $conn;
+	
+	$siteMessage = "";
+
+	$statement = $conn->prepare("SELECT sitemessage FROM settings LIMIT 1");
+	$statement->execute();
+	$statement->bind_result($siteMessage);
+	$statement->fetch();
+	$statement->close();
+
+	// Check if site message is blank
+	if($siteMessage != "") {
+		$siteMessage = '<p style="text-align: center; font-size: 20px; color: red;"><b>**** Message From Command Staff ****</b></p><p style="text-align: center; color: red; font-size: 18px;">' . $siteMessage . '</p>';
+	}
+	
+	return $siteMessage;
 }
 
 /**
@@ -3739,9 +4865,11 @@ function isWebsiteClosed()
 	global $conn;
 	
 	$isWebsiteClosed = false;
+
+	$statement = $conn->prepare("SELECT * FROM settings LIMIT 1");
+	$statement->execute();
 	
-	$query = "SELECT * FROM settings LIMIT 1";
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -3749,7 +4877,7 @@ function isWebsiteClosed()
 			{
 				$isWebsiteClosed = true;
 				
-				if(loggedIn() && !hasPermission(1))
+				if(loggedIn() && !isAdmin())
 				{
 					session_destroy();
 				}
@@ -3771,8 +4899,10 @@ function isSignUpClosed()
 	
 	$isWebsiteClosed = false;
 	
-	$query = "SELECT * FROM settings LIMIT 1";
-	if ($result = mysqli_query($conn, $query))
+	$statement = $conn->prepare("SELECT * FROM settings LIMIT 1");
+	$statement->execute();
+
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -3787,7 +4917,73 @@ function isSignUpClosed()
 }
 
 /**
- * Returns if the TKID exists
+ * Returns whether a phone number is valid (https://gist.github.com/gh-o-st/8126326)
+ * 
+ * @ return boolean Returns whether a phone number is valid
+*/
+function validPhone($phone) {
+  $format_pattern = '/^(?:(?:\((?=\d{3}\)))?(\d{3})(?:(?<=\(\d{3})\))?[\s.\/-]?)?(\d{3})[\s\.\/-]?(\d{4})\s?(?:(?:(?:(?:e|x|ex|ext)\.?\:?|extension\:?)\s?)(?=\d+)(\d+))?$/';
+  $nanpa_pattern = '/^(?:1)?(?(?!(37|96))[2-9][0-8][0-9](?<!(11)))?[2-9][0-9]{2}(?<!(11))[0-9]{4}(?<!(555(01([0-9][0-9])|1212)))$/';
+ 
+  //Set array of variables to false initially
+  $valid = array(
+    'format' => false,
+    'nanpa' => false,
+    'ext' => false,
+    'all' => false
+  );
+ 
+  //Check data against the format analyzer
+  if(preg_match($format_pattern, $phone, $matchset)) {
+    $valid['format'] = true;    
+  }
+ 
+  //If formatted properly, continue
+  if($valid['format']) {
+ 
+    //Set array of new components
+    $components = array(
+      'ac' => $matchset[1], //area code
+      'xc' => $matchset[2], //exchange code
+      'sn' => $matchset[3], //subscriber number
+      'xn' => $matchset[4], //extension number
+    );
+ 
+    //Set array of number variants
+    $numbers = array(
+      'original' => $matchset[0],
+      'stripped' => substr(preg_replace('[\D]', '', $matchset[0]), 0, 10)
+    );
+ 
+    //Now let's check the first ten digits against NANPA standards
+    if(preg_match($nanpa_pattern, $numbers['stripped'])) {
+      $valid['nanpa'] = true;
+    }
+ 
+    //If the NANPA guidelines have been met, continue
+    if($valid['nanpa']) {
+      if(!empty($components['xn'])) {
+        if(preg_match('/^[\d]{1,6}$/', $components['xn'])) {
+          $valid['ext'] = true;
+        }
+      }
+      else {
+        $valid['ext'] = true;
+      }
+    }
+   
+    //If the extension number is valid or non-existent, continue
+    if($valid['ext']) {
+      if(strlen($components['ac'].$components['xc'].$components['sn']) == 10) {
+        $valid['all'] = true;
+      }
+    }
+  }
+  return $valid['all'];
+}
+
+/**
+ * Returns if the TKID exists (NOTE: This is compatiable with 501st and Rebel Legion due to both clubs combining Troop Tracker data)
  *
  * @param int $tk The TKID of the trooper
  * @param int $squad The squad or club ID of the trooper
@@ -3803,19 +4999,31 @@ function doesTKExist($tk, $squad = 0)
 	// If a 501st squad
 	if($squad <= count($squadArray))
 	{
-		$query = "SELECT * FROM troopers WHERE tkid = '".$tk."' AND squad <= ".count($squadArray)."";
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE tkid = ? AND squad <= ".count($squadArray)."");
+		$statement->bind_param("i", $tk);
+		$statement->execute();
+
+		if ($result = $statement->get_result())
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				$exist = true;
+			}
+		}
 	}
 	else
 	{
 		// If a club
-		$query = "SELECT * FROM troopers WHERE rebelforum = '".$tk."' AND squad = ".$squad."";
-	}
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE rebelforum = ? AND squad = ?");
+		$statement->bind_param("ii", $tk, $squad);
+		$statement->execute();
 
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
+		if ($result = $statement->get_result())
 		{
-			$exist = true;
+			while ($db = mysqli_fetch_object($result))
+			{
+				$exist = true;
+			}
 		}
 	}
 
@@ -3823,7 +5031,7 @@ function doesTKExist($tk, $squad = 0)
 }
 
 /**
- * Returns if the TKID is registered
+ * Returns if the TKID is registered (NOTE: This is compatiable with 501st and Rebel Legion due to both clubs combining Troop Tracker data)
  *
  * @param int $tk The TKID of the trooper
  * @param int $squad The squad or club ID of the trooper
@@ -3835,25 +5043,40 @@ function isTKRegistered($tk, $squad = 0)
 	
 	// Set up variables
 	$registered = false;
-	
+
 	// If a 501st squad
 	if($squad <= count($squadArray))
 	{
-		$query = "SELECT * FROM troopers WHERE tkid = '".$tk."' AND squad <= ".count($squadArray)."";
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE tkid = ? AND squad <= ".count($squadArray)."");
+		$statement->bind_param("i", $tkid);
+		$statement->execute();
+
+		if ($result = $statement->get_result())
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				if($db->password != '')
+				{
+					$registered = true;
+				}
+			}
+		}
 	}
 	else
 	{
 		// If a club
-		$query = "SELECT * FROM troopers WHERE rebelforum = '".$tk."' AND squad = ".$squad."";
-	}
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE rebelforum = ? AND squad = ?");
+		$statement->bind_param("ii", $tkid, $squad);
+		$statement->execute();
 
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
+		if ($result = $statement->get_result())
 		{
-			if($db->password != '')
+			while ($db = mysqli_fetch_object($result))
 			{
-				$registered = true;
+				if($db->password != '')
+				{
+					$registered = true;
+				}
 			}
 		}
 	}
@@ -3869,8 +5092,75 @@ function isTKRegistered($tk, $squad = 0)
 */
 function cleanInput($value)
 {
-	$value = strip_tags(addslashes($value));
+	$value = filter_var($value, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
 	return $value;
+}
+
+/**
+ * Converts cleanInput into readable text
+ * 
+ * @param string $value The input to be read
+ * @return string Returns the readable data
+*/
+function readInput($value)
+{
+	$value = strip_tags(html_entity_decode(htmlspecialchars_decode($value ?? ''), ENT_QUOTES));
+
+	return $value;
+}
+
+/**
+ * Inserts a new event into the database
+ *
+ * @param string $name Name of the event
+ * @param string $venue Name of the venue
+ * @param string $dateStart Date and time the event starts
+ * @param string $dateEnd Date and time the event ends
+ * @param string $website URL of the website for event
+ * @param int $numberOfAttend Projected number of attending public
+ * @param int $requestedNumber Requested number of troopers
+ * @param string $requestedCharacter The types of characters requested
+ * @param int $secureChanging If there is secure changing
+ * @param int $blasters If blasters are allowed
+ * @param int $lightsabers If lightsabers are allowed
+ * @param int $parking If parking is available
+ * @param int $mobility If event has handicap access
+ * @param string $amenities Types of amenities offered
+ * @param string $referred Who referred the event
+ * @param string $poc Point of contact for event
+ * @param string $comments Describe the event
+ * @param string $location Address of the event
+ * @param string $label Type of event
+ * @param int $limitedEvent If event is limited and needs command staff to pick each trooper
+ * @param int $limit501st Limit number of 501st troopers (500 = do not limit)
+ * @param int $limitTotalTroopers Limit number of total troopers (500 = do not limit)
+ * @param int $limitHandlers Limit number of total handlers (500 = no not limit)
+ * @param int $friendLimit Max number of friends a trooper can add to an event
+ * @param int $allowTentative Set whether a trooper can set their status as tentative
+ * @param int $squad Value for squad location
+ * @param int $link (OPTIONAL // DEFAULT 0) ID of linked event
+ * @return int return Last inserted ID
+*/
+function createEvent($name, $venue, $dateStart, $dateEnd, $website, $numberOfAttend, $requestedNumber, $requestedCharacter, $secureChanging, $blasters, $lightsabers, $parking, $mobility, $amenities, $referred, $poc, $comments, $location, $label, $limitedEvent, $limit501st, $limitTotalTroopers, $limitHandlers, $friendLimit, $allowTentative, $squad, $link = 0)
+{
+	global $conn;
+
+	$name = cleanInput($name);
+	$venue = cleanInput($venue);
+	$website = cleanInput($website);
+	$requestedCharacter = cleanInput($requestedCharacter);
+	$amenities = cleanInput($amenities);
+	$referred = cleanInput($referred);
+	$poc = cleanInput($poc);
+	$comments = cleanInput($comments);
+	$location = cleanInput($location);
+
+	$statement = $conn->prepare("INSERT INTO events (name, venue, dateStart, dateEnd, website, numberOfAttend, requestedNumber, requestedCharacter, secureChanging, blasters, lightsabers, parking, mobility, amenities, referred, poc, comments, location, label, limitedEvent, limit501st, limitTotalTroopers, limitHandlers, friendLimit, allowTentative, squad, link) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	$statement->bind_param("sssssiisiiiiissssssiiiiiiii", $name, $venue, $dateStart, $dateEnd, $website, $numberOfAttend, $requestedNumber, $requestedCharacter, $secureChanging, $blasters, $lightsabers, $parking, $mobility, $amenities, $referred, $poc, $comments, $location, $label, $limitedEvent, $limit501st, $limitTotalTroopers, $limitHandlers, $friendLimit, $allowTentative, $squad, $link);
+	$statement->execute();
+
+	return $conn->insert_id;
 }
 
 /**
@@ -3890,8 +5180,11 @@ function sendEventUpdate($troopid, $trooperid, $subject, $message)
 	$message = $message . "https://www.fl501st.com/troop-tracker/index.php?event=".$troopid."\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com\n\nTo turn off this notification, go to the event page, and press the \"Unsubscribe\" button.";
 
 	// Query database for trooper information and make sure they are subscribed to e-mail
-	$query = "SELECT troopers.email, troopers.name, troopers.subscribe FROM troopers LEFT JOIN event_notifications ON troopers.id = event_notifications.trooperid WHERE event_notifications.troopid = '".$troopid."' AND troopers.subscribe = '1' AND troopers.email != ''";
-	if ($result = mysqli_query($conn, $query))
+	$statement = $conn->prepare("SELECT troopers.email, troopers.name, troopers.subscribe FROM troopers LEFT JOIN event_notifications ON troopers.id = event_notifications.trooperid WHERE event_notifications.troopid = ? AND troopers.subscribe = '1' AND troopers.email != ''");
+	$statement->bind_param("i", $troopid);
+	$statement->execute();
+
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -3922,6 +5215,10 @@ function sendEmail($SendTo, $Name, $Subject, $Message)
 
 	/* Tells PHPMailer to use SMTP. */
 	$mail->isSMTP();
+	
+	/* Debug */
+	//$mail->SMTPDebug = true;
+	//$mail->Debugoutput = 'echo';
 
 	/* SMTP server address. */
 	$mail->Host = emailServer;
@@ -3957,83 +5254,6 @@ function sendEmail($SendTo, $Name, $Subject, $Message)
 }
 
 /**
- * Returns string of Era ID
- *
- * @param int $number ID of era to format
- * @return string String of era
-*/
-function getEra($number)
-{
-	// Return value
-	$text = "";
-	
-	if($number == 0)
-	{
-		$text = "Prequel";
-	}
-	else if($number == 1)
-	{
-		$text = "Original";
-	}
-	else if($number == 2)
-	{
-		$text = "Sequel";
-	}
-	else if($number == 3)
-	{
-		$text = "Expanded";
-	}
-	else if($number == 4)
-	{
-		$text = "All";
-	}
-	
-	// Return
-	return $text;
-}
-
-/**
- * Returns if costume is allowed at the event based off era allowed
- *
- * @param int $eventID ID of the event
- * @param int $costumeID ID of the costume
- * @return boolean Returns if costume is allowed at the event based off era allowed
-*/
-function eraCheck($eventID, $costumeID)
-{
-	global $conn;
-
-	// Variables
-	$eventFail = false;	// Is this costume allowed?
-
-	// Query database for event info
-	$query = "SELECT * FROM events WHERE id = '".$eventID."'";
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			// Query costume database to get information on the users costume
-			$query4 = "SELECT * FROM costumes WHERE id = '".$costumeID."'";
-			if ($result4 = mysqli_query($conn, $query4))
-			{
-				while ($db4 = mysqli_fetch_object($result4))
-				{
-					// Make sure event and costume era isn't set to "All" and check if the era and limited to match
-					if($db->limitTo != 4 && $db4->era != 4 && $db->limitTo != $db4->era)
-					{
-						// Did not fail
-						$eventFail = true;
-					}
-				}
-			}
-		}
-	}
-
-	// Return
-	return $eventFail;
-}
-
-/**
  * Returns the number of troopers remaining
  *
  * @param int $value1 First number to compare
@@ -4058,7 +5278,7 @@ function troopersRemaining($value1, $value2)
 */
 function eventClubCount($eventID, $clubID)
 {
-	global $conn, $clubArray, $dualCostume;
+	global $conn, $clubArray, $dualCostume, $squadArray;
 	
 	// Variables
 	$c501 = 0;
@@ -4080,15 +5300,28 @@ function eventClubCount($eventID, $clubID)
 	$returnVal = 0;
 
 	// Query database for roster info
-	$query = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".$eventID."' AND status != '1' AND status != '4' AND status != '6'";
+	$statement = $conn->prepare("SELECT events.limitHandlers, event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid LEFT JOIN events ON events.id = event_sign_up.troopid WHERE troopid = ? AND (event_sign_up.status = 0 OR event_sign_up.status = 2)");
+	$statement->bind_param("i", $eventID);
+	$statement->execute();
 
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
-			// Query costume database to add to club counts
-			$query2 = "SELECT * FROM costumes WHERE id = '".$db->costume."'";
-			if ($result2 = mysqli_query($conn, $query2))
+			// Prevent bug where if event does not limit handlers, handlers are not counted towards the total
+			if($db->limitHandlers > 500 || $db->limitHandlers < 500)
+			{
+				$statement2 = $conn->prepare("SELECT * FROM costumes WHERE id = ? AND costume NOT LIKE '%handler%'");
+				$statement2->bind_param("i", $db->costume);
+				$statement2->execute();
+			} else {
+				$statement2 = $conn->prepare("SELECT * FROM costumes WHERE id = ?");
+				$statement2->bind_param("i", $db->costume);
+				$statement2->execute();
+			}
+
+
+			if ($result2 = $statement2->get_result())
 			{
 				while ($db2 = mysqli_fetch_object($result2))
 				{
@@ -4104,30 +5337,16 @@ function eventClubCount($eventID, $clubID)
 					// Loop through clubs
 					foreach($clubArray as $club => $club_value)
 					{
-						// Loop through costumes
-						foreach($club_value['costumes'] as $costume)
+						// Club
+						if(in_array($db2->club, $club_value['costumes']))
 						{
-							// Club
-							if($db2->club == $costume)
-							{
-								// Increment to club
-								${"c" . $club_value['dbLimit']}++;
+							// Increment to club
+							${"c" . $club_value['dbLimit']}++;
 
-								// Increment total count
-								$totalAll++;
-							}
+							// Increment total count
+							$totalAll++;
 						}
-					}
-					
-					// Dual costume
-					if($db2->club == $dualCostume)
-					{
-						// Just 501 because it will be added in the loop above as well
-						$c501++;
-						
-						// Add to total
-						$total++;
-					}							
+					}						
 				}
 			}
 		}
@@ -4142,35 +5361,63 @@ function eventClubCount($eventID, $clubID)
 	// Loop through clubs
 	foreach($clubArray as $club => $club_value)
 	{
-		// Loop through costumes
-		foreach($club_value['costumes'] as $costume)
+		// Set return val if Club ID set to club
+		if(($clubID == (count($squadArray) + 1) + $club) && $clubID >= count($squadArray) + 1)
 		{
-			// Make sure not a dual costume
-			if($clubID != $dualCostume)
-			{
-				// If club
-				if($clubID == $costume)
-				{
-					$returnVal = ${"c" . $club_value['dbLimit']};
-				}
-			}
+			$returnVal = ${"c" . $club_value['dbLimit']};
 		}
-	}
-	
-	// Dual costume
-	if($clubID == $dualCostume)
-	{
-		$returnVal = $total;
 	}
 
 	// If want total
-	if($clubID == "all")
+	if($clubID === "all")
 	{
 		$returnVal = $totalAll;
 	}
 
 	// Return
 	return $returnVal;
+}
+
+/**
+ * Returns number of handlers signed up for this event
+ *
+ * @param int $eventID ID of the event
+ * @param int $clubID ID of the club
+ * @return string Returns count of club in the event
+*/
+function handlerEventCount($eventID)
+{
+	global $conn;
+	
+	// Set total number to return
+	$total = 0;
+
+	// Query database for roster info
+	$statement = $conn->prepare("SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, troopers.id AS trooperId, troopers.name, troopers.tkid FROM event_sign_up LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid LEFT JOIN costumes ON costumes.id = event_sign_up.costume WHERE troopid = ? AND (event_sign_up.status = 0 OR event_sign_up.status = 2) AND costumes.costume LIKE '%handler%'");
+	$statement->bind_param("i", $eventID);
+	$statement->execute();
+
+	if ($result = $statement->get_result())
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Query costume database to add to club counts
+			$statement2 = $conn->prepare("SELECT * FROM costumes WHERE id = ?");
+			$statement2->bind_param("i", $db->costume);
+			$statement2->execute();
+
+			if ($result2 = $statement2->get_result())
+			{
+				while ($db2 = mysqli_fetch_object($result2))
+				{
+					$total++;
+				}
+			}
+		}
+	}
+
+	// Return
+	return $total;
 }
 
 /**
@@ -4209,11 +5456,12 @@ function isEventFull($eventID, $costumeID)
 		$clubCount++;
 	}
 
-	// Query to get limits
-	$query = "SELECT * FROM events WHERE id = '".$eventID."'";
+	// Query - get limiuts // output
+	$statement = $conn->prepare("SELECT * FROM events WHERE id = ?");
+	$statement->bind_param("i", $eventID);
+	$statement->execute();
 
-	// Output
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -4328,9 +5576,12 @@ function canAccess($id)
 	
 	// Set up var
 	$canAccess = false;
-	
-	$query = "SELECT * FROM troopers WHERE id = '".$id."'";
-	if ($result = mysqli_query($conn, $query))
+
+	$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -4368,13 +5619,36 @@ function emailSettingStatus($column, $print = false)
 	
 	// Set status
 	$status = 0;
+
+	// Set up
+	$continue = false;
+
+	// Get a list of all columns to make sure data is validated
+	$statement = $conn->prepare("SELECT COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'troopers'");
+	$statement->execute();
+
+	if($result = $statement->get_result())
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Loop through results
+			foreach($db as $row)
+			{
+				if($row == $column)
+				{
+					$continue = true;
+				}
+			}
+		}
+	}
 	
 	// Get email setting
-	$getStatus = $conn->query("SELECT ".$column." FROM troopers WHERE id = '".$_SESSION['id']."'");
-	$getStatus_get = $getStatus->fetch_row();
-	
-	// Set status to query
-	$status = $getStatus_get[0];
+	$statement = $conn->prepare("SELECT ".$column." FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $_SESSION['id']);
+	$statement->execute();
+	$statement->bind_result($status);
+	$statement->fetch();
+	$statement->close();
 	
 	// If print not set, return status
 	if(!$print)
@@ -4405,23 +5679,31 @@ function isLink($id)
 	$link = 0;
 	
 	// Get number of events with link
-	$getNumOfLinks = $conn->query("SELECT id FROM events WHERE link = '".$id."'");
+	$statement = $conn->prepare("SELECT id FROM events WHERE link = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->store_result();
+	$getNumOfLinks = $statement->num_rows;
 	
 	// Get link ID
-	$getLinkID = $conn->query("SELECT link FROM events WHERE id = '".$id."'");
-	$getLinkID_get = $getLinkID->fetch_row();
+	$statement = $conn->prepare("SELECT link FROM events WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($getLinkID_get);
+	$statement->fetch();
+	$statement->close();
 	
 	// If has links to event, or is linked, show shift data
-	if($getNumOfLinks->num_rows > 0 || $id != 0)
+	if($getNumOfLinks > 0 || $id != 0)
 	{
 		// If this event is the link
-		if($getNumOfLinks->num_rows > 0)
+		if($getNumOfLinks > 0)
 		{
 			$link = $id;
 		}
-		else if($getLinkID_get[0] != 0)
+		else if($getLinkID_get != 0)
 		{
-			$link = $getLinkID_get[0];
+			$link = $getLinkID_get;
 		}
 	}
 	
@@ -4563,23 +5845,41 @@ if(!loggedIn() && !isset($_POST['loginWithTK']))
 		// Set up fail check
 		$failCheck = true;
 		
-		$query = "SELECT * FROM troopers WHERE forum_id = '".$_COOKIE['TroopTrackerUsername']."'";
-		if ($result = mysqli_query($conn, $query))
+		// Login with forum
+		$forumLogin = loginWithForum($_COOKIE['TroopTrackerUsername'], $_COOKIE['TroopTrackerPassword']);
+		
+		// Check credentials
+		if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
+		{
+			// Update username if changed
+			$statement = $conn->prepare("UPDATE troopers SET forum_id = ? WHERE user_id = ?");
+			$statement->bind_param("si", $forumLogin['user']['username'], $forumLogin['user']['user_id']);
+			$statement->execute();
+		}
+		
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE forum_id = ?");
+		$statement->bind_param("s", $_COOKIE['TroopTrackerUsername']);
+		$statement->execute();
+
+		if($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				// Login with forum
-				$forumLogin = loginWithForum($_COOKIE['TroopTrackerUsername'], $_COOKIE['TroopTrackerPassword']);
-
 				// If logged in with forum details, and password does not match
 				if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
 				{
 					// Update password, e-mail, and user ID
-					$conn->query("UPDATE troopers SET password = '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."', email = '".$forumLogin['user']['email']."', user_id = '".$forumLogin['user']['user_id']."', forum_id = '".$forumLogin['user']['username']."' WHERE id = '".$db->id."'");
+					$password = password_hash($_COOKIE['TroopTrackerPassword'], PASSWORD_DEFAULT);
+					$statement2 = $conn->prepare("UPDATE troopers SET password = ?, email = ?, user_id = ? WHERE id = ?");
+					$statement2->bind_param("ssii", $password, $forumLogin['user']['email'], $forumLogin['user']['user_id'], $db->id);
+					$statement2->execute();
 				}
 
+				// Check if banned
+				if(isset($forumLogin['success']) && $forumLogin['user']['is_banned'] == 1) { break; }
+
 				// Check credentials and make sure trooper still has access
-				if((isset($forumLogin['success']) && $forumLogin['success'] == 1 || password_verify(cleanInput($_POST['password']), $db->password)) && canAccess($db->id))
+				if((isset($forumLogin['success']) && $forumLogin['success'] == 1 || (password_verify($_POST['password'], $db->password) && $db->permissions == 1)) && canAccess($db->id))
 				{
 					// Set session
 					$_SESSION['id'] = $db->id;
@@ -4607,17 +5907,25 @@ ob_start();
 // If logged in, update active status
 if(loggedIn())
 {
-	$conn->query("UPDATE troopers SET last_active = NOW() WHERE id='".$_SESSION['id']."'") or die($conn->error);
+	$statement = $conn->prepare("UPDATE troopers SET last_active = NOW() WHERE id = ?");
+	$statement->bind_param("i", $_SESSION['id']);
+	$statement->execute();
 }
 
 // Check for events that need to be closed
-$query = "SELECT * FROM events WHERE dateEnd < '".date('Y-m-d H:i:s', strtotime('-1 HOUR'))."' AND closed != '2' AND closed != '1'";
-if ($result = mysqli_query($conn, $query))
+$date = date('Y-m-d H:i:s', strtotime('-1 HOUR'));
+$statement = $conn->prepare("SELECT * FROM events WHERE dateEnd < ? AND closed != '2' AND closed != '1'");
+$statement->bind_param("s", $date);
+$statement->execute();
+
+if ($result = $statement->get_result())
 {
 	while ($db = mysqli_fetch_object($result))
 	{
 		// Close them
-		$conn->query("UPDATE events SET closed = '1' WHERE id = '".$db->id."'");
+		$statement2 = $conn->prepare("UPDATE events SET closed = '1' WHERE id = ?");
+		$statement2->bind_param("i", $db->id);
+		$statement2->execute();
 	}
 }
 

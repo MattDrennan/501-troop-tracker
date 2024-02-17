@@ -15,15 +15,11 @@ include(dirname(__DIR__) . '/../../config.php');
 // Get Simple PHP DOM Tool - just a note, for this code to work, $stripRN must be false in tool
 include(dirname(__DIR__) . '/../../tool/dom/simple_html_dom.php');
 
-// Purge rebel troopers
-$conn->query("DELETE FROM rebel_troopers") or die($conn->error);
-
-// Purge rebel costumes
-$conn->query("DELETE FROM rebel_costumes") or die($conn->error);
-
 // Check date time for sync
-$query = "SELECT syncdaterebels FROM settings";
-if ($result = mysqli_query($conn, $query) or die($conn->error))
+$statement = $conn->prepare("SELECT syncdaterebels FROM settings");
+$statement->execute();
+
+if ($result = $statement->get_result())
 {
 	while ($db = mysqli_fetch_object($result))
 	{
@@ -35,6 +31,14 @@ if ($result = mysqli_query($conn, $query) or die($conn->error))
 		}
 	}
 }
+
+// Purge rebel troopers
+$statement = $conn->prepare("DELETE FROM rebel_troopers");
+$statement->execute();
+
+// Purge rebel costumes
+$statement = $conn->prepare("DELETE FROM rebel_costumes");
+$statement->execute();
 
 // Costume image array (duplicate check)
 $costumeImagesG = array();
@@ -156,7 +160,9 @@ for($i = 0; $i <= 1000; $i += 10)
 							foreach($costumeNames as $c)
 							{
 								// Query
-								$conn->query("INSERT INTO rebel_costumes (rebelid, costumename, costumeimage) VALUES ('".cleanInput($innerArray[0])."', '".cleanInput($costumeNames[$cc])."', '".cleanInput($costumeImages[$cc])."')") or die($conn->error);
+								$statement = $conn->prepare("INSERT INTO rebel_costumes (rebelid, costumename, costumeimage) VALUES (?, ?, ?)");
+								$statement->bind_param("sss", $innerArray[0], $costumeNames[$cc], $costumeImages[$cc]);
+								$statement->execute();
 								
 								echo $innerArray[0] . ' - ' . $costumeNames[$cc] . ' - ' . $costumeImages[$cc] . ' <br />';
 								
@@ -178,7 +184,9 @@ for($i = 0; $i <= 1000; $i += 10)
 					}
 					
 					// Query
-					$conn->query("INSERT INTO rebel_troopers (rebelid, name, rebelforum) VALUES ('".cleanInput($rebelID)."', '".cleanInput($rebelName)."', '".cleanInput($rebelForum)."')") or die($conn->error);
+					$statement = $conn->prepare("INSERT INTO rebel_troopers (rebelid, name, rebelforum) VALUES (?, ?, ?)");
+					$statement->bind_param("sss", $rebelID, $rebelName, $rebelForum);
+					$statement->execute();
 				}
 			}
 			
@@ -207,7 +215,9 @@ foreach($values as $value)
 	if($i != 0)
 	{
 		// Query
-		$conn->query("INSERT INTO rebel_troopers (rebelid, name, rebelforum) VALUES ('".$value[0]."', '".$value[1]."', '".$value[2]."')") or die($conn->error);
+		$statement = $conn->prepare("INSERT INTO rebel_troopers (rebelid, name, rebelforum) VALUES (?, ?, ?)");
+		$statement->bind_param("sss", $value[0], $value[1], $value[2]);
+		$statement->execute();
 	}
 
 	// Increment
@@ -226,7 +236,9 @@ foreach($values as $value)
 	if($i != 0)
 	{
 		// Insert into database
-		$conn->query("INSERT INTO rebel_costumes (rebelid, costumename, costumeimage) VALUES ('".$value[0]."', '".$value[1]."', '".$value[2]."')") or die($conn->error);
+		$statement = $conn->prepare("INSERT INTO rebel_costumes (rebelid, costumename, costumeimage) VALUES (?, ?, ?)");
+		$statement->bind_param("sss", $value[0], $value[1], $value[2]);
+		$statement->execute();
 	}
 
 	// Increment
@@ -237,7 +249,8 @@ echo '
 COMPLETE!';
 
 // Update date time for last sync
-$conn->query("UPDATE settings SET syncdaterebels = NOW()");
+$statement = $conn->prepare("UPDATE settings SET syncdaterebels = NOW()");
+$statement->execute();
 
 /**
  * Convert a string (print_r) back to an array value

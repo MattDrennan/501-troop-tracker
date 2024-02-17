@@ -54,6 +54,13 @@
 </label>
 <aside class="phpdocumentor-column -four phpdocumentor-sidebar">
                     <section class="phpdocumentor-sidebar__category">
+            <h2 class="phpdocumentor-sidebar__category-header">Namespaces</h2>
+                                    <h4 class="phpdocumentor-sidebar__root-namespace">
+    <a href="namespaces/listener.html" class="">Listener</a>
+</h4>
+
+                        </section>
+                <section class="phpdocumentor-sidebar__category">
             <h2 class="phpdocumentor-sidebar__category-header">Packages</h2>
                                     <h4 class="phpdocumentor-sidebar__root-namespace">
     <a href="packages/Application.html" class="">Application</a>
@@ -76,7 +83,6 @@
 
             <div class="phpdocumentor-column -eight phpdocumentor-content">
                     <ul class="phpdocumentor-breadcrumbs">
-            <li class="phpdocumentor-breadcrumb"><a href="packages/Application.html">Application</a></li>
     </ul>
 
     <article class="phpdocumentor-element -file">
@@ -163,6 +169,13 @@
 <dd>Returns squads and clubs, and converts them to options to display back to trooper.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_pendingTroopsDisplay">pendingTroopsDisplay()</a>
+    <span>
+                                &nbsp;: string    </span>
+</dt>
+<dd>Returns an HTML results of pending troops</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_addSquadLink">addSquadLink()</a>
     <span>
                                 &nbsp;: string    </span>
@@ -212,6 +225,13 @@
 <dd>Draws a visual graph for troopers to see what we need to support the garrison</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_getTrooperRanking">getTrooperRanking()</a>
+    <span>
+                                &nbsp;: int    </span>
+</dt>
+<dd>Returns the troopers ranking</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_resetTrooperStatus">resetTrooperStatus()</a>
     <span>
                                 &nbsp;: void    </span>
@@ -219,11 +239,18 @@
 <dd>If a limited event, resets all troopers attendance status in an event, and recalculates status</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_getForumAvatar">getForumAvatar()</a>
+    <span>
+                                &nbsp;: string    </span>
+</dt>
+<dd>Return&#039;s the forum profile of the trooper, if available</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_getAuthForum">getAuthForum()</a>
     <span>
                                 &nbsp;: <abbr title="\json">json</abbr>    </span>
 </dt>
-<dd>getAuthForum: Get&#039;s auth data from Xenforo for logging in</dd>
+<dd>Get&#039;s auth data from Xenforo for logging in</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_loginWithForum">loginWithForum()</a>
@@ -233,11 +260,25 @@
 <dd>Login the trooper with there Xenforo credentials. Used for single sign on.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_createAlert">createAlert()</a>
+    <span>
+                                &nbsp;: <abbr title="\json">json</abbr>    </span>
+</dt>
+<dd>Create&#039;s an alert in Xenforo</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_createThread">createThread()</a>
     <span>
                                 &nbsp;: <abbr title="\json">json</abbr>    </span>
 </dt>
 <dd>Create&#039;s a thread in Xenforo</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_editThread">editThread()</a>
+    <span>
+                                &nbsp;: <abbr title="\json">json</abbr>    </span>
+</dt>
+<dd>Edits a thread in Xenforo</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_lockThread">lockThread()</a>
@@ -273,6 +314,34 @@
                                 &nbsp;: <abbr title="\json">json</abbr>    </span>
 </dt>
 <dd>Get&#039;s Xenforo forum user by username</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_replyThread">replyThread()</a>
+    <span>
+                                &nbsp;: <abbr title="\json">json</abbr>    </span>
+</dt>
+<dd>Reply to Xenforo thread</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_getThreadPosts">getThreadPosts()</a>
+    <span>
+                                &nbsp;: <abbr title="\json">json</abbr>    </span>
+</dt>
+<dd>Get&#039;s Xenforo forum posts from thread</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_getAlerts">getAlerts()</a>
+    <span>
+                                &nbsp;: <abbr title="\json">json</abbr>    </span>
+</dt>
+<dd>Get user alerts</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_getConversations">getConversations()</a>
+    <span>
+                                &nbsp;: <abbr title="\json">json</abbr>    </span>
+</dt>
+<dd>Get user private messages (unread)</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_getUserForumID">getUserForumID()</a>
@@ -415,13 +484,6 @@
 <dd>Displays all the troopers costumes in synced 501st database</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
-    <a href="namespaces/default.html#function_postTweet">postTweet()</a>
-    <span>
-                                &nbsp;: void    </span>
-</dt>
-<dd>Posts a tweet to Twitter using Twitter API</dd>
-
-            <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_squadToDiscord">squadToDiscord()</a>
     <span>
                                 &nbsp;: string    </span>
@@ -457,6 +519,13 @@
 <dd>Returns query for costume values for club. This will display costumes from the club specified.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_getCostumeQueryValuesSquad">getCostumeQueryValuesSquad()</a>
+    <span>
+                                &nbsp;: string    </span>
+</dt>
+<dd>Returns query for costume values for squad. This will display costumes from the squad specified.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_isImportant">isImportant()</a>
     <span>
                                 &nbsp;: string    </span>
@@ -483,13 +552,6 @@
                                 &nbsp;: string    </span>
 </dt>
 <dd>Returns if the trooper has an award</dd>
-
-            <dt class="phpdocumentor-table-of-contents__entry -function -">
-    <a href="namespaces/default.html#function_hasTitle">hasTitle()</a>
-    <span>
-                                &nbsp;: string    </span>
-</dt>
-<dd>Returns if the trooper has a title</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_sendNotification">sendNotification()</a>
@@ -546,13 +608,6 @@
                                 &nbsp;: int    </span>
 </dt>
 <dd>Returns the event Xenforo post ID on the forum</dd>
-
-            <dt class="phpdocumentor-table-of-contents__entry -function -">
-    <a href="namespaces/default.html#function_getCommentPostID">getCommentPostID()</a>
-    <span>
-                                &nbsp;: int    </span>
-</dt>
-<dd>Returns the event Xenforo comment ID on the forum</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_removeLetters">removeLetters()</a>
@@ -618,6 +673,20 @@
 <dd>Returns the ID of the club assigned to a costume</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_replaceCostumeID">replaceCostumeID()</a>
+    <span>
+                                &nbsp;: int    </span>
+</dt>
+<dd>Replaces the costume ID with an N/A costume</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_getFileName">getFileName()</a>
+    <span>
+                                &nbsp;: string    </span>
+</dt>
+<dd>Get&#039;s the file name of the file</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_profileTop">profileTop()</a>
     <span>
                                 &nbsp;: void    </span>
@@ -646,6 +715,13 @@
 <dd>Return&#039;s the provided data into BB code format to be displayed on the forum</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_timeBetweenDates">timeBetweenDates()</a>
+    <span>
+                                &nbsp;: mixed    </span>
+</dt>
+<dd>Returns the hours between two date times</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_getUserID">getUserID()</a>
     <span>
                                 &nbsp;: int    </span>
@@ -653,11 +729,32 @@
 <dd>Return&#039;s the user&#039;s ID from Xenforo Forum</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_getIDFromUserID">getIDFromUserID()</a>
+    <span>
+                                &nbsp;: int    </span>
+</dt>
+<dd>Return&#039;s the tracker ID based on Xenforo Forum ID</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_getName">getName()</a>
     <span>
                                 &nbsp;: string    </span>
 </dt>
 <dd>Return&#039;s the troopers&#039;s name</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_getTrooperAddress">getTrooperAddress()</a>
+    <span>
+                                &nbsp;: string    </span>
+</dt>
+<dd>Return&#039;s the troopers&#039;s address</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_getTrooperRadius">getTrooperRadius()</a>
+    <span>
+                                &nbsp;: string    </span>
+</dt>
+<dd>Return&#039;s the troopers&#039;s radius</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_getEmail">getEmail()</a>
@@ -700,6 +797,13 @@
                                 &nbsp;: array&lt;string|int, mixed&gt;    </span>
 </dt>
 <dd>Search for trooper in event, and return if in event</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_getRoster">getRoster()</a>
+    <span>
+                                &nbsp;: mixed    </span>
+</dt>
+<dd>Returns an updated roster</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_getStatus">getStatus()</a>
@@ -751,6 +855,13 @@
 <dd>Adds http to url string if it does not exist</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_mainCostumesBuild">mainCostumesBuild()</a>
+    <span>
+                                &nbsp;: string    </span>
+</dt>
+<dd>Returns a string of costumes that were favorited by the trooper</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_isAdmin">isAdmin()</a>
     <span>
                                 &nbsp;: bool    </span>
@@ -779,6 +890,13 @@
 <dd>Returns if trooper has club access</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_getSiteMessage">getSiteMessage()</a>
+    <span>
+                                &nbsp;: string    </span>
+</dt>
+<dd>Returns site message when closed</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_isWebsiteClosed">isWebsiteClosed()</a>
     <span>
                                 &nbsp;: bool    </span>
@@ -793,18 +911,25 @@
 <dd>Returns if the website sign ups are open or closed</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_validPhone">validPhone()</a>
+    <span>
+                                &nbsp;: mixed    </span>
+</dt>
+<dd>Returns whether a phone number is valid (https://gist.github.com/gh-o-st/8126326)</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_doesTKExist">doesTKExist()</a>
     <span>
                                 &nbsp;: bool    </span>
 </dt>
-<dd>Returns if the TKID exists</dd>
+<dd>Returns if the TKID exists (NOTE: This is compatiable with 501st and Rebel Legion due to both clubs combining Troop Tracker data)</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_isTKRegistered">isTKRegistered()</a>
     <span>
                                 &nbsp;: bool    </span>
 </dt>
-<dd>Returns if the TKID is registered</dd>
+<dd>Returns if the TKID is registered (NOTE: This is compatiable with 501st and Rebel Legion due to both clubs combining Troop Tracker data)</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_cleanInput">cleanInput()</a>
@@ -812,6 +937,20 @@
                                 &nbsp;: string    </span>
 </dt>
 <dd>Prevents hacks by sanitizing input</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_readInput">readInput()</a>
+    <span>
+                                &nbsp;: string    </span>
+</dt>
+<dd>Converts cleanInput into readable text</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_createEvent">createEvent()</a>
+    <span>
+                                &nbsp;: int    </span>
+</dt>
+<dd>Inserts a new event into the database</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_sendEventUpdate">sendEventUpdate()</a>
@@ -828,20 +967,6 @@
 <dd>Send&#039;s an e-mail to a specified trooper</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
-    <a href="namespaces/default.html#function_getEra">getEra()</a>
-    <span>
-                                &nbsp;: string    </span>
-</dt>
-<dd>Returns string of Era ID</dd>
-
-            <dt class="phpdocumentor-table-of-contents__entry -function -">
-    <a href="namespaces/default.html#function_eraCheck">eraCheck()</a>
-    <span>
-                                &nbsp;: bool    </span>
-</dt>
-<dd>Returns if costume is allowed at the event based off era allowed</dd>
-
-            <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_troopersRemaining">troopersRemaining()</a>
     <span>
                                 &nbsp;: string    </span>
@@ -854,6 +979,13 @@
                                 &nbsp;: string    </span>
 </dt>
 <dd>Returns number of troopers signed up for this event based on costume</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -function -">
+    <a href="namespaces/default.html#function_handlerEventCount">handlerEventCount()</a>
+    <span>
+                                &nbsp;: string    </span>
+</dt>
+<dd>Returns number of handlers signed up for this event</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -function -">
     <a href="namespaces/default.html#function_isEventFull">isEventFull()</a>
@@ -951,7 +1083,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">72</span>
+    <span class="phpdocumentor-element-found-in__line">69</span>
 
     </aside>
 
@@ -1002,7 +1134,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">84</span>
+    <span class="phpdocumentor-element-found-in__line">81</span>
 
     </aside>
 
@@ -1032,7 +1164,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">194</span>
+    <span class="phpdocumentor-element-found-in__line">196</span>
 
     </aside>
 
@@ -1110,7 +1242,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">222</span>
+    <span class="phpdocumentor-element-found-in__line">224</span>
 
     </aside>
 
@@ -1152,7 +1284,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">255</span>
+    <span class="phpdocumentor-element-found-in__line">257</span>
 
     </aside>
 
@@ -1194,7 +1326,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">318</span>
+    <span class="phpdocumentor-element-found-in__line">364</span>
 
     </aside>
 
@@ -1224,7 +1356,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">355</span>
+    <span class="phpdocumentor-element-found-in__line">401</span>
 
     </aside>
 
@@ -1295,6 +1427,48 @@
     
 </article>
                     <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_pendingTroopsDisplay">
+        pendingTroopsDisplay()
+        <a href="namespaces/default.html#function_pendingTroopsDisplay" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">488</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Returns an HTML results of pending troops</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">pendingTroopsDisplay</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$trooperid</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$trooperid</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The trooper ID of the trooper to get pending troops</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">string</span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>Returns an HTML results of pending troops</p>
+</section>
+
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_addSquadLink">
         addSquadLink()
         <a href="namespaces/default.html#function_addSquadLink" class="headerlink"><i class="fas fa-link"></i></a>
@@ -1302,7 +1476,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">444</span>
+    <span class="phpdocumentor-element-found-in__line">549</span>
 
     </aside>
 
@@ -1362,7 +1536,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">469</span>
+    <span class="phpdocumentor-element-found-in__line">576</span>
 
     </aside>
 
@@ -1370,7 +1544,7 @@
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility"></span>
-                <span class="phpdocumentor-signature__name">costume_restrict_query</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__return-type">bool&nbsp;</span><span class="phpdocumentor-signature__argument__name">$addWhere</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">false</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+                <span class="phpdocumentor-signature__name">costume_restrict_query</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__return-type">bool&nbsp;</span><span class="phpdocumentor-signature__argument__name">$addWhere</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">false</span><span> ]</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$friendID</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__return-type">bool&nbsp;</span><span class="phpdocumentor-signature__argument__name">$allowDualCostume</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">true</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
 
     
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
@@ -1381,6 +1555,24 @@
                  = <span class="phpdocumentor-signature__argument__default-value">false</span>            </dt>
             <dd class="phpdocumentor-argument-list__definition">
                     <section class="phpdocumentor-description"><p>Optional. This is used to add a &quot;where&quot; to the MySQL query.</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$friendID</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Optional. This is used to determine which costumes to display. If this interval does not match the session interval, then all costumes will display.</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$allowDualCostume</span>
+                : <span class="phpdocumentor-signature__argument__return-type">bool</span>
+                 = <span class="phpdocumentor-signature__argument__default-value">true</span>            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Optional. This is used to disable/enable allowing dual costumes to show.</p>
 </section>
 
             </dd>
@@ -1404,7 +1596,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">579</span>
+    <span class="phpdocumentor-element-found-in__line">668</span>
 
     </aside>
 
@@ -1434,7 +1626,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">603</span>
+    <span class="phpdocumentor-element-found-in__line">692</span>
 
     </aside>
 
@@ -1476,7 +1668,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">649</span>
+    <span class="phpdocumentor-element-found-in__line">738</span>
 
     </aside>
 
@@ -1536,7 +1728,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">675</span>
+    <span class="phpdocumentor-element-found-in__line">772</span>
 
     </aside>
 
@@ -1578,7 +1770,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">704</span>
+    <span class="phpdocumentor-element-found-in__line">803</span>
 
     </aside>
 
@@ -1601,6 +1793,46 @@
     
 </article>
                     <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_getTrooperRanking">
+        getTrooperRanking()
+        <a href="namespaces/default.html#function_getTrooperRanking" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">941</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Returns the troopers ranking</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">getTrooperRanking</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$trooperID</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">int</span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$trooperID</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The ID of the trooper</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">int</span>
+            &mdash;
+        
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_resetTrooperStatus">
         resetTrooperStatus()
         <a href="namespaces/default.html#function_resetTrooperStatus" class="headerlink"><i class="fas fa-link"></i></a>
@@ -1608,7 +1840,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">831</span>
+    <span class="phpdocumentor-element-found-in__line">976</span>
 
     </aside>
 
@@ -1650,6 +1882,48 @@
     
 </article>
                     <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_getForumAvatar">
+        getForumAvatar()
+        <a href="namespaces/default.html#function_getForumAvatar" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">1052</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Return&#039;s the forum profile of the trooper, if available</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">getForumAvatar</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$id</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$id</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The Troop Tracker ID of the trooper</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">string</span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>Returns the HTML needed to display the trooper avatar</p>
+</section>
+
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_getAuthForum">
         getAuthForum()
         <a href="namespaces/default.html#function_getAuthForum" class="headerlink"><i class="fas fa-link"></i></a>
@@ -1657,11 +1931,11 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">893</span>
+    <span class="phpdocumentor-element-found-in__line">1076</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">getAuthForum: Get&#039;s auth data from Xenforo for logging in</p>
+        <p class="phpdocumentor-summary">Get&#039;s auth data from Xenforo for logging in</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility"></span>
@@ -1699,7 +1973,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">925</span>
+    <span class="phpdocumentor-element-found-in__line">1110</span>
 
     </aside>
 
@@ -1743,6 +2017,57 @@
     
 </article>
                     <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_createAlert">
+        createAlert()
+        <a href="namespaces/default.html#function_createAlert" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">1144</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Create&#039;s an alert in Xenforo</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">createAlert</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$to</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$message</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\json">json</abbr></span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$to</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The forum ID the alert is to be sent to</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$message</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The message of the alert to be sent</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type"><abbr title="\json">json</abbr></span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>Return alert success</p>
+</section>
+
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_createThread">
         createThread()
         <a href="namespaces/default.html#function_createThread" class="headerlink"><i class="fas fa-link"></i></a>
@@ -1750,7 +2075,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">958</span>
+    <span class="phpdocumentor-element-found-in__line">1181</span>
 
     </aside>
 
@@ -1758,7 +2083,7 @@
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility"></span>
-                <span class="phpdocumentor-signature__name">createThread</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$id</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$title</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$message</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\json">json</abbr></span></code>
+                <span class="phpdocumentor-signature__name">createThread</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$id</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$title</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$message</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$userID</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">xenforoAPI_userID</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\json">json</abbr></span></code>
 
     
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
@@ -1790,6 +2115,15 @@
 </section>
 
             </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$userID</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                 = <span class="phpdocumentor-signature__argument__default-value">xenforoAPI_userID</span>            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>(optional) The user ID of the user you want to post</p>
+</section>
+
+            </dd>
             </dl>
 
     
@@ -1803,6 +2137,57 @@
     
 </article>
                     <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_editThread">
+        editThread()
+        <a href="namespaces/default.html#function_editThread" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">1216</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Edits a thread in Xenforo</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">editThread</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$id</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$title</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\json">json</abbr></span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$id</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The thread ID to be edited</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$title</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The title of the thread</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type"><abbr title="\json">json</abbr></span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>Return's the Xenforo thread data if success</p>
+</section>
+
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_lockThread">
         lockThread()
         <a href="namespaces/default.html#function_lockThread" class="headerlink"><i class="fas fa-link"></i></a>
@@ -1810,7 +2195,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">990</span>
+    <span class="phpdocumentor-element-found-in__line">1250</span>
 
     </aside>
 
@@ -1852,7 +2237,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1024</span>
+    <span class="phpdocumentor-element-found-in__line">1286</span>
 
     </aside>
 
@@ -1912,7 +2297,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1057</span>
+    <span class="phpdocumentor-element-found-in__line">1321</span>
 
     </aside>
 
@@ -1963,7 +2348,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1090</span>
+    <span class="phpdocumentor-element-found-in__line">1356</span>
 
     </aside>
 
@@ -2014,7 +2399,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1122</span>
+    <span class="phpdocumentor-element-found-in__line">1390</span>
 
     </aside>
 
@@ -2049,6 +2434,201 @@
     
 </article>
                     <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_replyThread">
+        replyThread()
+        <a href="namespaces/default.html#function_replyThread" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">1424</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Reply to Xenforo thread</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">replyThread</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$threadid</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$userid</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$message</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\json">json</abbr></span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$threadid</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The ID of the thread</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$userid</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The ID of the Xenforo user</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$message</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Message of the reply</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type"><abbr title="\json">json</abbr></span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>Success response</p>
+</section>
+
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_getThreadPosts">
+        getThreadPosts()
+        <a href="namespaces/default.html#function_getThreadPosts" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">1461</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Get&#039;s Xenforo forum posts from thread</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">getThreadPosts</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$threadid</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$page</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\json">json</abbr></span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$threadid</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The ID of the thread</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$page</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Return posts on page</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type"><abbr title="\json">json</abbr></span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>Return's the Xenforo user data if success</p>
+</section>
+
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_getAlerts">
+        getAlerts()
+        <a href="namespaces/default.html#function_getAlerts" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">1493</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Get user alerts</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">getAlerts</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$userid</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\json">json</abbr></span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$userid</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The ID of the user</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type"><abbr title="\json">json</abbr></span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>Success response</p>
+</section>
+
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_getConversations">
+        getConversations()
+        <a href="namespaces/default.html#function_getConversations" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">1525</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Get user private messages (unread)</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">getConversations</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$userid</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\json">json</abbr></span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$userid</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The ID of the user</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type"><abbr title="\json">json</abbr></span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>Success response</p>
+</section>
+
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_getUserForumID">
         getUserForumID()
         <a href="namespaces/default.html#function_getUserForumID" class="headerlink"><i class="fas fa-link"></i></a>
@@ -2056,7 +2636,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1152</span>
+    <span class="phpdocumentor-element-found-in__line">1557</span>
 
     </aside>
 
@@ -2098,7 +2678,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1184</span>
+    <span class="phpdocumentor-element-found-in__line">1591</span>
 
     </aside>
 
@@ -2158,7 +2738,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1218</span>
+    <span class="phpdocumentor-element-found-in__line">1627</span>
 
     </aside>
 
@@ -2218,7 +2798,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1262</span>
+    <span class="phpdocumentor-element-found-in__line">1673</span>
 
     </aside>
 
@@ -2269,7 +2849,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1294</span>
+    <span class="phpdocumentor-element-found-in__line">1707</span>
 
     </aside>
 
@@ -2320,7 +2900,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1327</span>
+    <span class="phpdocumentor-element-found-in__line">1742</span>
 
     </aside>
 
@@ -2362,7 +2942,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1357</span>
+    <span class="phpdocumentor-element-found-in__line">1766</span>
 
     </aside>
 
@@ -2404,7 +2984,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1387</span>
+    <span class="phpdocumentor-element-found-in__line">1791</span>
 
     </aside>
 
@@ -2446,7 +3026,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1419</span>
+    <span class="phpdocumentor-element-found-in__line">1825</span>
 
     </aside>
 
@@ -2488,7 +3068,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1449</span>
+    <span class="phpdocumentor-element-found-in__line">1850</span>
 
     </aside>
 
@@ -2530,7 +3110,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1482</span>
+    <span class="phpdocumentor-element-found-in__line">1885</span>
 
     </aside>
 
@@ -2572,7 +3152,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1512</span>
+    <span class="phpdocumentor-element-found-in__line">1910</span>
 
     </aside>
 
@@ -2614,7 +3194,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1553</span>
+    <span class="phpdocumentor-element-found-in__line">1953</span>
 
     </aside>
 
@@ -2665,7 +3245,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1588</span>
+    <span class="phpdocumentor-element-found-in__line">1990</span>
 
     </aside>
 
@@ -2707,7 +3287,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1617</span>
+    <span class="phpdocumentor-element-found-in__line">2021</span>
 
     </aside>
 
@@ -2757,7 +3337,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1650</span>
+    <span class="phpdocumentor-element-found-in__line">2056</span>
 
     </aside>
 
@@ -2799,7 +3379,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1694</span>
+    <span class="phpdocumentor-element-found-in__line">2102</span>
 
     </aside>
 
@@ -2841,7 +3421,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1737</span>
+    <span class="phpdocumentor-element-found-in__line">2147</span>
 
     </aside>
 
@@ -2883,7 +3463,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1783</span>
+    <span class="phpdocumentor-element-found-in__line">2195</span>
 
     </aside>
 
@@ -2924,7 +3504,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1830</span>
+    <span class="phpdocumentor-element-found-in__line">2244</span>
 
     </aside>
 
@@ -2967,46 +3547,6 @@
     
 </article>
                     <article class="phpdocumentor-element -function - ">
-    <h4 class="phpdocumentor-element__name" id="function_postTweet">
-        postTweet()
-        <a href="namespaces/default.html#function_postTweet" class="headerlink"><i class="fas fa-link"></i></a>
-    </h4>
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">1907</span>
-
-    </aside>
-
-        <p class="phpdocumentor-summary">Posts a tweet to Twitter using Twitter API</p>
-
-    <code class="phpdocumentor-code phpdocumentor-signature ">
-    <span class="phpdocumentor-signature__visibility"></span>
-                <span class="phpdocumentor-signature__name">postTweet</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$message</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">void</span></code>
-
-    
-        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
-    <dl class="phpdocumentor-argument-list">
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$message</span>
-                : <span class="phpdocumentor-signature__argument__return-type">string</span>
-                            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The message to post to Twitter</p>
-</section>
-
-            </dd>
-            </dl>
-
-    
-
-        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type">void</span>
-            &mdash;
-        
-    
-</article>
-                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_squadToDiscord">
         squadToDiscord()
         <a href="namespaces/default.html#function_squadToDiscord" class="headerlink"><i class="fas fa-link"></i></a>
@@ -3014,7 +3554,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1930</span>
+    <span class="phpdocumentor-element-found-in__line">2323</span>
 
     </aside>
 
@@ -3056,7 +3596,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1971</span>
+    <span class="phpdocumentor-element-found-in__line">2364</span>
 
     </aside>
 
@@ -3123,7 +3663,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2038</span>
+    <span class="phpdocumentor-element-found-in__line">2431</span>
 
     </aside>
 
@@ -3165,7 +3705,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2096</span>
+    <span class="phpdocumentor-element-found-in__line">2489</span>
 
     </aside>
 
@@ -3207,7 +3747,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2143</span>
+    <span class="phpdocumentor-element-found-in__line">2536</span>
 
     </aside>
 
@@ -3242,6 +3782,48 @@
     
 </article>
                     <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_getCostumeQueryValuesSquad">
+        getCostumeQueryValuesSquad()
+        <a href="namespaces/default.html#function_getCostumeQueryValuesSquad" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">2596</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Returns query for costume values for squad. This will display costumes from the squad specified.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">getCostumeQueryValuesSquad</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$squadid</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$squadid</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The ID of the squad</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">string</span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>Returns query</p>
+</section>
+
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_isImportant">
         isImportant()
         <a href="namespaces/default.html#function_isImportant" class="headerlink"><i class="fas fa-link"></i></a>
@@ -3249,7 +3831,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2204</span>
+    <span class="phpdocumentor-element-found-in__line">2657</span>
 
     </aside>
 
@@ -3300,7 +3882,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2221</span>
+    <span class="phpdocumentor-element-found-in__line">2674</span>
 
     </aside>
 
@@ -3328,7 +3910,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2236</span>
+    <span class="phpdocumentor-element-found-in__line">2689</span>
 
     </aside>
 
@@ -3370,7 +3952,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2271</span>
+    <span class="phpdocumentor-element-found-in__line">2724</span>
 
     </aside>
 
@@ -3432,75 +4014,6 @@
     
 </article>
                     <article class="phpdocumentor-element -function - ">
-    <h4 class="phpdocumentor-element__name" id="function_hasTitle">
-        hasTitle()
-        <a href="namespaces/default.html#function_hasTitle" class="headerlink"><i class="fas fa-link"></i></a>
-    </h4>
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">2322</span>
-
-    </aside>
-
-        <p class="phpdocumentor-summary">Returns if the trooper has a title</p>
-
-    <code class="phpdocumentor-code phpdocumentor-signature ">
-    <span class="phpdocumentor-signature__visibility"></span>
-                <span class="phpdocumentor-signature__name">hasTitle</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$trooperid</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$awardid</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__return-type">bool&nbsp;</span><span class="phpdocumentor-signature__argument__name">$echo</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">false</span><span> ]</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__return-type">bool&nbsp;</span><span class="phpdocumentor-signature__argument__name">$remove</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">false</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
-
-    
-        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
-    <dl class="phpdocumentor-argument-list">
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$trooperid</span>
-                : <span class="phpdocumentor-signature__argument__return-type">int</span>
-                            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The ID of the trooper</p>
-</section>
-
-            </dd>
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$awardid</span>
-                : <span class="phpdocumentor-signature__argument__return-type">int</span>
-                            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The ID of the award</p>
-</section>
-
-            </dd>
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$echo</span>
-                : <span class="phpdocumentor-signature__argument__return-type">bool</span>
-                 = <span class="phpdocumentor-signature__argument__default-value">false</span>            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>Optional. Returns text to output</p>
-</section>
-
-            </dd>
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$remove</span>
-                : <span class="phpdocumentor-signature__argument__return-type">bool</span>
-                 = <span class="phpdocumentor-signature__argument__default-value">false</span>            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>Optional. When set, will hide or show element</p>
-</section>
-
-            </dd>
-            </dl>
-
-    
-
-        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type">string</span>
-            &mdash;
-            <section class="phpdocumentor-description"><p>Returns HTML string</p>
-</section>
-
-    
-</article>
-                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_sendNotification">
         sendNotification()
         <a href="namespaces/default.html#function_sendNotification" class="headerlink"><i class="fas fa-link"></i></a>
@@ -3508,7 +4021,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2402</span>
+    <span class="phpdocumentor-element-found-in__line">2806</span>
 
     </aside>
 
@@ -3604,7 +4117,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2415</span>
+    <span class="phpdocumentor-element-found-in__line">2824</span>
 
     </aside>
 
@@ -3644,7 +4157,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2453</span>
+    <span class="phpdocumentor-element-found-in__line">2868</span>
 
     </aside>
 
@@ -3711,7 +4224,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2499</span>
+    <span class="phpdocumentor-element-found-in__line">2919</span>
 
     </aside>
 
@@ -3741,7 +4254,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2518</span>
+    <span class="phpdocumentor-element-found-in__line">2938</span>
 
     </aside>
 
@@ -3771,7 +4284,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2563</span>
+    <span class="phpdocumentor-element-found-in__line">2986</span>
 
     </aside>
 
@@ -3822,7 +4335,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2590</span>
+    <span class="phpdocumentor-element-found-in__line">3016</span>
 
     </aside>
 
@@ -3864,7 +4377,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2610</span>
+    <span class="phpdocumentor-element-found-in__line">3036</span>
 
     </aside>
 
@@ -3899,48 +4412,6 @@
     
 </article>
                     <article class="phpdocumentor-element -function - ">
-    <h4 class="phpdocumentor-element__name" id="function_getCommentPostID">
-        getCommentPostID()
-        <a href="namespaces/default.html#function_getCommentPostID" class="headerlink"><i class="fas fa-link"></i></a>
-    </h4>
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">2630</span>
-
-    </aside>
-
-        <p class="phpdocumentor-summary">Returns the event Xenforo comment ID on the forum</p>
-
-    <code class="phpdocumentor-code phpdocumentor-signature ">
-    <span class="phpdocumentor-signature__visibility"></span>
-                <span class="phpdocumentor-signature__name">getCommentPostID</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$id</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">int</span></code>
-
-    
-        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
-    <dl class="phpdocumentor-argument-list">
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$id</span>
-                : <span class="phpdocumentor-signature__argument__return-type">int</span>
-                            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The ID of the event</p>
-</section>
-
-            </dd>
-            </dl>
-
-    
-
-        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type">int</span>
-            &mdash;
-            <section class="phpdocumentor-description"><p>Returns comment ID</p>
-</section>
-
-    
-</article>
-                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_removeLetters">
         removeLetters()
         <a href="namespaces/default.html#function_removeLetters" class="headerlink"><i class="fas fa-link"></i></a>
@@ -3948,7 +4419,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2650</span>
+    <span class="phpdocumentor-element-found-in__line">3056</span>
 
     </aside>
 
@@ -3990,7 +4461,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2662</span>
+    <span class="phpdocumentor-element-found-in__line">3068</span>
 
     </aside>
 
@@ -4041,7 +4512,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2709</span>
+    <span class="phpdocumentor-element-found-in__line">3124</span>
 
     </aside>
 
@@ -4083,7 +4554,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2733</span>
+    <span class="phpdocumentor-element-found-in__line">3148</span>
 
     </aside>
 
@@ -4125,7 +4596,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2760</span>
+    <span class="phpdocumentor-element-found-in__line">3175</span>
 
     </aside>
 
@@ -4176,7 +4647,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2788</span>
+    <span class="phpdocumentor-element-found-in__line">3206</span>
 
     </aside>
 
@@ -4218,7 +4689,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2810</span>
+    <span class="phpdocumentor-element-found-in__line">3228</span>
 
     </aside>
 
@@ -4260,7 +4731,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2830</span>
+    <span class="phpdocumentor-element-found-in__line">3248</span>
 
     </aside>
 
@@ -4302,7 +4773,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2850</span>
+    <span class="phpdocumentor-element-found-in__line">3268</span>
 
     </aside>
 
@@ -4337,6 +4808,90 @@
     
 </article>
                     <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_replaceCostumeID">
+        replaceCostumeID()
+        <a href="namespaces/default.html#function_replaceCostumeID" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">3288</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Replaces the costume ID with an N/A costume</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">replaceCostumeID</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$id</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">int</span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$id</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The costume ID</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">int</span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>Returns the N/A costume for the club</p>
+</section>
+
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_getFileName">
+        getFileName()
+        <a href="namespaces/default.html#function_getFileName" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">3306</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Get&#039;s the file name of the file</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">getFileName</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$file</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$file</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The path to file</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">string</span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>Returns the file name without the extension</p>
+</section>
+
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_profileTop">
         profileTop()
         <a href="namespaces/default.html#function_profileTop" class="headerlink"><i class="fas fa-link"></i></a>
@@ -4344,7 +4899,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2874</span>
+    <span class="phpdocumentor-element-found-in__line">3322</span>
 
     </aside>
 
@@ -4428,7 +4983,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3073</span>
+    <span class="phpdocumentor-element-found-in__line">3611</span>
 
     </aside>
 
@@ -4470,7 +5025,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3111</span>
+    <span class="phpdocumentor-element-found-in__line">3649</span>
 
     </aside>
 
@@ -4512,7 +5067,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3156</span>
+    <span class="phpdocumentor-element-found-in__line">3693</span>
 
     </aside>
 
@@ -4520,7 +5075,7 @@
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility"></span>
-                <span class="phpdocumentor-signature__name">threadTemplate</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$eventName</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$eventVenue</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$location</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$date1</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$date2</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$website</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$numberOfAttend</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$requestedNumber</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$requestedCharacter</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$secure</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$blasters</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$lightsabers</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$parking</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$mobility</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$amenities</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$comments</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$referred</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$eventId</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$roster</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">&quot;&quot;</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+                <span class="phpdocumentor-signature__name">threadTemplate</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$eventName</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$eventVenue</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$location</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$date1</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$date2</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$website</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$numberOfAttend</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$requestedNumber</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$requestedCharacter</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$secure</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$blasters</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$lightsabers</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$parking</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$mobility</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$amenities</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$comments</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$referred</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$eventId</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$eventType</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$roster</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">&quot;&quot;</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
 
     
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
@@ -4688,6 +5243,15 @@
 
             </dd>
                     <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$eventType</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The ID of the event type for the event</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-signature__argument__name">$roster</span>
                 : <span class="phpdocumentor-signature__argument__return-type">string</span>
                  = <span class="phpdocumentor-signature__argument__default-value">&quot;&quot;</span>            </dt>
@@ -4707,6 +5271,55 @@
     
 </article>
                     <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_timeBetweenDates">
+        timeBetweenDates()
+        <a href="namespaces/default.html#function_timeBetweenDates" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">3765</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Returns the hours between two date times</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">timeBetweenDates</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$datetime1</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$datetime2</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$datetime1</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The first date to check</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$datetime2</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The second date to check</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">mixed</span>
+            &mdash;
+        
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_getUserID">
         getUserID()
         <a href="namespaces/default.html#function_getUserID" class="headerlink"><i class="fas fa-link"></i></a>
@@ -4714,7 +5327,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3190</span>
+    <span class="phpdocumentor-element-found-in__line">3781</span>
 
     </aside>
 
@@ -4749,6 +5362,47 @@
     
 </article>
                     <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_getIDFromUserID">
+        getIDFromUserID()
+        <a href="namespaces/default.html#function_getIDFromUserID" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">3801</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Return&#039;s the tracker ID based on Xenforo Forum ID</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">getIDFromUserID</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$id</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">int</span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$id</span>
+                : <span class="phpdocumentor-signature__argument__return-type">mixed</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"></section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">int</span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>Returns ID from tracker</p>
+</section>
+
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_getName">
         getName()
         <a href="namespaces/default.html#function_getName" class="headerlink"><i class="fas fa-link"></i></a>
@@ -4756,7 +5410,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3210</span>
+    <span class="phpdocumentor-element-found-in__line">3821</span>
 
     </aside>
 
@@ -4791,6 +5445,90 @@
     
 </article>
                     <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_getTrooperAddress">
+        getTrooperAddress()
+        <a href="namespaces/default.html#function_getTrooperAddress" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">3841</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Return&#039;s the troopers&#039;s address</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">getTrooperAddress</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$id</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$id</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>ID of the trooper</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">string</span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>Returns trooper's address</p>
+</section>
+
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_getTrooperRadius">
+        getTrooperRadius()
+        <a href="namespaces/default.html#function_getTrooperRadius" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">3861</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Return&#039;s the troopers&#039;s radius</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">getTrooperRadius</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$id</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$id</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>ID of the trooper</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">string</span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>Returns trooper's radius</p>
+</section>
+
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_getEmail">
         getEmail()
         <a href="namespaces/default.html#function_getEmail" class="headerlink"><i class="fas fa-link"></i></a>
@@ -4798,7 +5536,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3230</span>
+    <span class="phpdocumentor-element-found-in__line">3881</span>
 
     </aside>
 
@@ -4840,7 +5578,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3250</span>
+    <span class="phpdocumentor-element-found-in__line">3901</span>
 
     </aside>
 
@@ -4882,7 +5620,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3270</span>
+    <span class="phpdocumentor-element-found-in__line">3921</span>
 
     </aside>
 
@@ -4924,7 +5662,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3292</span>
+    <span class="phpdocumentor-element-found-in__line">3943</span>
 
     </aside>
 
@@ -4984,7 +5722,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3324</span>
+    <span class="phpdocumentor-element-found-in__line">3975</span>
 
     </aside>
 
@@ -5053,7 +5791,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3384</span>
+    <span class="phpdocumentor-element-found-in__line">4035</span>
 
     </aside>
 
@@ -5096,6 +5834,88 @@
     
 </article>
                     <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_getRoster">
+        getRoster()
+        <a href="namespaces/default.html#function_getRoster" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">4074</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Returns an updated roster</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">getRoster</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$eventID</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$limitTotal</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">bool&nbsp;</span><span class="phpdocumentor-signature__argument__name">$totalTrooperEvent</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__return-type">bool&nbsp;</span><span class="phpdocumentor-signature__argument__name">$signedUp</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">false</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$eventID</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The event ID to fetch</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$limitTotal</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The limit total for the event</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$totalTrooperEvent</span>
+                : <span class="phpdocumentor-signature__argument__return-type">bool</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>If the event is an event that checks the total limit</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$signedUp</span>
+                : <span class="phpdocumentor-signature__argument__return-type">bool</span>
+                 = <span class="phpdocumentor-signature__argument__default-value">false</span>            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>If the trooper is signed up for this event. Default: false</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">array</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                
+                                                 <section class="phpdocumentor-description"><p>Returns an HTML string of the updated roster and HTML string of the current trooper counts remaining</p>
+</section>
+
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">mixed</span>
+            &mdash;
+        
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_getStatus">
         getStatus()
         <a href="namespaces/default.html#function_getStatus" class="headerlink"><i class="fas fa-link"></i></a>
@@ -5103,7 +5923,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3419</span>
+    <span class="phpdocumentor-element-found-in__line">4490</span>
 
     </aside>
 
@@ -5113,7 +5933,7 @@
     <span class="phpdocumentor-signature__visibility"></span>
                 <span class="phpdocumentor-signature__name">getStatus</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$value</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
 
-        <section class="phpdocumentor-description"><p>0 = Going / 1 = Stand By / 2 = Tentative / 3 = Attended / 4 = Canceled / 5 = Pending / 6 = Not Picked</p>
+        <section class="phpdocumentor-description"><p>0 = Going / 1 = Stand By / 2 = Tentative / 3 = Attended / 4 = Canceled / 5 = Pending / 6 = Not Picked / 7 = No Show</p>
 </section>
 
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
@@ -5147,7 +5967,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3461</span>
+    <span class="phpdocumentor-element-found-in__line">4536</span>
 
     </aside>
 
@@ -5189,7 +6009,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3487</span>
+    <span class="phpdocumentor-element-found-in__line">4563</span>
 
     </aside>
 
@@ -5242,7 +6062,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3509</span>
+    <span class="phpdocumentor-element-found-in__line">4588</span>
 
     </aside>
 
@@ -5250,18 +6070,17 @@
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility"></span>
-                <span class="phpdocumentor-signature__name">getCostume</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$value</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+                <span class="phpdocumentor-signature__name">getCostume</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$id</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
 
     
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$value</span>
-                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                <span class="phpdocumentor-signature__argument__name">$id</span>
+                : <span class="phpdocumentor-signature__argument__return-type">mixed</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>ID of costume</p>
-</section>
+                    <section class="phpdocumentor-description"></section>
 
             </dd>
             </dl>
@@ -5284,7 +6103,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3530</span>
+    <span class="phpdocumentor-element-found-in__line">4609</span>
 
     </aside>
 
@@ -5335,7 +6154,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3548</span>
+    <span class="phpdocumentor-element-found-in__line">4627</span>
 
     </aside>
 
@@ -5377,7 +6196,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3570</span>
+    <span class="phpdocumentor-element-found-in__line">4649</span>
 
     </aside>
 
@@ -5412,6 +6231,48 @@
     
 </article>
                     <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_mainCostumesBuild">
+        mainCostumesBuild()
+        <a href="namespaces/default.html#function_mainCostumesBuild" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">4664</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Returns a string of costumes that were favorited by the trooper</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">mainCostumesBuild</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$trooperid</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$trooperid</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The trooper ID of the trooper to query</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">string</span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>Returns a query string</p>
+</section>
+
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_isAdmin">
         isAdmin()
         <a href="namespaces/default.html#function_isAdmin" class="headerlink"><i class="fas fa-link"></i></a>
@@ -5419,7 +6280,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3586</span>
+    <span class="phpdocumentor-element-found-in__line">4692</span>
 
     </aside>
 
@@ -5451,7 +6312,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3620</span>
+    <span class="phpdocumentor-element-found-in__line">4729</span>
 
     </aside>
 
@@ -5461,7 +6322,7 @@
     <span class="phpdocumentor-signature__visibility"></span>
                 <span class="phpdocumentor-signature__name">hasPermission</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$permissionLevel1</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$permissionLevel2</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">-1</span><span> ]</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$permissionLevel3</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">-1</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
 
-        <section class="phpdocumentor-description"><p>0 = Regular Member, 1 = Super Admin, 2 = Moderator</p>
+        <section class="phpdocumentor-description"><p>0 = Regular Member, 1 = Super Admin, 2 = Moderator, 3 = RIP Member</p>
 </section>
 
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
@@ -5513,7 +6374,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3663</span>
+    <span class="phpdocumentor-element-found-in__line">4774</span>
 
     </aside>
 
@@ -5557,7 +6418,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3692</span>
+    <span class="phpdocumentor-element-found-in__line">4805</span>
 
     </aside>
 
@@ -5592,6 +6453,36 @@
     
 </article>
                     <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_getSiteMessage">
+        getSiteMessage()
+        <a href="namespaces/default.html#function_getSiteMessage" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">4832</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Returns site message when closed</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">getSiteMessage</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+    
+    
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">string</span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>Returns the site closed message</p>
+</section>
+
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_isWebsiteClosed">
         isWebsiteClosed()
         <a href="namespaces/default.html#function_isWebsiteClosed" class="headerlink"><i class="fas fa-link"></i></a>
@@ -5599,7 +6490,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3717</span>
+    <span class="phpdocumentor-element-found-in__line">4857</span>
 
     </aside>
 
@@ -5629,7 +6520,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3748</span>
+    <span class="phpdocumentor-element-found-in__line">4890</span>
 
     </aside>
 
@@ -5652,6 +6543,47 @@
     
 </article>
                     <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_validPhone">
+        validPhone()
+        <a href="namespaces/default.html#function_validPhone" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">4918</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Returns whether a phone number is valid (https://gist.github.com/gh-o-st/8126326)</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">validPhone</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$phone</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+
+        <section class="phpdocumentor-description"><p>@ return boolean Returns whether a phone number is valid</p>
+</section>
+
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$phone</span>
+                : <span class="phpdocumentor-signature__argument__return-type">mixed</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"></section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">mixed</span>
+            &mdash;
+        
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_doesTKExist">
         doesTKExist()
         <a href="namespaces/default.html#function_doesTKExist" class="headerlink"><i class="fas fa-link"></i></a>
@@ -5659,11 +6591,11 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3776</span>
+    <span class="phpdocumentor-element-found-in__line">4986</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Returns if the TKID exists</p>
+        <p class="phpdocumentor-summary">Returns if the TKID exists (NOTE: This is compatiable with 501st and Rebel Legion due to both clubs combining Troop Tracker data)</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility"></span>
@@ -5710,11 +6642,11 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3812</span>
+    <span class="phpdocumentor-element-found-in__line">5034</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Returns if the TKID is registered</p>
+        <p class="phpdocumentor-summary">Returns if the TKID is registered (NOTE: This is compatiable with 501st and Rebel Legion due to both clubs combining Troop Tracker data)</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility"></span>
@@ -5761,7 +6693,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3850</span>
+    <span class="phpdocumentor-element-found-in__line">5087</span>
 
     </aside>
 
@@ -5796,6 +6728,324 @@
     
 </article>
                     <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_readInput">
+        readInput()
+        <a href="namespaces/default.html#function_readInput" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">5100</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Converts cleanInput into readable text</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">readInput</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$value</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$value</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The input to be read</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">string</span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>Returns the readable data</p>
+</section>
+
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_createEvent">
+        createEvent()
+        <a href="namespaces/default.html#function_createEvent" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">5139</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Inserts a new event into the database</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">createEvent</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$name</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$venue</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$dateStart</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$dateEnd</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$website</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$numberOfAttend</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$requestedNumber</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$requestedCharacter</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$secureChanging</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$blasters</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$lightsabers</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$parking</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$mobility</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$amenities</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$referred</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$poc</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$comments</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$location</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$label</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$limitedEvent</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$limit501st</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$limitTotalTroopers</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$limitHandlers</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$friendLimit</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$allowTentative</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$squad</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$link</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">int</span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$name</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Name of the event</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$venue</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Name of the venue</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$dateStart</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Date and time the event starts</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$dateEnd</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Date and time the event ends</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$website</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>URL of the website for event</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$numberOfAttend</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Projected number of attending public</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$requestedNumber</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Requested number of troopers</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$requestedCharacter</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The types of characters requested</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$secureChanging</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>If there is secure changing</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$blasters</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>If blasters are allowed</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$lightsabers</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>If lightsabers are allowed</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$parking</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>If parking is available</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$mobility</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>If event has handicap access</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$amenities</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Types of amenities offered</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$referred</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Who referred the event</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$poc</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Point of contact for event</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$comments</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Describe the event</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$location</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Address of the event</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$label</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Type of event</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$limitedEvent</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>If event is limited and needs command staff to pick each trooper</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$limit501st</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Limit number of 501st troopers (500 = do not limit)</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$limitTotalTroopers</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Limit number of total troopers (500 = do not limit)</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$limitHandlers</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Limit number of total handlers (500 = no not limit)</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$friendLimit</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Max number of friends a trooper can add to an event</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$allowTentative</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Set whether a trooper can set their status as tentative</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$squad</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Value for squad location</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$link</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>(OPTIONAL // DEFAULT 0) ID of linked event</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">int</span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>return Last inserted ID</p>
+</section>
+
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_sendEventUpdate">
         sendEventUpdate()
         <a href="namespaces/default.html#function_sendEventUpdate" class="headerlink"><i class="fas fa-link"></i></a>
@@ -5803,7 +7053,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3865</span>
+    <span class="phpdocumentor-element-found-in__line">5169</span>
 
     </aside>
 
@@ -5870,7 +7120,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3892</span>
+    <span class="phpdocumentor-element-found-in__line">5199</span>
 
     </aside>
 
@@ -5928,99 +7178,6 @@
     
 </article>
                     <article class="phpdocumentor-element -function - ">
-    <h4 class="phpdocumentor-element__name" id="function_getEra">
-        getEra()
-        <a href="namespaces/default.html#function_getEra" class="headerlink"><i class="fas fa-link"></i></a>
-    </h4>
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">3945</span>
-
-    </aside>
-
-        <p class="phpdocumentor-summary">Returns string of Era ID</p>
-
-    <code class="phpdocumentor-code phpdocumentor-signature ">
-    <span class="phpdocumentor-signature__visibility"></span>
-                <span class="phpdocumentor-signature__name">getEra</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$number</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
-
-    
-        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
-    <dl class="phpdocumentor-argument-list">
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$number</span>
-                : <span class="phpdocumentor-signature__argument__return-type">int</span>
-                            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>ID of era to format</p>
-</section>
-
-            </dd>
-            </dl>
-
-    
-
-        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type">string</span>
-            &mdash;
-            <section class="phpdocumentor-description"><p>String of era</p>
-</section>
-
-    
-</article>
-                    <article class="phpdocumentor-element -function - ">
-    <h4 class="phpdocumentor-element__name" id="function_eraCheck">
-        eraCheck()
-        <a href="namespaces/default.html#function_eraCheck" class="headerlink"><i class="fas fa-link"></i></a>
-    </h4>
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">3982</span>
-
-    </aside>
-
-        <p class="phpdocumentor-summary">Returns if costume is allowed at the event based off era allowed</p>
-
-    <code class="phpdocumentor-code phpdocumentor-signature ">
-    <span class="phpdocumentor-signature__visibility"></span>
-                <span class="phpdocumentor-signature__name">eraCheck</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$eventID</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$costumeID</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
-
-    
-        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
-    <dl class="phpdocumentor-argument-list">
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$eventID</span>
-                : <span class="phpdocumentor-signature__argument__return-type">int</span>
-                            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>ID of the event</p>
-</section>
-
-            </dd>
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$costumeID</span>
-                : <span class="phpdocumentor-signature__argument__return-type">int</span>
-                            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>ID of the costume</p>
-</section>
-
-            </dd>
-            </dl>
-
-    
-
-        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type">bool</span>
-            &mdash;
-            <section class="phpdocumentor-description"><p>Returns if costume is allowed at the event based off era allowed</p>
-</section>
-
-    
-</article>
-                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_troopersRemaining">
         troopersRemaining()
         <a href="namespaces/default.html#function_troopersRemaining" class="headerlink"><i class="fas fa-link"></i></a>
@@ -6028,7 +7185,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4023</span>
+    <span class="phpdocumentor-element-found-in__line">5257</span>
 
     </aside>
 
@@ -6079,7 +7236,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4039</span>
+    <span class="phpdocumentor-element-found-in__line">5273</span>
 
     </aside>
 
@@ -6123,6 +7280,48 @@
     
 </article>
                     <article class="phpdocumentor-element -function - ">
+    <h4 class="phpdocumentor-element__name" id="function_handlerEventCount">
+        handlerEventCount()
+        <a href="namespaces/default.html#function_handlerEventCount" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">5382</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Returns number of handlers signed up for this event</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility"></span>
+                <span class="phpdocumentor-signature__name">handlerEventCount</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$eventID</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$eventID</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>ID of the event</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">string</span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>Returns count of club in the event</p>
+</section>
+
+    
+</article>
+                    <article class="phpdocumentor-element -function - ">
     <h4 class="phpdocumentor-element__name" id="function_isEventFull">
         isEventFull()
         <a href="namespaces/default.html#function_isEventFull" class="headerlink"><i class="fas fa-link"></i></a>
@@ -6130,7 +7329,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4163</span>
+    <span class="phpdocumentor-element-found-in__line">5424</span>
 
     </aside>
 
@@ -6181,7 +7380,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4243</span>
+    <span class="phpdocumentor-element-found-in__line">5505</span>
 
     </aside>
 
@@ -6223,7 +7422,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4269</span>
+    <span class="phpdocumentor-element-found-in__line">5531</span>
 
     </aside>
 
@@ -6265,7 +7464,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4305</span>
+    <span class="phpdocumentor-element-found-in__line">5567</span>
 
     </aside>
 
@@ -6309,7 +7508,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4345</span>
+    <span class="phpdocumentor-element-found-in__line">5610</span>
 
     </aside>
 
@@ -6359,7 +7558,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4380</span>
+    <span class="phpdocumentor-element-found-in__line">5668</span>
 
     </aside>
 
@@ -6401,7 +7600,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4418</span>
+    <span class="phpdocumentor-element-found-in__line">5714</span>
 
     </aside>
 
@@ -6452,7 +7651,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4442</span>
+    <span class="phpdocumentor-element-found-in__line">5738</span>
 
     </aside>
 
@@ -6527,7 +7726,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4472</span>
+    <span class="phpdocumentor-element-found-in__line">5768</span>
 
     </aside>
 
@@ -6585,7 +7784,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4499</span>
+    <span class="phpdocumentor-element-found-in__line">5795</span>
 
     </aside>
 
@@ -6652,7 +7851,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="config.php"><a href="files/config.html"><abbr title="config.php">config.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">4531</span>
+    <span class="phpdocumentor-element-found-in__line">5827</span>
 
     </aside>
 

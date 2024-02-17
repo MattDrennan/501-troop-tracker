@@ -1,38 +1,10 @@
 .calendar{
-    background: #2869a5;
-    color: #010101;
+    background: var(--main-content-color);
+    color: var(--primary-bg-color);
     width:100%;
     font-family: 'Oxygen';
     table-layout:fixed;
 	font-weight: bold;
-}
-
-.calendar.purple{
-    background:#913CCD;
-}
-
-.calendar.pink{
-    background: #F15F74;
-}
-
-.calendar.orange{
-    background: #F76D3C;
-}
-
-.calendar.yellow{
-    background: #F7D842;
-}
-
-.calendar.green{
-    background: #98CB4A;
-}
-
-.calendar.grey{
-    background: #839098;
-}
-
-.calendar.blue{
-    background: #5481E6;
 }
 
 .calendar-title th {
@@ -47,15 +19,19 @@
 .calendar-header th {
     padding: 10px;
     text-align: center;
-    background: #2869a5;
+    background: var(--primary-bg-color);
 	font-weight: bold;
-	color: #FFF;
+	color: var(--button-text-color);
 }
 
-.calendar tbody tr td{
+.calendar tbody tr td {
     text-align: center;
     vertical-align: top;
     width: 14.28%;
+}
+
+.calendar tbody tr td a {
+    color: var(--button-text-color);
 }
 
 .calendar tbody tr td.pad{
@@ -84,7 +60,7 @@
 .calendar tbody tr td.mask-start,
 .calendar tbody tr td.mask,
 .calendar tbody tr td.mask-end {
-    background: #c6c6bc;
+    background: var(--squad-link-color);
 	overflow-wrap: break-word;
 	hyphens: auto;
 }

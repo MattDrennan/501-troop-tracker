@@ -9,6 +9,107 @@
 
 include 'config.php';
 
+/******************** ROSTER TROOPER CONFIRMATION *******************************/
+
+if(isset($_GET['do']) && $_GET['do'] == "roster-trooper-confirmation" && loggedIn() && isAdmin())
+{
+	// Prevent changing status
+	if($_POST['status'] != 3 && $_POST['status'] != 4) { return false; }
+
+	// Update trooper sign up
+	$statement = $conn->prepare("UPDATE event_sign_up SET status = ? WHERE id = ?");
+	$statement->bind_param("ii", $_POST['status'], $_POST['signid']);
+	$statement->execute();
+}
+
+/******************** SAVE FAVORITE COSTUMES *******************************/
+
+if(isset($_GET['do']) && $_GET['do'] == "savefavoritecostumes" && loggedIn())
+{
+	// Delete all from database
+	$statement = $conn->prepare("DELETE FROM favorite_costumes WHERE trooperid = ?");
+	$statement->bind_param("i", $_SESSION['id']);
+	$statement->execute();
+
+	// Insert into database
+	foreach(explode(",", $_POST['costumes']) as $value)
+	{
+		$statement = $conn->prepare("INSERT INTO favorite_costumes (trooperid, costumeid) VALUES (?, ?)");
+		$statement->bind_param("ii", $_SESSION['id'], $value);
+		$statement->execute();
+	}
+}
+
+/******************** SAVE PLACEHOLDER *******************************/
+
+if(isset($_GET['do']) && $_GET['do'] == "saveplaceholder" && loggedIn())
+{
+	// Bind
+	$placeholder = placeholder;
+
+	// Query database for placeholder
+	$statement = $conn->prepare("SELECT * FROM event_sign_up WHERE id = ? AND trooperid = ?");
+	$statement->bind_param("ii", $_POST['signid'], $placeholder);
+	$statement->execute();
+	
+	if ($result = $statement->get_result())
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Check if added or is admin
+			if($db->addedby == $_SESSION['id'] || isAdmin())
+			{
+				$statement2 = $conn->prepare("UPDATE event_sign_up SET note = ? WHERE id = ?");
+				$statement2->bind_param("si", $_POST['note'], $_POST['signid']);
+				$statement2->execute();
+			}
+		}
+	}
+}
+
+/******************** SAVE DB3 *******************************/
+
+if(isset($_GET['do']) && $_GET['do'] == "savedb3" && isAdmin())
+{
+	// Loop through clubs to check if db3 is in array to prevent exploits
+	$continue = false;
+
+	foreach($clubArray as $club => $club_value)
+	{
+		if(is_array($club_value)) { if(in_array($_POST['db3'], $club_value)) { $continue = true; } }
+	}
+
+	if(!$continue) { exit; }
+	// End
+
+	$statement = $conn->prepare("UPDATE troopers SET ".$_POST['db3']." = ? WHERE id = ?");
+	$statement->bind_param("si", $_POST['idvalue'], $_POST['trooperid']);
+	$statement->execute();
+}
+
+/******************** SAVE TKID *******************************/
+
+if(isset($_GET['do']) && $_GET['do'] == "savetkid" && isAdmin())
+{
+	// Check if TKID already exists
+	if(!doesTKExist($_POST['idvalue'], getSquadID($_POST['trooperid'])))
+	{
+		$statement = $conn->prepare("UPDATE troopers SET tkid = ? WHERE id = ?");
+		$statement->bind_param("si", $_POST['idvalue'], $_POST['trooperid']);
+		$statement->execute();
+
+		// Send JSON
+		$array = array('success' => true);
+		echo json_encode($array);
+	}
+	else
+	{
+		// Send JSON
+		$array = array('success' => false);
+		echo json_encode($array);
+	}
+}
+
 /******************** SMILEY EDITOR *******************************/
 
 if(isset($_GET['do']) && $_GET['do'] == "smileyeditor")
@@ -18,80 +119,25 @@ if(isset($_GET['do']) && $_GET['do'] == "smileyeditor")
 	echo json_encode($array);
 }
 
-/******************** EDIT COMMENT *******************************/
-
-if(isset($_GET['do']) && isset($_POST['commentid']) && isset($_POST['comment']) && $_GET['do'] == "editcomment")
-{
-	// Data to send back
-	$data = "";
-
-	// Query database for comment
-	$query = "SELECT * FROM comments WHERE id = '".cleanInput($_POST['commentid'])."'";
-	
-	if ($result = mysqli_query($conn, $query))
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			// Check comment matches ID of trooper
-			if($_SESSION['id'] == $db->trooperid)
-			{
-				// Update comment
-				$conn->query("UPDATE comments SET comment = '".cleanInput($_POST['comment'])."' WHERE id = '".cleanInput($_POST['commentid'])."' AND trooperid = '".cleanInput($_SESSION['id'])."'");
-
-				// Edit comment
-				editPost(getCommentPostID(cleanInput($_POST['commentid'])), cleanInput($_POST['comment']));
-
-				// Set up return data
-				$data = nl2br(isImportant($db->important, showBBcodes(cleanInput($_POST['comment']))));
-			}
-		}
-	}
-
-	// Send JSON
-	$array = array('data' => $data);
-	echo json_encode($array);
-}
-
 /******************** ADD MASTER ROSTER *******************************/
 
 if(isset($_GET['do']) && isset($_POST['userID']) && isset($_POST['squad']) && $_GET['do'] == "addmasterroster" && isAdmin())
-{
-	// Set up query add
-	$queryAdd = "";
-	$queryAdd2 = "";
-	
+{	
 	// Which club to get
 	if($_POST['squad'] <= count($squadArray))
 	{
-		$queryAdd = "p501";
+		$statement = $conn->prepare("UPDATE troopers SET p501 = 1, squad = ? WHERE id = ?");
+		$statement->bind_param("ii", $_POST['squad'], $_POST['userID']);
+		$statement->execute();
+	} else {
+		// Grab DB value
+		$dbValue = $clubArray[($_POST['squad'] - (count($squadArray) + 1))]['db'];
+
+		// Query
+		$statement = $conn->prepare("UPDATE troopers SET ".$dbValue." = 1 WHERE id = ?");
+		$statement->bind_param("i", $_POST['userID']);
+		$statement->execute();
 	}
-	
-	// Set up count
-	$clubCount = count($squadArray) + 1;
-	
-	// Loop through clubs
-	foreach($clubArray as $club => $club_value)
-	{
-		// Match
-		if($_POST['squad'] == $clubCount)
-		{
-			// Add to query
-			$queryAdd = "".$club_value['db']."";
-		}
-		
-		// Increment
-		$clubCount++;
-	}
-	
-	// Check if 501st squad
-	if($_POST['squad'] <= count($squadArray))
-	{
-		// Add this query to set squad
-		$queryAdd2 = ", squad = " . cleanInput($_POST['squad']);
-	}
-	
-	// Query trooper
-	$conn->query("UPDATE troopers SET ".$queryAdd." = 1".$queryAdd2." WHERE id = '".cleanInput($_POST['userID'])."'");
 	
 	// Send JSON
 	$array = array('data' => 'Trooper added!');
@@ -102,33 +148,29 @@ if(isset($_GET['do']) && isset($_POST['userID']) && isset($_POST['squad']) && $_
 
 if(isset($_GET['do']) && isset($_POST['trooperid']) && isset($_POST['permission']) && $_GET['do'] == "changepermission" && isAdmin())
 {
-	$queryAdd = "";
-	
 	// Which club to get
-	if($_POST['club'] <= count($squadArray))
+	if($_POST['club'] <= count($squadArray) || $_POST['club'] == "all")
 	{
-		$queryAdd = "p501";
-	}
-	
-	// Set up count
-	$clubCount = count($squadArray) + 1;
-	
-	// Loop through clubs
-	foreach($clubArray as $club => $club_value)
-	{
-		// Match
-		if($_POST['club'] == $clubCount)
+		$statement = $conn->prepare("UPDATE troopers SET p501 = ? WHERE id = ?");
+		$statement->bind_param("ii", $_POST['permission'], $_POST['trooperid']);
+		$statement->execute();
+
+		// If set to not a member, remove squad (501st only)
+		if($_POST['permission'] == 0)
 		{
-			// Add to query
-			$queryAdd = "".$club_value['db']."";
+			$statement = $conn->prepare("UPDATE troopers SET squad = 0 WHERE id = ?");
+			$statement->bind_param("i", $_POST['trooperid']);
+			$statement->execute();
 		}
-		
-		// Increment
-		$clubCount++;
+	} else {
+		// Grab DB value
+		$dbValue = $clubArray[(intval($_POST['club']) - (count($squadArray) + 1))]['db'];
+
+		// Query
+		$statement = $conn->prepare("UPDATE troopers SET ".$dbValue." = ? WHERE id = ?");
+		$statement->bind_param("ii", $_POST['permission'], $_POST['trooperid']);
+		$statement->execute();
 	}
-				
-	// Query the database
-	$conn->query("UPDATE troopers SET ".$queryAdd." = '".cleanInput($_POST['permission'])."' WHERE id = '".cleanInput($_POST['trooperid'])."'");
 }
 
 /******************** TROOPER CHECK *******************************/
@@ -144,34 +186,26 @@ if(isset($_GET['do']) && $_GET['do'] == "troopercheckreserve" && loggedIn() && i
 	}
 	else
 	{
-		$queryAdd = "";
-		
 		// Which club to get
 		if($_POST['club'] <= count($squadArray))
 		{
-			$queryAdd = "p501";
-		}
-
-		// Set up count
-		$clubCount = count($squadArray) + 1;
-		
-		// Loop through clubs
-		foreach($clubArray as $club => $club_value)
-		{
-			// Match
-			if($_POST['club'] == $clubCount)
+			foreach($_POST['trooper'] as $trooper)
 			{
-				// Add to query
-				$queryAdd = "".$club_value['db']."";
+				$statement = $conn->prepare("UPDATE troopers SET p501 = '2' WHERE id = ?");
+				$statement->bind_param("i", $trooper);
+				$statement->execute();
 			}
-			
-			// Increment
-			$clubCount++;
-		}
-	
-		foreach($_POST['trooper'] as $trooper)
-		{
-			$conn->query("UPDATE troopers SET ".$queryAdd." = '2' WHERE id = '".cleanInput($trooper)."'");
+		} else {
+			// Grab DB value
+			$dbValue = $clubArray[($_POST['club'] - (count($squadArray) + 1))]['db'];
+
+			// Query
+			foreach($_POST['trooper'] as $trooper)
+			{
+				$statement = $conn->prepare("UPDATE troopers SET ".$dbValue." = '2' WHERE id = ?");
+				$statement->bind_param("i", $trooper);
+				$statement->execute();
+			}
 		}
 		
 		// Send JSON
@@ -191,34 +225,26 @@ if(isset($_GET['do']) && $_GET['do'] == "troopercheckretired" && loggedIn() && i
 	}
 	else
 	{
-		foreach($_POST['trooper'] as $trooper)
+		// Which club to get
+		if($_POST['club'] <= count($squadArray))
 		{
-			$queryAdd = "";
-			
-			// Which club to get
-			if($_POST['club'] <= count($squadArray))
+			foreach($_POST['trooper'] as $trooper)
 			{
-				$queryAdd = "p501";
+				$statement = $conn->prepare("UPDATE troopers SET p501 = '3' WHERE id = ?");
+				$statement->bind_param("i", $trooper);
+				$statement->execute();
 			}
-			
-			// Set up count
-			$clubCount = count($squadArray) + 1;
-			
-			// Loop through clubs
-			foreach($clubArray as $club => $club_value)
+		} else {
+			// Grab DB value
+			$dbValue = $clubArray[($_POST['club'] - (count($squadArray) + 1))]['db'];
+
+			// Query
+			foreach($_POST['trooper'] as $trooper)
 			{
-				// Match
-				if($_POST['club'] == $clubCount)
-				{
-					// Add to query
-					$queryAdd = "".$club_value['db']."";
-				}
-				
-				// Increment
-				$clubCount++;
+				$statement = $conn->prepare("UPDATE troopers SET ".$dbValue." = '3' WHERE id = ?");
+				$statement->bind_param("i", $trooper);
+				$statement->execute();
 			}
-			
-			$conn->query("UPDATE troopers SET ".$queryAdd." = '3' WHERE id = '".cleanInput($trooper)."'");
 		}
 		
 		// Send JSON
@@ -233,23 +259,30 @@ if(isset($_GET['do']) && $_GET['do'] == "troopercheckretired" && loggedIn() && i
 if(isset($_GET['do']) && $_GET['do'] == "deletephoto" && loggedIn())
 {
 	// Query database for photos
-	$query = "SELECT * FROM uploads WHERE id = '".cleanInput($_POST['photoid'])."'";
+	$statement = $conn->prepare("SELECT * FROM uploads WHERE id = ?");
+	$statement->bind_param("i", $_POST['photoid']);
+	$statement->execute();
 	
 	// Count photos
 	$i = 0;
 	
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
 			// If is trooper or is admin
 			if($db->trooperid == $_SESSION['id'] || isAdmin())
 			{
-				// Delete file
-				unlink("images/uploads/" . $db->filename);
+				// Delete file if exist
+				if(file_exists("images/uploads/" . $db->filename))
+				{
+					unlink("images/uploads/" . $db->filename);
+				}
 				
 				// Query database
-				$conn->query("DELETE FROM uploads WHERE id = '".cleanInput($_POST['photoid'])."'");
+				$statement2 = $conn->prepare("DELETE FROM uploads WHERE id = ?");
+				$statement2->bind_param("i", $_POST['photoid']);
+				$statement2->execute();
 				
 				// Increment
 				$i++;
@@ -276,24 +309,30 @@ if(isset($_GET['do']) && $_GET['do'] == "deletephoto" && loggedIn())
 if(isset($_GET['do']) && $_GET['do'] == "adminphoto" && loggedIn())
 {
 	// Query database for photos
-	$query = "SELECT * FROM uploads WHERE id = '".cleanInput($_POST['photoid'])."'";
+	$statement = $conn->prepare("SELECT * FROM uploads WHERE id = ?");
+	$statement->bind_param("i", $_POST['photoid']);
+	$statement->execute();
 	
 	// Count photos
 	$i = 0;
 	
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
 			if($db->admin == 0)
 			{
 				// Query database
-				$conn->query("UPDATE uploads SET admin = '1' WHERE id = '".cleanInput($_POST['photoid'])."'");
+				$statement2 = $conn->prepare("UPDATE uploads SET admin = '1' WHERE id = ?");
+				$statement2->bind_param("i", $_POST['photoid']);
+				$statement2->execute();
 			}
 			else
 			{
 				// Query database
-				$conn->query("UPDATE uploads SET admin = '0' WHERE id = '".cleanInput($_POST['photoid'])."'");
+				$statement2 = $conn->prepare("UPDATE uploads SET admin = '0' WHERE id = ?");
+				$statement2->bind_param("i", $_POST['photoid']);
+				$statement2->execute();
 			}
 			
 			// Increment
@@ -320,21 +359,10 @@ if(isset($_GET['do']) && $_GET['do'] == "adminphoto" && loggedIn())
 
 if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 {
-	// Prevent if troop full
-	$getNumOfTroopers = $conn->query("SELECT id FROM event_sign_up WHERE troopid = '".cleanInput($_POST['troopid'])."' AND status != '4' AND status != '1'");
-
-	// Set up add to query
-	$addToQuery = "";
-
-	// Loop through clubs
-	foreach($clubArray as $club => $club_value)
-	{
-		// Add
-		$addToQuery .= " + SUM(".$club_value['dbLimit'].")";
-	}
-	
 	// Hack Check
-	$query = "SELECT * FROM event_sign_up WHERE (trooperid = '".cleanInput($_SESSION['id'])."' OR addedby = '".cleanInput($_SESSION['id'])."') AND troopid = '".cleanInput($_POST['troopid'])."'";
+	$statement = $conn->prepare("SELECT * FROM event_sign_up WHERE (trooperid = ? OR addedby = ?) AND troopid = ?");
+	$statement->bind_param("iii", $_SESSION['id'], $_SESSION['id'], $_POST['troopid']);
+	$statement->execute();
 	
 	// Used to see if record exists
 	$i = 0;
@@ -343,10 +371,20 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	$isFriend = false;
 	
 	// Output
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
+			// Set variables for trooper we are modifying
+			if($_POST['trooperid'] == $db->trooperid)
+			{
+				// Sign ID
+				$id = $db->id;
+				
+				// Get old status
+				$oldStatus = $db->status;
+			}
+			
 			// Increment
 			$i++;
 			
@@ -360,25 +398,28 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 
 	// Set up limits
 	$limit501st = "";
+	$limitHandlers = "";
 
 	// Set up limit totals
-	$limit501stTotal = eventClubCount(cleanInput($_POST['troopid']), 0);
+	$limit501stTotal = eventClubCount($_POST['troopid'], 0);
 
 	// Set up club count
 	$clubCount = 1;
 
-	// Loop through clubs
+	// Loop through clubs to create variables to use later
 	foreach($clubArray as $club => $club_value)
 	{
 		// Set up limits
 		${$club_value['dbLimit']} = "";
 
 		// Set up limit totals
-		${$club_value['dbLimit'] . "Total"} = eventClubCount(cleanInput($_POST['troopid']), $clubCount);
+		${$club_value['dbLimit'] . "Total"} = eventClubCount($_POST['troopid'], $clubCount);
 
 		// Increment club count
 		$clubCount++;
 	}
+
+	/******* SET UP VARIABLES *******/
 
 	// Set total
 	$limitTotal = 0;
@@ -387,10 +428,12 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	$totalTrooperEvent = false;
 
 	// Query to get limits
-	$query = "SELECT * FROM events WHERE id = '".cleanInput($_POST['troopid'])."'";
+	$statement = $conn->prepare("SELECT * FROM events WHERE id = ?");
+	$statement->bind_param("i", $_POST['troopid']);
+	$statement->execute();
 
 	// Output
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -399,6 +442,9 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 
 			// Set 501
 			$limit501st = $db->limit501st;
+			
+			// Set handler
+			$limitHandlers = $db->limitHandlers;
 
 			// Loop through clubs
 			foreach($clubArray as $club => $club_value)
@@ -418,6 +464,8 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 			}
 		}
 	}
+
+	/******* END SET UP VARIABLES *******/
 	
 	// Kill hack
 	if($i == 0)
@@ -426,131 +474,136 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	}
 
 	// Set status from post
-	$status = cleanInput($_POST['status']);
+	$status = $_POST['status'];
 
 	// Set troop full - not used at the moment, but will keep it here for now
 	$troopFull = false;
 
 	// Check for total limit set, if it is, check if troop is full based on total
-	if($totalTrooperEvent)
+	if(strpos(strtolower(getCostume($_POST['costume'])), "handler") === false)
 	{
-		/* TOTAL TROOPERS */
-
-		if($limitTotal - eventClubCount(cleanInput($_POST['troopid']), "all") <= 0 && $status != 4 && inEvent(cleanInput($_POST['trooperid']), cleanInput($_POST['troopid']))['inTroop'] != 1)
+		if($totalTrooperEvent)
 		{
-			// Troop is full, set to stand by
-			$status = 1;
-
-			// Set troop full
-			$troopFull = true;
-		}
-	}
-	else
-	{
-		/* CHECK IF SQUADS / CLUB ARE FULL */
-
-		// 501
-		if((getCostumeClub(cleanInput($_POST['costume'])) == 0 && ($limit501st - eventClubCount(cleanInput($_POST['troopid']), 0)) <= 0) && $status != 4 && inEvent(cleanInput($_POST['trooperid']), cleanInput($_POST['troopid']))['inTroop'] != 1)
-		{
-			// Troop is full, set to stand by
-			$status = 1;
-
-			// Set troop full
-			$troopFull = true;
-		}
-
-		// Loop through clubs
-		foreach($clubArray as $club => $club_value)
-		{
-			// Loop through costumes
-			foreach($club_value['costumes'] as $costume)
+			/* TOTAL TROOPERS */
+			
+			if($limitTotal - eventClubCount($_POST['troopid'], "all") <= 0 && $status != 4 && inEvent($_POST['trooperid'], $_POST['troopid'])['inTroop'] != 1)
 			{
-				// Make sure not a dual costume
-				if($costume != $dualCostume)
-				{
-					// Check club
-					if((getCostumeClub(cleanInput($_POST['costume'])) == $costume && (${$club_value['dbLimit']} - eventClubCount(cleanInput($_POST['troopid']), $costume)) <= 0) && $status != 4 && inEvent(cleanInput($_POST['trooperid']), cleanInput($_POST['troopid']))['inTroop'] != 1)
-					{
-						// Troop is full, set to stand by
-						$status = 1;
+				// Troop is full, set to stand by
+				$status = 1;
 
-						// Set troop full
-						$troopFull = true;
+				// Set troop full
+				$troopFull = true;
+			}
+		}
+		else
+		{
+			/* CHECK IF SQUADS / CLUB ARE FULL */
+
+			// 501
+			if((getCostumeClub($_POST['costume']) == 0 && ($limit501st - eventClubCount($_POST['troopid'], 0)) <= 0) && $status != 4 && inEvent($_POST['trooperid'], $_POST['troopid'])['inTroop'] != 1)
+			{
+				// Troop is full, set to stand by
+				$status = 1;
+
+				// Set troop full
+				$troopFull = true;
+			}
+
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
+			{
+				// Loop through costumes
+				foreach($club_value['costumes'] as $costume)
+				{
+					// Make sure not a dual costume
+					if(!in_array($costume, $dualCostume))
+					{
+						// Check club
+						if((getCostumeClub($_POST['costume']) == $costume && (${$club_value['dbLimit']} - eventClubCount($_POST['troopid'], $costume)) <= 0) && $status != 4 && inEvent($_POST['trooperid'], $_POST['troopid'])['inTroop'] != 1)
+						{
+							// Troop is full, set to stand by
+							$status = 1;
+
+							// Set troop full
+							$troopFull = true;
+						}
 					}
 				}
 			}
 		}
 	}
+	else
+	{
+		// Handler check
+		if(($limitHandlers - handlerEventCount($_POST['troopid'])) <= 0 && $status != 4 && inEvent($_POST['trooperid'], $_POST['troopid'])['inTroop'] != 1)
+		{
+			// Troop is full, set to stand by
+			$status = 1;
 
+			// Set troop full
+			$troopFull = true;
+		}
+	}
+	
+	// Update time ONLY if changed status
+	$statement = $conn->prepare("UPDATE event_sign_up SET signuptime = NOW() WHERE status != ? AND ? != 2 AND trooperid = ? AND troopid = ? AND id = ?");
+	$statement->bind_param("iiiii", $status, $status, $_POST['trooperid'], $_POST['troopid'], $_POST['signid']);
+	$statement->execute();
+	
 	// Update SQL
-	$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costume'])."', costume_backup = '".cleanInput($_POST['costume_backup'])."', status = '".$status."' WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['troopid'])."' AND id = '".cleanInput($_POST['signid'])."'");
+	$statement = $conn->prepare("UPDATE event_sign_up SET costume = ?, costume_backup = ?, status = ? WHERE trooperid = ? AND troopid = ? AND id = ?");
+	$statement->bind_param("iiiiii", $_POST['costume'], $_POST['costume_backup'], $status, $_POST['trooperid'], $_POST['troopid'], $_POST['signid']);
+	$statement->execute();
 	
 	// Update notifications
 	// Going
 	if($status == 0)
 	{
 		// Send to database to send out notifictions later
-		$conn->query("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES ('".cleanInput($_POST['troopid'])."', '".cleanInput($_POST['trooperid'])."', '1')");
+		$statement = $conn->prepare("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES (?, ?, '1')");
+		$statement->bind_param("ii", $_POST['troopid'], $_POST['trooperid']);
+		$statement->execute();
 	}
 	// Cancel
 	else if($status == 4)
 	{
 		// Send to database to send out notifictions later
-		$conn->query("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES ('".cleanInput($_POST['troopid'])."', '".cleanInput($_POST['trooperid'])."', '2')");
+		$statement = $conn->prepare("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES (?, ?, '2')");
+		$statement->bind_param("ii", $_POST['troopid'], $_POST['trooperid']);
+		$statement->execute();
 	}
-
-	// If cancel
-	if($status == 4 && !isEventFull(cleanInput($_POST['troopid']), cleanInput($_POST['costume'])))
+	
+	// Check if status is being changed from cancel to another
+	if($oldStatus == 4 && $status < 4)
 	{
-		// Check if someone is on the wait list, and set to going
-		$conn->query("UPDATE event_sign_up SET status = '0' WHERE troopid = '".cleanInput($_POST['troopid'])."' AND status = '1' AND ".getCostumeClub(cleanInput($_POST['costume']))." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ORDER BY signuptime DESC LIMIT 1");
-	}
-
-	// Update troopers remaining
-	$data = '
-	<ul>
-		<li>This event is limited to '.$limitTotal.' troopers. ';
-
-		// Check for total limit set, if it is, add remaining troopers
-		if($totalTrooperEvent)
+		// Delete
+		$statement = $conn->prepare("DELETE FROM event_sign_up WHERE id = ?");
+		$statement->bind_param("i", $id);
+		$statement->execute();
+		
+		// Set added by based on who is updating trooper
+		if($_POST['trooperid'] == $_SESSION['id'])
 		{
-			$data .= '
-			' . troopersRemaining($limitTotal, eventClubCount($limitTotal, "all")) . '</li>';
+			$addedby = 0;
 		}
 		else
 		{
-			$data .= '
-			</li>
-
-			<li>This event is limited to '.$limit501st.' 501st troopers. '.troopersRemaining($limit501st, eventClubCount(cleanInput($_POST['troopid']), 0)).' </li>';
-
-
-			// Set up club count
-			$clubCount = 1;
-
-			// Loop through clubs
-			foreach($clubArray as $club => $club_value)
-			{
-				$data .= '
-				<li>This event is limited to '.${$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining(${$club_value['dbLimit']}, eventClubCount(cleanInput($_POST['troopid']), $clubCount)).'</li>';
-
-				// Increment club count
-				$clubCount++;
-			}
+			$addedby = $_SESSION['id'];
 		}
-
-	$data .= '
-	</ul>';
+		
+		// Insert
+		$statement = $conn->prepare("INSERT INTO event_sign_up (trooperid, troopid, costume, costume_backup, status, addedby) VALUES (?, ?, ?, ?, ?, ?)");
+		$statement->bind_param("iiiiii", $_POST['trooperid'], $_POST['troopid'], $_POST['costume'], $_POST['costume_backup'], $_POST['status'], $addedby);
+		$statement->execute();
+		$last_id = $conn->insert_id;
+	}
+	
+	resetTrooperStatus($_POST['troopid']);
+	
+	$rosterUpdate = getRoster($_POST['troopid'], $limitTotal, $totalTrooperEvent, true);
 
 	// Send JSON
-	$array = array('success' => 'true', 'status' => $status, 'troopFull' => $troopFull, 'limit501st' => $limit501st, 'limit501stTotal' => $limit501stTotal, 'troopersRemaining' => $data);
-
-	// Loop through clubs
-	foreach($clubArray as $club => $club_value)
-	{
-		$array[$club_value['dbLimit']] = ${$club_value['dbLimit']};
-		$array[$club_value['dbLimit'] . "Total"] = ${$club_value['dbLimit'] . "Total"};
-	}
+	$array = array('success' => 'true', 'status' => $status, 'troopFull' => $troopFull, 'limit501st' => $limit501st, 'limit501stTotal' => $limit501stTotal, 'rosterData' => $rosterUpdate[0], 'troopersRemaining' => $rosterUpdate[1]);
 
 	echo json_encode($array);
 }
@@ -560,159 +613,70 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 // Enter comment into database
 if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitComment']) && loggedIn())
 {
-	if(strlen(trim($_POST['comment'])) > 0 && ($_POST['important'] == 0 || $_POST['important'] == 1))
+	// Set up thread id
+	$thread_id = $_POST['thread_id'];
+	
+	replyThread($thread_id, getUserID($_SESSION['id']), $_POST['comment']);
+	
+	// If important save comment
+	if($_POST['important'] == 1)
 	{
-		// Query - check if a comment has been recently posted by this trooper
-		$commentCheck = $conn->query("SELECT id FROM comments WHERE comment = '".cleanInput($_POST['comment'])."' AND posted > NOW() - INTERVAL 5 MINUTE") or die($conn->error);
-
-		// Check comment check
-		if($commentCheck->num_rows == 0)
-		{
-			// Query the database
-			$conn->query("INSERT INTO comments (troopid, trooperid, comment, important) VALUES ('".cleanInput($_POST['eventId'])."', '".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['comment'])."', '".cleanInput($_POST['important'])."')") or die($conn->error);
-
-			// Get last ID of comment
-			$last_id = $conn->insert_id;
-
-			// Get thread ID
-			$thread_id = getEventThreadID(cleanInput($_POST['eventId']));
-
-			// Check if there is a forum thread
-			if($thread_id > 0)
-			{
-				// Post to forum
-				$post = createPost($thread_id, cleanInput($_POST['comment']), getUserID($_SESSION['id']));
-
-				// Update comment
-				$conn->query("UPDATE comments SET post_id = '".$post['post']['post_id']."' WHERE id = '".$last_id."'");
-			}
-		}
-
-		// Set up query string
-		$troops = "";
+		// Query the database
+		$_POST['comment'] = cleanInput($_POST['comment']);
+		$statement = $conn->prepare("INSERT INTO comments (troopid, trooperid, comment) VALUES (?, ?, ?)");
+		$statement->bind_param("iis", $_POST['eventId'], $_SESSION['id'], $_POST['comment']);
+		$statement->execute();
+	}
+	
+	// Set up return data
+	$data = "";
+	
+	// Get thread
+	$thread = getThreadPosts($thread_id, 1);
+	
+	for($page = $thread['pagination']['last_page']; $page >= 1; $page--)
+	{
+		$thread = getThreadPosts($thread_id, $page);
 		
-		// Make sure this is a linked event
-		if(isset($link))
+		// Remove first post from thread
+		if($page == 1)
 		{
-			// Query database for shifts to display all comments for linked events
-			$query = "SELECT * FROM events WHERE link = '".$link."'";
-			
-			// Set up count so we don't start with an operator
-			$j = 0;
-			
-			// Query loop
-			if ($result = mysqli_query($conn, $query))
-			{
-				while ($db = mysqli_fetch_object($result))
-				{
-					// If not first result
-					if($j != 0)
-					{
-						$troops .= "OR ";
-					}
-					
-					// Add to query
-					$troops .= "troopid = '".$db->id."' ";
-					
-					// Increment j
-					$j++;
-				}
-			}
-
-			// Add a last OR at end if linked data
-			if($j > 0)
-			{
-				$troops .= "OR ";
-			}
+			array_shift($thread['posts']);
 		}
 		
-		// Check which type of link
-		if(!isset($link) || isset($link) && $link <= 0)
+		// Loop through posts
+		foreach(array_reverse($thread['posts']) as $key => $post)
 		{
-			$link = cleanInput($_POST['eventId']);
-		}
-
-		// Load comments for return data
-		$query = "SELECT * FROM comments WHERE ".$troops."troopid = '".$link."' ORDER BY posted DESC";
-
-		// Count comments
-		$i = 0;
-
-		// Return data
-		$data = "";
-		
-		// Set name comment var - used for e-mails
-		$name = "";
-		
-		// Set comment var - used for e-mails
-		$comment = "";
-
-		if ($result = mysqli_query($conn, $query))
-		{
-			while ($db = mysqli_fetch_object($result))
+			// Only show messages that are visible // Example: We don't want to show messages that are hidden from public view
+			if($post['message_state'] == "visible")
 			{
 				$data .= '
-				<div style="overflow-x: auto;" style="text-align: center;">
-				<table border="1" name="comment_'.$db->id.'" id="comment_'.$db->id.'">';
-				
-				// Set up admin variable
-				$admin = '';
-				
-				// Set comment variables
-				$name = getName($db->trooperid);
-				$comment = $db->comment;
-				
-				// If is admin, set up admin options
-				if(isAdmin())
-				{
-					$admin = '<span style="margin-right: 15px;"><a href="#/" id="deleteComment_'.$db->id.'" name="'.$db->id.'"><img src="images/trash.png" alt="Delete Comment" /></a></span>';
-				}
-				
-				// If is trooper, set up edit option
-				if($db->trooperid == $_SESSION['id'])
-				{
-					$admin .= '<span style="margin-right: 15px;"><a href="#/" id="editComment_'.$db->id.'" name="'.$db->id.'"><img src="images/edit.png" alt="Edit Comment" /></a></span>';
-				}
-
-				// Convert date/time
-				$newdate = formatTime($db->posted, "F j, Y, g:i a");
-
-				$data .= '
+				<table border="1">
 				<tr>
-					<td><span style="float: left;">'.$admin.'<a href="#/" id="quoteComment_'.$db->id.'" name="'.$db->id.'" troopername="'.getName($db->trooperid).'" tkid="'.getTKNumber($db->trooperid, true).'" trooperid="'.$db->trooperid.'"><img src="images/quote.png" alt="Quote Comment"></a></span> <a href="index.php?profile='.$db->trooperid.'">'.$name.' - '.readTKNumber(getTKNumber($db->trooperid), getTrooperSquad($db->trooperid)).'</a><br />'.$newdate.'</td>
+					<td><a href="index.php?profile='.getIDFromUserID($post['user_id']).'">'.getName(getIDFromUserID($post['user_id'])).' - '.readTKNumber(getTKNumber(getIDFromUserID($post['user_id'])), getTrooperSquad(getIDFromUserID($post['user_id']))).'</a><br /><img src="'.$post['User']['avatar_urls']['m'].'" /></td>
 				</tr>
 				
 				<tr>
-					<td name="insideComment">'.nl2br(isImportant($db->important, showBBcodes($comment))).'</td>
+					<td>'.$post['message_parsed'].'</td>
 				</tr>
 
 				</table>
-				</div>
 
 				<br />';
-
-				// Increment
-				$i++;
 			}
 		}
-		
-		// Check comment check
-		if($commentCheck->num_rows == 0)
-		{
-			// Send to database to send out notifictions later
-			$conn->query("INSERT INTO notification_check (troopid, commentid) VALUES ('".cleanInput($_POST['eventId'])."', '".$last_id."')");
-		}
-
-		if($i == 0)
-		{
-			$data .= '
-			<br />
-			<b>No discussion to display.</b>';
-		}
-
-		$array = array('data' => $data);
-		echo json_encode($array);
 	}
+
+	// If no posts
+	if(count($thread['posts']) == 0)
+	{
+		$data .= '
+		<br />
+		<b>No discussion to display.</b>';
+	}
+
+	$array = array('data' => $data);
+	echo json_encode($array);
 }
 
 
@@ -723,45 +687,83 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 	// Costume submitted for deletion...
 	if(isset($_POST['submitDeleteCostume']))
 	{
+		// Don't allow delete N/A costume
+		foreach($clubArray as $club => $club_value)
+		{
+			if($_POST['costumeID'] == $club_value['naCostume'])
+			{
+				$array = array('success' => 'fail');
+				echo json_encode($array);
+
+				return false;
+			}
+		}
+
+		if($_POST['costumeID'] == $dualNA)
+		{
+			$array = array('success' => 'fail');
+			echo json_encode($array);
+
+			return false;
+		}
+
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has deleted costume ID: " . cleanInput($_POST['costumeID']) . "", cleanInput($_SESSION['id']), 2, convertDataToJSON("SELECT * FROM costumes WHERE id = '".cleanInput($_POST['costumeID'])."'"));
+		sendNotification(getName($_SESSION['id']) . " has deleted costume ID: " . $_POST['costumeID'] . "", $_SESSION['id'], 2, convertDataToJSON("SELECT * FROM costumes WHERE id = '".$_POST['costumeID']."'"));
 
 		// Query the database
-		$conn->query("DELETE FROM costumes WHERE id = '".cleanInput($_POST['costumeID'])."'");
+		$statement = $conn->prepare("DELETE FROM costumes WHERE id = ?");
+		$statement->bind_param("i", $_POST['costumeID']);
+		$statement->execute();
 		
 		// Update other databases that are affected
-		$conn->query("UPDATE event_sign_up SET costume = '0' WHERE costume = '".cleanInput($_POST['costumeID'])."'");
-		$conn->query("UPDATE event_sign_up SET costume_backup = '0' WHERE costume_backup = '".cleanInput($_POST['costumeID'])."'");
+		$replaceCostume = replaceCostumeID($_POST['costumeID']);
+
+		// Costume
+		$statement = $conn->prepare("UPDATE event_sign_up SET costume = ? WHERE costume = ?");
+		$statement->bind_param("ss", $replaceCostume, $_POST['costumeID']);
+		$statement->execute();
+
+		// Costume back up
+		$statement = $conn->prepare("UPDATE event_sign_up SET costume_backup = ? WHERE costume_backup = ?");
+		$statement->bind_param("ss", $replaceCostume, $_POST['costumeID']);
+		$statement->execute();
+
+		$array = array('success' => 'pass');
+		echo json_encode($array);
 	}
 	
 	// Add costume...
 	if(isset($_POST['addCostumeButton']))
 	{
-		$message = "Costume added";
+		$message = "Costume added!";
 
 		// Check if has value
-		if(cleanInput($_POST['costumeName']) == "")
+		if($_POST['costumeName'] == "")
 		{
 			$message = "Costume must have a name.";
 		}
 		else
 		{
 			// Query the database
-			$conn->query("INSERT INTO costumes (costume, era, club) VALUES ('".cleanInput($_POST['costumeName'])."', '".cleanInput($_POST['costumeEra'])."', '".cleanInput($_POST['costumeClub'])."')");
+			$_POST['costumeName'] = cleanInput($_POST['costumeName']);
+			$statement = $conn->prepare("INSERT INTO costumes (costume, club) VALUES (?, ?)");
+			$statement->bind_param("si", $_POST['costumeName'], $_POST['costumeClub']);
+			$statement->execute();
 			$last_id = $conn->insert_id;
 			
 			// Send notification to command staff
-			sendNotification(getName($_SESSION['id']) . " has added costume: " . cleanInput($_POST['costumeName']), cleanInput($_SESSION['id']), 1, convertDataToJSON("SELECT * FROM costumes WHERE id = '".$last_id."'"));
+			sendNotification(getName($_SESSION['id']) . " has added costume: " . $_POST['costumeName'], $_SESSION['id'], 1, convertDataToJSON("SELECT * FROM costumes WHERE id = '".$last_id."'"));
 		}
 		
 		$returnMessage = '
 		<h3>Edit Costume</h3>';
 
 		// Get data
-		$query = "SELECT * FROM costumes ORDER BY costume";
+		$statement = $conn->prepare("SELECT * FROM costumes ORDER BY costume");
+		$statement->execute();
 
 		$i = 0;
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -777,7 +779,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 				}
 
 				$returnMessage .= '
-				<option value="'.$db->id.'" costumeName="'.$db->costume.'" costumeID="'.$db->id.'" costumeEra="'.$db->era.'" costumeClub="'.$db->club.'">'.$db->costume.'</option>';
+				<option value="'.$db->id.'" costumeName="'.$db->costume.'" costumeID="'.$db->id.'" costumeClub="'.$db->club.'">'.$db->costume.'</option>';
 
 				// Increment
 				$i++;
@@ -797,15 +799,6 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 
 			<b>Costume Name:</b></br />
 			<input type="text" name="costumeNameEdit" id="costumeNameEdit" />
-			
-			<b>Costume Era:</b></br />
-			<select name="costumeEraEdit" id="costumeEraEdit">
-				<option value="0">Prequel</option>
-				<option value="1" SELECTED>Original</option>
-				<option value="2">Sequel</option>
-				<option value="3">Expanded</option>
-				<option value="4">All</option>
-			</select>
 			
 			<b>Costume Club:</b></br />
 			<select name="costumeClubEdit" id="costumeClubEdit">
@@ -831,10 +824,11 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 		<h3>Delete Costume</h3>';
 
 		// Get data
-		$query = "SELECT * FROM costumes ORDER BY costume";
+		$statement = $conn->prepare("SELECT * FROM costumes ORDER BY costume");
+		$statement->execute();
 
 		$i = 0;
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -875,10 +869,13 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 	if(isset($_POST['submitEditCostume']))
 	{
 		// Query the database
-		$conn->query("UPDATE costumes SET costume = '".cleanInput($_POST['costumeNameEdit'])."', era = '".cleanInput($_POST['costumeEraEdit'])."', club = '".cleanInput($_POST['costumeClubEdit'])."' WHERE id = '".cleanInput($_POST['costumeIDEdit'])."'");
+		$_POST['costumeNameEdit'] = cleanInput($_POST['costumeNameEdit']);
+		$statement = $conn->prepare("UPDATE costumes SET costume = ?, club = ? WHERE id = ?");
+		$statement->bind_param("sii", $_POST['costumeNameEdit'], $_POST['costumeClubEdit'], $_POST['costumeIDEdit']);
+		$statement->execute();
 
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has edited costume ID [" . cleanInput($_POST['costumeIDEdit']) . "] to " . cleanInput($_POST['costumeNameEdit']), cleanInput($_SESSION['id']), 3, convertDataToJSON("SELECT * FROM costumes WHERE id = '".cleanInput($_POST['costumeIDEdit'])."'"));
+		sendNotification(getName($_SESSION['id']) . " has edited costume ID [" . $_POST['costumeIDEdit'] . "] to " . $_POST['costumeNameEdit'], $_SESSION['id'], 3, convertDataToJSON("SELECT * FROM costumes WHERE id = '".$_POST['costumeIDEdit']."'"));
 	}
 }
 
@@ -891,13 +888,19 @@ if(isset($_GET['do']) && $_GET['do'] == "eventsubscribe" && isset($_POST['events
 	$message = "";
 
 	// Query to see if trooper is subscribed already
-	$isSubscribed = $conn->query("SELECT * FROM event_notifications WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($_POST['event'])."'");
+	$statement = $conn->prepare("SELECT * FROM event_notifications WHERE trooperid = ? AND troopid = ?");
+	$statement->bind_param("ii", $_SESSION['id'], $_POST['event']);
+	$statement->execute();
+	$statement->store_result();
+	$isSubscribed = $statement->num_rows;
 
 	// Check if subscribed
-	if($isSubscribed->num_rows > 0)
+	if($isSubscribed > 0)
 	{
 		// Already subscribed, delete information
-		$conn->query("DELETE FROM event_notifications WHERE trooperid = '".cleanInput($_SESSION['id'])."' AND troopid = '".cleanInput($_POST['event'])."'");
+		$statement = $conn->prepare("DELETE FROM event_notifications WHERE trooperid = ? AND troopid = ?");
+		$statement->bind_param("ii", $_SESSION['id'], $_POST['event']);
+		$statement->execute();
 
 		// Message
 		$message = "You are now unsubscribed from this event.";
@@ -905,7 +908,9 @@ if(isset($_GET['do']) && $_GET['do'] == "eventsubscribe" && isset($_POST['events
 	else
 	{
 		// Subscribe
-		$conn->query("INSERT INTO event_notifications (trooperid, troopid) VALUES ('".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['event'])."')");
+		$statement = $conn->prepare("INSERT INTO event_notifications (trooperid, troopid) VALUES (?, ?)");
+		$statement->bind_param("ii", $_SESSION['id'], $_POST['event']);
+		$statement->execute();
 
 		// Message
 		$message = "You are now subscribed to this event and will receive e-mail notifications.";
@@ -916,327 +921,6 @@ if(isset($_GET['do']) && $_GET['do'] == "eventsubscribe" && isset($_POST['events
 	echo json_encode($array);
 }
 
-/************************ TITLES ***************************************/
-// Titles to troopers
-if(isset($_GET['do']) && $_GET['do'] == "assigntitles" && loggedIn() && isAdmin())
-{
-	// Get title details
-	if(isset($_POST['gettitle']))
-	{
-		// Set up return variable
-		$hasTitle = 0;
-
-		// Get data
-		$query = "SELECT * FROM title_troopers WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND titleid = '".cleanInput($_POST['titleid'])."'";
-		
-		if ($result = mysqli_query($conn, $query))
-		{
-			while ($db = mysqli_fetch_object($result))
-			{
-				// Set
-				$hasTitle = 1;
-			}
-		}
-		
-		// Output
-		$array = array('hasTitle' => $hasTitle);
-		echo json_encode($array);
-	}
-	
-	// Title submitted for deletion...
-	if(isset($_POST['submitDeleteTitle']))
-	{
-		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has deleted title ID: " . cleanInput($_POST['titleID']), cleanInput($_SESSION['id']), 21, convertDataToJSON("SELECT * FROM titles WHERE id = '".cleanInput($_POST['titleID'])."'"));
-
-		// Query the database
-		$conn->query("DELETE FROM titles WHERE id = '".cleanInput($_POST['titleID'])."'");
-
-		// Delete from the other database
-		$conn->query("DELETE FROM title_troopers WHERE titleid = '".cleanInput($_POST['titleID'])."'");
-	}
-
-	// Add title...
-	if(isset($_POST['submitAddTitle']))
-	{
-		$message = "Title added!";
-
-		// Set up in advance to prevent error
-		$last_id = 0;
-
-		// Check if has value
-		if(cleanInput($_POST['titleName']) == "")
-		{
-			$message = "Title must have a name.";
-		}
-		else
-		{
-			// Query the database
-			$conn->query("INSERT INTO titles (title, icon, forum_id) VALUES ('".cleanInput($_POST['titleName'])."', '".cleanInput($_POST['titleImage'])."', '".cleanInput($_POST['titleForumID'])."')");
-
-			$last_id = $conn->insert_id;
-			
-			// Send notification to command staff
-			sendNotification(getName($_SESSION['id']) . " has added title: " . cleanInput($_POST['titleName']), cleanInput($_SESSION['id']), 20, convertDataToJSON("SELECT * FROM titles WHERE id = '".$last_id."'"));
-		}
-		
-		$returnMessage = '<br /><hr /><br /><h3>Edit Title</h3>';
-
-		// Get data
-		$query = "SELECT * FROM titles ORDER BY title";
-
-		$i = 0;
-		if ($result = mysqli_query($conn, $query))
-		{
-			while ($db = mysqli_fetch_object($result))
-			{
-				// Formatting
-				if($i == 0)
-				{
-					$returnMessage .= '
-					<form action="process.php?do=assigntitles" method="POST" name="titleEdit" id="titleEdit">
-
-					<select name="titleIDEdit" id="titleIDEdit">
-
-						<option value="0" SELECTED>Please select a title...</option>';
-				}
-
-				$returnMessage .= '<option value="'.$db->id.'" title="'.$db->title.'" titleID="'.$db->id.'" titleImage="'.$db->icon.'">'.$db->title.'</option>';
-
-				// Increment
-				$i++;
-			}
-		}
-
-		if($i == 0)
-		{
-			$returnMessage .= 'No titles to display.';
-		}
-		else
-		{
-			$returnMessage .= '
-			</select>
-
-			<div id="editTitleList" name="editTitleList" style="display: none;">
-
-			<p>
-				<b>Title:</b>
-				<input type="text" name="editTitle" id="editTitle" />
-			</p>
-
-			<p>
-				<b>Title Image:</b>
-				<input type="text" name="editTitleImage" id="editTitleImage" />
-			</p>
-
-			<input type="submit" name="submitEditTitle" id="submitEditTitle" value="Edit Title" />
-
-			</div>
-			</form>';
-		}
-
-		$returnMessage .= '<br /><hr /><br /><h3>Delete Title</h3>';
-
-		// Get data
-		$query = "SELECT * FROM titles ORDER BY title";
-
-		$i = 0;
-		if ($result = mysqli_query($conn, $query))
-		{
-			while ($db = mysqli_fetch_object($result))
-			{
-				// Formatting
-				if($i == 0)
-				{
-					$returnMessage .= '
-					<form action="process.php?do=assigntitles" method="POST" name="titleUserDelete" id="titleUserDelete">
-
-					<select name="titleID" id="titleID">';
-				}
-
-				$returnMessage .= '<option value="'.$db->id.'">'.$db->title.'</option>';
-
-				// Increment
-				$i++;
-			}
-		}
-
-		if($i == 0)
-		{
-			$returnMessage .= 'No titles to display.';
-		}
-		else
-		{
-			$returnMessage .= '
-			</select>
-
-			<input type="submit" name="submitDeleteTitle" id="submitDeleteTitle" value="Delete Title" />
-			</form>';
-		}
-		
-		$returnMessage2 = '';
-		
-		// Get data
-		$query = "SELECT * FROM troopers WHERE approved = 1 ORDER BY name";
-
-		// Amount of users
-		$i = 0;
-		$getId = 0;
-
-		if ($result = mysqli_query($conn, $query))
-		{
-			while ($db = mysqli_fetch_object($result))
-			{
-				// Formatting
-				if($i == 0)
-				{
-					$getId = $db->id;
-
-					$returnMessage2 .= '
-					<form action="process.php?do=assigntitles" method="POST" name="titleUser" id="titleUser">
-
-					<select name="userIDTitle" id="userIDTitle">';
-				}
-
-					$returnMessage2 .= '<option value="'.$db->id.'">'.$db->name.'</option>';
-
-				// Increment
-				$i++;
-			}
-		}
-
-		// If no events
-		if($i == 0)
-		{
-				$returnMessage2 .= 'There are no troopers to display.';
-		}
-		else
-		{
-				$returnMessage2 .= '
-			</select>
-
-			<br /><br />';
-
-			// Get data
-			$query2 = "SELECT * FROM titles ORDER BY title";
-
-			// Amount of titles
-			$j = 0;
-
-			if ($result2 = mysqli_query($conn, $query2))
-			{
-				while ($db = mysqli_fetch_object($result2))
-				{
-					// Formatting
-					if($j == 0)
-					{
-						$getId2 = $db->id;
-						$returnMessage2 .= '<select id="titleIDAssign" name="titleIDAssign">';
-					}
-
-					$returnMessage2 .= '<option value="'.$db->id.'">'.$db->title.'</option>';
-
-					// Increment $j
-					$j++;
-				}
-			}
-
-			// If title exist
-			if($j > 0)
-			{
-				$returnMessage2 .= '
-				</select>
-
-				<input type="submit" name="title" id="title" value="Assign" '.hasTitle($getId, $getId2, true).' />
-				<input type="submit" name="titleRemove" id="titleRemove" value="Remove" '.hasTitle($getId, $getId2, true, true).' />';
-			}
-			else
-			{
-				$returnMessage2 .= 'No titles to display.';
-			}
-		}
-
-		$returnMessage2 .= '</form>';
-
-		$array = array(array('message' => $message, 'id' => $last_id, 'result' => $returnMessage, 'result2' => $returnMessage2));
-		echo json_encode($array);
-	}
-
-	// Add's title to trooper
-	if(isset($_POST['submitTitle']))
-	{
-		// Check how many rewards
-		$result = mysqli_query($conn, "SELECT count(*) FROM title_troopers WHERE trooperid = '".cleanInput($_POST['userIDTitle'])."' AND titleid = '".cleanInput($_POST['titleIDAssign'])."'");
-		$num_rows = mysqli_fetch_row($result)[0];
-
-		$message = "The title was given successfully!";
-
-		// If no duplicates
-		if($num_rows == 0)
-		{
-			// Check title exists query
-			$checkExist = $conn->query("SELECT * FROM titles WHERE id = '".cleanInput($_POST['titleIDAssign'])."'");
-
-			// Check if title exists
-			if($checkExist->num_rows > 0)
-			{
-				// Query the database
-				$conn->query("INSERT INTO title_troopers (trooperid, titleid) VALUES ('".cleanInput($_POST['userIDTitle'])."', '".cleanInput($_POST['titleIDAssign'])."')");
-			
-				// Send notification to command staff
-				sendNotification(getName($_SESSION['id']) . " has given title ID [" . cleanInput($_POST['titleIDAssign']) . "] to " . getName(cleanInput($_POST['userIDTitle'])), cleanInput($_SESSION['id']), 22, json_encode(array("trooperid" => cleanInput($_POST['userIDTitle']), "titleid" => cleanInput($_POST['titleIDAssign']))));
-			}
-			else
-			{
-				$message = "This title does not exist!";
-			}
-		}
-		else
-		{
-			$message = "Trooper already has this title!";
-		}
-
-		$array = array(array('message' => $message));
-		echo json_encode($array);
-	}
-	
-	// Remove's title from trooper
-	if(isset($_POST['removeTitle']))
-	{
-		// Check how many rewards
-		$result = mysqli_query($conn, "SELECT count(*) FROM title_troopers WHERE trooperid = '".cleanInput($_POST['userIDTitle'])."' AND titleid = '".cleanInput($_POST['titleIDAssign'])."'");
-		$num_rows = mysqli_fetch_row($result)[0];
-
-		$message = "The title was removed successfully!";
-
-		// If no duplicates
-		if($num_rows > 0)
-		{
-			// Remove
-			$conn->query("DELETE FROM title_troopers WHERE trooperid = '".cleanInput($_POST['userIDTitle'])."' AND titleid = '".cleanInput($_POST['titleIDAssign'])."'");
-			
-			// Send notification to command staff
-			sendNotification(getName($_SESSION['id']) . " has removed title ID [" . cleanInput($_POST['titleIDAssign']) . "] from " . getName(cleanInput($_POST['userIDTitle'])), cleanInput($_SESSION['id']), 24, json_encode(array("trooperid" => cleanInput($_POST['userIDTitle']), "titleid" => cleanInput($_POST['titleIDAssign']))));
-		}
-		else
-		{
-			$message = "Trooper does not have this title!";
-		}
-
-		$array = array(array('message' => $message));
-		echo json_encode($array);
-	}
-
-	if(isset($_POST['submitEditTitle']))
-	{
-		// Query the database
-		$conn->query("UPDATE titles SET title = '".cleanInput($_POST['editTitleTitle'])."', icon = '".cleanInput($_POST['editTitleImage'])."', forum_id = '".cleanInput($_POST['editTitleForumID'])."' WHERE id = '".cleanInput($_POST['titleIDEdit'])."'");
-
-		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has edited title ID [" . cleanInput($_POST['titleIDEdit']) . "] to " . cleanInput($_POST['editTitle']), cleanInput($_SESSION['id']), 23, convertDataToJSON("SELECT * FROM titles WHERE id = '".cleanInput($_POST['titleIDEdit'])."'"));
-	}
-}
-
 /************************ AWARDS ***************************************/
 // Awards to troopers
 if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin())
@@ -1244,20 +928,14 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 	// Get award details
 	if(isset($_POST['getaward']))
 	{
-		// Set up return variable
-		$hasAward = 0;
-
 		// Get data
-		$query = "SELECT * FROM award_troopers WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND awardid = '".cleanInput($_POST['awardid'])."'";
-		
-		if ($result = mysqli_query($conn, $query))
-		{
-			while ($db = mysqli_fetch_object($result))
-			{
-				// Set
-				$hasAward = 1;
-			}
-		}
+		$statement = $conn->prepare("SELECT * FROM award_troopers WHERE trooperid = ? AND awardid = ?");
+		$statement->bind_param("ii", $_POST['trooperid'], $_POST['awardid']);
+		$statement->execute();
+		$statement->store_result();
+
+		// Number of awards
+		$hasAward = $statement->num_rows;
 		
 		// Output
 		$array = array('hasAward' => $hasAward);
@@ -1268,45 +946,54 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 	if(isset($_POST['submitDeleteAward']))
 	{
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has deleted award ID: " . cleanInput($_POST['awardID']), cleanInput($_SESSION['id']), 4, convertDataToJSON("SELECT * FROM awards WHERE id = '".cleanInput($_POST['awardID'])."'"));
+		sendNotification(getName($_SESSION['id']) . " has deleted award ID: " . $_POST['awardID'], $_SESSION['id'], 4, convertDataToJSON("SELECT * FROM awards WHERE id = '".$_POST['awardID']."'"));
 
 		// Query the database
-		$conn->query("DELETE FROM awards WHERE id = '".cleanInput($_POST['awardID'])."'");
+		$statement = $conn->prepare("DELETE FROM awards WHERE id = ?");
+		$statement->bind_param("i", $_POST['awardID']);
+		$statement->execute();
 
 		// Delete from the other database
-		$conn->query("DELETE FROM award_troopers WHERE awardid = '".cleanInput($_POST['awardID'])."'");
+		$statement = $conn->prepare("DELETE FROM award_troopers WHERE awardid = ?");
+		$statement->bind_param("i", $_POST['awardID']);
+		$statement->execute();
 	}
 
 	// Add award...
 	if(isset($_POST['submitAddAward']))
 	{
-		$message = "Award added";
+		$message = "Award added!";
 
 		// Set up in advance to prevent error
 		$last_id = 0;
 
 		// Check if has value
-		if(cleanInput($_POST['awardName']) == "")
+		if($_POST['awardName'] == "")
 		{
 			$message = "Award must have a name.";
 		}
 		else
 		{
 			// Query the database
-			$conn->query("INSERT INTO awards (title, icon) VALUES ('".cleanInput($_POST['awardName'])."', '".cleanInput($_POST['awardImage'])."')");
+			$_POST['awardName'] = cleanInput($_POST['awardName']);
+			$_POST['awardImage'] = cleanInput($_POST['awardImage']);
+			$statement = $conn->prepare("INSERT INTO awards (title, icon) VALUES (?, ?)");
+			$statement->bind_param("ss", $_POST['awardName'], $_POST['awardImage']);
+			$statement->execute();
 			$last_id = $conn->insert_id;
 			
 			// Send notification to command staff
-			sendNotification(getName($_SESSION['id']) . " has added award: " . cleanInput($_POST['awardName']), cleanInput($_SESSION['id']), 5, convertDataToJSON("SELECT * FROM awards WHERE id = '".$last_id."'"));
+			sendNotification(getName($_SESSION['id']) . " has added award: " . $_POST['awardName'], $_SESSION['id'], 5, convertDataToJSON("SELECT * FROM awards WHERE id = '".$last_id."'"));
 		}
 		
 		$returnMessage = '<br /><hr /><br /><h3>Edit Award</h3>';
 
 		// Get data
-		$query = "SELECT * FROM awards ORDER BY title";
+		$statement = $conn->prepare("SELECT * FROM awards ORDER BY title");
+		$statement->execute();
 
 		$i = 0;
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -1321,7 +1008,7 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 						<option value="0" SELECTED>Please select an award...</option>';
 				}
 
-				$returnMessage .= '<option value="'.$db->id.'" awardTitle="'.$db->title.'" awardID="'.$db->id.'" awardImage="'.$db->icon.'">'.$db->title.'</option>';
+				$returnMessage .= '<option value="'.$db->id.'" awardTitle="'.readInput($db->title).'" awardID="'.$db->id.'" awardImage="'.$db->icon.'">'.readInput($db->title).'</option>';
 
 				// Increment
 				$i++;
@@ -1356,10 +1043,11 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 		$returnMessage .= '<br /><hr /><br /><h3>Delete Award</h3>';
 
 		// Get data
-		$query = "SELECT * FROM awards ORDER BY title";
+		$statement = $conn->prepare("SELECT * FROM awards ORDER BY title");
+		$statement->execute();
 
 		$i = 0;
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -1372,7 +1060,7 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 					<select name="awardID" id="awardID">';
 				}
 
-				$returnMessage .= '<option value="'.$db->id.'">'.$db->title.'</option>';
+				$returnMessage .= '<option value="'.$db->id.'">'.readInput($db->title).'</option>';
 
 				// Increment
 				$i++;
@@ -1395,13 +1083,14 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 		$returnMessage2 = '';
 		
 		// Get data
-		$query = "SELECT * FROM troopers WHERE approved = 1 ORDER BY name";
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE approved = 1 ORDER BY name");
+		$statement->execute();
 
 		// Amount of users
 		$i = 0;
 		$getId = 0;
 
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -1416,7 +1105,7 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 					<select name="userIDAward" id="userIDAward">';
 				}
 
-					$returnMessage2 .= '<option value="'.$db->id.'">'.$db->name.'</option>';
+					$returnMessage2 .= '<option value="'.$db->id.'">'.readInput($db->name).'</option>';
 
 				// Increment
 				$i++;
@@ -1436,14 +1125,15 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 			<br /><br />';
 
 			// Get data
-			$query2 = "SELECT * FROM awards ORDER BY title";
+			$statement = $conn->prepare("SELECT * FROM awards ORDER BY title");
+			$statement->execute();
 
 			// Amount of awards
 			$j = 0;
 
-			if ($result2 = mysqli_query($conn, $query2))
+			if ($result = $statement->get_result())
 			{
-				while ($db = mysqli_fetch_object($result2))
+				while ($db = mysqli_fetch_object($result))
 				{
 					// Formatting
 					if($j == 0)
@@ -1452,7 +1142,7 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 						$returnMessage2 .= '<select id="awardIDAssign" name="awardIDAssign">';
 					}
 					
-					$returnMessage2 .= '<option value="'.$db->id.'">'.$db->title.'</option>';
+					$returnMessage2 .= '<option value="'.$db->id.'">'.readInput($db->title).'</option>';
 
 					// Increment $j
 					$j++;
@@ -1484,8 +1174,12 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 	if(isset($_POST['submitAward']))
 	{
 		// Check how many rewards
-		$result = mysqli_query($conn, "SELECT count(*) FROM award_troopers WHERE trooperid = '".cleanInput($_POST['userIDAward'])."' AND awardid = '".cleanInput($_POST['awardIDAssign'])."'");
-		$num_rows = mysqli_fetch_row($result)[0];
+		$statement = $conn->prepare("SELECT count(*) FROM award_troopers WHERE trooperid = ? AND awardid = ?");
+		$statement->bind_param("ii", $_POST['userIDAward'], $_POST['awardIDAssign']);
+		$statement->execute();
+		$statement->bind_result($num_rows);
+		$statement->fetch();
+		$statement->close();
 
 		$message = "The award was awarded successfully!";
 
@@ -1493,16 +1187,22 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 		if($num_rows == 0)
 		{
 			// Check title exists query
-			$checkExist = $conn->query("SELECT * FROM awards WHERE id = '".cleanInput($_POST['awardIDAssign'])."'");
+			$statement = $conn->prepare("SELECT * FROM awards WHERE id = ?");
+			$statement->bind_param("i", $_POST['awardIDAssign']);
+			$statement->execute();
+			$statement->store_result();
+			$checkExist = $statement->num_rows;
 
 			// Check if title exists
-			if($checkExist->num_rows > 0)
+			if($checkExist > 0)
 			{
 				// Query the database
-				$conn->query("INSERT INTO award_troopers (trooperid, awardid) VALUES ('".cleanInput($_POST['userIDAward'])."', '".cleanInput($_POST['awardIDAssign'])."')");
+				$statement = $conn->prepare("INSERT INTO award_troopers (trooperid, awardid) VALUES (?, ?)");
+				$statement->bind_param("ii", $_POST['userIDAward'], $_POST['awardIDAssign']);
+				$statement->execute();
 				
 				// Send notification to command staff
-				sendNotification(getName($_SESSION['id']) . " has awarded ID [" . cleanInput($_POST['awardIDAssign']) . "] to " . getName(cleanInput($_POST['userIDAward'])), cleanInput($_SESSION['id']), 6, json_encode(array("trooperid" => cleanInput($_POST['userIDAward']), "awardid" => cleanInput($_POST['awardIDAssign']))));
+				sendNotification(getName($_SESSION['id']) . " has awarded ID [" . $_POST['awardIDAssign'] . "] to " . getName($_POST['userIDAward']), $_SESSION['id'], 6, json_encode(array("trooperid" => $_POST['userIDAward'], "awardid" => $_POST['awardIDAssign'])));
 			}
 			else
 			{
@@ -1522,8 +1222,11 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 	if(isset($_POST['removeAward']))
 	{
 		// Check how many rewards
-		$result = mysqli_query($conn, "SELECT count(*) FROM award_troopers WHERE trooperid = '".cleanInput($_POST['userIDAward'])."' AND awardid = '".cleanInput($_POST['awardIDAssign'])."'");
-		$num_rows = mysqli_fetch_row($result)[0];
+		$statement = $conn->prepare("SELECT count(*) FROM award_troopers WHERE trooperid = ? AND awardid = ?");
+		$statement->bind_param("ii", $_POST['userIDAward'], $_POST['awardIDAssign']);
+		$statement->execute();
+		$statement->store_result();
+		$num_rows = $statement->num_rows;
 
 		$message = "The award was removed successfully!";
 
@@ -1531,10 +1234,12 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 		if($num_rows > 0)
 		{
 			// Remove
-			$conn->query("DELETE FROM award_troopers WHERE trooperid = '".cleanInput($_POST['userIDAward'])."' AND awardid = '".cleanInput($_POST['awardIDAssign'])."'");
+			$statement = $conn->prepare("DELETE FROM award_troopers WHERE trooperid = ? AND awardid = ?");
+			$statement->bind_param("ii", $_POST['userIDAward'], $_POST['awardIDAssign']);
+			$statement->execute();
 			
 			// Send notification to command staff
-			sendNotification(getName($_SESSION['id']) . " has removed award ID [" . cleanInput($_POST['awardIDAssign']) . "] from " . getName(cleanInput($_POST['userIDAward'])), cleanInput($_SESSION['id']), 25, json_encode(array("trooperid" => cleanInput($_POST['userIDAward']), "awardid" => cleanInput($_POST['awardIDAssign']))));
+			sendNotification(getName($_SESSION['id']) . " has removed award ID [" . $_POST['awardIDAssign'] . "] from " . getName($_POST['userIDAward']), $_SESSION['id'], 25, json_encode(array("trooperid" => $_POST['userIDAward'], "awardid" => $_POST['awardIDAssign'])));
 		}
 		else
 		{
@@ -1549,10 +1254,14 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 	if(isset($_POST['submitEditAward']))
 	{
 		// Query the database
-		$conn->query("UPDATE awards SET title = '".cleanInput($_POST['editAwardTitle'])."', icon = '".cleanInput($_POST['editAwardImage'])."' WHERE id = '".cleanInput($_POST['awardIDEdit'])."'");
+		$_POST['editAwardTitle'] = cleanInput($_POST['editAwardTitle']);
+		$_POST['editAwardImage'] = cleanInput($_POST['editAwardImage']);
+		$statement = $conn->prepare("UPDATE awards SET title = ?, icon = ? WHERE id = ?");
+		$statement->bind_param("ssi", $_POST['editAwardTitle'], $_POST['editAwardImage'], $_POST['awardIDEdit']);
+		$statement->execute();
 
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has edited award ID [" . cleanInput($_POST['awardIDEdit']) . "] to " . cleanInput($_POST['editAwardTitle']), cleanInput($_SESSION['id']), 7, convertDataToJSON("SELECT * FROM awards WHERE id = '".cleanInput($_POST['awardIDEdit'])."'"));
+		sendNotification(getName($_SESSION['id']) . " has edited award ID [" . $_POST['awardIDEdit'] . "] to " . $_POST['editAwardTitle'], $_SESSION['id'], 7, convertDataToJSON("SELECT * FROM awards WHERE id = '".$_POST['awardIDEdit']."'"));
 	}
 }
 
@@ -1561,9 +1270,11 @@ if(isset($_GET['do']) && $_GET['do'] == "getuser" && loggedIn())
 {
 	if(isset($_POST['getuser']))
 	{
-		$query = "SELECT * FROM troopers WHERE id = '".cleanInput($_POST['id'])."'";
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
+		$statement->bind_param("i", $_POST['id']);
+		$statement->execute();
 
-		if ($result = mysqli_query($conn, $query) or die($conn->error))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -1581,7 +1292,7 @@ if(isset($_GET['do']) && $_GET['do'] == "getuser" && loggedIn())
 				}
 				
 				// Array variables
-				$array = array('name' => $db->name, 'email' => $db->email, 'forum' => $db->forum_id, 'phone' => $db->phone, 'squad' => getSquadName($db->squad), 'tkid' => readTKNumber($db->tkid, $db->squad), 'link' => $link);
+				$array = array('name' => readInput($db->name), 'email' => $db->email, 'forum' => $db->forum_id, 'phone' => $db->phone, 'squad' => getSquadName($db->squad), 'tkid' => readTKNumber($db->tkid, $db->squad), 'link' => $link, 'user_id' => $db->user_id);
 
 				// Loop through clubs
 				foreach($clubArray as $club => $club_value)
@@ -1606,9 +1317,11 @@ if(isset($_GET['do']) && $_GET['do'] == "approvetroopers" && loggedIn() && isAdm
 	if(isset($_POST['submitDenyUser']))
 	{
 		// Query for user info
-		$query = "SELECT * FROM troopers WHERE id = '".cleanInput($_POST['userID2'])."'";
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
+		$statement->bind_param("i", $_POST['userID2']);
+		$statement->execute();
 
-		if ($result = mysqli_query($conn, $query) or die($conn->error))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -1625,18 +1338,22 @@ if(isset($_GET['do']) && $_GET['do'] == "approvetroopers" && loggedIn() && isAdm
 		}
 
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has denied user ID [" . cleanInput($_POST['userID2']) . "]", cleanInput($_SESSION['id']), 8, convertDataToJSON("SELECT * FROM troopers WHERE id = '".cleanInput($_POST['userID2'])."'"));
+		sendNotification(getName($_SESSION['id']) . " has denied user ID [" . $_POST['userID2'] . "]", $_SESSION['id'], 8, convertDataToJSON("SELECT * FROM troopers WHERE id = '".$_POST['userID2']."'"));
 		
 		// Query the database - troopers
-		$conn->query("DELETE FROM troopers WHERE id = '".cleanInput($_POST['userID2'])."'");
+		$statement = $conn->prepare("DELETE FROM troopers WHERE id = ?");
+		$statement->bind_param("i", $_POST['userID2']);
+		$statement->execute();
 	}
 
 	if(isset($_POST['submitApproveUser']))
 	{
 		// Query for user info
-		$query = "SELECT * FROM troopers WHERE id = '".cleanInput($_POST['userID2'])."'";
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
+		$statement->bind_param("i", $_POST['userID2']);
+		$statement->execute();
 
-		if ($result = mysqli_query($conn, $query) or die($conn->error))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -1653,10 +1370,12 @@ if(isset($_GET['do']) && $_GET['do'] == "approvetroopers" && loggedIn() && isAdm
 		}
 		
 		// Query the database
-		$conn->query("UPDATE troopers SET approved = 1 WHERE id = '".cleanInput($_POST['userID2'])."'");
+		$statement = $conn->prepare("UPDATE troopers SET approved = 1 WHERE id = ?");
+		$statement->bind_param("i", $_POST['userID2']);
+		$statement->execute();
 		
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has approved user ID [" . cleanInput($_POST['userID2']) . "]", cleanInput($_SESSION['id']), 9, convertDataToJSON("SELECT * FROM troopers WHERE id = '".cleanInput($_POST['userID2'])."'"));
+		sendNotification(getName($_SESSION['id']) . " has approved user ID [" . $_POST['userID2'] . "]", $_SESSION['id'], 9, convertDataToJSON("SELECT * FROM troopers WHERE id = '".$_POST['userID2']."'"));
 	}
 }
 
@@ -1667,30 +1386,48 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 	if(isset($_POST['submitDeleteUser']))
 	{
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has deleted user ID [" . cleanInput($_POST['userID']) . "]", cleanInput($_SESSION['id']), 10, convertDataToJSON("SELECT * FROM troopers WHERE id = '".cleanInput($_POST['userID'])."'"));
+		sendNotification(getName($_SESSION['id']) . " has deleted user ID [" . $_POST['userID'] . "]", $_SESSION['id'], 10, convertDataToJSON("SELECT * FROM troopers WHERE id = '".$_POST['userID']."'"));
 
 		// Query the database
-		$conn->query("DELETE FROM troopers WHERE id = '".cleanInput($_POST['userID'])."'");
+		$statement = $conn->prepare("DELETE FROM troopers WHERE id = ?");
+		$statement->bind_param("i", $_POST['userID']);
+		$statement->execute();
 		
 		// Update other databases that will be affected
-		$conn->query("DELETE FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['userID'])."'");
-		$conn->query("DELETE FROM award_troopers WHERE trooperid = '".cleanInput($_POST['userID'])."'");
-		$conn->query("DELETE FROM comments WHERE trooperid = '".cleanInput($_POST['userID'])."'");
-		$conn->query("DELETE FROM event_notifications WHERE trooperid = '".cleanInput($_POST['userID'])."'");
-		$conn->query("DELETE FROM notification_check WHERE trooperid = '".cleanInput($_POST['userID'])."'");
-		$conn->query("DELETE FROM title_troopers WHERE trooperid = '".cleanInput($_POST['userID'])."'");
+		$statement2 = $conn->prepare("DELETE FROM event_sign_up WHERE trooperid = ?");
+		$statement2->bind_param("i", $_POST['userID']);
+		$statement2->execute();
+
+		$statement3 = $conn->prepare("DELETE FROM award_troopers WHERE trooperid = ?");
+		$statement3->bind_param("i", $_POST['userID']);
+		$statement3->execute();
+
+		$statement4 = $conn->prepare("DELETE FROM event_notifications WHERE trooperid = ?");
+		$statement4->bind_param("i", $_POST['userID']);
+		$statement4->execute();
+
+		$statement5 = $conn->prepare("DELETE FROM notification_check WHERE trooperid = ?");
+		$statement5->bind_param("i", $_POST['userID']);
+		$statement5->execute();
+
+		$statement6 = $conn->prepare("DELETE FROM title_troopers WHERE trooperid = ?");
+		$statement6->bind_param("i", $_POST['userID']);
+		$statement6->execute();
 	}
 
 	// User submitted for edit...
 	if(isset($_POST['submitEditUser']))
 	{
 		// Load user info
-		$query = "SELECT * FROM troopers WHERE id = '".cleanInput($_POST['userID'])."'";
-		if ($result = mysqli_query($conn, $query))
+		$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
+		$statement->bind_param("i", $_POST['userID']);
+		$statement->execute();
+
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$array = array('id' => $db->id, 'name' => $db->name, 'phone' => $db->phone, 'squad' => $db->squad, 'permissions' => $db->permissions, 'p501' => $db->p501, 'tkid' => $db->tkid, 'forumid' => $db->forum_id, 'supporter' => $db->supporter, 'spTrooper' => $db->spTrooper, 'spCostume' => $db->spCostume, 'spAward' => $db->spAward);
+				$array = array('id' => $db->id, 'name' => readInput($db->name), 'phone' => readInput($db->phone), 'squad' => $db->squad, 'permissions' => $db->permissions, 'note' => $db->note, 'p501' => $db->p501, 'tkid' => $db->tkid, 'forumid' => readInput($db->forum_id), 'supporter' => $db->supporter, 'spTrooper' => $db->spTrooper, 'spCostume' => $db->spCostume, 'spAward' => $db->spAward);
 
 				// Loop through clubs
 				foreach($clubArray as $club => $club_value)
@@ -1701,7 +1438,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 					// If DB3 defined
 					if($club_value['db3Name'] != "")
 					{
-						$array[$club_value['db3']] = $db->{$club_value['db3']}; 
+						$array[$club_value['db3']] = readInput($db->{$club_value['db3']}); 
 					}
 				}
 
@@ -1714,14 +1451,14 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 	if(isset($_POST['submitUserEdit']))
 	{
 		// Check we have all the data we need server side. JQuery should do this, but this is a backup
-		if(cleanInput($_POST['user']) != "" && cleanInput($_POST['squad']) != "" && cleanInput($_POST['tkid']) != "" && cleanInput($_POST['forumid']) != "")
+		if($_POST['user'] != "" && $_POST['squad'] != "" && $_POST['tkid'] != "" && $_POST['forumid'] != "")
 		{
 			// Set up message
 			$message = "Trooper has been updated!";
 			
 			// **CUSTOM**
 			// Check if Rebel has a Rebel Forum to change status
-			if(cleanInput($_POST['pRebel']) != 0 && cleanInput($_POST['rebelforum']) == "")
+			if($_POST['pRebel'] != 0 && $_POST['rebelforum'] == "")
 			{
 				// Reset Rebel due to it not being able to put value in spreadsheet
 				$_POST['pRebel'] = 0;
@@ -1731,29 +1468,34 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 			}
 			
 			// Set up TKID
-			$tkid = cleanInput($_POST['tkid']);
+			$tkid = $_POST['tkid'];
 
 			// Send notification to command staff
-			sendNotification(getName($_SESSION['id']) . " has updated user ID [" . cleanInput($_POST['userIDE']) . "]", cleanInput($_SESSION['id']), 11, convertDataToJSON("SELECT * FROM troopers WHERE id = '".cleanInput($_POST['userIDE'])."'"));
+			sendNotification(getName($_SESSION['id']) . " has updated user ID [" . $_POST['userIDE'] . "]", $_SESSION['id'], 11, convertDataToJSON("SELECT * FROM troopers WHERE id = '".$_POST['userIDE']."'"));
 
-			// Set up add to query
-			$addToQuery = "";
-
-			// Loop through clubs
+			// Loop through clubs for custom DB variables
 			foreach($clubArray as $club => $club_value)
 			{
-				// Add
-				$addToQuery .= "".$club_value['db']." = '".cleanInput($_POST[$club_value['db']])."', ";
+				$statement = $conn->prepare("UPDATE troopers SET " . $club_value['db'] . " = ? WHERE id = ?");
+				$statement->bind_param("si", $_POST[$club_value['db']], $_POST['userIDE']);
+				$statement->execute();
 
 				// If DB3 defined
 				if($club_value['db3Name'] != "")
 				{
-					$addToQuery .= "".$club_value['db3']." = '".cleanInput($_POST[$club_value['db3']])."', ";
+					$statement = $conn->prepare("UPDATE troopers SET " . $club_value['db3'] . " = ? WHERE id = ?");
+					$statement->bind_param("si", $_POST[$club_value['db3']], $_POST['userIDE']);
+					$statement->execute();
 				}
 			}
-			
+
 			// Query the database
-			$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['user'])."', phone = '".cleanInput(cleanInput($_POST['phone']))."', squad = '".cleanInput($_POST['squad'])."', p501 = '".cleanInput($_POST['p501'])."', ".$addToQuery." tkid = '".$tkid."', forum_id = '".cleanInput($_POST['forumid'])."', supporter = '".cleanInput($_POST['supporter'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'") or die($conn->error);
+			$_POST['phone'] = cleanInput($_POST['phone']);
+			$_POST['phone'] = preg_replace('/\D/', '', $_POST['phone']);
+			$_POST['note'] = cleanInput($_POST['note']);
+			$statement = $conn->prepare("UPDATE troopers SET name = ?, phone = ?, squad = ?, p501 = ?, tkid = ?, forum_id = ?, note = ?, supporter = ? WHERE id = ?");
+			$statement->bind_param("ssiiissii", $_POST['user'], $_POST['phone'], $_POST['squad'], $_POST['p501'], $tkid, $_POST['forumid'], $_POST['note'], $_POST['supporter'], $_POST['userIDE']);
+			$statement->execute();
 
 			// If super user, update special permissions
 			if(hasPermission(1))
@@ -1764,10 +1506,12 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 				if(!isset($_POST['spAward'])) { $_POST['spAward'] = 0; } else { $_POST['spAward'] = 1; }
 
 				// Query the database
-				$conn->query("UPDATE troopers SET spTrooper = '".cleanInput($_POST['spTrooper'])."', spCostume = '".cleanInput($_POST['spCostume'])."', spAward = '".cleanInput($_POST['spAward'])."', permissions = '".cleanInput($_POST['permissions'])."' WHERE id = '".cleanInput($_POST['userIDE'])."'") or die($conn->error);
+				$statement = $conn->prepare("UPDATE troopers SET spTrooper = ?, spCostume = ?, spAward = ?, permissions = ? WHERE id = ?");
+				$statement->bind_param("iiiii", $_POST['spTrooper'], $_POST['spCostume'], $_POST['spAward'], $_POST['permissions'], $_POST['userIDE']);
+				$statement->execute();
 			}
 
-			$array = array('success' => 'true', 'newname' => cleanInput($_POST['user']) . " - " . readTKNumber($tkid, getTrooperSquad(cleanInput($_POST['userIDE']))), 'data' => $message);
+			$array = array('success' => 'true', 'newname' => $_POST['user'] . " - " . readTKNumber($tkid, getTrooperSquad($_POST['userIDE'])) . " - " . $_POST['forumid'], 'data' => $message);
 			echo json_encode($array);
 		}
 		else
@@ -1783,8 +1527,17 @@ if(isset($_GET['do']) && $_GET['do'] == "changephone" && loggedIn())
 {
 	if(isset($_POST['phoneButton']))
 	{
-		$conn->query("UPDATE troopers SET phone = '".cleanInput($_POST['phone'])."' WHERE id = '".$_SESSION['id']."'");
-		echo 'Phone number updated sucessfully!';
+		if(@validPhone($_POST['phone']) || empty($_POST['phone']))
+		{
+			$_POST['phone'] = cleanInput($_POST['phone']);
+			$_POST['phone'] = preg_replace('/\D/', '', $_POST['phone']);
+			$statement = $conn->prepare("UPDATE troopers SET phone = ? WHERE id = ?");
+			$statement->bind_param("si", $_POST['phone'], $_SESSION['id']);
+			$statement->execute();
+			echo 'Phone number updated sucessfully!';
+		} else {
+			echo 'Invalid phone number.';
+		}
 	}
 }
 
@@ -1795,7 +1548,7 @@ if(isset($_GET['do']) && $_GET['do'] == "changename" && loggedIn())
 	{
 		$failed = false;
 
-		if(cleanInput($_POST['name']) == "")
+		if($_POST['name'] == "")
 		{
 			$failed = true;
 			echo 'Please enter a name.';
@@ -1803,7 +1556,10 @@ if(isset($_GET['do']) && $_GET['do'] == "changename" && loggedIn())
 
 		if(!$failed)
 		{
-			$conn->query("UPDATE troopers SET name = '".cleanInput($_POST['name'])."' WHERE id = '".$_SESSION['id']."'");
+			$_POST['name'] = cleanInput($_POST['name']);
+			$statement = $conn->prepare("UPDATE troopers SET name = ? WHERE id = ?");
+			$statement->bind_param("si", $_POST['name'], $_SESSION['id']);
+			$statement->execute();
 			echo 'Name updated sucessfully!';
 		}
 	}
@@ -1814,20 +1570,26 @@ if(isset($_GET['do']) && $_GET['do'] == "unsubscribe" && loggedIn())
 {
 	if(isset($_POST['unsubscribeButton']))
 	{
-		$query = "SELECT subscribe FROM troopers WHERE id = '".$_SESSION['id']."'";
+		$statement = $conn->prepare("SELECT subscribe FROM troopers WHERE id = ?");
+		$statement->bind_param("i", $_SESSION['id']);
+		$statement->execute();
 
-		if ($result = mysqli_query($conn, $query) or die($conn->error))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
 				if($db->subscribe == 1)
 				{
-					$conn->query("UPDATE troopers SET subscribe = 0 WHERE id = '".$_SESSION['id']."'");
+					$statement = $conn->prepare("UPDATE troopers SET subscribe = 0 WHERE id = ?");
+					$statement->bind_param("i", $_SESSION['id']);
+					$statement->execute();
 					echo 'You are now unsubscribed from e-mails and will no longer receive notifications.';
 				}
 				else
 				{
-					$conn->query("UPDATE troopers SET subscribe = 1 WHERE id = '".$_SESSION['id']."'");
+					$statement = $conn->prepare("UPDATE troopers SET subscribe = 1 WHERE id = ?");
+					$statement->bind_param("i", $_SESSION['id']);
+					$statement->execute();
 					echo 'You are now subscribed to e-mail notifications.';
 				}
 			}
@@ -1841,8 +1603,35 @@ if(isset($_GET['do']) && $_GET['do'] == "emailsettings" && loggedIn())
 	// Check for post request
 	if(isset($_POST['setemailsettings']))
 	{
+		// Set up
+		$continue = false;
+
+		// Get a list of all columns to make sure data is validated
+		$statement = $conn->prepare("SELECT COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'troopers'");
+		$statement->execute();
+
+		if($result = $statement->get_result())
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				// Loop through results
+				foreach($db as $row)
+				{
+					if($row == $_POST['setting'])
+					{
+						$continue = true;
+					}
+				}
+			}
+		}
+
+		// Don't continue
+		if(!$continue) { exit; }
+
 		// Check which setting we are changing
-		$conn->query("UPDATE troopers SET " . cleanInput($_POST['setting']) . " = CASE " . cleanInput($_POST['setting']) . " WHEN 1 THEN 0 WHEN 0 THEN 1 END WHERE id = '".$_SESSION['id']."'") or die($conn->error);
+		$statement = $conn->prepare("UPDATE troopers SET " . $_POST['setting'] . " = CASE " . $_POST['setting'] . " WHEN 1 THEN 0 WHEN 0 THEN 1 END WHERE id = ?");
+		$statement->bind_param("i", $_SESSION['id']);
+		$statement->execute();
 	}
 }
 
@@ -1852,189 +1641,240 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 	if($_POST['submitRequest'])
 	{
 		// Check we have all the data we need server side. JQuery should do this, but this is a backup
-		if($_POST['tkid'] != "" && $_POST['name'] != "" && $_POST['forum_id'] != "" && $_POST['password'] != "" && $_POST['squad'] >= 0)
+		$failed = false;
+
+		echo '<ul>';
+
+		// If name empty
+		if($_POST['name'] == "")
 		{
-			$failed = false;
+			$failed = true;
+			echo '<li>Please enter your name.</li>';
+		}
 
-			echo '<ul>';
-			
-			// Check to see if a forum username exists
-			$forum_name_exists = getUserForum(cleanInput($_POST['forumid']));
-			
-			// Check forum name
-			if(isset($forum_name_exists['exact']))
-			{
-				$failed = true;
-				echo '<li>An account was not found on the FL 501st Boards. <a href="https://www.fl501st.com/boards/">Register here</a>.</li>';
-			}
+		// Set TKID
+		$tkid = $_POST['tkid'];
+		
+		// If Forum ID empty
+		if($_POST['forumid'] == "")
+		{
+			$failed = true;
+			echo '<li>Please enter your FL 501st Forum Username.</li>';
+		}
+		
+		// If TKID is greather than 11 characters
+		if(strlen($tkid) > 11)
+		{
+			$failed = true;
+			echo '<li>TKID must be less than eleven (11) characters.</li>';
+		}
 
-			// If name empty
-			if(cleanInput($_POST['name']) == "")
+		// If TKID is not numeric
+		if(!is_numeric($tkid))
+		{
+			$failed = true;
+			echo '<li>TKID must be an integer.</li>';
+		}
+		
+		// Check if TKID can be 0
+		if($_POST['accountType'] == 1 && $tkid == 0)
+		{
+			$failed = true;
+			echo '<li>TKID cannot be zero.</li>';
+		}
+		
+		// Check if TKID cannot be 0
+		if($_POST['accountType'] == 4 && $tkid > 0)
+		{
+			$failed = true;
+			echo '<li>TKID must be zero for a handler account.</li>';
+		}
+		
+		// Set squad variable
+		$squad = $_POST['squad'];
+		
+		// Check if 501st
+		if($squad <= count($squadArray))
+		{
+			// Query ID database
+			$statement = $conn->prepare("SELECT id FROM troopers WHERE tkid = ? AND squad <= ".count($squadArray)."");
+			$statement->bind_param("i", $tkid);
+			$statement->execute();
+			$statement->store_result();
+			$idcheck = $statement->num_rows;
+		}
+		else
+		{
+			// In a club - query by club
+			$statement = $conn->prepare("SELECT id FROM troopers WHERE tkid = ? AND squad = ?");
+			$statement->bind_param("ii", $tkid, $squad);
+			$statement->execute();
+			$statement->store_result();
+			$idcheck = $statement->num_rows;
+		}
+		
+		// Query 501st forum
+		$statement = $conn->prepare("SELECT forum_id FROM troopers WHERE forum_id = ?");
+		$statement->bind_param("s", $_POST['forumid']);
+		$statement->execute();
+		$statement->store_result();
+		$forumcheck = $statement->num_rows;
+		
+		// Check if 501st forum exists
+		if($forumcheck > 0)
+		{
+			$failed = true;
+			echo '<li>FL Garrison Forum Name is already taken. Please contact the '.garrison.' Webmaster for further assistance.</li>';
+		}
+		
+		// Loop through clubs
+		foreach($clubArray as $club => $club_value)
+		{
+			// If DB3 defined
+			if($club_value['db3Name'] != "")
 			{
-				$failed = true;
-				echo '<li>Please enter your name.</li>';
-			}
+				// Query Club - if specified
+				if($_POST[$club_value['db3']] != "")
+				{
+					$statement = $conn->prepare("SELECT ".$club_value['db3']." FROM troopers WHERE ".$club_value['db3']." = ?");
+					$statement->bind_param("s", $_POST[$club_value['db3']]);
+					$statement->execute();
+					$statement->store_result();
+					$clubid = $statement->num_rows;
 
-			// Set TKID
-			$tkid = cleanInput($_POST['tkid']);
-			
-			// If Forum ID empty
-			if(cleanInput($_POST['forumid']) == "")
-			{
-				$failed = true;
-				echo '<li>Please enter your FL 501st Forum Username.</li>';
+					
+					// Check if club ID exists
+					if($clubid > 0)
+					{
+						$failed = true;
+						echo '<li>'.$club_value['name'].' ID is already taken. Please contact the '.garrison.' Webmaster for further assistance.</li>';
+					}
+				}
 			}
-			
-			// If TKID is greather than 11 characters
-			if(strlen($tkid) > 11)
-			{
-				$failed = true;
-				echo '<li>TKID must be less than eleven (11) characters.</li>';
-			}
+		}
 
-			// If TKID is not numeric
-			if(!is_numeric($tkid))
+		// Check if ID exists, if not set to 0
+		if($_POST["accountType"] == 1 && $idcheck > 0)
+		{
+			$failed = true;
+			echo '<li>TKID is taken. If you have troops on the old troop tracker, <a href="index.php?action=setup">click here to request access</a>.</li>';
+		}
+
+		// Login with forum
+		$forumLogin = loginWithForum($_POST['forumid'], $_POST['forumpassword']);
+
+		// Verify forum and password
+		if(!isset($forumLogin['success']))
+		{
+			$failed = true;
+			echo '<li>Incorrect '.garrison.' Board username and password.</li>';
+		} else {
+			// Query user_id to prevent duplicates
+			$statement = $conn->prepare("SELECT user_id FROM troopers WHERE user_id = ?");
+			$statement->bind_param("i", $forumLogin['user']['user_id']);
+			$statement->execute();
+			$statement->store_result();
+			$forumcheck = $statement->num_rows;
+			
+			// Check if user_id exists
+			if($forumcheck > 0)
 			{
 				$failed = true;
-				echo '<li>TKID must be an integer.</li>';
+				echo '<li>You already have a Troop Tracker account.</li>';
 			}
-			
-			// Set squad variable
-			$squad = cleanInput($_POST['squad']);
-			
-			// Check if 501st
-			if($squad <= count($squadArray))
-			{
-				// Query ID database
-				$idcheck = $conn->query("SELECT id FROM troopers WHERE tkid = '".$tkid."' AND squad <= ".count($squadArray)."") or die($conn->error);
-			}
-			else
-			{
-				// In a club - query by club
-				$idcheck = $conn->query("SELECT id FROM troopers WHERE tkid = '".$tkid."' AND squad = ".$squad."") or die($conn->error);
-			}
-			
-			// Query 501st forum
-			$forumcheck = $conn->query("SELECT forum_id FROM troopers WHERE forum_id = '".cleanInput($_POST['forumid'])."'") or die($conn->error);
-			
-			// Check if 501st forum exists
-			if($forumcheck->num_rows > 0)
-			{
-				$failed = true;
-				echo '<li>FL Garrison Forum Name is already taken. Please contact the '.garrison.' Webmaster for further assistance.</li>';
-			}
-			
+		}
+
+		if(!@validPhone($_POST['phone']) && !empty($_POST['phone']))
+		{
+			$failed = true;
+			echo '<li>Enter a valid phone number.</li>';
+		}
+
+		// If failed
+		if(!$failed)
+		{
+			// Set up permission vars
+			$p501 = 0;
+
 			// Loop through clubs
 			foreach($clubArray as $club => $club_value)
 			{
-				// If DB3 defined
-				if($club_value['db3Name'] != "")
+				// Add permission vars
+				${$club_value['db']} = 0;
+			}
+			
+			// Set permissions
+			// 501
+			if($_POST['squad'] <= count($squadArray))
+			{
+				$p501 = $_POST['accountType'];
+			}
+
+			// Hash password
+			$password = password_hash($_POST['forumpassword'], PASSWORD_DEFAULT);
+
+			// Insert
+			$_POST['phone'] = cleanInput($_POST['phone']);
+			$_POST['phone'] = preg_replace('/\D/', '', $_POST['phone']);
+			$statement = $conn->prepare("INSERT INTO troopers (user_id, name, tkid, email, forum_id, p501, phone, squad, password) VALUES (?, ?, ?, ?, ?,?, ?, ?, ?)");
+			$statement->bind_param("isissisis", $forumLogin['user']['user_id'], $_POST['name'], $tkid, $forumLogin['user']['email'], $_POST['forumid'], $p501, $_POST['phone'], $squad, $password);
+			$statement->execute();
+			
+			// Last ID
+			$last_id = $conn->insert_id;
+
+			// Set up Squad ID
+			$clubID = count($squadArray) + 1;
+
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
+			{
+				// If has value
+				if(isset($_POST[$club_value['db3']]) && ($_POST[$club_value['db3']] != "" || $_POST[$club_value['db3']] > 0))
 				{
-					// Query Club - if specified
-					if(cleanInput($_POST[$club_value['db3']]) != "")
+					// Change value
+					${$club_value['db']} = $_POST['accountType'];
+				}
+				else
+				{
+					// If contains ID (which would make the value an int)
+					if (isset($_POST[$club_value['db3']]) && strpos($club_value['db3'], "id") !== false)
 					{
-						$clubid = $conn->query("SELECT ".$club_value['db3']." FROM troopers WHERE ".$club_value['db3']." = '".cleanInput($_POST[$club_value['db3']])."'") or die($conn->error);
-						
-						// Check if club ID exists
-						if($clubid->num_rows > 0)
-						{
-							$failed = true;
-							echo '<li>'.$club_value['name'].' ID is already taken. Please contact the '.garrison.' Webmaster for further assistance.</li>';
-						}
+						// Set as int
+						$_POST[$club_value['db3']] = 0;
 					}
 				}
-			}
 
-			// Check if ID exists
-			if($idcheck->num_rows > 0)
-			{
-				$failed = true;
-				echo '<li>TKID is taken. If you have troops on the old troop tracker, <a href="index.php?action=setup">click here to request access</a>.</li>';
-			}
-
-			// Login with forum
-			$forumLogin = loginWithForum(cleanInput($_POST['forumid']), cleanInput($_POST['password']));
-
-			// Verify forum and password
-			if(isset($forumLogin['success']) && $forumLogin['success'] != 1)
-			{
-				$failed = true;
-				echo '<li>Incorrect '.garrison.' Board username and password.</li>';
-			}
-
-			if(strlen(cleanInput($_POST['phone'])) < 10 && cleanInput($_POST['phone']) != "")
-			{
-				$failed = true;
-				echo '<li>Enter a valid phone number.</li>';
-			}
-
-			// If failed
-			if(!$failed)
-			{
-				// Set up permission vars
-				$p501 = 0;
-
-				// Loop through clubs
-				foreach($clubArray as $club => $club_value)
+				// Make member of club
+				if($clubID == $_POST['squad'])
 				{
-					// Add permission vars
-					${$club_value['db']} = 0;
-				}
-				
-				// Set permissions
-				// 501
-				if(cleanInput($_POST['squad']) <= count($squadArray))
-				{
-					$p501 = 1;
+					// Change value
+					${$club_value['db']} = $_POST['accountType'];
 				}
 
-				// Add to query set up
-				$addToQuery1 = "";
-				$addToQuery2 = "";
-				$addToQuery3 = "";
-				$addToQuery4 = "";
-
-				// Loop through clubs
-				foreach($clubArray as $club => $club_value)
+				// Club membership DB value set
+				if($club_value['db'] != "")
 				{
-					// If has value
-					if(isset($_POST[$club_value['db3']]) && (cleanInput($_POST[$club_value['db3']]) != "" || cleanInput($_POST[$club_value['db3']]) > 0))
-					{
-						// Change value
-						${$club_value['db']} = 1;
-					}
-					else
-					{
-						// If contains ID
-						if (isset($_POST[$club_value['db3']]) && strpos($club_value['db3'], "id") !== false)
-						{
-							// Set as int
-							$_POST[$club_value['db3']] = 0;
-						}
-					}
-
-					// If database 3 set
-					if($club_value['db3'] != "")
-					{
-						// Add to query
-						$addToQuery1 .= "".$club_value['db3'].", ";
-						$addToQuery2 .= "'".cleanInput($_POST[$club_value['db3']])."', ";
-						$addToQuery3 .= "".$club_value['db'].", ";
-						$addToQuery4 .= "'".${$club_value['db']}."', ";
-					}
+					$statement = $conn->prepare("UPDATE troopers SET " . $club_value['db'] . " = ? WHERE id = ?");
+					$statement->bind_param("si", ${$club_value['db']}, $last_id);
+					$statement->execute();
 				}
-				
-				// Insert
-				$conn->query("INSERT INTO troopers (name, tkid, email, forum_id, ".$addToQuery1."p501,".$addToQuery3."phone, squad, password) VALUES ('".cleanInput($_POST['name'])."', '".floatval($tkid)."', '".$forumLogin['user']['email']."', '".cleanInput($_POST['forumid'])."',".$addToQuery2."'".$p501."',".$addToQuery4."'".cleanInput($_POST['phone'])."', '".$squad."', '".password_hash(cleanInput($_POST['password']), PASSWORD_DEFAULT)."')") or die($conn->error);
-				
-				// Last ID
-				$last_id = $conn->insert_id;
-				
-				echo '<li>Request submitted! You will receive an e-mail when your request is approved or denied.</li>';
-			}
 
-			echo '</ul>';
+				// If Club membership DB member identifer set
+				if($club_value['db3'] != "")
+				{
+					$statement = $conn->prepare("UPDATE troopers SET " . $club_value['db3'] . " = ? WHERE id = ?");
+					$statement->bind_param("si", $_POST[$club_value['db3']], $last_id);
+					$statement->execute();
+				}
+
+				$clubID++;
+			}
+			
+			echo '<li>Request submitted! You will receive an e-mail when your request is approved or denied.</li>';
 		}
+
+		echo '</ul>';
 	}
 }
 
@@ -2056,9 +1896,11 @@ if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin(
 	$message2 = "";
 
 	// Load event sign up in roster
-	$query = "SELECT * FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['eventid'])."' AND id = ".cleanInput($_POST['signid'])."";
+	$statement = $conn->prepare("SELECT * FROM event_sign_up WHERE trooperid = ? AND troopid = ? AND id = ?");
+	$statement->bind_param("iii", $_POST['trooperid'], $_POST['eventid'], $_POST['signid']);
+	$statement->execute();
 
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -2066,7 +1908,9 @@ if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin(
 			if($db->status == 0)
 			{
 				// Set to not picked
-				$conn->query("UPDATE event_sign_up SET status = '6' WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['eventid'])."' AND id = ".cleanInput($_POST['signid'])."");
+				$statement = $conn->prepare("UPDATE event_sign_up SET status = '6' WHERE trooperid = ? AND troopid = ? AND id = ?");
+				$statement->bind_param("iii", $_POST['trooperid'], $_POST['eventid'], $_POST['signid']);
+				$statement->execute();
 
 				// Set return data
 				$message = '
@@ -2099,7 +1943,9 @@ if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin(
 				}
 
 				// Set to not picked
-				$conn->query("UPDATE event_sign_up SET status = '".$status."' WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['eventid'])."' AND id = ".cleanInput($_POST['signid'])."");
+				$statement = $conn->prepare("UPDATE event_sign_up SET status = ? WHERE trooperid = ? AND troopid = ? AND id = ?");
+				$statement->bind_param("iiii", $status, $_POST['trooperid'], $_POST['eventid'], $_POST['signid']);
+				$statement->execute();
 
 				// Set return data
 				$message = '
@@ -2111,7 +1957,9 @@ if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin(
 			else if($db->status == 6)
 			{
 				// Set to going
-				$conn->query("UPDATE event_sign_up SET status = '0' WHERE trooperid = '".cleanInput($_POST['trooperid'])."' AND troopid = '".cleanInput($_POST['eventid'])."' AND id = ".cleanInput($_POST['signid'])."");
+				$statement = $conn->prepare("UPDATE event_sign_up SET status = '0' WHERE trooperid = ? AND troopid = ? AND id = ?");
+				$statement->bind_param("iii", $_POST['trooperid'], $_POST['eventid'], $_POST['signid']);
+				$statement->execute();
 
 				// Set return data
 				$message = '
@@ -2126,13 +1974,23 @@ if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin(
 				// Load trooper counts
 				$message2 .= '
 				<h3>Admin Trooper Counts</h3>
-
+				
 				<ul style="display:inline-table;">
-					<li>501st troopers: '.eventClubCount(cleanInput($_POST['eventid']), 0).' </li>
-					<li>Rebel Legion: '.eventClubCount(cleanInput($_POST['eventid']), 1).' </li>
-					<li>Mando Mercs: '.eventClubCount(cleanInput($_POST['eventid']), 2).' </li>
-					<li>Droid Builders: '.eventClubCount(cleanInput($_POST['eventid']), 3).' </li>
-					<li>Other troopers: '.eventClubCount(cleanInput($_POST['eventid']), 4).' </li>
+					<li>501st: '.eventClubCount($_POST['eventid'], 0).' </li>';
+					
+					// Set up club count
+					$clubID = count($squadArray) + 1;
+					
+					// Loop through clubs
+					foreach($clubArray as $club => $club_value)
+					{
+						$message2 .= '<li>' . $club_value['name'] . ': ' . eventClubCount($_POST['eventid'], $clubID) . '</li>';
+						
+						// Increment
+						$clubID++;
+					}
+					
+				$message2 .= '
 				</ul>';
 			}
 		}
@@ -2145,9 +2003,10 @@ if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin(
 // Edit Settings
 if(isset($_GET['do']) && $_GET['do'] == "changesettings" && loggedIn() && isAdmin())
 {
-	$query = "SELECT * FROM settings LIMIT 1";
+	$statement = $conn->prepare("SELECT * FROM settings LIMIT 1");
+	$statement->execute();
 	
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
@@ -2158,12 +2017,15 @@ if(isset($_GET['do']) && $_GET['do'] == "changesettings" && loggedIn() && isAdmi
 				if($db->siteclosed == 0)
 				{
 					// Close website button
-					$conn->query("UPDATE settings SET siteclosed = '1'");
+					$statement = $conn->prepare("UPDATE settings SET siteclosed = '1', sitemessage = ?");
+					$statement->bind_param("s", $_POST['sitemessage']);
+					$statement->execute();
 				}
 				else
 				{
 					// Open website button
-					$conn->query("UPDATE settings SET siteclosed = '0'");
+					$statement = $conn->prepare("UPDATE settings SET siteclosed = '0', sitemessage = NULL");
+					$statement->execute();
 				}
 			}
 			
@@ -2174,12 +2036,14 @@ if(isset($_GET['do']) && $_GET['do'] == "changesettings" && loggedIn() && isAdmi
 				if($db->signupclosed == 0)
 				{
 					// Close sign up button
-					$conn->query("UPDATE settings SET signupclosed = '1'");
+					$statement = $conn->prepare("UPDATE settings SET signupclosed = '1'");
+					$statement->execute();
 				}
 				else
 				{
 					// Open sign up button
-					$conn->query("UPDATE settings SET signupclosed = '0'");
+					$statement = $conn->prepare("UPDATE settings SET signupclosed = '0'");
+					$statement->execute();
 				}
 			}
 			
@@ -2197,7 +2061,9 @@ if(isset($_GET['do']) && $_GET['do'] == "changesettings" && loggedIn() && isAdmi
 				if($_POST['supportgoal'] != "" && is_numeric($_POST['supportgoal']))
 				{
 					// Query
-					$conn->query("UPDATE settings SET supportgoal = '".cleanInput($_POST['supportgoal'])."'");
+					$statement = $conn->prepare("UPDATE settings SET supportgoal = ?");
+					$statement->bind_param("i", $_POST['supportgoal']);
+					$statement->execute();
 				}
 			}
 		}
@@ -2214,49 +2080,32 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 		if($_POST['eventName'] != "" && $_POST['eventVenue'] != "" && $_POST['location'] != "" && $_POST['dateStart'] != "" && $_POST['dateEnd'] != "" && $_POST['numberOfAttend'] != "" && $_POST['requestedNumber'] != "" && $_POST['secure'] != "" && $_POST['blasters'] != "" && $_POST['lightsabers'] != "" && $_POST['parking'] != "null" && $_POST['mobility'] != "null" && $_POST['label'] != "null" && $_POST['limitedEvent'] != "null")
 		{
 			// Clean date input
-			$date1 = date('Y-m-d H:i:s', strtotime(cleanInput($_POST['dateStart'])));
-			$date2 = date('Y-m-d H:i:s', strtotime(cleanInput($_POST['dateEnd'])));
-
-			// Set up add to query
-			$addToQuery1 = "";
-			$addToQuery2 = "";
+			$date1 = date('Y-m-d H:i:s', strtotime($_POST['dateStart']));
+			$date2 = date('Y-m-d H:i:s', strtotime($_POST['dateEnd']));
+			
+			// Create event and grab last inserted event ID
+			$eventId = createEvent($_POST['eventName'], $_POST['eventVenue'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['referred'], $_POST['poc'], $_POST['comments'], $_POST['location'], $_POST['label'], $_POST['limitedEvent'], $_POST['limit501st'], $_POST['limitTotalTroopers'], $_POST['limitHandlers'], $_POST['friendLimit'], $_POST['allowTentative'], $_POST['squadm']);
 
 			// Loop through clubs
 			foreach($clubArray as $club => $club_value)
 			{
-				// Add
-				$addToQuery1 .= "".$club_value['dbLimit'].", ";
-				$addToQuery2 .= "'".cleanInput($_POST[$club_value['dbLimit']])."', ";
-			}
-			
-			// Query the database
-			$conn->query("INSERT INTO events (name, venue, dateStart, dateEnd, website, numberOfAttend, requestedNumber, requestedCharacter, secureChanging, blasters, lightsabers, parking, mobility, amenities, referred, comments, location, label, limitedEvent, limitTo, limit501st, limitTotalTroopers, ".$addToQuery1."squad) VALUES ('".cleanInput($_POST['eventName'])."', '".cleanInput($_POST['eventVenue'])."', '".cleanInput($date1)."', '".cleanInput($date2)."', '".cleanInput($_POST['website'])."', '".cleanInput($_POST['numberOfAttend'])."', '".cleanInput($_POST['requestedNumber'])."', '".cleanInput($_POST['requestedCharacter'])."', '".cleanInput($_POST['secure'])."', '".cleanInput($_POST['blasters'])."', '".cleanInput($_POST['lightsabers'])."', '".cleanInput($_POST['parking'])."', '".cleanInput($_POST['mobility'])."', '".cleanInput($_POST['amenities'])."', '".cleanInput($_POST['referred'])."', '".cleanInput($_POST['comments'])."', '".cleanInput($_POST['location'])."', '".cleanInput($_POST['label'])."', '".cleanInput($_POST['limitedEvent'])."', '".cleanInput($_POST['era'])."', '".cleanInput($_POST['limit501st'])."', '".cleanInput($_POST['limitTotalTroopers'])."', ".$addToQuery2."'".cleanInput($_POST['squadm'])."')") or die($conn->error);
-			
-			// Event ID - Last insert from database
-			$eventId = $conn->insert_id;
-
-			// Only create thread if we can and admin allows
-			if($_POST['postToBoards'] == 1 && $_POST['squadm'] != 0)
-			{
-				// Make thread body
-				$thread_body = threadTemplate($_POST['eventName'], $_POST['eventVenue'], $_POST['location'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['comments'], $_POST['referred'], $eventId);
-
-				// Create thread on forum
-				$thread = createThread($squadArray[intval($_POST['squadm'] - 1)]['eventForum'], date("m/d/y", strtotime($date1)) . " " . $_POST['eventName'], $thread_body);
-
-				// Lock the thread
-				lockThread($thread['thread']['thread_id']);
-
-				// Update event with thread and post IDs
-				$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."', post_id = '".$thread['thread']['last_post_id']."' WHERE id = '".$eventId."'");
+				// Update limits for each club
+				$statement = $conn->prepare("UPDATE events SET " . $club_value['dbLimit'] . " = ? WHERE id = ?");
+				$statement->bind_param("ii", $_POST[$club_value['dbLimit']], $eventId);
+				$statement->execute();
 			}
 
 			// Only notify if event is in the future
 			if(strtotime($date1) > strtotime("now"))
 			{
 				// Send to database to send out notifictions later
-				$conn->query("INSERT INTO notification_check (troopid) VALUES ($eventId)");
+				$statement = $conn->prepare("INSERT INTO notification_check (troopid) VALUES (?)");
+				$statement->bind_param("i", $eventId);
+				$statement->execute();
 			}
+
+			// Check if is shift event
+			$isShift = false;
 			
 			// Loop through shifts
 			foreach($_POST as $key => $value)
@@ -2268,56 +2117,126 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 					$pair = $value;
 					
 					// Verify there is a value in both dates before inserting data
-					if(cleanInput($_POST['adddateStart' . $pair]) != "" && cleanInput($_POST['adddateEnd' . $pair]) != "")
+					if($_POST['adddateStart' . $pair] != "" && $_POST['adddateEnd' . $pair] != "")
 					{
+						// Set shift event
+						$isShift = true;
+					
 						// Clean date input
-						$date1 = date('Y-m-d H:i:s', strtotime(cleanInput($_POST['adddateStart' . $pair])));
-						$date2 = date('Y-m-d H:i:s', strtotime(cleanInput($_POST['adddateEnd' . $pair])));
+						$date1 = date('Y-m-d H:i:s', strtotime($_POST['adddateStart' . $pair]));
+						$date2 = date('Y-m-d H:i:s', strtotime($_POST['adddateEnd' . $pair]));
 
-						// Set up add to query
-						$addToQuery1 = "";
-						$addToQuery2 = "";
+						// Create event and grab last inserted event ID
+						$last_id = createEvent($_POST['eventName'], $_POST['eventVenue'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['referred'], $_POST['poc'], $_POST['comments'], $_POST['location'], $_POST['label'], $_POST['limitedEvent'], $_POST['limit501st'], $_POST['limitTotalTroopers'], $_POST['limitHandlers'], $_POST['friendLimit'], $_POST['allowTentative'], $_POST['squadm']);
 
 						// Loop through clubs
 						foreach($clubArray as $club => $club_value)
 						{
-							// Add
-							$addToQuery1 .= "".$club_value['dbLimit'].", ";
-							$addToQuery2 .= "'".cleanInput($_POST[$club_value['dbLimit']])."', ";
+							// Update limits for each club
+							$statement = $conn->prepare("UPDATE events SET " . $club_value['dbLimit'] . " = ? WHERE id = ?");
+							$statement->bind_param("ii", $_POST[$club_value['dbLimit']], $last_id);
+							$statement->execute();
 						}
-					
-						// Query the database
-						$conn->query("INSERT INTO events (name, venue, dateStart, dateEnd, website, numberOfAttend, requestedNumber, requestedCharacter, secureChanging, blasters, lightsabers, parking, mobility, amenities, referred, comments, location, label, limitedEvent, limitTo, limit501st, limitTotalTroopers, ".$addToQuery1."squad, link) VALUES ('".cleanInput($_POST['eventName'])."', '".cleanInput($_POST['eventVenue'])."', '".$date1."', '".$date2."', '".cleanInput($_POST['website'])."', '".cleanInput($_POST['numberOfAttend'])."', '".cleanInput($_POST['requestedNumber'])."', '".cleanInput($_POST['requestedCharacter'])."', '".cleanInput($_POST['secure'])."', '".cleanInput($_POST['blasters'])."', '".cleanInput($_POST['lightsabers'])."', '".cleanInput($_POST['parking'])."', '".cleanInput($_POST['mobility'])."', '".cleanInput($_POST['amenities'])."', '".cleanInput($_POST['referred'])."', '".cleanInput($_POST['comments'])."', '".cleanInput($_POST['location'])."', '".cleanInput($_POST['label'])."', '".cleanInput($_POST['limitedEvent'])."', '".cleanInput($_POST['era'])."', '".cleanInput($_POST['limit501st'])."', '".cleanInput($_POST['limitTotalTroopers'])."', ".$addToQuery2."'".cleanInput($_POST['squadm'])."', '".$eventId."')") or die($conn->error);
-
-						// Last ID
-						$last_id = $conn->insert_id;
 
 						// Only create thread if we can and admin allows
-						if($_POST['postToBoards'] == 1 && $_POST['squadm'] != 0)
+						if($_POST['postToBoards'] == 1 && ($_POST['squadm'] != 0 || $_POST['label'] == 7 || $_POST['label'] == 4 || $_POST['label'] == 3))
 						{
 							// Make thread body
 							$thread_body = threadTemplate($_POST['eventName'], $_POST['eventVenue'], $_POST['location'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['comments'], $_POST['referred'], $last_id);
 
-							// Create thread on forum
-							$thread = createThread($squadArray[intval($_POST['squadm'] - 1)]['eventForum'], date("m/d/y", strtotime($date1)) . " " . $_POST['eventName'], $thread_body);
+							// ID of forum category
+							$forumCat = 0;
+							
+							// If a virtual troop, send to distance category
+							if($_POST['label'] == 7)
+							{
+								$forumCat = $virtualTroop;
+							}
+							else if($_POST['label'] == 4)
+							{
+								$forumCat = $conventionTroop;
+							}
+							else if($_POST['label'] == 3)
+							{
+								$forumCat = $disneyTroop;
+							}
+							else
+							{
+								$forumCat = $squadArray[intval($_POST['squadm'] - 1)]['eventForum'];
+							}
 
-							// Lock the thread
-							lockThread($thread['thread']['thread_id']);
+							// Create thread on forum
+							$thread = createThread($forumCat, date("m/d/y h:i A", strtotime($date1)) . " - " . date("h:i A", strtotime($date2)) . " " . $_POST['eventName'], $thread_body, getUserID($_SESSION['id']));
 
 							// Update event
-							$conn->query("UPDATE events SET thread_id = '".$thread['thread']['thread_id']."', post_id = '".$thread['thread']['last_post_id']."' WHERE id = '".$last_id."'");
+							$statement = $conn->prepare("UPDATE events SET thread_id = ?, post_id = ? WHERE id = ?");
+							$statement->bind_param("iii", $thread['thread']['thread_id'], $thread['thread']['last_post_id'], $last_id);
+							$statement->execute();
 						}
 
 						// Send notification to command staff
-						sendNotification(getName($_SESSION['id']) . " has added an event: [" . $last_id . "][" . cleanInput($_POST['eventName']) . "]", cleanInput($_SESSION['id']), 13, convertDataToJSON("SELECT * FROM events WHERE id = '".$last_id."'"));
+						sendNotification(getName($_SESSION['id']) . " has added an event: [" . $last_id . "][" . $_POST['eventName'] . "]", $_SESSION['id'], 13, convertDataToJSON("SELECT * FROM events WHERE id = '".$last_id."'"));
 					}
 				}
 			}
 
-			// Send notification to command staff
-			sendNotification(getName($_SESSION['id']) . " has added an event: [" . $eventId . "][" . cleanInput($_POST['eventName']) . "]", cleanInput($_SESSION['id']), 13, convertDataToJSON("SELECT * FROM events WHERE id = '".$eventId."'"));
+			// Only create thread if we can and admin allows (single event)
+			if($_POST['postToBoards'] == 1 && ($_POST['squadm'] != 0 || $_POST['label'] == 7 || $_POST['label'] == 4 || $_POST['label'] == 3))
+			{
+				// Make thread body
+				$thread_body = threadTemplate($_POST['eventName'], $_POST['eventVenue'], $_POST['location'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['comments'], $_POST['referred'], $eventId);
 
-			$array = array('success' => 'success', 'data' => 'Event created!');
+				// ID of forum category
+				$forumCat = 0;
+				
+				// If a virtual troop, send to distance category
+				if($_POST['label'] == 7)
+				{
+					$forumCat = $virtualTroop;
+				}
+				else if($_POST['label'] == 4)
+				{
+					$forumCat = $conventionTroop;
+				}
+				else if($_POST['label'] == 3)
+				{
+					$forumCat = $disneyTroop;
+				}
+				else
+				{
+					$forumCat = $squadArray[intval($_POST['squadm'] - 1)]['eventForum'];
+				}
+
+				// Set title
+				$title = date("m/d/y", strtotime($date1)) . " " . $_POST['eventName'];
+
+				// Change date based on event type
+				if($isShift) {
+					// Fix where wrong date would be posted on forum
+					$date1 = date('Y-m-d H:i:s', strtotime($_POST['dateStart']));
+					$date2 = date('Y-m-d H:i:s', strtotime($_POST['dateEnd']));
+					
+					// Set up title
+					$title = date("m/d/y h:i A", strtotime($date1)) . " - " . date("h:i A", strtotime($date2)) . " " . $_POST['eventName'];
+				}
+
+				// Create thread on forum
+				$thread = createThread($forumCat, $title, $thread_body, getUserID($_SESSION['id']));
+
+				// Make sure value is set from createThread
+				if(isset($thread['thread']['thread_id']))
+				{
+					// Update event with thread and post IDs
+					$statement = $conn->prepare("UPDATE events SET thread_id = ?, post_id = ? WHERE id = ?");
+					$statement->bind_param("iii", $thread['thread']['thread_id'], $thread['thread']['last_post_id'], $eventId);
+					$statement->execute();
+				}
+			}
+
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has added an event: [" . $eventId . "][" . $_POST['eventName'] . "]", $_SESSION['id'], 13, convertDataToJSON("SELECT * FROM events WHERE id = '".$eventId."'"));
+
+			$array = array('success' => 'success', 'data' => 'Event created!', 'eventid' => $eventId);
 			echo json_encode($array);
 		}
 		else
@@ -2335,17 +2254,19 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 	if(isset($_POST['submitEditRoster']))
 	{	
 		// Query the database
-		$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costumeValSelect' . $_POST['trooperSelectEdit'] . ''])."', costume_backup = '".cleanInput($_POST['costumeVal' . $_POST['trooperSelectEdit'] . ''])."', status = '".cleanInput($_POST['statusVal' . $_POST['trooperSelectEdit'] . ''])."' WHERE trooperid = '".cleanInput($_POST['trooperSelectEdit'])."' AND troopid = '".cleanInput($_POST['eventId'])."' AND id = '".cleanInput($_POST['signid'])."'") or die($conn->error);
+		$statement = $conn->prepare("UPDATE event_sign_up SET costume = ?, costume_backup = ?, status = ? WHERE trooperid = ? AND troopid = ? AND id = ?");
+		$statement->bind_param("iiiiii", $_POST['costumeValSelect' . $_POST['trooperSelectEdit'] . ''], $_POST['costumeVal' . $_POST['trooperSelectEdit'] . ''], $_POST['statusVal' . $_POST['trooperSelectEdit'] . ''], $_POST['trooperSelectEdit'], $_POST['eventId'], $_POST['signid']);
+		$statement->execute();
 
 		// If set as attended, check trooper counts
-		if(cleanInput($_POST['statusVal' . $_POST['trooperSelectEdit'] . '']) == 3)
+		if($_POST['statusVal' . $_POST['trooperSelectEdit'] . ''] == 3)
 		{
 			// Check troops for notification
-			troopCheck(cleanInput($_POST['trooperSelectEdit']));
+			troopCheck($_POST['trooperSelectEdit']);
 		}
 
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has edited event ID: [" . cleanInput($_POST['eventId']) . "] by updating trooper ID: [" . cleanInput($_POST['trooperSelectEdit']) . "].", cleanInput($_SESSION['id']), 14, convertDataToJSON("SELECT * FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['trooperSelectEdit'])."' AND troopid = '".cleanInput($_POST['eventId'])."' AND id = '".cleanInput($_POST['signid'])."'"));
+		sendNotification(getName($_SESSION['id']) . " has edited event ID: [" . $_POST['eventId'] . "] by updating trooper ID: [" . $_POST['trooperSelectEdit'] . "].", $_SESSION['id'], 14, convertDataToJSON("SELECT * FROM event_sign_up WHERE trooperid = '".$_POST['trooperSelectEdit']."' AND troopid = '".$_POST['eventId']."' AND id = '".$_POST['signid']."'"));
 
 		// Send back data
 		$array = array('success' => 'success', 'id' => $_SESSION['id']);
@@ -2356,33 +2277,30 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 	if(isset($_POST['troopRosterFormAdd']))
 	{
 		// Does this trooper already exist in roster?
-		$query = "SELECT * FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['trooperSelect'])."' AND troopid = '".cleanInput($_POST['troopid'])."' AND trooperid != ".placeholder."";
-		$i = 0;
-		if ($result = mysqli_query($conn, $query))
-		{
-			while ($db = mysqli_fetch_object($result))
-			{
-				// Increment
-				$i++;
-			}
-		}
+		$statement = $conn->prepare("SELECT * FROM event_sign_up WHERE trooperid = ? AND troopid = ? AND trooperid != ".placeholder."");
+		$statement->bind_param("ii", $_POST['trooperSelect'], $_POST['troopid']);
+		$statement->execute();
+		$statement->store_result();
+		$trooperExist = $statement->num_rows;
 		
 		// Final check before adding to roster
-		if(cleanInput($_POST['costume']) != "null" && cleanInput($_POST['status']) != "null" && $i == 0)
+		if($_POST['costume'] != "null" && $_POST['status'] != "null" && $trooperExist == 0)
 		{
 			// Query the database
-			$conn->query("INSERT INTO event_sign_up (trooperid, troopid, costume, costume_backup, status) VALUES ('".cleanInput($_POST['trooperSelect'])."', '".cleanInput($_POST['troopid'])."', '".cleanInput($_POST['costume'])."', '".cleanInput($_POST['costumebackup'])."', '".cleanInput($_POST['status'])."')") or die($conn->error);
+			$statement = $conn->prepare("INSERT INTO event_sign_up (trooperid, troopid, costume, costume_backup, status) VALUES (?, ?, ?, ?, ?)");
+			$statement->bind_param("iiiii", $_POST['trooperSelect'], $_POST['troopid'], $_POST['costume'], $_POST['costumebackup'], $_POST['status']);
+			$statement->execute();
 			$last_id = $conn->insert_id;
 			
 			// If status is attended
-			if(cleanInput($_POST['status']) == 3)
+			if($_POST['status'] == 3)
 			{
 				// Check troops for notification
-				troopCheck(cleanInput($_POST['trooperSelect']));
+				troopCheck($_POST['trooperSelect']);
 			}
 			
 			// Send notification to command staff
-			sendNotification(getName($_SESSION['id']) . " has added trooper ID [".cleanInput($_POST['trooperSelect'])."] to event ID [" . cleanInput($_POST['troopid']) . "]", cleanInput($_SESSION['id']), 15, convertDataToJSON("SELECT * FROM event_sign_up WHERE id = '".$last_id."'"));
+			sendNotification(getName($_SESSION['id']) . " has added trooper ID [".$_POST['trooperSelect']."] to event ID [" . $_POST['troopid'] . "]", $_SESSION['id'], 15, convertDataToJSON("SELECT * FROM event_sign_up WHERE id = '".$last_id."'"));
 			
 			// Send back data
 			$array = array('success' => 'success', 'signid' => $last_id);
@@ -2394,116 +2312,175 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 	if(isset($_POST['submitDelete']))
 	{
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has deleted event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']), 16, convertDataToJSON("SELECT * FROM events WHERE id = '".cleanInput($_POST['eventId'])."'"));
+		sendNotification(getName($_SESSION['id']) . " has deleted event ID: [" . $_POST['eventId'] . "]", $_SESSION['id'], 16, convertDataToJSON("SELECT * FROM events WHERE id = '".$_POST['eventId']."'"));
 
 		// Get number of events with link
-		$getNumOfLinks = $conn->query("SELECT id FROM events WHERE link = '".cleanInput($_POST['eventId'])."'");
+		$statement = $conn->prepare("SELECT id FROM events WHERE link = ?");
+		$statement->bind_param("i", $_POST['eventId']);
+		$statement->execute();
+		$statement->store_result();
+		$getNumOfLinks = $statement->num_rows;
 
 		// Delete thread on forum
-		if(getEventThreadID(cleanInput($_POST['eventId'])) != 0)
+		if(getEventThreadID($_POST['eventId']) != 0)
 		{
-			deleteThread(getEventThreadID(cleanInput($_POST['eventId'])), true);
+			deleteThread(getEventThreadID($_POST['eventId']), true);
 		}
 		
 		// Query the database
-		$conn->query("DELETE FROM events WHERE id = '".cleanInput($_POST['eventId'])."'");
+		$statement = $conn->prepare("DELETE FROM events WHERE id = ?");
+		$statement->bind_param("i", $_POST['eventId']);
+		$statement->execute();
 
 		// Delete from sign ups - event_sign_up
-		$conn->query("DELETE FROM event_sign_up WHERE troopid = '".cleanInput($_POST['eventId'])."'");
+		$statement = $conn->prepare("DELETE FROM event_sign_up WHERE troopid = ?");
+		$statement->bind_param("i", $_POST['eventId']);
+		$statement->execute();
 		
 		// Delete from event_notifications
-		$conn->query("DELETE FROM event_notifications WHERE troopid = '".cleanInput($_POST['eventId'])."'");
+		$statement = $conn->prepare("DELETE FROM event_notifications WHERE troopid = ?");
+		$statement->bind_param("i", $_POST['eventId']);
+		$statement->execute();
 		
 		// Delete from notification_check
-		$conn->query("DELETE FROM notification_check WHERE troopid = '".cleanInput($_POST['eventId'])."'");
+		$statement = $conn->prepare("DELETE FROM notification_check WHERE troopid = ?");
+		$statement->bind_param("i", $_POST['eventId']);
+		$statement->execute();
 		
 		// If this event is the main link to others
-		if($getNumOfLinks->num_rows > 0)
+		if($getNumOfLinks > 0)
 		{
 			// Get lowest event for link change
-			$getLinkChange = $conn->query("SELECT id FROM events WHERE link = '".cleanInput($_POST['eventId'])."' ORDER BY id ASC LIMIT 1");
-			$getLinkVal = $getLinkChange->fetch_row()[0];
+			$statement = $conn->prepare("SELECT id FROM events WHERE link = ? ORDER BY id ASC LIMIT 1");
+			$statement->bind_param("i", $_POST['eventId']);
+			$statement->execute();
+			$statement->bind_result($getLinkVal);
+			$statement->fetch();
+			$statement->close();
 			
 			// Set link to new main event
-			$conn->query("UPDATE events SET link = '".$getLinkVal."' WHERE link = '".cleanInput($_POST['eventId'])."'");
+			$statement = $conn->prepare("UPDATE events SET link = '" . $getLinkVal . "' WHERE link = ?");
+			$statement->bind_param("i", $_POST['eventId']);
+			$statement->execute();
 			
 			// Remove link from main event
-			$conn->query("UPDATE events SET link = '0' WHERE id = '".$getLinkVal."'");
+			$statement = $conn->prepare("UPDATE events SET link = '0' WHERE id = '".$getLinkVal."'");
+			$statement->execute();
 		}
 	}
 	
-	// Event submitted for lock...
-	if(isset($_POST['submitLock']))
-	{
-		// Query the database
-		$conn->query("UPDATE events SET closed = '3' WHERE id = '".cleanInput($_POST['eventId'])."'");
-		
-		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has locked event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
-	}
 
-	// Event submitted for cancelation...
-	if(isset($_POST['submitCancel']))
-	{
-		// Query the database
-		$conn->query("UPDATE events SET closed = '2' WHERE id = '".cleanInput($_POST['eventId'])."'");
-		
-		// Prepare notification
-		$query = "SELECT * FROM event_sign_up WHERE troopid = '".cleanInput($_POST['eventId'])."'";
-		if ($result = mysqli_query($conn, $query))
-		{
-			while ($db = mysqli_fetch_object($result))
-			{
-				// Insert into notification_check
-				$conn->query("INSERT INTO notification_check (troopid, trooperid, troopstatus) VALUES ('".$db->troopid."', '".$db->trooperid."', 2)");
-			}
-		}
-
-		// Delete from sign ups - event_sign_up
-		$conn->query("DELETE FROM event_sign_up WHERE troopid = '".cleanInput($_POST['eventId'])."'");
-		
-		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has canceled event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
-	}
-
-	// Event submitted for completion...
-	if(isset($_POST['submitFinish']))
-	{
-		// Query the database
-		$conn->query("UPDATE events SET closed = '1' WHERE id = '".cleanInput($_POST['eventId'])."'");
-		
-		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has finished event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
-	}
-	
-	// Event submitted for open...
-	if(isset($_POST['submitOpen']))
-	{
-		// Query the database
-		$conn->query("UPDATE events SET closed = '0' WHERE id = '".cleanInput($_POST['eventId'])."'");
-		
-		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has reopened event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']));
-	}
 	
 	// Charity submitted for event...
 	if(isset($_POST['submitCharity']))
 	{
+		// Form Check
+		if(!is_numeric($_POST['charityDirectFunds'])) { return false; }
+		if(!is_numeric($_POST['charityIndirectFunds'])) { return false; }
+		if(!is_numeric($_POST['charityAddHours'])) { return false; }
+
 		// Query the database
-		$conn->query("UPDATE events SET moneyRaised = '".cleanInput($_POST['charity'])."' WHERE id = '".cleanInput($_POST['eventId'])."'");
+		$_POST['charityName'] = cleanInput($_POST['charityName']);
+		$_POST['charityNote'] = cleanInput($_POST['charityNote']);
+		$statement = $conn->prepare("UPDATE events SET charityDirectFunds = ?, charityIndirectFunds = ?, charityName = ?, charityAddHours = ?, charityNote = ? WHERE id = ?");
+		$statement->bind_param("iisisi", $_POST['charityDirectFunds'], $_POST['charityIndirectFunds'], $_POST['charityName'], $_POST['charityAddHours'], $_POST['charityNote'], $_POST['eventId']);
+		$statement->execute();
 		
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has set charity raised to [".cleanInput($_POST['charity'])."] on event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']), 17, json_encode(array("id" => cleanInput($_POST['eventId']), "moneyRaised" => cleanInput($_POST['charity']))));
+		sendNotification(getName($_SESSION['id']) . " has updated charity on event ID: [" . $_POST['eventId'] . "]", $_SESSION['id'], 17, json_encode(array("id" => $_POST['eventId'], "charityDirectFunds" => $_POST['charityDirectFunds'], "charityIndirectFunds" => $_POST['charityIndirectFunds'], "charityName" => $_POST['charityName'], "charityAddHours" => $_POST['charityAddHours'], "charityNote" => $_POST['charityNote'])));
+	}
+
+	// Event status set...
+	if(isset($_POST['eventStatus']))
+	{
+		// Event submitted for lock...
+		if($_POST['eventStatus'] == 3)
+		{
+			// Query the database
+			$statement = $conn->prepare("UPDATE events SET closed = '3' WHERE id = ?");
+			$statement->bind_param("i", $_POST['eventId']);
+			$statement->execute();
+			
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has locked event ID: [" . $_POST['eventId'] . "]", $_SESSION['id']);
+		}
+		// Event submitted for cancelation...
+		else if($_POST['eventStatus'] == 2)
+		{
+			// Query the database
+			$statement = $conn->prepare("UPDATE events SET closed = '2' WHERE id = ?");
+			$statement->bind_param("i", $_POST['eventId']);
+			$statement->execute();
+			
+			// Prepare notification
+			$statement = $conn->prepare("SELECT * FROM event_sign_up WHERE troopid = ?");
+			$statement->bind_param("i", $_POST['eventId']);
+			$statement->execute();
+
+			if ($result = $statement->get_result())
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					// Insert into notification_check
+					$statement = $conn->prepare("INSERT INTO notification_check (troopid, trooperid, troopstatus) VALUES (?, ?, 2)");
+					$statement->bind_param("ii", $db->troopid, $db->trooperid);
+					$statement->execute();
+				}
+			}
+
+			// Delete from sign ups - event_sign_up
+			$statement = $conn->prepare("DELETE FROM event_sign_up WHERE troopid = ?");
+			$statement->bind_param("i", $_POST['eventId']);
+			$statement->execute();
+			
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has canceled event ID: [" . $_POST['eventId'] . "]", $_SESSION['id']);
+		}
+		// Event submitted for completion...
+		else if($_POST['eventStatus'] == 1)
+		{
+			// Query the database
+			$statement = $conn->prepare("UPDATE events SET closed = '1' WHERE id = ?");
+			$statement->bind_param("i", $_POST['eventId']);
+			$statement->execute();
+			
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has finished event ID: [" . $_POST['eventId'] . "]", $_SESSION['id']);
+		}
+		// Event submitted for open...
+		else if($_POST['eventStatus'] == 0)
+		{
+			// Query the database
+			$statement = $conn->prepare("UPDATE events SET closed = '0' WHERE id = ?");
+			$statement->bind_param("i", $_POST['eventId']);
+			$statement->execute();
+			
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has reopened event ID: [" . $_POST['eventId'] . "]", $_SESSION['id']);
+		}
+		// Event submitted for set full...
+		else if($_POST['eventStatus'] == 4)
+		{
+			// Query the database
+			$statement = $conn->prepare("UPDATE events SET closed = '4' WHERE id = ?");
+			$statement->bind_param("i", $_POST['eventId']);
+			$statement->execute();
+			
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has set event ID: [" . $_POST['eventId'] . "] to full.", $_SESSION['id']);
+		}
 	}
 
 	// Advanced options set...
 	if(isset($_POST['submitAdvanced']))
 	{
 		// Query the database
-		$conn->query("UPDATE events SET thread_id = '".cleanInput($_POST['threadIDA'])."', post_id = '".cleanInput($_POST['postIDA'])."' WHERE id = '".cleanInput($_POST['eventId'])."'");
+		$statement = $conn->prepare("UPDATE events SET thread_id = ?, post_id = ? WHERE id = ?");
+		$statement->bind_param("iii", $_POST['threadIDA'], $_POST['postIDA'], $_POST['eventId']);
+		$statement->execute();
 		
 		// Send notification to command staff
-		sendNotification(getName($_SESSION['id']) . " has set thread ID to [".cleanInput($_POST['threadIDA'])."], post ID to [".cleanInput($_POST['postIDA'])."] on event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']), 26, json_encode(array("id" => cleanInput($_POST['eventId']), "thread_id" => cleanInput($_POST['threadIDA']), "post_id" => cleanInput($_POST['postIDA']))));
+		sendNotification(getName($_SESSION['id']) . " has set thread ID to [".$_POST['threadIDA']."], post ID to [".$_POST['postIDA']."] on event ID: [" . $_POST['eventId'] . "]", $_SESSION['id'], 26, json_encode(array("id" => $_POST['eventId'], "thread_id" => $_POST['threadIDA'], "post_id" => $_POST['postIDA'])));
 	}
 
 	// Remove trooper from roster
@@ -2514,10 +2491,12 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			$array = array('success' => 'true', 'data' => 'Trooper removed!');
 			
 			// Send notification to command staff
-			sendNotification(getName($_SESSION['id']) . " has removed trooper ID [".cleanInput($_POST['trooperSelectEdit'])."] on event ID: [" . cleanInput($_POST['eventId']) . "]", cleanInput($_SESSION['id']), 18, convertDataToJSON("SELECT * FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['trooperSelectEdit'])."' AND troopid = '".cleanInput($_POST['eventId'])."' AND id = '".cleanInput($_POST['signid'])."'"));
+			sendNotification(getName($_SESSION['id']) . " has removed trooper ID [".$_POST['trooperSelectEdit']."] on event ID: [" . $_POST['eventId'] . "]", $_SESSION['id'], 18, convertDataToJSON("SELECT * FROM event_sign_up WHERE trooperid = '".$_POST['trooperSelectEdit']."' AND troopid = '".$_POST['eventId']."' AND id = '".$_POST['signid']."'"));
 
 			// Query the database
-			$conn->query("DELETE FROM event_sign_up WHERE trooperid = '".cleanInput($_POST['trooperSelectEdit'])."' AND troopid = '".cleanInput($_POST['eventId'])."' AND id = '".cleanInput($_POST['signid'])."'");
+			$statement = $conn->prepare("DELETE FROM event_sign_up WHERE trooperid = ? AND troopid = ? AND id = ?");
+			$statement->bind_param("iii", $_POST['trooperSelectEdit'], $_POST['eventId'], $_POST['signid']);
+			$statement->execute();
 		}
 		else
 		{
@@ -2535,24 +2514,15 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		$costumesID = array();
 		
 		// Display costumes
-		$query2 = "SELECT * FROM costumes";
-		$limitToGet = $conn->query("SELECT limitTo FROM events WHERE id = '".cleanInput($_POST['eventId'])."'") or die($conn->error);
-		$limitToGetVal = $limitToGet->fetch_row();
+		$statement = $conn->prepare("SELECT * FROM costumes ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id']).") DESC, costume");
+		$statement->execute();
 		
-		// If limited to certain costumes, only show certain costumes...
-		if($limitToGetVal[0] < 4)
+		if ($result = $statement->get_result())
 		{
-			$query2 .= " WHERE era = '".$limitToGetVal[0]."' OR era = '4'";
-		}
-		
-		$query2 .= " ORDER BY FIELD(costume, ".$mainCostumes.") DESC, costume";
-		
-		if ($result2 = mysqli_query($conn, $query2))
-		{
-			while ($db2 = mysqli_fetch_object($result2))
+			while ($db = mysqli_fetch_object($result))
 			{
-				array_push($costumesID, $db2->id);
-				array_push($costumesName, $db2->costume);
+				array_push($costumesID, $db->id);
+				array_push($costumesName, $db->costume);
 			}
 		}
 		
@@ -2565,9 +2535,12 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		</script>';
 							
 		// Load users assigned to event
-		$query = "SELECT * FROM event_sign_up WHERE troopid = '".cleanInput($_POST['eventId'])."' ORDER BY id ASC";
+		$statement = $conn->prepare("SELECT * FROM event_sign_up WHERE troopid = ? ORDER BY id ASC");
+		$statement->bind_param("i", $_POST['eventId']);
+		$statement->execute();
 		$i = 0;
-		if ($result = mysqli_query($conn, $query))
+
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -2587,13 +2560,21 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				<tr name="roster_'.$db->trooperid.'" signid="'.$db->id.'">
 					<td>
 						<input type="hidden" name="tkid" signid="'.$db->id.'" value = "'.getTKNumber($db->trooperid).'" />
-						<input type="hidden" name="troopername" signid="'.$db->id.'" value = "'.getName(cleanInput($db->trooperid)).'" />
+						<input type="hidden" name="troopername" signid="'.$db->id.'" value = "'.getName($db->trooperid).'" />
 						<input type="hidden" name="eventId" signid="'.$db->id.'" value = "'.cleanInput($_POST['eventId']).'" />
 						<input type="radio" name="trooperSelectEdit" signid="'.$db->id.'" value="'.$db->trooperid.'" signid="'.$db->id.'" />
 					</td>
 
 					<td>
-						<div name="tknumber1'.$db->trooperid.'" signid="'.$db->id.'"><a href="index.php?profile='.$db->trooperid.'" target="_blank">'.readTKNumber(getTKNumber($db->trooperid), getSquadID($db->trooperid)).' - '.getName($db->trooperid).'</a></div>
+						<div name="tknumber1'.$db->trooperid.'" signid="'.$db->id.'"><a href="index.php?profile='.$db->trooperid.'" target="_blank">'.readTKNumber(getTKNumber($db->trooperid), getSquadID($db->trooperid)).' - '.getName($db->trooperid).'</a></div>';
+
+						// If placeholder
+						if($db->trooperid == placeholder)
+						{
+							echo '<input type="text" name="placeholdertext" signid="'.$db->id.'" value="'.$db->note.'" />';
+						}
+
+					echo '
 					</td>
 
 					<td>
@@ -2682,6 +2663,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 								<option value="4" '.echoSelect(4, $db->status).'>Canceled</option>
 								<option value="5" '.echoSelect(5, $db->status).'>Pending</option>
 								<option value="6" '.echoSelect(6, $db->status).'>Not Picked</option>
+								<option value="7" '.echoSelect(7, $db->status).'>No Show</option>
 							</select>
 						</div>
 					</td>
@@ -2719,10 +2701,12 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		}
 
 		// Load all users
-		$query = "SELECT troopers.id AS troopida, troopers.name AS troopername, troopers.tkid, troopers.squad FROM troopers WHERE NOT EXISTS (SELECT event_sign_up.trooperid FROM event_sign_up WHERE event_sign_up.trooperid = troopers.id AND event_sign_up.troopid = '".cleanInput($_POST['eventId'])."' AND event_sign_up.trooperid != ".placeholder.") ORDER BY troopers.name";
+		$statement = $conn->prepare("SELECT troopers.id AS troopida, troopers.name AS troopername, troopers.tkid, troopers.squad FROM troopers WHERE NOT EXISTS (SELECT event_sign_up.trooperid FROM event_sign_up WHERE event_sign_up.trooperid = troopers.id AND event_sign_up.troopid = ? AND event_sign_up.trooperid != ".placeholder.") ORDER BY troopers.name");
+		$statement->bind_param("i", $_POST['eventId']);
+		$statement->execute();
 
 		$i = 0;
-		if ($result = mysqli_query($conn, $query) or die($conn->error))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
@@ -2825,12 +2809,15 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 	if(isset($_POST['submitEdit']))
 	{
 		// Load event info
-		$query = "SELECT * FROM events WHERE id = '".cleanInput($_POST['eventId'])."'";
-		if ($result = mysqli_query($conn, $query))
+		$statement = $conn->prepare("SELECT * FROM events WHERE id = ?");
+		$statement->bind_param("i", $_POST['eventId']);
+		$statement->execute();
+
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$array = array('id' => $db->id, 'name' => $db->name, 'venue' => $db->venue, 'dateStart' => $db->dateStart, 'dateEnd' => $db->dateEnd, 'website' => $db->website, 'numberOfAttend' => $db->numberOfAttend, 'requestedNumber' => $db->requestedNumber, 'requestedCharacter' => $db->requestedCharacter, 'secureChanging' => $db->secureChanging, 'blasters' => $db->blasters, 'lightsabers' => $db->lightsabers, 'parking' => $db->parking, 'mobility' => $db->mobility, 'amenities' => $db->amenities, 'referred' => $db->referred, 'comments' => $db->comments, 'location' => $db->location, 'squad' => $db->squad, 'label' => $db->label, 'postComment' => $db->postComment, 'notes' => $db->notes, 'limitedEvent' => $db->limitedEvent, 'limitTo' => $db->limitTo, 'limit501st' => $db->limit501st, 'limitTotalTroopers' => $db->limitTotalTroopers, 'closed' => $db->closed, 'moneyRaised' => $db->moneyRaised, 'eventLink' => $db->link, 'thread_id' => $db->thread_id, 'post_id' => $db->post_id);
+				$array = array('id' => $db->id, 'name' => readInput($db->name), 'venue' => readInput($db->venue), 'dateStart' => $db->dateStart, 'dateEnd' => $db->dateEnd, 'website' => readInput($db->website), 'numberOfAttend' => $db->numberOfAttend, 'requestedNumber' => $db->requestedNumber, 'requestedCharacter' => readInput($db->requestedCharacter), 'secureChanging' => $db->secureChanging, 'blasters' => $db->blasters, 'lightsabers' => $db->lightsabers, 'parking' => $db->parking, 'mobility' => $db->mobility, 'amenities' => readInput($db->amenities), 'referred' => readInput($db->referred), 'poc' => readInput($db->poc), 'comments' => readInput($db->comments), 'location' => readInput($db->location), 'squad' => $db->squad, 'label' => $db->label, 'postComment' => $db->postComment, 'notes' => readInput($db->notes), 'limitedEvent' => $db->limitedEvent, 'limit501st' => $db->limit501st, 'limitTotalTroopers' => $db->limitTotalTroopers, 'limitHandlers' => $db->limitHandlers, 'allowTentative' => $db->allowTentative, 'friendLimit' => $db->friendLimit, 'closed' => $db->closed, 'charityDirectFunds' => $db->charityDirectFunds, 'charityIndirectFunds' => $db->charityIndirectFunds, 'charityName' => readInput($db->charityName), 'charityAddHours' => $db->charityAddHours,'charityNote' => readInput($db->charityNote), 'eventLink' => $db->link, 'thread_id' => $db->thread_id, 'post_id' => $db->post_id);
 
 				// Loop through clubs
 				foreach($clubArray as $club => $club_value)
@@ -2855,34 +2842,52 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			$date2 = date('Y-m-d H:i:s', strtotime($_POST['dateEnd']));
 			
 			// Get number of events with link
-			$getNumOfLinks = $conn->query("SELECT id FROM events WHERE link = '".cleanInput($_POST['eventIdE'])."'");
-			
-			// Set up add to query
-			$addToQuery = "";
+			$statement = $conn->prepare("SELECT id FROM events WHERE link = ?");
+			$statement->bind_param("i", $_POST['eventIdE']);
+			$statement->execute();
+			$statement->store_result();
+			$getNumOfLinks = $statement->num_rows;
 			
 			// Loop through clubs
 			foreach($clubArray as $club => $club_value)
 			{
-				// Add
-				$addToQuery .= "" . $club_value['dbLimit'] . " = '".cleanInput($_POST[$club_value['dbLimit']])."', ";
+				$statement = $conn->prepare("UPDATE events SET " . $club_value['dbLimit'] . " = ? WHERE id = ? OR link = ? OR id = ?");
+				$statement->bind_param("iiii", $_POST[$club_value['dbLimit']], $_POST['eventIdE'], $_POST['eventLink'], $_POST['eventLink']);
+				$statement->execute();
 			}
+
+			$_POST['eventName'] = cleanInput($_POST['eventName']);
+			$_POST['eventVenue'] = cleanInput($_POST['eventVenue']);
+			$_POST['website'] = cleanInput($_POST['website']);
+			$_POST['requestedNumber'] = cleanInput($_POST['requestedNumber']);
+			$_POST['amenities'] = cleanInput($_POST['amenities']);
+			$_POST['referred'] = cleanInput($_POST['referred']);
+			$_POST['poc'] = cleanInput($_POST['poc']);
+			$_POST['comments'] = cleanInput($_POST['comments']);
+			$_POST['location'] = cleanInput($_POST['location']);
 			
 			// If event is linked
 			if($_POST['eventLink'] > 0)
 			{
 				// Query the database - linked
-				$conn->query("UPDATE events SET name = '".cleanInput($_POST['eventName'])."', venue =  '".cleanInput($_POST['eventVenue'])."', website = '".cleanInput($_POST['website'])."', numberOfAttend = '".cleanInput($_POST['numberOfAttend'])."', requestedNumber = '".cleanInput($_POST['requestedNumber'])."', requestedCharacter = '".cleanInput($_POST['requestedCharacter'])."', secureChanging = '".cleanInput($_POST['secure'])."', blasters = '".cleanInput($_POST['blasters'])."', lightsabers = '".cleanInput($_POST['lightsabers'])."', parking = '".cleanInput($_POST['parking'])."', mobility = '".cleanInput($_POST['mobility'])."', amenities = '".cleanInput($_POST['amenities'])."', referred = '".cleanInput($_POST['referred'])."', comments = '".cleanInput($_POST['comments'])."', location = '".cleanInput($_POST['location'])."', squad = '".cleanInput($_POST['squadm'])."', label = '".cleanInput($_POST['label'])."', limitedEvent = '".cleanInput($_POST['limitedEvent'])."', limitTo = '".cleanInput($_POST['era'])."', ".$addToQuery." limit501st = '".cleanInput($_POST['limit501st'])."', limitTotalTroopers = '".cleanInput($_POST['limitTotalTroopers'])."' WHERE id = '".cleanInput($_POST['eventIdE'])."' OR link = '".cleanInput($_POST['eventLink'])."' OR id = '".cleanInput($_POST['eventLink'])."'") or die($conn->error);
+				$statement = $conn->prepare("UPDATE events SET name = ?, venue =  ?, website = ?, numberOfAttend = ?, requestedNumber = ?, requestedCharacter = ?, secureChanging = ?, blasters = ?, lightsabers = ?, parking = ?, mobility = ?, amenities = ?, referred = ?, poc = ?, comments = ?, location = ?, squad = ?, label = ?, limitedEvent = ?, limit501st = ?, limitTotalTroopers = ?, limitHandlers = ?, friendLimit = ?, allowTentative = ? WHERE id = ? OR link = ? OR id = ?");
+				$statement->bind_param("sssiisiiiiisssssisiiiiiiiii", $_POST['eventName'], $_POST['eventVenue'], $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['referred'], $_POST['poc'], $_POST['comments'], $_POST['location'], $_POST['squadm'], $_POST['label'], $_POST['limitedEvent'], $_POST['limit501st'], $_POST['limitTotalTroopers'], $_POST['limitHandlers'], $_POST['friendLimit'], $_POST['allowTentative'], $_POST['eventIdE'], $_POST['eventLink'], $_POST['eventLink']);
+				$statement->execute();
 
 				// Update if limited event
-				resetTrooperStatus(cleanInput($_POST['eventIdE']), cleanInput($_POST['eventLink']));
-				resetTrooperStatus(cleanInput($_POST['eventLink']));
+				resetTrooperStatus($_POST['eventIdE'], $_POST['eventLink']);
+				resetTrooperStatus($_POST['eventLink']);
 				
 				// Update date
-				$conn->query("UPDATE events SET dateStart = '".cleanInput($date1)."', dateEnd = '".cleanInput($date2)."' WHERE id = '".cleanInput($_POST['eventIdE'])."'") or die($conn->error);
+				$statement = $conn->prepare("UPDATE events SET dateStart = ?, dateEnd = ? WHERE id = ?");
+				$statement->bind_param("ssi", $date1, $date2, $_POST['eventIdE']);
+				$statement->execute();
 
 				// Query database for event info from above
-				$query = "SELECT * FROM events WHERE thread_body != 0 AND id = '".cleanInput($_POST['eventIdE'])."' OR link = '".cleanInput($_POST['eventLink'])."' OR id = '".cleanInput($_POST['eventLink'])."'";
-				if ($result = mysqli_query($conn, $query))
+				$statement = $conn->prepare("SELECT * FROM events WHERE thread_id != 0 AND id = ? OR link = ? OR id = ?");
+				$statement->bind_param("iii", $_POST['eventIdE'], $_POST['eventLink'], $_POST['eventLink']);
+				$statement->execute();
+				if ($result = $statement->get_result())
 				{
 					while ($db = mysqli_fetch_object($result))
 					{
@@ -2891,24 +2896,39 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 
 						// Update thread
 						editPost($db->post_id, $thread_body);
-						moveThread($db->thread_id, $squadArray[intval(cleanInput($_POST['squadm']) - 1)]['eventForum']);
+						moveThread($db->thread_id, $squadArray[intval($_POST['squadm'] - 1)]['eventForum']);
 					}
 				}
 			}
-			else if($getNumOfLinks->num_rows > 0)
+			else if($getNumOfLinks > 0)
 			{
+				// Loop through clubs
+				foreach($clubArray as $club => $club_value)
+				{
+					$statement = $conn->prepare("UPDATE events SET " . $club_value['dbLimit'] . " = ? WHERE id = ? OR link = ?");
+					$statement->bind_param("iii", $_POST[$club_value['dbLimit']], $_POST['eventIdE'], $_POST['eventIdE']);
+					$statement->execute();
+				}
+
 				// Query the database - linked
-				$conn->query("UPDATE events SET name = '".cleanInput($_POST['eventName'])."', venue =  '".cleanInput($_POST['eventVenue'])."', website = '".cleanInput($_POST['website'])."', numberOfAttend = '".cleanInput($_POST['numberOfAttend'])."', requestedNumber = '".cleanInput($_POST['requestedNumber'])."', requestedCharacter = '".cleanInput($_POST['requestedCharacter'])."', secureChanging = '".cleanInput($_POST['secure'])."', blasters = '".cleanInput($_POST['blasters'])."', lightsabers = '".cleanInput($_POST['lightsabers'])."', parking = '".cleanInput($_POST['parking'])."', mobility = '".cleanInput($_POST['mobility'])."', amenities = '".cleanInput($_POST['amenities'])."', referred = '".cleanInput($_POST['referred'])."', comments = '".cleanInput($_POST['comments'])."', location = '".cleanInput($_POST['location'])."', squad = '".cleanInput($_POST['squadm'])."', label = '".cleanInput($_POST['label'])."', limitedEvent = '".cleanInput($_POST['limitedEvent'])."', limitTo = '".cleanInput($_POST['era'])."', ".$addToQuery."limit501st = '".cleanInput($_POST['limit501st'])."', limitTotalTroopers = '".cleanInput($_POST['limitTotalTroopers'])."' WHERE id = '".cleanInput($_POST['eventIdE'])."' OR link = '".cleanInput($_POST['eventIdE'])."'") or die($conn->error);
+				$statement = $conn->prepare("UPDATE events SET name = ?, venue =  ?, website = ?, numberOfAttend = ?, requestedNumber = ?, requestedCharacter = ?, secureChanging = ?, blasters = ?, lightsabers = ?, parking = ?, mobility = ?, amenities = ?, referred = ?, poc = ?, comments = ?, location = ?, squad = ?, label = ?, limitedEvent = ?, limit501st = ?, limitTotalTroopers = ?, limitHandlers = ?, friendLimit = ?, allowTentative = ? WHERE id = ? OR link = ?");
+				$statement->bind_param("sssiisiiiiisssssisiiiiiiii", $_POST['eventName'], $_POST['eventVenue'], $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['referred'], $_POST['poc'], $_POST['comments'], $_POST['location'], $_POST['squadm'], $_POST['label'], $_POST['limitedEvent'], $_POST['limit501st'], $_POST['limitTotalTroopers'], $_POST['limitHandlers'], $_POST['friendLimit'], $_POST['allowTentative'], $_POST['eventIdE'], $_POST['eventIdE']);
+				$statement->execute();
 
 				// Update if limited event
-				resetTrooperStatus(cleanInput($_POST['eventIdE']), cleanInput($_POST['eventIdE']));
+				resetTrooperStatus($_POST['eventIdE'], $_POST['eventIdE']);
 				
 				// Update date
-				$conn->query("UPDATE events SET dateStart = '".cleanInput($date1)."', dateEnd = '".cleanInput($date2)."' WHERE id = '".cleanInput($_POST['eventIdE'])."'") or die($conn->error);
+				$statement = $conn->prepare("UPDATE events SET dateStart = ?, dateEnd = ? WHERE id = ?");
+				$statement->bind_param("ssi", $date1, $date2, $_POST['eventIdE']);
+				$statement->execute();
 
 				// Query database for event info from above
-				$query = "SELECT * FROM events WHERE thread_id != 0 AND post_id != 0 AND (id = '".cleanInput($_POST['eventIdE'])."' OR link = '".cleanInput($_POST['eventIdE'])."')";
-				if ($result = mysqli_query($conn, $query))
+				$statement = $conn->prepare("SELECT * FROM events WHERE thread_id != 0 AND post_id != 0 AND (id = ? OR link = ?)");
+				$statement->bind_param("ii", $_POST['eventIdE'], $_POST['eventIdE']);
+				$statement->execute();
+
+				if ($result = $statement->get_result())
 				{
 					while ($db = mysqli_fetch_object($result))
 					{
@@ -2917,7 +2937,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 
 						// Update thread
 						editPost($db->post_id, $thread_body);
-						moveThread($db->thread_id, $squadArray[intval(cleanInput($_POST['squadm']) - 1)]['eventForum']);
+						moveThread($db->thread_id, $squadArray[intval($_POST['squadm'] - 1)]['eventForum']);
 					}
 				}
 			}
@@ -2927,14 +2947,29 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				$thread_body = threadTemplate($_POST['eventName'], $_POST['eventVenue'], $_POST['location'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['comments'], $_POST['referred'], $_POST['eventIdE']);
 
 				// Update thread
-				editPost(getEventPostID(cleanInput($_POST['eventIdE'])), $thread_body);
-				moveThread(getEventThreadID(cleanInput($_POST['eventIdE'])), $squadArray[intval(cleanInput($_POST['squadm']) - 1)]['eventForum']);
+				editPost(getEventPostID($_POST['eventIdE']), $thread_body);
+				moveThread(getEventThreadID($_POST['eventIdE']), $squadArray[intval($_POST['squadm'] - 1)]['eventForum']);
+
+				// Loop through clubs
+				foreach($clubArray as $club => $club_value)
+				{
+					$statement = $conn->prepare("UPDATE events SET " . $club_value['dbLimit'] . " = ? WHERE id = ?");
+					$statement->bind_param("ii", $_POST[$club_value['dbLimit']], $_POST['eventIdE']);
+					$statement->execute();
+				}
 				
 				// Query the database - if not linked
-				$conn->query("UPDATE events SET name = '".cleanInput($_POST['eventName'])."', venue =  '".cleanInput($_POST['eventVenue'])."', dateStart = '".cleanInput($date1)."', dateEnd = '".cleanInput($date2)."', website = '".cleanInput($_POST['website'])."', numberOfAttend = '".cleanInput($_POST['numberOfAttend'])."', requestedNumber = '".cleanInput($_POST['requestedNumber'])."', requestedCharacter = '".cleanInput($_POST['requestedCharacter'])."', secureChanging = '".cleanInput($_POST['secure'])."', blasters = '".cleanInput($_POST['blasters'])."', lightsabers = '".cleanInput($_POST['lightsabers'])."', parking = '".cleanInput($_POST['parking'])."', mobility = '".cleanInput($_POST['mobility'])."', amenities = '".cleanInput($_POST['amenities'])."', referred = '".cleanInput($_POST['referred'])."', comments = '".cleanInput($_POST['comments'])."', location = '".cleanInput($_POST['location'])."', squad = '".cleanInput($_POST['squadm'])."', label = '".cleanInput($_POST['label'])."', limitedEvent = '".cleanInput($_POST['limitedEvent'])."', limitTo = '".cleanInput($_POST['era'])."', ".$addToQuery."limit501st = '".cleanInput($_POST['limit501st'])."', limitTotalTroopers = '".cleanInput($_POST['limitTotalTroopers'])."' WHERE id = '".cleanInput($_POST['eventIdE'])."'") or die($conn->error);
+				$statement = $conn->prepare("UPDATE events SET name = ?, venue =  ?, website = ?, numberOfAttend = ?, requestedNumber = ?, requestedCharacter = ?, secureChanging = ?, blasters = ?, lightsabers = ?, parking = ?, mobility = ?, amenities = ?, referred = ?, poc = ?, comments = ?, location = ?, squad = ?, label = ?, limitedEvent = ?, limit501st = ?, limitTotalTroopers = ?, limitHandlers = ?, friendLimit = ?, allowTentative = ? WHERE id = ?");
+				$statement->bind_param("sssiisiiiiisssssisiiiiiii", $_POST['eventName'], $_POST['eventVenue'], $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['referred'], $_POST['poc'], $_POST['comments'], $_POST['location'], $_POST['squadm'], $_POST['label'], $_POST['limitedEvent'], $_POST['limit501st'], $_POST['limitTotalTroopers'], $_POST['limitHandlers'], $_POST['friendLimit'], $_POST['allowTentative'], $_POST['eventIdE']);
+				$statement->execute();
+
+				// Update date
+				$statement = $conn->prepare("UPDATE events SET dateStart = ?, dateEnd = ? WHERE id = ?");
+				$statement->bind_param("ssi", $date1, $date2, $_POST['eventIdE']);
+				$statement->execute();
 
 				// Update if limited event
-				resetTrooperStatus(cleanInput($_POST['eventIdE']));
+				resetTrooperStatus($_POST['eventIdE']);
 			}
 			
 			// Loop through shifts - if exist
@@ -2952,39 +2987,33 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 					// If this is a linked event and not main
 					if($_POST['eventLink'] > 0)
 					{
-						$link = cleanInput($_POST['eventLink']);
+						$link = $_POST['eventLink'];
 					}
 					else
 					{
-						$link = cleanInput($_POST['eventIdE']);
+						$link = $_POST['eventIdE'];
 					}
 					
 					// Verify there is a value in both dates before inserting data
-					if(cleanInput($_POST['adddateStart' . $pair]) != "" && cleanInput($_POST['adddateEnd' . $pair]) != "")
+					if($_POST['adddateStart' . $pair] != "" && $_POST['adddateEnd' . $pair] != "")
 					{
 						// Clean date input
-						$date1 = date('Y-m-d H:i:s', strtotime(cleanInput($_POST['adddateStart' . $pair])));
-						$date2 = date('Y-m-d H:i:s', strtotime(cleanInput($_POST['adddateEnd' . $pair])));
-
-						// Set up add to query
-						$addToQuery1 = "";
-						$addToQuery2 = "";
+						$date1 = date('Y-m-d H:i:s', strtotime($_POST['adddateStart' . $pair]));
+						$date2 = date('Y-m-d H:i:s', strtotime($_POST['adddateEnd' . $pair]));
+					
+						// Query the database
+						$last_id = createEvent($_POST['eventName'], $_POST['eventVenue'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['referred'], $_POST['poc'], $_POST['comments'], $_POST['location'], $_POST['label'], $_POST['limitedEvent'], $_POST['limit501st'], $_POST['limitTotalTroopers'], $_POST['limitHandlers'], $_POST['friendLimit'], $_POST['allowTentative'], $_POST['squadm'], $link);
 
 						// Loop through clubs
 						foreach($clubArray as $club => $club_value)
 						{
-							// Add
-							$addToQuery1 .= "'".cleanInput($_POST[$club_value['dbLimit']])."', ";
-							$addToQuery2 .= "" . $club_value['dbLimit'] . ", ";
+							$statement = $conn->prepare("UPDATE events SET " . $club_value['dbLimit'] . " = ? WHERE id = ?");
+							$statement->bind_param("ii", $_POST[$club_value['dbLimit']], $last_id);
+							$statement->execute();
 						}
-					
-						// Query the database
-						$conn->query("INSERT INTO events (name, venue, dateStart, dateEnd, website, numberOfAttend, requestedNumber, requestedCharacter, secureChanging, blasters, lightsabers, parking, mobility, amenities, referred, comments, location, label, limitedEvent, limitTo, limit501st, limitTotalTroopers, ".$addToQuery2." squad, link) VALUES ('".cleanInput($_POST['eventName'])."', '".cleanInput($_POST['eventVenue'])."', '".$date1."', '".$date2."', '".cleanInput($_POST['website'])."', '".cleanInput($_POST['numberOfAttend'])."', '".cleanInput($_POST['requestedNumber'])."', '".cleanInput($_POST['requestedCharacter'])."', '".cleanInput($_POST['secure'])."', '".cleanInput($_POST['blasters'])."', '".cleanInput($_POST['lightsabers'])."', '".cleanInput($_POST['parking'])."', '".cleanInput($_POST['mobility'])."', '".cleanInput($_POST['amenities'])."', '".cleanInput($_POST['referred'])."', '".cleanInput($_POST['comments'])."', '".cleanInput($_POST['location'])."', '".cleanInput($_POST['label'])."', '".cleanInput($_POST['limitedEvent'])."', '".cleanInput($_POST['era'])."', '".cleanInput($_POST['limit501st'])."', '".cleanInput($_POST['limitTotalTroopers'])."', ".$addToQuery1."'".cleanInput($_POST['squadm'])."', '".$link."')") or die($conn->error);
-
-						$last_id = $conn->insert_id;
 						
 						// Send notification to command staff
-						sendNotification(getName($_SESSION['id']) . " has added a shift: [" . $link . "]", cleanInput($_SESSION['id']), 19, convertDataToJSON("SELECT * FROM events WHERE id = '".$last_id."'"));
+						sendNotification(getName($_SESSION['id']) . " has added a shift: [" . $link . "]", $_SESSION['id'], 19, convertDataToJSON("SELECT * FROM events WHERE id = '".$last_id."'"));
 						
 						// We just sent a notification, don't send another below
 						$sendNotificationCheck = false;
@@ -2993,12 +3022,35 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			}
 			
 			// Send notification that event was edited
-			sendNotification(getName($_SESSION['id']) . " has edited event ID: [" . cleanInput($_POST['eventIdE']) . "]", cleanInput($_SESSION['id']), 14, convertDataToJSON("SELECT * FROM events WHERE id = '".cleanInput($_POST['eventIdE'])."'"));
+			sendNotification(getName($_SESSION['id']) . " has edited event ID: [" . $_POST['eventIdE'] . "]", $_SESSION['id'], 14, convertDataToJSON("SELECT * FROM events WHERE id = '".$_POST['eventIdE']."'"));
 
 			// For updating title, send date back
 			$newDate = "[" . date("l", strtotime($date1)) . " : " . date("m/d - h:i A", strtotime($date1)) . " - " . date("h:i A", strtotime($date2)) . "] ";
 
-			$array = array('success' => 'true', 'data' => 'Event has been updated!', 'newdate' => $newDate);
+			// Reload events - return data
+			$returnData = "";
+
+			$statement = $conn->prepare("SELECT * FROM events ORDER BY dateStart DESC LIMIT 500");
+			$statement->execute();
+
+			if ($result = $statement->get_result())
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					// Set up string to add to title if a linked event
+					$add = "";
+					
+					// If this a linked event?
+					if(isLink($db->id) > 0)
+					{
+						$add .= "[" . date("l", strtotime($db->dateStart)) . " : " . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "] ";
+					}
+
+					$returnData .= '<option value="'.$db->id.'" link="'.isLink($db->id).'" '.echoSelect($db->id, cleanInput($_POST['eventIdE'])).'>'.$add.''.$db->name.'</option>';
+				}
+			}
+
+			$array = array('success' => 'true', 'data' => 'Event has been updated!', 'returnData' => $returnData);
 			echo json_encode($array);
 		}
 		else
@@ -3016,23 +3068,34 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 	{
 		// Set trooper ID
 		$trooperID = 0;
+		
+		// Set up success message
+		$success = "success";
+		$success_message = "Success!";
+		
+		// Get number of troopers that trooper signed up for event
+		$statement = $conn->prepare("SELECT id FROM event_sign_up WHERE addedby = ? AND troopid = ?");
+		$statement->bind_param("ii", $_SESSION['id'], $_POST['event']);
+		$statement->execute();
+		$statement->store_result();
+		$numFriends = $statement->num_rows;
 
 		// Check if this is add friend
 		if(isset($_POST['addfriend']))
 		{
 			// Prevent bug of getting signed up twice
-			$eventCheck = inEvent(cleanInput($_POST['trooperSelect']), cleanInput($_POST['event']));
+			$eventCheck = inEvent($_POST['trooperSelect'], $_POST['event']);
 
 			// Set
-			$trooperID = cleanInput($_POST['trooperSelect']);
+			$trooperID = $_POST['trooperSelect'];
 		}
 		else
 		{
 			// Prevent bug of getting signed up twice
-			$eventCheck = inEvent(cleanInput($_SESSION['id']), cleanInput($_POST['event']));
+			$eventCheck = inEvent($_SESSION['id'], $_POST['event']);
 
 			// Set
-			$trooperID = cleanInput($_SESSION['id']);
+			$trooperID = $_SESSION['id'];
 		}
 
 		// Check if already in troop and exclude placeholder account
@@ -3042,23 +3105,9 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 		}
 
 		// End prevent bug of getting signed up twice
-		
-		// Check to see if this event is limited to an era
-		if(eraCheck(cleanInput($_POST['event']), cleanInput($_POST['costume'])))
-		{
-			// Message to users
-			$data = "This costume is not allowed for this event.";
-
-			// Send back data
-			$array = array('success' => 'failed', 'data' => $data, 'id' => $_SESSION['id']);
-			echo json_encode($array);
-
-			// DO NOT CONTINUE
-			die("");
-		}
 
 		// Get status post variable
-		$status = cleanInput($_POST['status']);
+		$status = $_POST['status'];
 
 		// Check to see if this event is full
 
@@ -3066,7 +3115,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 		$limit501st = "";
 
 		// Set up limit total
-		$limit501stTotal = eventClubCount(cleanInput($_POST['event']), 0);
+		$limit501stTotal = eventClubCount($_POST['event'], 0);
 
 		// Set up club count
 		$clubCount = 1;
@@ -3078,28 +3127,43 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 			${$club_value['dbLimit']} = "";
 
 			// Set up limit totals
-			${$club_value['dbLimit'] . "Total"} = eventClubCount(cleanInput($_POST['event']), $clubCount);
+			${$club_value['dbLimit'] . "Total"} = eventClubCount($_POST['event'], $clubCount);
 
 			// Increment club count
 			$clubCount++;
 		}
 
-		// Query to get limits
-		$query = "SELECT * FROM events WHERE id = '".cleanInput($_POST['event'])."'";
-
 		// Set limit total
 		$limitTotal = 0;
+		
+		// Set handler total
+		$limitHandlers = 0;
+		
+		// Set friend limit
+		$friendLimit = 0;
 
 		// Is this a total trooper event?
 		$totalTrooperEvent = false;
 
+
+		// Query to get limits
+		$statement = $conn->prepare("SELECT * FROM events WHERE id = ?");
+		$statement->bind_param("i", $_POST['event']);
+		$statement->execute();
+
 		// Output
-		if ($result = mysqli_query($conn, $query))
+		if ($result = $statement->get_result())
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
 				// Set 501
 				$limit501st = $db->limit501st;
+				
+				// Set handlers
+				$limitHandlers = $db->limitHandlers;
+				
+				// Set friend limit
+				$friendLimit = $db->friendLimit;
 
 				// Add
 				$limitTotal += $db->limit501st;
@@ -3127,53 +3191,69 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 		// Set troop full - not used at the moment, but will keep it here for now
 		$troopFull = false;
 
-		if($totalTrooperEvent)
+		// Check for total limit set, if it is, check if troop is full based on total
+		if(strpos(strtolower(getCostume($_POST['costume'])), "handler") === false)
 		{
-			/* TOTAL TROOPERS */
-			
-			if($limitTotal - eventClubCount(cleanInput($_POST['event']), "all") <= 0 && $status != 4)
+			if($totalTrooperEvent)
 			{
-				// Troop is full, set to stand by
-				$status = 1;
+				/* TOTAL TROOPERS */
+				
+				if($limitTotal - eventClubCount($_POST['event'], "all") <= 0 && $status != 4)
+				{
+					// Troop is full, set to stand by
+					$status = 1;
 
-				// Set troop full
-				$troopFull = true;
+					// Set troop full
+					$troopFull = true;
+				}
+			}
+			else
+			{
+				/* CHECK IF SQUADS / CLUB ARE FULL */
+
+				// 501
+				if((getCostumeClub($_POST['costume']) == 0 && ($limit501st - eventClubCount($_POST['event'], 0)) <= 0) && $status != 4)
+				{
+					// Troop is full, set to stand by
+					$status = 1;
+
+					// Set troop full
+					$troopFull = true;
+				}
+
+				// Loop through clubs
+				foreach($clubArray as $club => $club_value)
+				{
+					// Loop through costumes
+					foreach($club_value['costumes'] as $costume)
+					{
+						// Make sure not a dual costume
+						if(!in_array($costume, $dualCostume))
+						{
+							// Check club
+							if((getCostumeClub($_POST['costume']) == $costume && (${$club_value['dbLimit']} - eventClubCount($_POST['event'], $costume)) <= 0) && $status != 4)
+							{
+								// Troop is full, set to stand by
+								$status = 1;
+
+								// Set troop full
+								$troopFull = true;
+							}
+						}
+					}
+				}
 			}
 		}
 		else
 		{
-			/* CHECK IF SQUADS / CLUB ARE FULL */
-
-			// 501
-			if((getCostumeClub(cleanInput($_POST['costume'])) == 0 && ($limit501st - eventClubCount(cleanInput($_POST['event']), 0)) <= 0) && $status != 4)
+			// Handler check
+			if(($limitHandlers - handlerEventCount($_POST['event'])) <= 0 && $status != 4)
 			{
 				// Troop is full, set to stand by
 				$status = 1;
 
 				// Set troop full
 				$troopFull = true;
-			}
-
-			// Loop through clubs
-			foreach($clubArray as $club => $club_value)
-			{
-				// Loop through costumes
-				foreach($club_value['costumes'] as $costume)
-				{
-					// Make sure not a dual costume
-					if($costume != $dualCostume)
-					{
-						// Check club
-						if((getCostumeClub(cleanInput($_POST['costume'])) == $costume && (${$club_value['dbLimit']} - eventClubCount(cleanInput($_POST['event']), $costume)) <= 0) && $status != 4)
-						{
-							// Troop is full, set to stand by
-							$status = 1;
-
-							// Set troop full
-							$troopFull = true;
-						}
-					}
-				}
 			}
 		}
 
@@ -3182,423 +3262,43 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 		// Check if this is add friend
 		if(isset($_POST['addfriend']))
 		{
-			// Query the database
-			$conn->query("INSERT INTO event_sign_up (trooperid, troopid, costume, status, costume_backup, addedby) VALUES ('".cleanInput($_POST['trooperSelect'])."', '".cleanInput($_POST['event'])."', '".cleanInput($_POST['costume'])."', '".$status."', '".cleanInput($_POST['backupcostume'])."', '".cleanInput($_SESSION['id'])."')") or die($conn->error);
-			
-			// Send to database to send out notifictions later
-			$conn->query("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES ('".cleanInput($_POST['event'])."', '".cleanInput($_POST['trooperSelect'])."', '1')");
+			// Check if can add friend based on friend count
+			if($numFriends >= $friendLimit)
+			{
+				$success = "friend_fail";
+				$success_message = "You cannot add anymore friends!";
+			}
+			else
+			{
+				// Query the database
+				$statement = $conn->prepare("INSERT INTO event_sign_up (trooperid, troopid, costume, status, costume_backup, addedby) VALUES (?, ?, ?, ?,?, ?)");
+				$statement->bind_param("iiiiii", $_POST['trooperSelect'], $_POST['event'], $_POST['costume'], $status, $_POST['backupcostume'], $_SESSION['id']);
+				$statement->execute();
+				
+				// Send to database to send out notifictions later
+				$statement = $conn->prepare("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES (?, ?, '1')");
+				$statement->bind_param("ii", $_POST['event'], $_POST['trooperSelect']);
+				$statement->execute();
+			}
 		}
 		else
 		{
 			// Query the database
-			$conn->query("INSERT INTO event_sign_up (trooperid, troopid, costume, status, costume_backup) VALUES ('".cleanInput($_SESSION['id'])."', '".cleanInput($_POST['event'])."', '".cleanInput($_POST['costume'])."', '".$status."', '".cleanInput($_POST['backupcostume'])."')") or die($conn->error);
+			$statement = $conn->prepare("INSERT INTO event_sign_up (trooperid, troopid, costume, status, costume_backup) VALUES (?, ?, ?, ?, ?)");
+			$statement->bind_param("iiiii", $_SESSION['id'], $_POST['event'], $_POST['costume'], $status, $_POST['backupcostume']);
+			$statement->execute();
 			
 			// Send to database to send out notifictions later
-			$conn->query("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES ('".cleanInput($_POST['event'])."', '".cleanInput($_SESSION['id'])."', '1')");
+			$statement = $conn->prepare("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES (?, ?, '1')");
+			$statement->bind_param("ii", $_POST['event'], $_SESSION['id']);
+			$statement->execute();
 		}
 
-		// Define data variable for below code
-		$data = "";
-
-		// Get data to send back - query the event data for the information
-
-		// Query database for event info
-		$query = "SELECT * FROM events WHERE id = '".cleanInput($_POST['event'])."'";
-		if ($result = mysqli_query($conn, $query))
-		{
-			while ($db = mysqli_fetch_object($result))
-			{
-
-				// Query database for roster info
-				$query2 = "SELECT event_sign_up.id AS signId, event_sign_up.costume_backup, event_sign_up.costume, event_sign_up.status, event_sign_up.troopid, event_sign_up.addedby, event_sign_up.status, event_sign_up.signuptime, troopers.id AS trooperId, troopers.name, troopers.tkid, troopers.squad FROM event_sign_up JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopid = '".cleanInput($_POST['event'])."' ORDER BY event_sign_up.id ASC";
-				$i = 0;
-
-				if ($result2 = mysqli_query($conn, $query2))
-				{
-					while ($db2 = mysqli_fetch_object($result2))
-					{
-						// Use this for later to determine which select box to show...
-						$status = $db2->status;
-
-						// If no events to show...
-						if($i == 0)
-						{
-							$data .= '
-							<form action="process.php?do=modifysignup" method="POST" name="modifysignupForm" id="modifysignupForm">
-							
-							<!-- Hidden variables -->
-							<input type="hidden" name="modifysignupTroopIdForm" id="modifysignupTroopIdForm" value="'.$db->id.'" />
-							<input type="hidden" name="limitedEventCancel" id="limitedEventCancel" value="'.$db->limitedEvent.'" />
-							<input type="hidden" name="troopidC" id="troopidC" value="'.cleanInput($_POST['event']).'" />
-							<input type="hidden" name="myId" id="myId" value="'.cleanInput($_SESSION['id']).'" />
-
-							<div style="overflow-x: auto;">
-							<table border="1">
-							<tr>
-								<th>Trooper Name</th>	<th>TKID</th>	<th>Costume</th>	<th>Backup Costume</th>	<th>Status</th>
-							</tr>';
-						}
-
-						// Allow for users to edit their status from the event, and make sure the event is not closed, and the user did not cancel
-						if(loggedIn() && ($db2->trooperId == $_SESSION['id'] || $_SESSION['id'] == $db2->addedby) && $db->closed == 0 && $db2->status != 4)
-						{
-							$data .= '
-							<tr>
-								<td>
-									'.drawSupportBadge($db2->trooperId).'
-									<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
-
-									// Show who added the trooper
-									if($db2->addedby != 0)
-									{
-										$data .= '
-										<br /><small>Added by:<br />' . getName($db2->addedby) . '</small>';
-									}
-
-								$data .= '
-								</td>
-									
-								<td>
-									'.readTKNumber($db2->tkid, $db2->squad).'
-								</td>
-								
-								<td name="trooperRosterCostume" id="trooperRosterCostume">
-									<select name="modifysignupFormCostume" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
-
-									// Display costumes
-									$query3 = "SELECT * FROM costumes WHERE ";
-									
-									// If limited to certain costumes, only show certain costumes...
-									if($db->limitTo < 4)
-									{
-										$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
-									}
-									
-									$query3 .= costume_restrict_query() . " ORDER BY FIELD(costume, ".$mainCostumes."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
-									
-									if ($result3 = mysqli_query($conn, $query3))
-									{
-										while ($db3 = mysqli_fetch_object($result3))
-										{
-											if($db2->costume == $db3->id)
-											{
-												// If this is the selected costume, make it selected
-												$data .= '
-												<option value="'. $db3->id .'" SELECTED>'.$db3->costume.'</option>';
-											}
-											else
-											{
-												// Default
-												$data .= '
-												<option value="'. $db3->id .'">'.$db3->costume.'</option>';
-											}
-										}
-									}
-
-									$data .= '
-									</select>
-								</td>
-								
-								<td name="trooperRosterBackup" id="trooperRosterBackup">
-									<select name="modiftybackupcostumeForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
-
-									// Display costumes
-									$query3 = "SELECT * FROM costumes WHERE ";
-									
-									// If limited to certain costumes, only show certain costumes...
-									if($db->limitTo < 4)
-									{
-										$query3 .= " era = '".$db->limitTo."' OR era = '4' AND ";
-									}
-									
-									$query3 .= costume_restrict_query() . " ORDER BY FIELD(costume, ".$mainCostumes."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume";
-									
-									// Count results
-									$c = 0;
-									
-									// Amount of costumes
-									if ($result3 = mysqli_query($conn, $query3))
-									{
-										while ($db3 = mysqli_fetch_object($result3))
-										{
-											// If costume set to backup and first result
-											if($db2->costume_backup == 0 && $c == 0)
-											{
-												$data .= '
-												<option value="0" SELECTED>N/A</option>';
-											}
-											// Make sure this is a first result otherwise
-											else if($c == 0)
-											{
-												$data .= '
-												<option value="0">N/A</option>';
-											}
-											
-											
-											// If a costume matches
-											if($db2->costume_backup == $db3->id)
-											{
-												$data .= '
-												<option value="'.$db3->id.'" SELECTED>'.$db3->costume.'</option>';
-											}
-											// Start showing costumes
-											else
-											{
-												$data .= '
-												<option value="'.$db3->id.'">'.$db3->costume.'</option>';
-											}
-											
-											// Increment
-											$c++;
-										}
-									}
-
-									$data .= '
-									</select>
-								</td>
-								
-								<td id="'.$db2->trooperId.'Status" aria-label="'.date("F j, Y, g:i:s a", strtotime($db2->signuptime)).'" data-balloon-pos="up">
-								<div name="trooperRosterStatus">';
-								
-									if($db->limitedEvent != 1)
-									{
-										// If on stand by
-										if($db2->status == 1)
-										{
-											$data .= '
-											<select name="modifysignupStatusForm" id="modifysignupStatusForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
-												<option value="0" '.echoSelect(1, $db2->status).'>Stand By</option>
-												<option value="4" '.echoSelect(4, $db2->status).'>Cancel</option>
-											</select>';
-										}
-										// Regular
-										else
-										{
-											$data .= '
-											<select name="modifysignupStatusForm" id="modifysignupStatusForm" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
-												<option value="0" '.echoSelect(0, $db2->status).'>I\'ll be there!</option>
-												<option value="2" '.echoSelect(2, $db2->status).'>Tentative</option>
-												<option value="4" '.echoSelect(4, $db2->status).'>Cancel</option>
-											</select>';
-										}
-									}
-									else
-									{
-										$data .= '
-										<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
-										(Pending Command Staff Approval)';
-
-										// If is admin and limited event
-										if(isAdmin() && $db->limitedEvent == 1)
-										{
-											// Set status
-											$data .= '
-											<br />
-											<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>
-											<br />
-											<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
-										}
-
-										$data .= '
-										</div>';								
-									}
-
-								$data .= '
-								</div>
-								</td>
-							</tr>';
-						}
-						// If this is the user, and the user canceled, allow to be edited
-						else if(loggedIn() && ($db2->trooperId == $_SESSION['id'] || $_SESSION['id'] == $db2->addedby) && $db->closed == 0 && $db2->status == 4)
-						{
-							$data .= '
-							<tr>
-								<td>
-									'.drawSupportBadge($db2->trooperId).'
-									<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
-
-									// Show who added the trooper
-									if($db2->addedby != 0)
-									{
-										$data .= '
-										<br /><small>Added by:<br />' . getName($db2->addedby) . '</small>';
-									}
-
-								$data .= '
-								</td>
-									
-								<td>
-									'.readTKNumber($db2->tkid, $db2->squad).'
-								</td>
-								
-								<td name="trooperRosterCostume">
-									'.getCostume($db2->costume).'
-								</td>
-								
-								<td name="trooperRosterBackup">
-									'.ifEmpty(getCostume($db2->costume_backup), "N/A").'
-								</td>
-								
-								<td id="'.$db2->trooperId.'Status" aria-label="'.date("F j, Y, g:i:s a", strtotime($db2->signuptime)).'" data-balloon-pos="up">
-								<div name="trooperRosterStatus">
-								<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
-									'.getStatus($db2->status);
-
-									// If is admin and limited event
-									if(isAdmin() && $db->limitedEvent == 1)
-									{
-										// If set to going
-										if($db2->status == 0)
-										{
-											// Set status
-											$data .= '
-											<br />
-											<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
-										}
-										// If set to not picked
-										else if($db2->status == 6)
-										{
-											// Set status
-											$data .= '
-											<br />
-											<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>';
-										}
-									}
-
-								$data .= '
-								</div>
-								</div>
-								</td>
-							</tr>';
-						}
-						else
-						{
-							// If a user other than the current user
-							$data .= '
-							<tr>
-								<td>
-									'.drawSupportBadge($db2->trooperId).'
-									<a href="index.php?profile='.$db2->trooperId.'">'.$db2->name.'</a>';
-
-									// Show who added the trooper
-									if($db2->addedby != 0)
-									{
-										$data .= '
-										<br /><small>Added by:<br />' . getName($db2->addedby) . '</small>';
-									}
-
-								$data .= '
-								</td>
-									
-								<td>
-									'.readTKNumber($db2->tkid, $db2->squad).'
-								</td>
-								
-								<td>
-									'.getCostume($db2->costume).'
-								</td>
-								
-								<td>
-									'.ifEmpty(getCostume($db2->costume_backup), "N/A").'
-								</td>
-								
-								<td id="'.$db2->trooperId.'Status" aria-label="'.date("F j, Y, g:i:s a", strtotime($db2->signuptime)).'" data-balloon-pos="up">
-									<div name="changestatusarea" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">
-									'.getStatus($db2->status);
-
-									// If is admin and limited event
-									if(isAdmin() && $db->limitedEvent == 1)
-									{
-										// If set to going
-										if($db2->status == 0)
-										{
-											// Set status
-											$data .= '
-											<br />
-											<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="0">Reject</a>';
-										}
-										// If set to not picked
-										else if($db2->status == 6)
-										{
-											// Set status
-											$data .= '
-											<br />
-											<a href="#/" class="button" name="changestatus" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'" buttonid="1">Approve</a>';
-										}
-									}
-
-								$data .= '
-								</div>
-								</td>
-							</tr>';
-						}
-
-						// Increment trooper count
-						$i++;
-					}
-				}
-
-				if($i == 0)
-				{
-					$data .= '
-					<b>No troopers have signed up for this event!</b>
-					<br />
-					<br />';
-				}
-				else
-				{
-					$data .= '</table>
-					</div>
-					</form>';
-				}
-
-				if(!isset($_POST['addfriend']))
-				{
-					$data .= '
-					<hr />
-					<div name="signeduparea" id="signeduparea">
-						<p><b>You are signed up for this troop!</b></p>
-					</div>';
-				}
-
-				// Update troopers remaining
-				$data2 = '
-				<ul>
-					<li>This event is limited to '.$limitTotal.' troopers. ';
-
-					// Check for total limit set, if it is, add remaining troopers
-					if($totalTrooperEvent)
-					{
-						$data2 .= '
-						' . troopersRemaining($limitTotal, eventClubCount($db->id, "all")) . '</li>';
-					}
-					else
-					{
-						$data2 .= '
-						<li>This event is limited to '.$db->limit501st.' 501st troopers. '.troopersRemaining($db->limit501st, eventClubCount($db->id, 0)).' </li>';
-
-						// Set up club count
-						$clubCount = 1;
-
-						// Loop through clubs
-						foreach($clubArray as $club => $club_value)
-						{
-							$data2 .= '
-							<li>This event is limited to '.$db->{$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining($db->{$club_value['dbLimit']}, eventClubCount($db->id, $clubCount)).'</li>';
-
-							// Increment club count
-							$clubCount++;
-						}
-					}
-
-				$data2 .= '
-				</ul>';
-
-				// Send back data
-				$array = array('success' => 'success', 'data' => $data, 'id' => $_SESSION['id'], 'troopersRemaining' => $data2);
-				echo json_encode($array);
-			}
-		}
+		$rosterUpdate = getRoster($_POST['event'], $limitTotal, $totalTrooperEvent, isset($_POST['addfriend']));
+		
+		// Send back data
+		$array = array('success' => $success, 'success_message' => $success_message, 'numFriends' => ($friendLimit - $numFriends), 'data' => $rosterUpdate[0], 'id' => $_SESSION['id'], 'troopersRemaining' => $rosterUpdate[1]);
+		echo json_encode($array);
 	}
 }
 
@@ -3624,7 +3324,9 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmList")
 			for($i = 0; $i < $n; $i++)
 			{
 				// Query the database
-				$conn->query("UPDATE event_sign_up SET costume = '".cleanInput($_POST['costume'])."', status = '3' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($list[$i])."'") or die($conn->error);
+				$statement = $conn->prepare("UPDATE event_sign_up SET costume = ?, status = '3' WHERE trooperid = ? AND troopid = ?");
+				$statement->bind_param("iii", $_POST['costume'], $_SESSION['id'], $list[$i]);
+				$statement->execute();
 			}
 			
 			// Check troops for notification
@@ -3651,7 +3353,9 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmList")
 			for($i = 0; $i < $n; $i++)
 			{
 				// Query the database
-				$conn->query("UPDATE event_sign_up SET status = '4' WHERE trooperid = '".$_SESSION['id']."' AND troopid = '".cleanInput($list[$i])."'") or die($conn->error);
+				$statement = $conn->prepare("UPDATE event_sign_up SET status = '4' WHERE trooperid = ? AND troopid = ?");
+				$statement->bind_param("ii", $_SESSION['id'], $list[$i]);
+				$statement->execute();
 			}
 		}
 	}
@@ -3662,9 +3366,11 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmList")
 	$dataMain = "";
 
 	// Load events that need confirmation
-	$query = "SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = '".$_SESSION['id']."' AND events.dateEnd < NOW() AND status < 3 AND events.closed = 1";
+	$statement = $conn->prepare("SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = ? AND events.dateEnd < NOW() AND status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC");
+	$statement->bind_param("i", $_SESSION['id']);
+	$statement->execute();
 
-	if ($result = mysqli_query($conn, $query))
+	if ($result = $statement->get_result())
 	{
 		// Number of results total
 		$i = 0;
@@ -3686,6 +3392,142 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmList")
 
 	// Send back data
 	$array = array('success' => 'success', 'data' => $dataMain, 'id' => $_SESSION['id']);
+	echo json_encode($array);
+
+	// End send back AJAX data
+}
+
+// Confirm troop for friend
+if(isset($_GET['do']) && $_GET['do'] == "confirmfriend")
+{
+	// Query the database
+	$statement = $conn->prepare("UPDATE event_sign_up SET status = '3' WHERE trooperid = ? AND troopid = ? AND id = ? AND addedby = ?");
+	$statement->bind_param("iiii", $_POST['friendid'], $_POST['troopid'], $_POST['signid'], $_SESSION['id']);
+	$statement->execute();
+
+	// Send back AJAX data
+
+	// What we are going to send back
+	$dataMain = "";
+
+	// Load events that need confirmation
+	$statement = $conn->prepare("SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.addedby, event_sign_up.costume, event_sign_up.note FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.addedby = ? AND events.dateEnd < NOW() AND status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC");
+	$statement->bind_param("i", $_SESSION['id']);
+	$statement->execute();
+
+	if ($result = $statement->get_result())
+	{
+		// Number of results total
+		$i = 0;
+
+		while ($db = mysqli_fetch_object($result))
+		{
+			// If a shift exists to attest to
+			$i++;
+			
+			// Set up string to add to title if a linked event
+			$add = "";
+			
+			// If added by friend, add name
+			if($db->addedby != 0)
+			{
+				$add .= '<a href="#/" trooperid="'.$db->trooperid.'" troopid="'.$db->eventId.'" signid="'.$db->signupId.'" class="button" name="attendFriend">Attended</a> <a href="#/" trooperid="'.$db->trooperid.'" troopid="'.$db->eventId.'" signid="'.$db->signupId.'" class="button" name="didNotFriend">Did Not Attend</a>';
+				
+				// If note left, add note
+				if($db->note != "")
+				{
+					$add .= '<b>[' . $db->note . ']</b> ';
+				}
+				
+				$add .= '<b>' . getName($db->trooperid) . ' as ' . getCostume($db->costume) . '</b>: ';
+			}
+			
+			// If this a linked event?
+			if(isLink($db->eventId) > 0)
+			{
+				$add .= "[<b>" . date("l", strtotime($db->dateStart)) . "</b> : <i>" . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "</i>] ";
+			}
+
+			$dataMain .= '
+			<div name="confirmListBox_'.$db->eventId.'_'.$db->trooperid.'" id="confirmListBox_'.$db->eventId.'_'.$db->trooperid.'">
+				'.$add.''.$db->name.'<br /><br />
+			</div>';
+
+			$dataMain .= '
+			</div>';
+		}
+	}
+
+	// Send back data
+	$array = array('success' => 'success', 'data' => $dataMain, 'id' => $_SESSION['id'], 'count' => $i);
+	echo json_encode($array);
+
+	// End send back AJAX data
+}
+
+// Did not attend troop for friend
+if(isset($_GET['do']) && $_GET['do'] == "friendnoconfirm")
+{
+	// Query the database
+	$statement = $conn->prepare("UPDATE event_sign_up SET status = '4' WHERE trooperid = ? AND troopid = ? AND id = ? AND addedby = ?");
+	$statement->bind_param("iiii", $_POST['friendid'], $_POST['troopid'], $_POST['signid'], $_SESSION['id']);
+	$statement->execute();
+
+	// Send back AJAX data
+
+	// What we are going to send back
+	$dataMain = "";
+
+	// Load events that need confirmation
+	$statement = $conn->prepare("SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.addedby, event_sign_up.costume, event_sign_up.note FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.addedby = ? AND events.dateEnd < NOW() AND status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC");
+	$statement->bind_param("i", $_SESSION['id']);
+	$statement->execute();
+
+	if ($result = $statement->get_result())
+	{
+		// Number of results total
+		$i = 0;
+
+		while ($db = mysqli_fetch_object($result))
+		{
+			// If a shift exists to attest to
+			$i++;
+			
+			// Set up string to add to title if a linked event
+			$add = "";
+			
+			// If added by friend, add name
+			if($db->addedby != 0)
+			{
+				$add .= '<a href="#/" trooperid="'.$db->trooperid.'" troopid="'.$db->eventId.'" signid="'.$db->signupId.'" class="button" name="attendFriend">Attended</a> <a href="#/" trooperid="'.$db->trooperid.'" troopid="'.$db->eventId.'" signid="'.$db->signupId.'" class="button" name="didNotFriend">Did Not Attend</a>';
+				
+				// If note left, add note
+				if($db->note != "")
+				{
+					$add .= '<b>[' . $db->note . ']</b> ';
+				}
+				
+				$add .= '<b>' . getName($db->trooperid) . ' as ' . getCostume($db->costume) . '</b>: ';
+			}
+			
+			// If this a linked event?
+			if(isLink($db->eventId) > 0)
+			{
+				$add .= "[<b>" . date("l", strtotime($db->dateStart)) . "</b> : <i>" . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "</i>] ";
+			}
+
+			$dataMain .= '
+			<div name="confirmListBox_'.$db->eventId.'_'.$db->trooperid.'" id="confirmListBox_'.$db->eventId.'_'.$db->trooperid.'">
+				'.$add.''.$db->name.'<br /><br />
+			</div>';
+
+			$dataMain .= '
+			</div>';
+		}
+	}
+
+	// Send back data
+	$array = array('success' => 'success', 'data' => $dataMain, 'id' => $_SESSION['id'], 'count' => $i);
 	echo json_encode($array);
 
 	// End send back AJAX data

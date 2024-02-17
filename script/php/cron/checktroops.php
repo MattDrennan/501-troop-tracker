@@ -19,14 +19,14 @@ if ($result = mysqli_query($conn, $query))
 	while ($db = mysqli_fetch_object($result))
 	{
 		// Get total troops that need attention
-		$troops_get = $conn->query("SELECT COUNT(*) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE events.closed = '1' AND event_sign_up.status = '0' AND troopers.subscribe = '1' AND troopers.id = '".$db->trooperId."'") or die($conn->error);
+		$troops_get = $conn->query("SELECT COUNT(*) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE events.closed = '1' AND event_sign_up.status = '0' AND troopers.subscribe = '1' AND troopers.id = '".$db->trooperId."'");
 		$count = $troops_get->fetch_row();
 		
 		// Set up message
-		$message = "Hello!\n\nYou have ".$count[0]." troops that need to be confirmed in order to give you troop credit. Please login to the troop tracker and confirm these troops.\n\nIf you need assistance, please contact your squad leader.\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com";
+		$message = "Hello!\n\nYou have ".$count[0]." troops that need to be confirmed in order to give you troop credit. Please login to the troop tracker and confirm these troops.\n\nConfirm troops here: https://fl501st.com/troop-tracker/index.php#confirmtroops\n\nIf you need assistance, please contact your squad leader.\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com";
 		
 		// Send E-mail
-		sendEmail($db->email, $db->name, "Troop Tracker: Troops need your attention!", $message);
+		sendEmail($db->email, readInput($db->name), "Troop Tracker: Troops need your attention!", readInput($message));
 	}
 }
 
@@ -95,7 +95,7 @@ if ($result = mysqli_query($conn, $query))
 }
 
 // Loop through all comments that are important
-$query = "SELECT * FROM comments, settings WHERE comments.id > settings.lastimportantcomment AND comments.important = '1'";
+$query = "SELECT * FROM comments";
 if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))
@@ -108,13 +108,13 @@ if ($result = mysqli_query($conn, $query))
 			{
 				// Update message
 				${"sC" . $db2->squad} .= getName($db->trooperid) . ': ' . $db->comment . "\nhttps://fl501st.com/troop-tracker/index.php?event=".$db->troopid."\n\n";
-
-				// Update last important comment
-				$conn->query("UPDATE settings SET lastimportantcomment = '".$db->id."'");
 			}
 		}
 	}
 }
+
+// Reset comments
+$conn->query("DELETE FROM comments");
 
 // Set up squad count
 $i = 1;
@@ -278,7 +278,7 @@ if ($result = mysqli_query($conn, $query))
 		// Send e-mail if something to send
 		if($mC > 0 || $cC > 0)
 		{
-			sendEmail($db->email, $db->name, "Troop Tracker: Command Staff Notifications", $message);
+			sendEmail($db->email, readInput($db->name), "Troop Tracker: Command Staff Notifications", readInput($message));
 		}
 	}
 }
@@ -389,7 +389,7 @@ if($i > 0)
 			if($k > 0)
 			{
 				// Send E-mail
-				sendEmail($db->email, $db->name, "Troop Tracker: New events posted!", $emailBody);
+				sendEmail($db->email, readInput($db->name), "Troop Tracker: New events posted!", readInput($emailBody));
 			}
 		}
 	}

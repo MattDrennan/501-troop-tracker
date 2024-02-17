@@ -49,7 +49,7 @@
 	--nav-active-link-color: #2869a5;
 }
 
-.parjai {
+.floridadark {
 	--primary-bg-color: #000000;
 	--primary-text-color: #fff;
 	--select-text-color: #fff;
@@ -66,6 +66,11 @@
 	--nav-active-link-color: #1c262f;
 }
 
+html, body {
+	max-width: 100%;
+	overflow-x: hidden;
+}
+
 body {
 	background-color: var(--primary-bg-color);
 	color: var(--primary-text-color);
@@ -77,7 +82,6 @@ body {
 }
 
 .tm-container {
-	max-width: 900px;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -121,6 +125,7 @@ body {
 table {
 	width: 100%;
 	border-spacing: 0;
+	overflow: hidden;
 }
 
 td {
@@ -260,11 +265,25 @@ a.button{
 	margin: 5px;
 	padding: 10px 10px 10px 10px;
 	-webkit-appearance: none;
+	min-width: 100px;
+	text-align: center;
 }
 
 /* Background for chosen squad */
 .squadlink {
 	background-color: var(--squad-link-color);
+}
+
+@media (min-width: 901px) {
+	.tm-container {
+		width: 70%;
+	}
+}
+
+@media (max-width: 900px) {
+	.tm-container {
+		max-width: 900px;
+	}
 }
 
 @media (max-width: 550px) {
@@ -330,7 +349,7 @@ label {
 }
 
 /* Style the submit button */
-input[type=submit] {
+input[type=submit], input[type=button] {
 	display: inline-block;
 	background-color: var(--main-theme-bg-color);
 	border: 1px solid var(--button-border-color);
@@ -343,6 +362,8 @@ input[type=submit] {
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
+	min-width: 100px;
+	text-align: center;
 }
 
 /* Floating column for labels: 25% width */
@@ -387,68 +408,68 @@ input, select, textarea {
 	font-size: 16px;
 }
 
-/************************* PARJAI *******************************/ 
+/************************* FLORIDA DARK *******************************/ 
 
-.parjai input[type=text], input[type=number], select, textarea{
+.floridadark input[type=text], input[type=number], select, textarea{
   background-color: var(--main-content-color);
   color: #fff;
 }
 
-.parjai a:hover {
+.floridadark a:hover {
 	color: #01bcfb;
 }
 
-.parjai input[type=password], input[type=number], select, textarea{
+.floridadark input[type=password], input[type=number], select, textarea{
   background-color: var(--main-content-color);
   color: #fff;
 }
 
-.parjai #photoupload
+.floridadark #photoupload
 {
 	background-color: var(--main-content-color);
 }
 
-.parjai .select2-search
-{
-	background-color: var(--main-content-color);
-	color: #fff;
-}
-
-.parjai .select2-search input
+.floridadark .select2-search
 {
 	background-color: var(--main-content-color);
 	color: #fff;
 }
 
-.parjai .select2-results
+.floridadark .select2-search input
 {
 	background-color: var(--main-content-color);
 	color: #fff;
 }
 
-.parjai .select2-selection__rendered
+.floridadark .select2-results
 {
 	background-color: var(--main-content-color);
 	color: #fff;
 }
 
-.parjai .select2-selection select2-selection--single
+.floridadark .select2-selection__rendered
 {
 	background-color: var(--main-content-color);
 	color: #fff;
 }
 
-.parjai span[class*="select2"]
+.floridadark .select2-selection select2-selection--single
+{
+	background-color: var(--main-content-color);
+	color: #fff;
+}
+
+.floridadark span[class*="select2"]
 {
 	background-color: var(--main-content-color) !important;
 	color: #fff !important;
 }
 
-.parjai th {
+.floridadark th {
 	background-color: #000;
 }
 
-/************************* END PARJAI *******************************/
+/************************* END FLORIDA DARK *******************************/
 
 /************************ SELECT 2 **************************************/
 
@@ -526,6 +547,29 @@ span.select2-selection__rendered
 	color:  gray;
 }
 
+/********** FOOTER ICONS *******************/
+
+.footer-icons {
+	text-align: center;
+}
+
+.footer-icons a:not(:first-child) {
+	margin-left: 15px;
+}
+
+/************ BOX AROUND CHARITY DATA ON EVENT PAGE *******************/
+
+.charitybox {
+	text-align: center;
+	border: 1px solid;
+	padding: 10px;
+	box-shadow: 5px 5px #888888;
+	width: 80%;
+	display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /************************ COMMENT TEXTAREA **************************************/
 
 table[name*="comment_"] textarea {
@@ -568,6 +612,18 @@ table[name*="comment_"] textarea {
 	display: none;
 }
 
+/* Top troops */
+
+.top-troops {
+	text-align: center;
+	display:  none;
+}
+
+.top-troops ol {
+	display: inline-block;
+	justify-content: center;
+}
+
  /* When the screen is less than 600 pixels wide, hide all links, except for the first one ("Home"). Show the link that contains should open and close the topnav (.icon) */
 @media screen and (max-width: 600px) {
 	.topnav a:not(:first-child) {display: none;}
@@ -590,4 +646,144 @@ table[name*="comment_"] textarea {
 		display: block;
 		text-align: left;
 	}
-} 
+}
+
+/* Add to calendar links */
+
+.calendar-links {
+	text-align: center;
+}
+
+.calendar-links a:not(:first-child) {
+	margin-left: 20px;
+}
+
+/* Canceled Troop */
+
+.canceled-troop, .canceled-troop a {
+	color: red;
+	text-decoration: line-through;
+}
+
+/* Trooper count list */
+
+div[name="troopersRemainingDisplay"] {
+	justify-content: center;
+	text-align: center;
+	list-style-position: inside;
+}
+
+/* Trooper Roster Data */
+
+div[name="rosterTableNoData"], div[name="signeduparea"] {
+	text-align: center;
+}
+
+/* Trooper Comment Area */
+
+div[name="commentArea"] {
+	text-align: center;
+}
+
+/* Profile - Awards */
+
+.profile-awards {
+	text-align: center;
+}
+
+.profile-awards ul {
+	list-style-position: inside;
+}
+
+.profile-awards ul li {
+	list-style-image: url("../images/icons/501.png");
+}
+
+/* Profile - Donations */
+
+.profile-donations {
+	text-align: center;
+}
+
+.profile-donations ul {
+	list-style-position: inside;
+}
+
+.profile-donations ul li {
+	list-style-image: url("../images/icons/bluestar.png");
+}
+
+/* Trooper Confirmation Box */
+
+.trooper-confirmation-box {
+	border: 1px solid var(--primary-text-color);
+	text-align: center;
+}
+
+/* Rank image size */
+
+.rankTitle {
+	width: 150px;
+	height: 30px;
+}
+
+/* Statistics Roster */
+
+.stat-container {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.stat-container .title {
+	max-width: 150px;
+	flex: 1;
+	text-align: center;
+	border: 1px dashed #000;
+	margin: 20px;
+}
+
+.stat-container div {
+	max-width: 75px;
+	flex: 1;
+	text-align: center;
+	border: 1px dashed #000;
+	margin: 20px;
+}
+
+/* JQUERY Validator */
+
+label.error {
+	display: block;
+	width: 100%;
+	background-color: #ff0000;
+	color: #fff;
+	font-weight: bold;
+}
+
+/* Prevent comments going too wide */
+
+td[name=insideComment] {
+	word-break: break-all;
+}
+
+/* Center content / Margins */
+
+.center-content {
+	text-align: center;
+}
+
+.space-content {
+	margin-bottom: 10px;
+}
+
+/* Quotes from forum */
+
+blockquote {
+	border: 5px solid black; 
+	box-sizing: border-box; 
+	grid-area: 1 / 1; /* first row, first column */
+	padding: 20px; 
+	width: inherit; 
+}

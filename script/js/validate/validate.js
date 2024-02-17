@@ -117,7 +117,6 @@ $(function()
                             $("#comments").val("");
                             $("#label").val("null");
                             $("#limitedEvent").val("0");
-                            $("#era").val("4");
                             $("#limit501st").val("500");
                             $("[name=smileyarea]").html("");
                             $("#postToBoards").val(1);
@@ -129,6 +128,7 @@ $(function()
                             }
 
                             $("#referred").val("");
+							$("#poc").val("");
                             $("#options").show();
 
                             // Remove all shift boxes
@@ -136,6 +136,9 @@ $(function()
                             {
                                 $(this).remove();
                             });
+							
+							// Set event link
+							$("#create_event_area").html('<p><a href="index.php?event=' + json.eventid + '" class="button">View Posted Event</a>');
                         }
 
                         // Alert to success
@@ -154,13 +157,12 @@ $(function()
             forumid: "required",
             squad:
             {
-                required: true,
-                range: [0, 9]
+                required: true
             },
             permissions:
             {
                 required: true,
-                range: [0, 2]
+                range: [0, 3]
             },
             p501:
             {
@@ -212,6 +214,7 @@ $(function()
         }
     });
 
+    // Command Staff Roster Add
     $("form[name='editEventForm']").validate(
     {
         rules:
@@ -313,25 +316,17 @@ $(function()
                         $("#limitChange").text("Change Limits");
                         $("[name=smileyarea]").html("");
 
-                        // Is linked event
-                        if($("#eventId option:selected").attr("link") != 0)
-                        {
-                            // Fix text when changing the title
-                            $("#eventId option:selected").text(json.newdate + $("#eventName").val());
-                        }
-                        else
-                        {
-                            // Fix text when changing the title
-                            $("#eventId option:selected").text($("#eventName").val());
+                        // Populate select with events
+                        $("#editEvents select").html(json.returnData);
+
+                        if(json.returnData == "") {
+                             $("#editEvents").html("No events to display.");
                         }
 
                         $("#eventId").select2();
-						
-						// Remove all shift boxes
-						$("div[name*='pair']").each(function()
-						{
-							$(this).remove();
-						});
+
+                        // Refresh Select 2
+                        selectAdd();
 
                         // Alert to success
                         alert(json.data);
@@ -343,7 +338,6 @@ $(function()
 
     $("form[name='loginForm']").validate(
     {
-        // Specify validation rules
         rules:
         {
             tkid: "required",
@@ -364,9 +358,15 @@ $(function()
     {
         rules:
         {
+            phone:
+            {
+                required: false,
+                phoneUS: true,
+            },
         },
         messages:
         {
+            phone: "Please enter a valid phone number.",
         },
         submitHandler: function(form)
         {
@@ -416,27 +416,55 @@ $(function()
 
     $("form[name='requestAccessForm']").validate(
     {
-        // Specify validation rules
         rules:
         {
             tkid:
             {
-                required: true,
+				required: function()
+				{
+					// Handler account - check if TKID is required
+					if($("[name=accountType]:checked").val() == 1)
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
+				},
                 digits: true,
-                maxlength: 11
+                maxlength: 11,
+				min: function()
+				{
+					// Handler account - prevent TKID 0 for regular accounts
+					if($("[name=accountType]:checked").val() == 1)
+					{
+						return 1;
+					}
+					else
+					{
+						return 0;
+					}
+				}
             },
             forumid: "required",
-            password: "required",
-            name: "required"
+            forumpassword: "required",
+            name: "required",
+            phone:
+            {
+                required: false,
+                phoneUS: true,
+            },
         },
         messages:
         {
             tkid: "Please enter your TKID and make sure it is no more than eleven (11) characters.",
             forumid: "Please enter your FL 501st Forum Username.",
-            password: "Please enter your password.",
+            forumpassword: "Please enter your password.",
             name: "Please enter your name.",
 			rebelforum: "Please enter your Rebel Legion forum username.",
-			mandoid: "Please enter your Mando Mercs CAT #."
+			mandoid: "Please enter your Mando Mercs CAT #.",
+            phone: "Please enter a valid phone number.",
         },
         submitHandler: function(form)
         {
@@ -590,11 +618,7 @@ $(function()
                     // Get JSON Data
                     var json = JSON.parse(data);
 
-                    if (json.success == "failed")
-                    {
-                        alert(json.data);
-                    }
-                    else
+                    if (json.success == "success")
                     {
                         // Put data in html
                         $("#signuparea1").html(json.data);
@@ -620,6 +644,16 @@ $(function()
                         // Update troopers remaining on the page
                         $("div[name=troopersRemainingDisplay]").html(json.troopersRemaining);
                     }
+					else
+					{
+						alert(json.success_message);
+					}
+					
+					// Check number of friends
+					if(json.numFriends <= 0)
+					{
+						$("#addfriend").hide();
+					}
                 }
             });
         }
@@ -716,11 +750,55 @@ $(function()
         }
     });
 
+    $("form[name='editcharityForm']").validate(
+    {
+        rules:
+        {
+            charityDirectFunds:
+            {
+                required: false,
+                digits: true
+            },
+            charityIndirectFunds:
+            {
+                required: false,
+                digits: true
+            },
+            charityAddHours:
+            {
+                required: false,
+                digits: true
+            }
+        },
+        messages:
+        {
+            charityDirectFunds: "Please enter a valid number.",
+            charityIndirectFunds: "Please enter a valid number.",
+            charityAddHours: "Please enter a valid number."
+        },
+        submitHandler: function(form)
+        {
+            $.ajax({
+                type: "POST",
+                url: form.action,
+                data: $('#editcharityForm').serialize() + "&eventId=" + $("#eventId").val() + "&submitCharity=1",
+                success: function(data)
+                {
+                    // Hide charity form
+                    $("#charityAmount").hide();
+                    $("#submitCharity").val("Charity");
+            
+                    // Send success message
+                    alert("Charity updated!");
+                }
+            });
+        }
+    });
+
     $("body").on("click", "#troopRosterFormAdd", function(e)
     {
         $("form[name='troopRosterFormAdd']").validate(
         {
-            // Specify validation rules
             rules:
             {
                 trooperSelect: "required",
@@ -808,9 +886,17 @@ $(function()
                         }
 
                         string2 += '</select>';
+						
+						var string3 = '';
+						
+						// Make sure not placeholder
+						if(trooperid == placeholder)
+						{
+							string3 = '<input type="text" name="placeholdertext" signid="' + signid + '" value="" />';
+						}
 
                         // Show form / table
-                        $('#rosterTable').append('<tr name="roster_' + trooperid + '" signid="' + signid + '"><td><input type="hidden" name="tkid" signid="' + signid + '" value = "' + tkid + '" /><input type="hidden" name="troopername" signid="' + signid + '" value = "' + troopername + '" /><input type="hidden" name="eventId" signid="' + signid + '" value = "' + $("#troopid").val() + '" /><input type="radio" name="trooperSelectEdit" signid="' + signid + '" value="' + trooperid + '" /></td><td><div name="tknumber1' + trooperid + '" signid="' + signid + '"><a href="index.php?profile=' + trooperid + '" target="_blank">' + tkid + ' - ' + troopername + '</a></div></td><td><div name="costume1' + trooperid + '" signid="' + signid + '">' + $("#costume option:selected").text() + '</div><div name="costume2' + trooperid + '" signid="' + signid + '" style="display:none;">' + string1 + '</div></td><td><div name="backup1' + trooperid + '" signid="' + signid + '">' + ifEmpty($("#costumebackup option:selected").text()) + '</div><div name="backup2' + trooperid + '" signid="' + signid + '" style="display:none;">' + string2 + '</div></td><td><div name="status1' + trooperid + '" signid="' + signid + '">' + getStatus($("#status").val()) + '</div><div name="status2' + trooperid + '" signid="' + signid + '" style="display:none;"><select name="statusVal' + trooperid + '" signid="' + signid + '"><option value="0">Going</option><option value="1">Stand By</option><option value="2">Tentative</option><option value="3">Attended</option><option value="4">Canceled</option><option value="5">Pending</option><option value="6">Not Picked</option></select></div></td></tr>');
+                        $('#rosterTable').append('<tr name="roster_' + trooperid + '" signid="' + signid + '"><td><input type="hidden" name="tkid" signid="' + signid + '" value = "' + tkid + '" /><input type="hidden" name="troopername" signid="' + signid + '" value = "' + troopername + '" /><input type="hidden" name="eventId" signid="' + signid + '" value = "' + $("#troopid").val() + '" /><input type="radio" name="trooperSelectEdit" signid="' + signid + '" value="' + trooperid + '" /></td><td><div name="tknumber1' + trooperid + '" signid="' + signid + '"><a href="index.php?profile=' + trooperid + '" target="_blank">' + tkid + ' - ' + troopername + '</a></div>' + string3 + '</td><td><div name="costume1' + trooperid + '" signid="' + signid + '">' + $("#costume option:selected").text() + '</div><div name="costume2' + trooperid + '" signid="' + signid + '" style="display:none;">' + string1 + '</div></td><td><div name="backup1' + trooperid + '" signid="' + signid + '">' + ifEmpty($("#costumebackup option:selected").text()) + '</div><div name="backup2' + trooperid + '" signid="' + signid + '" style="display:none;">' + string2 + '</div></td><td><div name="status1' + trooperid + '" signid="' + signid + '">' + getStatus($("#status").val()) + '</div><div name="status2' + trooperid + '" signid="' + signid + '" style="display:none;"><select name="statusVal' + trooperid + '" signid="' + signid + '"><option value="0">Going</option><option value="1">Stand By</option><option value="2">Tentative</option><option value="3">Attended</option><option value="4">Canceled</option><option value="5">Pending</option><option value="6">Not Picked</option><option value="7">No Show</option></select></div></td></tr>');
 
                         // Select Options
                         $("select[name=statusVal" + trooperid + "][signid=" + signid + "]").val($("#status").val());

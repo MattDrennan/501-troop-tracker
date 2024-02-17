@@ -2,8 +2,8 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Generation Time: Mar 01, 2022 at 07:42 PM
--- Server version: 8.0.23
+-- Generation Time: Feb 17, 2024 at 04:26 PM
+-- Server version: 8.0.33
 -- PHP Version: 7.4.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -64,7 +64,7 @@ CREATE TABLE `awards` (
   `id` int UNSIGNED NOT NULL,
   `title` varchar(100) NOT NULL,
   `icon` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -77,7 +77,7 @@ CREATE TABLE `award_troopers` (
   `trooperid` int NOT NULL,
   `awardid` int NOT NULL,
   `awarded` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -91,9 +91,8 @@ CREATE TABLE `comments` (
   `trooperid` int NOT NULL,
   `post_id` int NOT NULL DEFAULT '0',
   `comment` text NOT NULL,
-  `important` int NOT NULL,
   `posted` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -103,10 +102,9 @@ CREATE TABLE `comments` (
 
 CREATE TABLE `costumes` (
   `id` int UNSIGNED NOT NULL,
-  `costume` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `era` int NOT NULL,
+  `costume` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `club` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -118,6 +116,7 @@ CREATE TABLE `donations` (
   `trooperid` int NOT NULL,
   `amount` decimal(11,2) NOT NULL,
   `txn_id` varchar(255) NOT NULL,
+  `txn_type` varchar(255) NOT NULL DEFAULT '',
   `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -141,7 +140,6 @@ CREATE TABLE `droid_troopers` (
 
 CREATE TABLE `events` (
   `id` int UNSIGNED NOT NULL,
-  `oldid` int NOT NULL DEFAULT '0',
   `thread_id` int NOT NULL DEFAULT '0',
   `post_id` int NOT NULL DEFAULT '0',
   `name` varchar(255) NOT NULL,
@@ -159,24 +157,32 @@ CREATE TABLE `events` (
   `mobility` tinyint(1) DEFAULT NULL,
   `amenities` text,
   `referred` text,
+  `poc` text,
   `comments` text,
   `location` varchar(500) DEFAULT NULL,
   `label` varchar(100) DEFAULT NULL,
   `postComment` text,
   `notes` text,
   `limitedEvent` tinyint(1) DEFAULT NULL,
-  `limitTo` int DEFAULT NULL,
   `limitRebels` int NOT NULL DEFAULT '500',
   `limit501st` int NOT NULL DEFAULT '500',
   `limitMando` int NOT NULL DEFAULT '500',
   `limitDroid` int NOT NULL DEFAULT '500',
   `limitOther` int NOT NULL DEFAULT '500',
+  `limitSG` int NOT NULL DEFAULT '500',
   `limitTotalTroopers` int NOT NULL DEFAULT '500',
+  `limitHandlers` int NOT NULL DEFAULT '500',
+  `friendLimit` int NOT NULL DEFAULT '4',
+  `allowTentative` tinyint NOT NULL DEFAULT '1',
   `closed` tinyint(1) NOT NULL DEFAULT '0',
-  `moneyRaised` int NOT NULL DEFAULT '0',
+  `charityDirectFunds` int NOT NULL DEFAULT '0',
+  `charityIndirectFunds` int NOT NULL DEFAULT '0',
+  `charityName` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `charityAddHours` int DEFAULT NULL,
+  `charityNote` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
   `squad` int NOT NULL,
   `link` int NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -199,12 +205,24 @@ CREATE TABLE `event_sign_up` (
   `id` int UNSIGNED NOT NULL,
   `trooperid` int DEFAULT NULL,
   `troopid` int NOT NULL,
-  `costume` varchar(50) DEFAULT NULL,
-  `costume_backup` varchar(50) NOT NULL DEFAULT '0',
+  `costume` int DEFAULT NULL,
+  `costume_backup` int NOT NULL DEFAULT '0',
   `status` int NOT NULL DEFAULT '0',
   `addedby` int NOT NULL DEFAULT '0',
+  `note` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '',
   `signuptime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `favorite_costumes`
+--
+
+CREATE TABLE `favorite_costumes` (
+  `trooperid` int NOT NULL,
+  `costumeid` int NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -237,7 +255,7 @@ CREATE TABLE `mando_troopers` (
 
 CREATE TABLE `notifications` (
   `id` int NOT NULL,
-  `message` varchar(100) NOT NULL,
+  `message` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
   `trooperid` int NOT NULL,
   `type` int NOT NULL DEFAULT '0',
   `json` text NOT NULL,
@@ -297,9 +315,9 @@ CREATE TABLE `settings` (
   `lastnotification` int NOT NULL DEFAULT '0',
   `supportgoal` int NOT NULL DEFAULT '0',
   `notifyevent` int NOT NULL DEFAULT '0',
-  `lastimportantcomment` int NOT NULL DEFAULT '0',
   `syncdate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `syncdaterebels` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `syncdaterebels` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `sitemessage` text
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -351,7 +369,6 @@ CREATE TABLE `title_troopers` (
 
 CREATE TABLE `troopers` (
   `id` int UNSIGNED NOT NULL,
-  `oldid` int NOT NULL,
   `user_id` int NOT NULL DEFAULT '0',
   `name` varchar(255) NOT NULL,
   `email` varchar(240) DEFAULT NULL,
@@ -366,10 +383,11 @@ CREATE TABLE `troopers` (
   `pDroid` int NOT NULL DEFAULT '0',
   `pMando` int NOT NULL DEFAULT '0',
   `pOther` int NOT NULL DEFAULT '0',
+  `pSG` int DEFAULT '0',
   `tkid` varchar(20) NOT NULL,
   `forum_id` varchar(255) NOT NULL,
-  `rebelforum` varchar(255) NOT NULL,
-  `mandoid` int NOT NULL,
+  `rebelforum` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `mandoid` int DEFAULT NULL,
   `sgid` varchar(10) NOT NULL DEFAULT '0',
   `password` varchar(255) DEFAULT NULL,
   `last_active` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -387,12 +405,13 @@ CREATE TABLE `troopers` (
   `esquad7` int NOT NULL DEFAULT '1',
   `esquad8` int NOT NULL DEFAULT '1',
   `esquad9` int NOT NULL DEFAULT '1',
-  `ecomments` tinyint(1) DEFAULT '1',
+  `esquad10` int NOT NULL DEFAULT '1',
   `efast` tinyint(1) DEFAULT '0',
   `ecommandnotify` tinyint(1) DEFAULT '1',
   `econfirm` tinyint(1) DEFAULT '1',
+  `note` varchar(255) DEFAULT NULL,
   `datecreated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -459,7 +478,9 @@ ALTER TABLE `events`
 -- Indexes for table `event_sign_up`
 --
 ALTER TABLE `event_sign_up`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `troopid` (`troopid`),
+  ADD KEY `trooperid` (`trooperid`);
 
 --
 -- Indexes for table `mando_troopers`
@@ -489,7 +510,8 @@ ALTER TABLE `title_troopers`
 -- Indexes for table `troopers`
 --
 ALTER TABLE `troopers`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `id` (`id`);
 
 --
 -- Indexes for table `uploads`

@@ -36,6 +36,11 @@ Search.appendIndex(
             "summary": "Returns\u0020squads\u0020and\u0020clubs,\u0020and\u0020converts\u0020them\u0020to\u0020options\u0020to\u0020display\u0020back\u0020to\u0020trooper.",
             "url": "namespaces/default.html#function_squadSelectList"
         },                {
+            "fqsen": "\\pendingTroopsDisplay\u0028\u0029",
+            "name": "pendingTroopsDisplay",
+            "summary": "Returns\u0020an\u0020HTML\u0020results\u0020of\u0020pending\u0020troops",
+            "url": "namespaces/default.html#function_pendingTroopsDisplay"
+        },                {
             "fqsen": "\\addSquadLink\u0028\u0029",
             "name": "addSquadLink",
             "summary": "Returns\u0020a\u0020link\u0020for\u0020a\u0020squad\u0020based\u0020on\u0020selection",
@@ -71,14 +76,24 @@ Search.appendIndex(
             "summary": "Draws\u0020a\u0020visual\u0020graph\u0020for\u0020troopers\u0020to\u0020see\u0020what\u0020we\u0020need\u0020to\u0020support\u0020the\u0020garrison",
             "url": "namespaces/default.html#function_drawSupportGraph"
         },                {
+            "fqsen": "\\getTrooperRanking\u0028\u0029",
+            "name": "getTrooperRanking",
+            "summary": "Returns\u0020the\u0020troopers\u0020ranking",
+            "url": "namespaces/default.html#function_getTrooperRanking"
+        },                {
             "fqsen": "\\resetTrooperStatus\u0028\u0029",
             "name": "resetTrooperStatus",
             "summary": "If\u0020a\u0020limited\u0020event,\u0020resets\u0020all\u0020troopers\u0020attendance\u0020status\u0020in\u0020an\u0020event,\u0020and\u0020recalculates\u0020status",
             "url": "namespaces/default.html#function_resetTrooperStatus"
         },                {
+            "fqsen": "\\getForumAvatar\u0028\u0029",
+            "name": "getForumAvatar",
+            "summary": "Return\u0027s\u0020the\u0020forum\u0020profile\u0020of\u0020the\u0020trooper,\u0020if\u0020available",
+            "url": "namespaces/default.html#function_getForumAvatar"
+        },                {
             "fqsen": "\\getAuthForum\u0028\u0029",
             "name": "getAuthForum",
-            "summary": "getAuthForum\u003A\u0020Get\u0027s\u0020auth\u0020data\u0020from\u0020Xenforo\u0020for\u0020logging\u0020in",
+            "summary": "Get\u0027s\u0020auth\u0020data\u0020from\u0020Xenforo\u0020for\u0020logging\u0020in",
             "url": "namespaces/default.html#function_getAuthForum"
         },                {
             "fqsen": "\\loginWithForum\u0028\u0029",
@@ -86,10 +101,20 @@ Search.appendIndex(
             "summary": "Login\u0020the\u0020trooper\u0020with\u0020there\u0020Xenforo\u0020credentials.\u0020Used\u0020for\u0020single\u0020sign\u0020on.",
             "url": "namespaces/default.html#function_loginWithForum"
         },                {
+            "fqsen": "\\createAlert\u0028\u0029",
+            "name": "createAlert",
+            "summary": "Create\u0027s\u0020an\u0020alert\u0020in\u0020Xenforo",
+            "url": "namespaces/default.html#function_createAlert"
+        },                {
             "fqsen": "\\createThread\u0028\u0029",
             "name": "createThread",
             "summary": "Create\u0027s\u0020a\u0020thread\u0020in\u0020Xenforo",
             "url": "namespaces/default.html#function_createThread"
+        },                {
+            "fqsen": "\\editThread\u0028\u0029",
+            "name": "editThread",
+            "summary": "Edits\u0020a\u0020thread\u0020in\u0020Xenforo",
+            "url": "namespaces/default.html#function_editThread"
         },                {
             "fqsen": "\\lockThread\u0028\u0029",
             "name": "lockThread",
@@ -115,6 +140,26 @@ Search.appendIndex(
             "name": "getUserForum",
             "summary": "Get\u0027s\u0020Xenforo\u0020forum\u0020user\u0020by\u0020username",
             "url": "namespaces/default.html#function_getUserForum"
+        },                {
+            "fqsen": "\\replyThread\u0028\u0029",
+            "name": "replyThread",
+            "summary": "Reply\u0020to\u0020Xenforo\u0020thread",
+            "url": "namespaces/default.html#function_replyThread"
+        },                {
+            "fqsen": "\\getThreadPosts\u0028\u0029",
+            "name": "getThreadPosts",
+            "summary": "Get\u0027s\u0020Xenforo\u0020forum\u0020posts\u0020from\u0020thread",
+            "url": "namespaces/default.html#function_getThreadPosts"
+        },                {
+            "fqsen": "\\getAlerts\u0028\u0029",
+            "name": "getAlerts",
+            "summary": "Get\u0020user\u0020alerts",
+            "url": "namespaces/default.html#function_getAlerts"
+        },                {
+            "fqsen": "\\getConversations\u0028\u0029",
+            "name": "getConversations",
+            "summary": "Get\u0020user\u0020private\u0020messages\u0020\u0028unread\u0029",
+            "url": "namespaces/default.html#function_getConversations"
         },                {
             "fqsen": "\\getUserForumID\u0028\u0029",
             "name": "getUserForumID",
@@ -216,11 +261,6 @@ Search.appendIndex(
             "summary": "Displays\u0020all\u0020the\u0020troopers\u0020costumes\u0020in\u0020synced\u0020501st\u0020database",
             "url": "namespaces/default.html#function_showCostumes"
         },                {
-            "fqsen": "\\postTweet\u0028\u0029",
-            "name": "postTweet",
-            "summary": "Posts\u0020a\u0020tweet\u0020to\u0020Twitter\u0020using\u0020Twitter\u0020API",
-            "url": "namespaces/default.html#function_postTweet"
-        },                {
             "fqsen": "\\squadToDiscord\u0028\u0029",
             "name": "squadToDiscord",
             "summary": "Converts\u0020squad\u0020ID\u0020to\u0020Discord\u0020role\u0020ID",
@@ -246,6 +286,11 @@ Search.appendIndex(
             "summary": "Returns\u0020query\u0020for\u0020costume\u0020values\u0020for\u0020club.\u0020This\u0020will\u0020display\u0020costumes\u0020from\u0020the\u0020club\u0020specified.",
             "url": "namespaces/default.html#function_getCostumeQueryValues"
         },                {
+            "fqsen": "\\getCostumeQueryValuesSquad\u0028\u0029",
+            "name": "getCostumeQueryValuesSquad",
+            "summary": "Returns\u0020query\u0020for\u0020costume\u0020values\u0020for\u0020squad.\u0020This\u0020will\u0020display\u0020costumes\u0020from\u0020the\u0020squad\u0020specified.",
+            "url": "namespaces/default.html#function_getCostumeQueryValuesSquad"
+        },                {
             "fqsen": "\\isImportant\u0028\u0029",
             "name": "isImportant",
             "summary": "Returns\u0020the\u0020comment\u0020in\u0020a\u0020red\u0020color\u0020if\u0020it\u0020is\u0020marked\u0020as\u0020important",
@@ -265,11 +310,6 @@ Search.appendIndex(
             "name": "hasAward",
             "summary": "Returns\u0020if\u0020the\u0020trooper\u0020has\u0020an\u0020award",
             "url": "namespaces/default.html#function_hasAward"
-        },                {
-            "fqsen": "\\hasTitle\u0028\u0029",
-            "name": "hasTitle",
-            "summary": "Returns\u0020if\u0020the\u0020trooper\u0020has\u0020a\u0020title",
-            "url": "namespaces/default.html#function_hasTitle"
         },                {
             "fqsen": "\\sendNotification\u0028\u0029",
             "name": "sendNotification",
@@ -310,11 +350,6 @@ Search.appendIndex(
             "name": "getEventPostID",
             "summary": "Returns\u0020the\u0020event\u0020Xenforo\u0020post\u0020ID\u0020on\u0020the\u0020forum",
             "url": "namespaces/default.html#function_getEventPostID"
-        },                {
-            "fqsen": "\\getCommentPostID\u0028\u0029",
-            "name": "getCommentPostID",
-            "summary": "Returns\u0020the\u0020event\u0020Xenforo\u0020comment\u0020ID\u0020on\u0020the\u0020forum",
-            "url": "namespaces/default.html#function_getCommentPostID"
         },                {
             "fqsen": "\\removeLetters\u0028\u0029",
             "name": "removeLetters",
@@ -361,6 +396,16 @@ Search.appendIndex(
             "summary": "Returns\u0020the\u0020club\u0020ID\u0020based\u0020on\u0020the\u0020costume\u0020ID",
             "url": "namespaces/default.html#function_getCostumeClub"
         },                {
+            "fqsen": "\\replaceCostumeID\u0028\u0029",
+            "name": "replaceCostumeID",
+            "summary": "Replaces\u0020the\u0020costume\u0020ID\u0020with\u0020an\u0020N\/A\u0020costume",
+            "url": "namespaces/default.html#function_replaceCostumeID"
+        },                {
+            "fqsen": "\\getFileName\u0028\u0029",
+            "name": "getFileName",
+            "summary": "Get\u0027s\u0020the\u0020file\u0020name\u0020of\u0020the\u0020file",
+            "url": "namespaces/default.html#function_getFileName"
+        },                {
             "fqsen": "\\profileTop\u0028\u0029",
             "name": "profileTop",
             "summary": "Display\u0027s\u0020user\u0020information\u0020at\u0020top\u0020of\u0020profile\u0020page,\u0020used\u0020on\u0020profiles",
@@ -381,15 +426,35 @@ Search.appendIndex(
             "summary": "Return\u0027s\u0020the\u0020provided\u0020data\u0020into\u0020BB\u0020code\u0020format\u0020to\u0020be\u0020displayed\u0020on\u0020the\u0020forum",
             "url": "namespaces/default.html#function_threadTemplate"
         },                {
+            "fqsen": "\\timeBetweenDates\u0028\u0029",
+            "name": "timeBetweenDates",
+            "summary": "Returns\u0020the\u0020hours\u0020between\u0020two\u0020date\u0020times",
+            "url": "namespaces/default.html#function_timeBetweenDates"
+        },                {
             "fqsen": "\\getUserID\u0028\u0029",
             "name": "getUserID",
             "summary": "Return\u0027s\u0020the\u0020user\u0027s\u0020ID\u0020from\u0020Xenforo\u0020Forum",
             "url": "namespaces/default.html#function_getUserID"
         },                {
+            "fqsen": "\\getIDFromUserID\u0028\u0029",
+            "name": "getIDFromUserID",
+            "summary": "Return\u0027s\u0020the\u0020tracker\u0020ID\u0020based\u0020on\u0020Xenforo\u0020Forum\u0020ID",
+            "url": "namespaces/default.html#function_getIDFromUserID"
+        },                {
             "fqsen": "\\getName\u0028\u0029",
             "name": "getName",
             "summary": "Return\u0027s\u0020the\u0020troopers\u0027s\u0020name",
             "url": "namespaces/default.html#function_getName"
+        },                {
+            "fqsen": "\\getTrooperAddress\u0028\u0029",
+            "name": "getTrooperAddress",
+            "summary": "Return\u0027s\u0020the\u0020troopers\u0027s\u0020address",
+            "url": "namespaces/default.html#function_getTrooperAddress"
+        },                {
+            "fqsen": "\\getTrooperRadius\u0028\u0029",
+            "name": "getTrooperRadius",
+            "summary": "Return\u0027s\u0020the\u0020troopers\u0027s\u0020radius",
+            "url": "namespaces/default.html#function_getTrooperRadius"
         },                {
             "fqsen": "\\getEmail\u0028\u0029",
             "name": "getEmail",
@@ -420,6 +485,11 @@ Search.appendIndex(
             "name": "inEvent",
             "summary": "Search\u0020for\u0020trooper\u0020in\u0020event,\u0020and\u0020return\u0020if\u0020in\u0020event",
             "url": "namespaces/default.html#function_inEvent"
+        },                {
+            "fqsen": "\\getRoster\u0028\u0029",
+            "name": "getRoster",
+            "summary": "Returns\u0020an\u0020updated\u0020roster",
+            "url": "namespaces/default.html#function_getRoster"
         },                {
             "fqsen": "\\getStatus\u0028\u0029",
             "name": "getStatus",
@@ -456,6 +526,11 @@ Search.appendIndex(
             "summary": "Adds\u0020http\u0020to\u0020url\u0020string\u0020if\u0020it\u0020does\u0020not\u0020exist",
             "url": "namespaces/default.html#function_addHttp"
         },                {
+            "fqsen": "\\mainCostumesBuild\u0028\u0029",
+            "name": "mainCostumesBuild",
+            "summary": "Returns\u0020a\u0020string\u0020of\u0020costumes\u0020that\u0020were\u0020favorited\u0020by\u0020the\u0020trooper",
+            "url": "namespaces/default.html#function_mainCostumesBuild"
+        },                {
             "fqsen": "\\isAdmin\u0028\u0029",
             "name": "isAdmin",
             "summary": "Returns\u0020if\u0020trooper\u0020is\u0020an\u0020admin\u0020or\u0020moderator",
@@ -476,6 +551,11 @@ Search.appendIndex(
             "summary": "Returns\u0020if\u0020trooper\u0020has\u0020club\u0020access",
             "url": "namespaces/default.html#function_isClubMember"
         },                {
+            "fqsen": "\\getSiteMessage\u0028\u0029",
+            "name": "getSiteMessage",
+            "summary": "Returns\u0020site\u0020message\u0020when\u0020closed",
+            "url": "namespaces/default.html#function_getSiteMessage"
+        },                {
             "fqsen": "\\isWebsiteClosed\u0028\u0029",
             "name": "isWebsiteClosed",
             "summary": "Returns\u0020if\u0020the\u0020website\u0020is\u0020closed",
@@ -486,20 +566,35 @@ Search.appendIndex(
             "summary": "Returns\u0020if\u0020the\u0020website\u0020sign\u0020ups\u0020are\u0020open\u0020or\u0020closed",
             "url": "namespaces/default.html#function_isSignUpClosed"
         },                {
+            "fqsen": "\\validPhone\u0028\u0029",
+            "name": "validPhone",
+            "summary": "Returns\u0020whether\u0020a\u0020phone\u0020number\u0020is\u0020valid\u0020\u0028https\u003A\/\/gist.github.com\/gh\u002Do\u002Dst\/8126326\u0029",
+            "url": "namespaces/default.html#function_validPhone"
+        },                {
             "fqsen": "\\doesTKExist\u0028\u0029",
             "name": "doesTKExist",
-            "summary": "Returns\u0020if\u0020the\u0020TKID\u0020exists",
+            "summary": "Returns\u0020if\u0020the\u0020TKID\u0020exists\u0020\u0028NOTE\u003A\u0020This\u0020is\u0020compatiable\u0020with\u0020501st\u0020and\u0020Rebel\u0020Legion\u0020due\u0020to\u0020both\u0020clubs\u0020combining\u0020Troop\u0020Tracker\u0020data\u0029",
             "url": "namespaces/default.html#function_doesTKExist"
         },                {
             "fqsen": "\\isTKRegistered\u0028\u0029",
             "name": "isTKRegistered",
-            "summary": "Returns\u0020if\u0020the\u0020TKID\u0020is\u0020registered",
+            "summary": "Returns\u0020if\u0020the\u0020TKID\u0020is\u0020registered\u0020\u0028NOTE\u003A\u0020This\u0020is\u0020compatiable\u0020with\u0020501st\u0020and\u0020Rebel\u0020Legion\u0020due\u0020to\u0020both\u0020clubs\u0020combining\u0020Troop\u0020Tracker\u0020data\u0029",
             "url": "namespaces/default.html#function_isTKRegistered"
         },                {
             "fqsen": "\\cleanInput\u0028\u0029",
             "name": "cleanInput",
             "summary": "Prevents\u0020hacks\u0020by\u0020sanitizing\u0020input",
             "url": "namespaces/default.html#function_cleanInput"
+        },                {
+            "fqsen": "\\readInput\u0028\u0029",
+            "name": "readInput",
+            "summary": "Converts\u0020cleanInput\u0020into\u0020readable\u0020text",
+            "url": "namespaces/default.html#function_readInput"
+        },                {
+            "fqsen": "\\createEvent\u0028\u0029",
+            "name": "createEvent",
+            "summary": "Inserts\u0020a\u0020new\u0020event\u0020into\u0020the\u0020database",
+            "url": "namespaces/default.html#function_createEvent"
         },                {
             "fqsen": "\\sendEventUpdate\u0028\u0029",
             "name": "sendEventUpdate",
@@ -511,16 +606,6 @@ Search.appendIndex(
             "summary": "Send\u0027s\u0020an\u0020e\u002Dmail\u0020to\u0020a\u0020specified\u0020trooper",
             "url": "namespaces/default.html#function_sendEmail"
         },                {
-            "fqsen": "\\getEra\u0028\u0029",
-            "name": "getEra",
-            "summary": "Returns\u0020string\u0020of\u0020Era\u0020ID",
-            "url": "namespaces/default.html#function_getEra"
-        },                {
-            "fqsen": "\\eraCheck\u0028\u0029",
-            "name": "eraCheck",
-            "summary": "Returns\u0020if\u0020costume\u0020is\u0020allowed\u0020at\u0020the\u0020event\u0020based\u0020off\u0020era\u0020allowed",
-            "url": "namespaces/default.html#function_eraCheck"
-        },                {
             "fqsen": "\\troopersRemaining\u0028\u0029",
             "name": "troopersRemaining",
             "summary": "Returns\u0020the\u0020number\u0020of\u0020troopers\u0020remaining",
@@ -530,6 +615,11 @@ Search.appendIndex(
             "name": "eventClubCount",
             "summary": "Returns\u0020number\u0020of\u0020troopers\u0020signed\u0020up\u0020for\u0020this\u0020event\u0020based\u0020on\u0020costume",
             "url": "namespaces/default.html#function_eventClubCount"
+        },                {
+            "fqsen": "\\handlerEventCount\u0028\u0029",
+            "name": "handlerEventCount",
+            "summary": "Returns\u0020number\u0020of\u0020handlers\u0020signed\u0020up\u0020for\u0020this\u0020event",
+            "url": "namespaces/default.html#function_handlerEventCount"
         },                {
             "fqsen": "\\isEventFull\u0028\u0029",
             "name": "isEventFull",
@@ -586,6 +676,726 @@ Search.appendIndex(
             "summary": "Returns\u0020numbers\u0020from\u0020string",
             "url": "namespaces/default.html#function_get_numerics"
         },                {
+            "fqsen": "\\html_get\u0028\u0029",
+            "name": "html_get",
+            "summary": "",
+            "url": "namespaces/default.html#function_html_get"
+        },                {
+            "fqsen": "\\HDOM_TYPE_ELEMENT",
+            "name": "HDOM_TYPE_ELEMENT",
+            "summary": "Website\u003A\u0020http\u003A\/\/sourceforge.net\/projects\/simplehtmldom\/\nAdditional\u0020projects\u003A\u0020http\u003A\/\/sourceforge.net\/projects\/debugobject\/\nAcknowledge\u003A\u0020Jose\u0020Solorzano\u0020\u0028https\u003A\/\/sourceforge.net\/projects\/php\u002Dhtml\/\u0029",
+            "url": "namespaces/default.html#constant_HDOM_TYPE_ELEMENT"
+        },                {
+            "fqsen": "\\HDOM_TYPE_COMMENT",
+            "name": "HDOM_TYPE_COMMENT",
+            "summary": "",
+            "url": "namespaces/default.html#constant_HDOM_TYPE_COMMENT"
+        },                {
+            "fqsen": "\\HDOM_TYPE_TEXT",
+            "name": "HDOM_TYPE_TEXT",
+            "summary": "",
+            "url": "namespaces/default.html#constant_HDOM_TYPE_TEXT"
+        },                {
+            "fqsen": "\\HDOM_TYPE_ENDTAG",
+            "name": "HDOM_TYPE_ENDTAG",
+            "summary": "",
+            "url": "namespaces/default.html#constant_HDOM_TYPE_ENDTAG"
+        },                {
+            "fqsen": "\\HDOM_TYPE_ROOT",
+            "name": "HDOM_TYPE_ROOT",
+            "summary": "",
+            "url": "namespaces/default.html#constant_HDOM_TYPE_ROOT"
+        },                {
+            "fqsen": "\\HDOM_TYPE_UNKNOWN",
+            "name": "HDOM_TYPE_UNKNOWN",
+            "summary": "",
+            "url": "namespaces/default.html#constant_HDOM_TYPE_UNKNOWN"
+        },                {
+            "fqsen": "\\HDOM_QUOTE_DOUBLE",
+            "name": "HDOM_QUOTE_DOUBLE",
+            "summary": "",
+            "url": "namespaces/default.html#constant_HDOM_QUOTE_DOUBLE"
+        },                {
+            "fqsen": "\\HDOM_QUOTE_SINGLE",
+            "name": "HDOM_QUOTE_SINGLE",
+            "summary": "",
+            "url": "namespaces/default.html#constant_HDOM_QUOTE_SINGLE"
+        },                {
+            "fqsen": "\\HDOM_QUOTE_NO",
+            "name": "HDOM_QUOTE_NO",
+            "summary": "",
+            "url": "namespaces/default.html#constant_HDOM_QUOTE_NO"
+        },                {
+            "fqsen": "\\HDOM_INFO_BEGIN",
+            "name": "HDOM_INFO_BEGIN",
+            "summary": "",
+            "url": "namespaces/default.html#constant_HDOM_INFO_BEGIN"
+        },                {
+            "fqsen": "\\HDOM_INFO_END",
+            "name": "HDOM_INFO_END",
+            "summary": "",
+            "url": "namespaces/default.html#constant_HDOM_INFO_END"
+        },                {
+            "fqsen": "\\HDOM_INFO_QUOTE",
+            "name": "HDOM_INFO_QUOTE",
+            "summary": "",
+            "url": "namespaces/default.html#constant_HDOM_INFO_QUOTE"
+        },                {
+            "fqsen": "\\HDOM_INFO_SPACE",
+            "name": "HDOM_INFO_SPACE",
+            "summary": "",
+            "url": "namespaces/default.html#constant_HDOM_INFO_SPACE"
+        },                {
+            "fqsen": "\\HDOM_INFO_TEXT",
+            "name": "HDOM_INFO_TEXT",
+            "summary": "",
+            "url": "namespaces/default.html#constant_HDOM_INFO_TEXT"
+        },                {
+            "fqsen": "\\HDOM_INFO_INNER",
+            "name": "HDOM_INFO_INNER",
+            "summary": "",
+            "url": "namespaces/default.html#constant_HDOM_INFO_INNER"
+        },                {
+            "fqsen": "\\HDOM_INFO_OUTER",
+            "name": "HDOM_INFO_OUTER",
+            "summary": "",
+            "url": "namespaces/default.html#constant_HDOM_INFO_OUTER"
+        },                {
+            "fqsen": "\\HDOM_INFO_ENDSPACE",
+            "name": "HDOM_INFO_ENDSPACE",
+            "summary": "",
+            "url": "namespaces/default.html#constant_HDOM_INFO_ENDSPACE"
+        },                {
+            "fqsen": "\\HDOM_SMARTY_AS_TEXT",
+            "name": "HDOM_SMARTY_AS_TEXT",
+            "summary": "",
+            "url": "namespaces/default.html#constant_HDOM_SMARTY_AS_TEXT"
+        },                {
+            "fqsen": "\\file_get_html\u0028\u0029",
+            "name": "file_get_html",
+            "summary": "",
+            "url": "namespaces/default.html#function_file_get_html"
+        },                {
+            "fqsen": "\\str_get_html\u0028\u0029",
+            "name": "str_get_html",
+            "summary": "",
+            "url": "namespaces/default.html#function_str_get_html"
+        },                {
+            "fqsen": "\\dump_html_tree\u0028\u0029",
+            "name": "dump_html_tree",
+            "summary": "",
+            "url": "namespaces/default.html#function_dump_html_tree"
+        },                {
+            "fqsen": "\\simple_html_dom_node",
+            "name": "simple_html_dom_node",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003A__construct\u0028\u0029",
+            "name": "__construct",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method___construct"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003A__destruct\u0028\u0029",
+            "name": "__destruct",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method___destruct"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003A__toString\u0028\u0029",
+            "name": "__toString",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method___toString"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Aclear\u0028\u0029",
+            "name": "clear",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_clear"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Adump\u0028\u0029",
+            "name": "dump",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_dump"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Adump_node\u0028\u0029",
+            "name": "dump_node",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_dump_node"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003A\u0024parent",
+            "name": "parent",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#property_parent"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Ahas_child\u0028\u0029",
+            "name": "has_child",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_has_child"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003A\u0024children",
+            "name": "children",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#property_children"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Afirst_child\u0028\u0029",
+            "name": "first_child",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_first_child"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Alast_child\u0028\u0029",
+            "name": "last_child",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_last_child"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Anext_sibling\u0028\u0029",
+            "name": "next_sibling",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_next_sibling"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Aprev_sibling\u0028\u0029",
+            "name": "prev_sibling",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_prev_sibling"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Afind_ancestor_tag\u0028\u0029",
+            "name": "find_ancestor_tag",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_find_ancestor_tag"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Ainnertext\u0028\u0029",
+            "name": "innertext",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_innertext"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Aoutertext\u0028\u0029",
+            "name": "outertext",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_outertext"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Atext\u0028\u0029",
+            "name": "text",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_text"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Axmltext\u0028\u0029",
+            "name": "xmltext",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_xmltext"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Amakeup\u0028\u0029",
+            "name": "makeup",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_makeup"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Afind\u0028\u0029",
+            "name": "find",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_find"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Aseek\u0028\u0029",
+            "name": "seek",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_seek"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Amatch\u0028\u0029",
+            "name": "match",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_match"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Aparse_selector\u0028\u0029",
+            "name": "parse_selector",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_parse_selector"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003A__get\u0028\u0029",
+            "name": "__get",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method___get"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003A__set\u0028\u0029",
+            "name": "__set",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method___set"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003A__isset\u0028\u0029",
+            "name": "__isset",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method___isset"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003A__unset\u0028\u0029",
+            "name": "__unset",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method___unset"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Aconvert_text\u0028\u0029",
+            "name": "convert_text",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_convert_text"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Ais_utf8\u0028\u0029",
+            "name": "is_utf8",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_is_utf8"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Aget_display_size\u0028\u0029",
+            "name": "get_display_size",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_get_display_size"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Asave\u0028\u0029",
+            "name": "save",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_save"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003AaddClass\u0028\u0029",
+            "name": "addClass",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_addClass"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003AhasClass\u0028\u0029",
+            "name": "hasClass",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_hasClass"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003AremoveClass\u0028\u0029",
+            "name": "removeClass",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_removeClass"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003AgetAllAttributes\u0028\u0029",
+            "name": "getAllAttributes",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_getAllAttributes"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003AgetAttribute\u0028\u0029",
+            "name": "getAttribute",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_getAttribute"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003AsetAttribute\u0028\u0029",
+            "name": "setAttribute",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_setAttribute"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003AhasAttribute\u0028\u0029",
+            "name": "hasAttribute",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_hasAttribute"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003AremoveAttribute\u0028\u0029",
+            "name": "removeAttribute",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_removeAttribute"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003Aremove\u0028\u0029",
+            "name": "remove",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_remove"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003AremoveChild\u0028\u0029",
+            "name": "removeChild",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_removeChild"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003AgetElementById\u0028\u0029",
+            "name": "getElementById",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_getElementById"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003AgetElementsById\u0028\u0029",
+            "name": "getElementsById",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_getElementsById"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003AgetElementByTagName\u0028\u0029",
+            "name": "getElementByTagName",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_getElementByTagName"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003AgetElementsByTagName\u0028\u0029",
+            "name": "getElementsByTagName",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_getElementsByTagName"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003AparentNode\u0028\u0029",
+            "name": "parentNode",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_parentNode"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003AchildNodes\u0028\u0029",
+            "name": "childNodes",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_childNodes"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003AfirstChild\u0028\u0029",
+            "name": "firstChild",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_firstChild"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003AlastChild\u0028\u0029",
+            "name": "lastChild",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_lastChild"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003AnextSibling\u0028\u0029",
+            "name": "nextSibling",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_nextSibling"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003ApreviousSibling\u0028\u0029",
+            "name": "previousSibling",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_previousSibling"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003AhasChildNodes\u0028\u0029",
+            "name": "hasChildNodes",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_hasChildNodes"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003AnodeName\u0028\u0029",
+            "name": "nodeName",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_nodeName"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003AappendChild\u0028\u0029",
+            "name": "appendChild",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#method_appendChild"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003A\u0024nodetype",
+            "name": "nodetype",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#property_nodetype"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003A\u0024tag",
+            "name": "tag",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#property_tag"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003A\u0024attr",
+            "name": "attr",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#property_attr"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003A\u0024nodes",
+            "name": "nodes",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#property_nodes"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003A\u0024_",
+            "name": "_",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#property__"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003A\u0024tag_start",
+            "name": "tag_start",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#property_tag_start"
+        },                {
+            "fqsen": "\\simple_html_dom_node\u003A\u003A\u0024dom",
+            "name": "dom",
+            "summary": "",
+            "url": "classes/simple-html-dom-node.html#property_dom"
+        },                {
+            "fqsen": "\\simple_html_dom",
+            "name": "simple_html_dom",
+            "summary": "",
+            "url": "classes/simple-html-dom.html"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A__construct\u0028\u0029",
+            "name": "__construct",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method___construct"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A__destruct\u0028\u0029",
+            "name": "__destruct",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method___destruct"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003Aload\u0028\u0029",
+            "name": "load",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_load"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003Aload_file\u0028\u0029",
+            "name": "load_file",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_load_file"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003Aset_callback\u0028\u0029",
+            "name": "set_callback",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_set_callback"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003Aremove_callback\u0028\u0029",
+            "name": "remove_callback",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_remove_callback"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003Asave\u0028\u0029",
+            "name": "save",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_save"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003Afind\u0028\u0029",
+            "name": "find",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_find"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003Aclear\u0028\u0029",
+            "name": "clear",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_clear"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003Adump\u0028\u0029",
+            "name": "dump",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_dump"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003Aprepare\u0028\u0029",
+            "name": "prepare",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_prepare"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003Aparse\u0028\u0029",
+            "name": "parse",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_parse"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003Aparse_charset\u0028\u0029",
+            "name": "parse_charset",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_parse_charset"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003Aread_tag\u0028\u0029",
+            "name": "read_tag",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_read_tag"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003Aparse_attr\u0028\u0029",
+            "name": "parse_attr",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_parse_attr"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003Alink_nodes\u0028\u0029",
+            "name": "link_nodes",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_link_nodes"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003Aas_text_node\u0028\u0029",
+            "name": "as_text_node",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_as_text_node"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003Askip\u0028\u0029",
+            "name": "skip",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_skip"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003Acopy_skip\u0028\u0029",
+            "name": "copy_skip",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_copy_skip"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003Acopy_until\u0028\u0029",
+            "name": "copy_until",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_copy_until"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003Acopy_until_char\u0028\u0029",
+            "name": "copy_until_char",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_copy_until_char"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003Aremove_noise\u0028\u0029",
+            "name": "remove_noise",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_remove_noise"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003Arestore_noise\u0028\u0029",
+            "name": "restore_noise",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_restore_noise"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003Asearch_noise\u0028\u0029",
+            "name": "search_noise",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_search_noise"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A__toString\u0028\u0029",
+            "name": "__toString",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method___toString"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A__get\u0028\u0029",
+            "name": "__get",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method___get"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003AchildNodes\u0028\u0029",
+            "name": "childNodes",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_childNodes"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003AfirstChild\u0028\u0029",
+            "name": "firstChild",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_firstChild"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003AlastChild\u0028\u0029",
+            "name": "lastChild",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_lastChild"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003AcreateElement\u0028\u0029",
+            "name": "createElement",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_createElement"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003AcreateTextNode\u0028\u0029",
+            "name": "createTextNode",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_createTextNode"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003AgetElementById\u0028\u0029",
+            "name": "getElementById",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_getElementById"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003AgetElementsById\u0028\u0029",
+            "name": "getElementsById",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_getElementsById"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003AgetElementByTagName\u0028\u0029",
+            "name": "getElementByTagName",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_getElementByTagName"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003AgetElementsByTagName\u0028\u0029",
+            "name": "getElementsByTagName",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_getElementsByTagName"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003AloadFile\u0028\u0029",
+            "name": "loadFile",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#method_loadFile"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024root",
+            "name": "root",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property_root"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024nodes",
+            "name": "nodes",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property_nodes"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024callback",
+            "name": "callback",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property_callback"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024lowercase",
+            "name": "lowercase",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property_lowercase"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024original_size",
+            "name": "original_size",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property_original_size"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024size",
+            "name": "size",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property_size"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024pos",
+            "name": "pos",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property_pos"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024doc",
+            "name": "doc",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property_doc"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024char",
+            "name": "char",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property_char"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024cursor",
+            "name": "cursor",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property_cursor"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024parent",
+            "name": "parent",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property_parent"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024noise",
+            "name": "noise",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property_noise"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024token_blank",
+            "name": "token_blank",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property_token_blank"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024token_equal",
+            "name": "token_equal",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property_token_equal"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024token_slash",
+            "name": "token_slash",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property_token_slash"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024token_attr",
+            "name": "token_attr",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property_token_attr"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024_charset",
+            "name": "_charset",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property__charset"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024_target_charset",
+            "name": "_target_charset",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property__target_charset"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024default_br_text",
+            "name": "default_br_text",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property_default_br_text"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024default_span_text",
+            "name": "default_span_text",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property_default_span_text"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024self_closing_tags",
+            "name": "self_closing_tags",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property_self_closing_tags"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024block_tags",
+            "name": "block_tags",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property_block_tags"
+        },                {
+            "fqsen": "\\simple_html_dom\u003A\u003A\u0024optional_closing_tags",
+            "name": "optional_closing_tags",
+            "summary": "",
+            "url": "classes/simple-html-dom.html#property_optional_closing_tags"
+        },                {
             "fqsen": "\\convertMemberApproved\u0028\u0029",
             "name": "convertMemberApproved",
             "summary": "Converts\u0020the\u0020member\u0020approval\u0020string\u0020value\u0020to\u0020an\u0020interger",
@@ -616,9 +1426,74 @@ Search.appendIndex(
             "summary": "Checks\u0020if\u0020string\u0020is\u0020inside\u0020another\u0020string",
             "url": "namespaces/default.html#function_contains"
         },                {
+            "fqsen": "\\array_to_csv_download\u0028\u0029",
+            "name": "array_to_csv_download",
+            "summary": "Generate\u0020CSV\u0020file\u0020from\u0020array",
+            "url": "namespaces/default.html#function_array_to_csv_download"
+        },                {
+            "fqsen": "\\PaypalIPN",
+            "name": "PaypalIPN",
+            "summary": "",
+            "url": "classes/PaypalIPN.html"
+        },                {
+            "fqsen": "\\PaypalIPN\u003A\u003AuseSandbox\u0028\u0029",
+            "name": "useSandbox",
+            "summary": "Sets\u0020the\u0020IPN\u0020verification\u0020to\u0020sandbox\u0020mode\u0020\u0028for\u0020use\u0020when\u0020testing,\nshould\u0020not\u0020be\u0020enabled\u0020in\u0020production\u0029.",
+            "url": "classes/PaypalIPN.html#method_useSandbox"
+        },                {
+            "fqsen": "\\PaypalIPN\u003A\u003AusePHPCerts\u0028\u0029",
+            "name": "usePHPCerts",
+            "summary": "Sets\u0020curl\u0020to\u0020use\u0020php\u0020curl\u0027s\u0020built\u0020in\u0020certs\u0020\u0028may\u0020be\u0020required\u0020in\u0020some\nenvironments\u0029.",
+            "url": "classes/PaypalIPN.html#method_usePHPCerts"
+        },                {
+            "fqsen": "\\PaypalIPN\u003A\u003AgetPaypalUri\u0028\u0029",
+            "name": "getPaypalUri",
+            "summary": "Determine\u0020endpoint\u0020to\u0020post\u0020the\u0020verification\u0020data\u0020to.",
+            "url": "classes/PaypalIPN.html#method_getPaypalUri"
+        },                {
+            "fqsen": "\\PaypalIPN\u003A\u003AverifyIPN\u0028\u0029",
+            "name": "verifyIPN",
+            "summary": "Verification\u0020Function\nSends\u0020the\u0020incoming\u0020post\u0020data\u0020back\u0020to\u0020PayPal\u0020using\u0020the\u0020cURL\u0020library.",
+            "url": "classes/PaypalIPN.html#method_verifyIPN"
+        },                {
+            "fqsen": "\\PaypalIPN\u003A\u003AVERIFY_URI",
+            "name": "VERIFY_URI",
+            "summary": "Production\u0020Postback\u0020URL",
+            "url": "classes/PaypalIPN.html#constant_VERIFY_URI"
+        },                {
+            "fqsen": "\\PaypalIPN\u003A\u003ASANDBOX_VERIFY_URI",
+            "name": "SANDBOX_VERIFY_URI",
+            "summary": "Sandbox\u0020Postback\u0020URL",
+            "url": "classes/PaypalIPN.html#constant_SANDBOX_VERIFY_URI"
+        },                {
+            "fqsen": "\\PaypalIPN\u003A\u003AVALID",
+            "name": "VALID",
+            "summary": "Response\u0020from\u0020PayPal\u0020indicating\u0020validation\u0020was\u0020successful",
+            "url": "classes/PaypalIPN.html#constant_VALID"
+        },                {
+            "fqsen": "\\PaypalIPN\u003A\u003AINVALID",
+            "name": "INVALID",
+            "summary": "Response\u0020from\u0020PayPal\u0020indicating\u0020validation\u0020failed",
+            "url": "classes/PaypalIPN.html#constant_INVALID"
+        },                {
+            "fqsen": "\\PaypalIPN\u003A\u003A\u0024use_sandbox",
+            "name": "use_sandbox",
+            "summary": "",
+            "url": "classes/PaypalIPN.html#property_use_sandbox"
+        },                {
+            "fqsen": "\\PaypalIPN\u003A\u003A\u0024use_local_certs",
+            "name": "use_local_certs",
+            "summary": "",
+            "url": "classes/PaypalIPN.html#property_use_local_certs"
+        },                {
             "fqsen": "\\",
             "name": "\\",
             "summary": "",
             "url": "namespaces/default.html"
+        },                {
+            "fqsen": "\\Listener",
+            "name": "Listener",
+            "summary": "",
+            "url": "namespaces/listener.html"
         }            ]
 );
