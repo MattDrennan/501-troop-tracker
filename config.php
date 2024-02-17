@@ -5074,6 +5074,16 @@ function createEvent($name, $venue, $dateStart, $dateEnd, $website, $numberOfAtt
 {
 	global $conn;
 
+	$name = cleanInput($name);
+	$venue = cleanInput($venue);
+	$website = cleanInput($website);
+	$requestedCharacter = cleanInput($requestedCharacter);
+	$amenities = cleanInput($amenities);
+	$referred = cleanInput($referred);
+	$poc = cleanInput($poc)
+	$comments = cleanInput($comments);
+	$location = cleanInput($location);
+
 	$statement = $conn->prepare("INSERT INTO events (name, venue, dateStart, dateEnd, website, numberOfAttend, requestedNumber, requestedCharacter, secureChanging, blasters, lightsabers, parking, mobility, amenities, referred, poc, comments, location, label, limitedEvent, limit501st, limitTotalTroopers, limitHandlers, friendLimit, allowTentative, squad, link) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	$statement->bind_param("sssssiisiiiiissssssiiiiiiii", $name, $venue, $dateStart, $dateEnd, $website, $numberOfAttend, $requestedNumber, $requestedCharacter, $secureChanging, $blasters, $lightsabers, $parking, $mobility, $amenities, $referred, $poc, $comments, $location, $label, $limitedEvent, $limit501st, $limitTotalTroopers, $limitHandlers, $friendLimit, $allowTentative, $squad, $link);
 	$statement->execute();
