@@ -2497,7 +2497,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		
 		if ($result = $statement->get_result())
 		{
-			while ($db = mysqli_fetch_object($result2))
+			while ($db = mysqli_fetch_object($result))
 			{
 				array_push($costumesID, $db->id);
 				array_push($costumesName, $db->costume);
