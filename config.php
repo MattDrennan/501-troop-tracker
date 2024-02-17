@@ -5080,7 +5080,7 @@ function createEvent($name, $venue, $dateStart, $dateEnd, $website, $numberOfAtt
 	$requestedCharacter = cleanInput($requestedCharacter);
 	$amenities = cleanInput($amenities);
 	$referred = cleanInput($referred);
-	$poc = cleanInput($poc)
+	$poc = cleanInput($poc);
 	$comments = cleanInput($comments);
 	$location = cleanInput($location);
 

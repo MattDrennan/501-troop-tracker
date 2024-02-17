@@ -2854,7 +2854,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			$_POST['requestedNumber'] = cleanInput($_POST['requestedNumber']);
 			$_POST['amenities'] = cleanInput($_POST['amenities']);
 			$_POST['referred'] = cleanInput($_POST['referred']);
-			$_POST['poc'] = cleanInput($_POST['poc'])
+			$_POST['poc'] = cleanInput($_POST['poc']);
 			$_POST['comments'] = cleanInput($_POST['comments']);
 			$_POST['location'] = cleanInput($_POST['location']);
 			

@@ -26,6 +26,10 @@ foreach($values as $value)
 	// If not first
 	if($i != 0)
 	{
+		$value[0] = cleanInput($value[0]);
+		$value[1] = cleanInput($value[1]);
+		$value[2] = cleanInput($value[2]);
+
 		// Insert into database
 		$statement = $conn->prepare("INSERT INTO droid_troopers (forum_id, droidname, imageurl) VALUES (?, ?, ?)");
 		$statement->bind_param("sss", $value[0], $value[1], $value[2]);

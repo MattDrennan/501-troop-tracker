@@ -44,6 +44,12 @@ foreach($values as $value)
 			$image = "https://drive.google.com/uc?id=" . $image[5] . "";
 		}
 
+		$value[2] = cleanInput($value[2]);
+		$value[0] = cleanInput($value[0]);
+		$value[1] = cleanInput($value[1]);
+		$value[3] = cleanInput($value[3]);
+		$image = cleanInput($image);
+
 		// Insert into database
 		$statement = $conn->prepare("INSERT INTO sg_troopers (sgid, name, image, ranktitle, costumename, link) VALUES (?, ?, ?, ?, ?, '')");
 		$statement->bind_param("isssss", $value[2], $value[0], $image, $value[1], $value[3]);
