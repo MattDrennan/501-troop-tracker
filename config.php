@@ -5605,9 +5605,9 @@ function isLink($id)
 	
 	// Get link ID
 	$statement = $conn->prepare("SELECT link FROM events WHERE id = ?");
-	$statement->bind_param("i", $getLinkID_get);
+	$statement->bind_param("i", $id);
 	$statement->execute();
-	$statement->bind_result($status);
+	$statement->bind_result($getLinkID_get);
 	$statement->fetch();
 	$statement->close();
 	
