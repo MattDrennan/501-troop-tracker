@@ -622,6 +622,7 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 	if($_POST['important'] == 1)
 	{
 		// Query the database
+		$_POST['comment'] = cleanInput($_POST['comment']);
 		$statement = $conn->prepare("INSERT INTO comments (troopid, trooperid, comment) VALUES (?, ?, ?)");
 		$statement->bind_param("iis", $_POST['eventId'], $_SESSION['id'], $_POST['comment']);
 		$statement->execute();
@@ -744,6 +745,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 		else
 		{
 			// Query the database
+			$_POST['costumeName'] = cleanInput($_POST['costumeName']);
 			$statement = $conn->prepare("INSERT INTO costumes (costume, club) VALUES (?, ?)");
 			$statement->bind_param("si", $_POST['costumeName'], $_POST['costumeClub']);
 			$statement->execute();
@@ -867,6 +869,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 	if(isset($_POST['submitEditCostume']))
 	{
 		// Query the database
+		$_POST['costumeNameEdit'] = cleanInput($_POST['costumeNameEdit']);
 		$statement = $conn->prepare("UPDATE costumes SET costume = ?, club = ? WHERE id = ?");
 		$statement->bind_param("sii", $_POST['costumeNameEdit'], $_POST['costumeClubEdit'], $_POST['costumeIDEdit']);
 		$statement->execute();
@@ -972,6 +975,8 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 		else
 		{
 			// Query the database
+			$_POST['awardName'] = cleanInput($_POST['awardName']);
+			$_POST['awardImage'] = cleanInput($_POST['awardImage']);
 			$statement = $conn->prepare("INSERT INTO awards (title, icon) VALUES (?, ?)");
 			$statement->bind_param("ss", $_POST['awardName'], $_POST['awardImage']);
 			$statement->execute();
@@ -1249,6 +1254,8 @@ if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin(
 	if(isset($_POST['submitEditAward']))
 	{
 		// Query the database
+		$_POST['editAwardTitle'] = cleanInput($_POST['editAwardTitle']);
+		$_POST['editAwardImage'] = cleanInput($_POST['editAwardImage']);
 		$statement = $conn->prepare("UPDATE awards SET title = ?, icon = ? WHERE id = ?");
 		$statement->bind_param("ssi", $_POST['editAwardTitle'], $_POST['editAwardImage'], $_POST['awardIDEdit']);
 		$statement->execute();
@@ -1483,6 +1490,8 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 			}
 
 			// Query the database
+			$_POST['phone'] = cleanInput($_POST['phone']);
+			$_POST['note'] = cleanInput($_POST['note']);
 			$statement = $conn->prepare("UPDATE troopers SET name = ?, phone = ?, squad = ?, p501 = ?, tkid = ?, forum_id = ?, note = ?, supporter = ? WHERE id = ?");
 			$statement->bind_param("ssiiissii", $_POST['user'], $_POST['phone'], $_POST['squad'], $_POST['p501'], $tkid, $_POST['forumid'], $_POST['note'], $_POST['supporter'], $_POST['userIDE']);
 			$statement->execute();
@@ -1517,6 +1526,7 @@ if(isset($_GET['do']) && $_GET['do'] == "changephone" && loggedIn())
 {
 	if(isset($_POST['phoneButton']))
 	{
+		$_POST['phone'] = cleanInput($_POST['phone']);
 		$statement = $conn->prepare("UPDATE troopers SET phone = ? WHERE id = ?");
 		$statement->bind_param("si", $_POST['phone'], $_SESSION['id']);
 		$statement->execute();
@@ -1539,6 +1549,7 @@ if(isset($_GET['do']) && $_GET['do'] == "changename" && loggedIn())
 
 		if(!$failed)
 		{
+			$_POST['name'] = cleanInput($_POST['name']);
 			$statement = $conn->prepare("UPDATE troopers SET name = ? WHERE id = ?");
 			$statement->bind_param("si", $_POST['name'], $_SESSION['id']);
 			$statement->execute();
@@ -1796,6 +1807,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			$password = password_hash($_POST['forumpassword'], PASSWORD_DEFAULT);
 
 			// Insert
+			$_POST['phone'] = cleanInput($_POST['phone']);
 			$statement = $conn->prepare("INSERT INTO troopers (user_id, name, tkid, email, forum_id, p501, phone, squad, password) VALUES (?, ?, ?, ?, ?,?, ?, ?, ?)");
 			$statement->bind_param("isissisis", $forumLogin['user']['user_id'], $_POST['name'], $tkid, $forumLogin['user']['email'], $_POST['forumid'], $p501, $_POST['phone'], $squad, $password);
 			$statement->execute();
@@ -2360,6 +2372,8 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		if(!is_numeric($_POST['charityAddHours'])) { return false; }
 
 		// Query the database
+		$_POST['charityName'] = cleanInput($_POST['charityName']);
+		$_POST['charityNote'] = cleanInput($_POST['charityNote']);
 		$statement = $conn->prepare("UPDATE events SET charityDirectFunds = ?, charityIndirectFunds = ?, charityName = ?, charityAddHours = ?, charityNote = ? WHERE id = ?");
 		$statement->bind_param("iisisi", $_POST['charityDirectFunds'], $_POST['charityIndirectFunds'], $_POST['charityName'], $_POST['charityAddHours'], $_POST['charityNote'], $_POST['eventId']);
 		$statement->execute();
@@ -2833,6 +2847,16 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				$statement->bind_param("iiii", $_POST[$club_value['dbLimit']], $_POST['eventIdE'], $_POST['eventLink'], $_POST['eventLink']);
 				$statement->execute();
 			}
+
+			$_POST['eventName'] = cleanInput($_POST['eventName']);
+			$_POST['eventVenue'] = cleanInput($_POST['eventVenue']);
+			$_POST['website'] = cleanInput($_POST['website']);
+			$_POST['requestedNumber'] = cleanInput($_POST['requestedNumber']);
+			$_POST['amenities'] = cleanInput($_POST['amenities']);
+			$_POST['referred'] = cleanInput($_POST['referred']);
+			$_POST['poc'] = cleanInput($_POST['poc'])
+			$_POST['comments'] = cleanInput($_POST['comments']);
+			$_POST['location'] = cleanInput($_POST['location']);
 			
 			// If event is linked
 			if($_POST['eventLink'] > 0)
