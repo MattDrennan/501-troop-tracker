@@ -2271,6 +2271,9 @@ $(document).ready(function()
 						$(this).prop("disabled", true);
 					}
 				});
+
+				// Refresh select 2
+				selectAdd();
 			}
 			else
 			{

@@ -214,6 +214,7 @@ $(function()
         }
     });
 
+    // Command Staff Roster Add
     $("form[name='editEventForm']").validate(
     {
         rules:
@@ -323,6 +324,9 @@ $(function()
                         }
 
                         $("#eventId").select2();
+
+                        // Refresh Select 2
+                        selectAdd();
 
                         // Alert to success
                         alert(json.data);
