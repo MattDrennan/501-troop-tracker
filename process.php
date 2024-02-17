@@ -149,13 +149,13 @@ if(isset($_GET['do']) && isset($_POST['userID']) && isset($_POST['squad']) && $_
 if(isset($_GET['do']) && isset($_POST['trooperid']) && isset($_POST['permission']) && $_GET['do'] == "changepermission" && isAdmin())
 {
 	// Which club to get
-	if($_POST['club'] <= count($squadArray))
+	if($_POST['club'] <= count($squadArray) || $_POST['club'] == "all")
 	{
 		$statement = $conn->prepare("UPDATE troopers SET p501 = ? WHERE id = ?");
 		$statement->bind_param("ii", $_POST['permission'], $_POST['trooperid']);
 		$statement->execute();
 
-		// If set to not a member, remove squad
+		// If set to not a member, remove squad (501st only)
 		if($_POST['permission'] == 0)
 		{
 			$statement = $conn->prepare("UPDATE troopers SET squad = 0 WHERE id = ?");
@@ -164,7 +164,7 @@ if(isset($_GET['do']) && isset($_POST['trooperid']) && isset($_POST['permission'
 		}
 	} else {
 		// Grab DB value
-		$dbValue = $clubArray[($_POST['club'] - (count($squadArray) + 1))]['db'];
+		$dbValue = $clubArray[(intval($_POST['club']) - (count($squadArray) + 1))]['db'];
 
 		// Query
 		$statement = $conn->prepare("UPDATE troopers SET ".$dbValue." = ? WHERE id = ?");
