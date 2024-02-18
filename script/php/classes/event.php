@@ -105,7 +105,151 @@ class Event {
      */
     public $eventId;
 
+    /**
+     * @var int Label type for the event
+     */
+    public $label;
+
+    /**
+     * @var int Thread ID linked to Xenforo Forum
+     */
+    public $thread_id;
+
+    /**
+     * @var int Post ID linked to Xenforo Forum
+     */
+    public $post_id;
+
+    /**
+     * @var int Limited event true or false (0 or 1)
+     */
+    public $limitedEvent;
+
+    /**
+     * @var int Limit total troopers for an event
+     */
+    public $limitTotalTroopers;
+
+    /**
+     * @var int Limit total handlers for an event
+     */
+    public $limitHandlers;
+
+    /**
+     * @var int Limit total friends allowed to be added
+     */
+    public $friendLimit;
+
+    /**
+     * @var int Allow tentative troopers true or false (0 or 1)
+     */
+    public $allowTentative;
+
+    /**
+     * @var int Integer value for closed status
+     */
+    public $closed;
+
+    /**
+     * @var float Amount of direct charity raised
+     */
+    public $charityDirectFunds;
+
+    /**
+     * @var float Amount of indirect charity raised
+     */
+    public $charityIndirectFunds;
+
+    /**
+     * @var string Name of charity raised for
+     */
+    public $charityName;
+
+    /**
+     * @var int Charity additional hours to add for an event
+     */
+    public $charityAddHours;
+
+    /**
+     * @var string Note for charity donation
+     */
+    public $charityNote;
+
+    /**
+     * @var int Integer value for squad where event is taking place
+     */
+    public $squad;
+
+    /**
+     * @var int Value of linked events
+     */
+    public $link;
+
+    /**
+     * @var object Database connection object
+     */
+    protected $sql;
+
     public function __construct() {
+        // Nothing now
+    }
+
+    /**
+     * Get event from event ID
+     *
+     * @return object
+     */ 
+    public static function getEventFromId(object $conn, int $eventId) {
+        // Create new object
+        $instance = new self();
+        $instance->sql = $conn;
+
+        // Query
+        $statement = $instance->sql->prepare("SELECT * FROM events WHERE id = ?");
+        $statement->bind_param("i", $eventId);
+        $statement->execute();
+
+        if($result = $statement->get_result())
+        {
+            while ($db = mysqli_fetch_object($result))
+            {
+                $instance->eventName = $db->name;
+                $instance->eventVenue = $db->venue;
+                $instance->location = $db->location;
+                $instance->startDate = $db->dateStart;
+                $instance->endDate = $db->dateEnd;
+                $instance->website = $db->website;
+                $instance->numberOfAttend = $db->numberOfAttend;
+                $instance->requestedNumber = $db->requestedNumber;
+                $instance->requestedCharacter = $db->requestedCharacter;
+                $instance->secure = $db->secureChanging;
+                $instance->blasters = $db->blasters;
+                $instance->lightsabers = $db->lightsabers;
+                $instance->parking = $db->parking;
+                $instance->mobility = $db->mobility;
+                $instance->amenities = $db->amenities;
+                $instance->comments = $db->comments;
+                $instance->eventId = $db->id;
+                $instance->label = $db->label;
+                $instance->thread_id = $db->thread_id;
+                $instance->post_id = $db->post_id;
+                $instance->limitedEvent = $db->limitedEvent;
+                $instance->limitTotalTroopers = $db->limitTotalTroopers;
+                $instance->limitHandlers = $db->limitHandlers;
+                $instance->friendLimit = $db->friendLimit;
+                $instance->allowTentative = $db->allowTentative;
+                $instance->closed = $db->closed;
+                $instance->charityDirectFunds = $db->charityDirectFunds;
+                $instance->charityIndirectFunds = $db->charityIndirectFunds;
+                $instance->charityName = $db->charityName;
+                $instance->charityAddHours = $db->charityAddHours;
+                $instance->charityNote = $db->charityNote;
+                $instance->squad = $db->squad;
+                $instance->link = $db->link;
+            }
+        }
+
+        return $instance;
     }
 
     /**

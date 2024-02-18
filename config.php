@@ -26,13 +26,13 @@ use PHPMailer\PHPMailer\Exception;
 use Spatie\CalendarLinks\Link;
 
 // Classes
-require 'script/php/TroopTracker/Event.php';
+use TroopTracker\Event\Event;
+
+// Classes
+require 'script/php/classes/Event.php';
 
 // Composer Autoload
 require 'vendor/autoload.php';
-
-// Classes
-use TroopTracker\Event;
 
 // Calendar Namespace
 use benhall14\phpCalendar\Calendar;
@@ -57,6 +57,10 @@ if ($conn->connect_error)
 {
 	trigger_error('Database connection failed: ' . $conn->connect_error, E_USER_ERROR);
 }
+
+$event = Event::getEventFromId($conn, 9354);
+
+print_r($event);
 
 /**
  * This variable is used to put these costumes first in a query
