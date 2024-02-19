@@ -49,10 +49,14 @@ if ($result = $statement->get_result())
 	while ($db = mysqli_fetch_object($result))
 	{
 		// Search ID for profile
-		$html = file_get_html('https://www.forum.rebellegion.com/forum/profile.php?mode=viewprofile&u=' . $db->rebelforum);
+		$html = file_get_html('https://www.forum.rebellegion.com/forum/profile.php?mode=viewprofile&u=' . urlencode($db->rebelforum));
+
+		// If cannot get page, go to next trooper
+		if(!$html) { continue; }
 
 		// Set Rebel ID
 		$rebelID = $db->rebelforum;
+		$rebelName = "";
 		$rebelForum = $db->rebelforum;
 		
 		// Costume name array
@@ -62,32 +66,38 @@ if ($result = $statement->get_result())
 		$costumeImages = array();
 		
 		// Loop through costume images on profile
-		foreach($html->find('img[height=125]') as $r)
-		{
-			// Set should add to prevent duplicates
-			$addTo = true;
-
-			// Check to see if exists in duplicate array
-			if(in_array(str_replace("sm", "-A", $r->src), $costumeImagesG))
+		try {
+			foreach($html->find('img[height=125]') as $r)
 			{
-				$addTo = false;
-			}
-			
-			// Check to see if we can add (duplicates)
-			if($addTo)
-			{
-				// Push to array
-				array_push($costumeImages, str_replace("sm", "-A", $r->src));
-				
-				// Push to array (to check for duplicates)
-				array_push($costumeImagesG, str_replace("sm", "-A", $r->src));
+				// Set should add to prevent duplicates
+				$addTo = true;
 
-				// Get costume names
-				foreach($r->parent->parent->parent->find('span[class=gen] a') as $s)
+				// Check to see if exists in duplicate array
+				if(in_array(str_replace("sm", "-A", $r->src), $costumeImagesG))
 				{
-					array_push($costumeNames, $s->innertext);
+					$addTo = false;
+				}
+				
+				// Check to see if we can add (duplicates)
+				if($addTo)
+				{
+					// Push to array
+					array_push($costumeImages, str_replace("sm", "-A", $r->src));
+					
+					// Push to array (to check for duplicates)
+					array_push($costumeImagesG, str_replace("sm", "-A", $r->src));
+
+					// Get costume names
+					foreach($r->parent->parent->parent->find('span[class=gen] a') as $s)
+					{
+						array_push($costumeNames, $s->innertext);
+					}
 				}
 			}
+		} catch(Exception $e) {
+			// Error
+			echo 'Error! <br />';
+			continue;
 		}
 		
 		// Start i count
@@ -106,11 +116,19 @@ if ($result = $statement->get_result())
 		}
 
 		// Get Rebel name
-		foreach($html->find('td[class=catRight] span') as $r)
-		{
-			$rebelName = preg_match( '!\(([^\)]+)\)!', $r->innertext, $match);
-			$rebelName = $match[1];
+		try {
+			foreach($html->find('td[class=catRight] span') as $r)
+			{
+				$rebelName = preg_match( '!\(([^\)]+)\)!', $r->innertext, $match);
+				$rebelName = $match[1];
+			}
+		} catch(Exception $e) {
+			// Error
+			echo 'Error! <br />';
+			continue;
 		}
+
+		if(is_null($rebelName)) { $rebelName = ""; }
 
 		// Query
 		$statement = $conn->prepare("INSERT INTO rebel_troopers (rebelid, name, rebelforum) VALUES (?, ?, ?)");
