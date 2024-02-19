@@ -2,7 +2,7 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Generation Time: Feb 17, 2024 at 04:26 PM
+-- Generation Time: Feb 19, 2024 at 03:16 PM
 -- Server version: 8.0.33
 -- PHP Version: 7.4.7
 
@@ -283,7 +283,7 @@ CREATE TABLE `notification_check` (
 --
 
 CREATE TABLE `rebel_costumes` (
-  `rebelid` int NOT NULL,
+  `rebelid` varchar(255) NOT NULL,
   `costumename` varchar(255) NOT NULL,
   `costumeimage` varchar(255) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
@@ -295,7 +295,7 @@ CREATE TABLE `rebel_costumes` (
 --
 
 CREATE TABLE `rebel_troopers` (
-  `rebelid` int NOT NULL,
+  `rebelid` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
   `rebelforum` varchar(255) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
