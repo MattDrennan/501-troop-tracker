@@ -4902,9 +4902,8 @@ if(isset($_GET['action']) && $_GET['action'] == "login" && !loggedIn())
 		}
 
 		// Get data
-		$username = filter_var($_POST['tkid'], FILTER_SANITIZE_ADD_SLASHES);
 		$statement = $conn->prepare("SELECT * FROM troopers WHERE forum_id = ? LIMIT 1");
-		$statement->bind_param("s", $username);
+		$statement->bind_param("s", $_POST['tkid']);
 		$statement->execute();
 		
 		// Trooper count
