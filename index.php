@@ -739,7 +739,7 @@ if(isset($_GET['profile']) && loggedIn())
 		showCostumes(getTKNumber($profile), getTrooperSquad($profile));
 		
 		// Show Rebel Legion costumes
-		showRebelCostumes(getRebelInfo(getRebelLegionUser($profile))['id']);
+		showRebelCostumes(getRebelLegionUser($profile));
 		
 		// Show Mando Mercs costumes
 		showMandoCostumes(getMandoLegionUser($profile));

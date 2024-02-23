@@ -2059,7 +2059,7 @@ function showRebelCostumes($id)
 	
 	// Get data
 	$statement = $conn->prepare("SELECT * FROM rebel_costumes WHERE rebelid = ?");
-	$statement->bind_param("i", $id);
+	$statement->bind_param("s", $id);
 	$statement->execute();
 	
 	// Set up count
@@ -3344,8 +3344,10 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	}
 	
 	// Get Rebel Legion thumbnail info
+	$rebelid = getRebelLegionUser($id);
+	
 	$statement = $conn->prepare("SELECT costumeimage FROM rebel_costumes WHERE rebelid = ? LIMIT 1");
-	$statement->bind_param("i", getRebelInfo(getRebelLegionUser($id))['id']);
+	$statement->bind_param("s", $rebelid);
 	$statement->execute();
 	$statement->bind_result($thumbnail_rebel);
 	$statement->fetch();
