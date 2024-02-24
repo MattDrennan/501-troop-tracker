@@ -50,6 +50,12 @@ define('dbName2', 'DB_NAME_HERE');
 $forumURL = "index.php?api";
 
 /**
+ * forumAnnounceID: ID of the forum where announcements are made
+*/
+
+$forumAnnounceID = 18;
+
+/**
  * placeholder: This variable is used for assigning a user account to be a placeholder account. A placeholder account can be signed up multiple times for the same event, and is used to sign up non-members.
 */
 

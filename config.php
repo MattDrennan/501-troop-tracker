@@ -1170,6 +1170,40 @@ function createAlert($to, $message)
 }
 
 /**
+ * Gets threads from forum
+ * 
+ * @return json Return's the thread data from forum if success
+*/
+function getThreadsFromForum()
+{
+	global $forumURL, $forumAnnounceID;
+	
+	// Get user forum info by forum name
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+	  CURLOPT_URL => $forumURL . "api/forums/" . $forumAnnounceID . "/threads&order=post_date&direction=desc&unread=1",
+	  CURLOPT_CUSTOMREQUEST => "GET",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => "",
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_HTTPHEADER => [
+	    "XF-Api-Key: " . xenforoAPI_superuser,
+	    "XF-Api-User: " . xenforoAPI_userID,
+	  ],
+	]);
+	
+	// This must be uncommented in a test environment
+	//curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+
+	return json_decode($response, true);
+}
+
+/**
  * Create's a thread in Xenforo
  * 
  * @param int $id The forum ID to be posted in

@@ -787,3 +787,35 @@ blockquote {
 	padding: 20px; 
 	width: inherit; 
 }
+
+/* Annoucements */
+
+.container-announce {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.container-announce .box {
+	flex: 1;
+	text-align: center;
+	margin: 20px;
+	border: 1px dashed #000;
+	display: flex;
+	flex-wrap: wrap;
+	max-width: 300px;
+}
+
+.container-announce .user {
+	flex: 1;
+	text-align: center;
+	margin: 20px;
+}
+
+.container-announce .title {
+	flex: 1;
+	text-align: center;
+	margin: 20px;
+}
