@@ -4812,7 +4812,7 @@ function isClubMember($dbclub)
 	
 	// Check if the trooper is a moderator
 	$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
-	$statement->bind_param("i", $id);
+	$statement->bind_param("i", $_SESSION['id']);
 	$statement->execute();
 
 	if ($result = $statement->get_result())
