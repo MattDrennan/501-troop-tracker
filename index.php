@@ -5445,24 +5445,35 @@ if(isset($_GET['event']) && loggedIn())
 				if($link > 0)
 				{						
 					echo '
-					<h2 class="tm-section-header">Other Shifts</h2>';
+					<h2 class="tm-section-header" id="shifts-link">Shifts</h2>';
 					
 					// Query database for photos
-					$statement = $conn->prepare("SELECT * FROM events WHERE (id = ? OR link = ?) AND id != ? ORDER BY dateStart DESC");
-					$statement->bind_param("iii", $link, $link, $db->id);
+					$statement = $conn->prepare("SELECT * FROM events WHERE (id = ? OR link = ?) ORDER BY dateStart DESC");
+					$statement->bind_param("ii", $link, $link);
 					$statement->execute();
 					
 					if ($result2 = $statement->get_result())
 					{
 						while ($db2 = mysqli_fetch_object($result2))
 						{
-							echo '
-							<div style="border: 1px solid gray; margin-bottom: 10px; text-align: center;">
-							<a href="index.php?event=' . $db2->id . '"><b>'.date('l', strtotime($db2->dateStart)).'</b> - ' . date('M d, Y', strtotime($db2->dateStart)) . '
-							<br />' .
-							date('h:i A', strtotime($db2->dateStart)) . ' - ' . date('h:i A', strtotime($db2->dateEnd)) .
-							'</a>
-							</div>';
+							if($db->id == $db2->id) {
+								echo '
+								<div style="border: 1px solid gray; margin-bottom: 10px; text-align: center; color: orange; font-weight: bold;">
+								<u>Currently Viewing:</u>
+								<br />
+								<b>'.date('l', strtotime($db2->dateStart)).'</b> - ' . date('M d, Y', strtotime($db2->dateStart)) . '
+								<br />' .
+								date('h:i A', strtotime($db2->dateStart)) . ' - ' . date('h:i A', strtotime($db2->dateEnd)) .
+								'</div>';
+							} else {
+								echo '
+								<div style="border: 1px solid gray; margin-bottom: 10px; text-align: center;">
+								<a href="index.php?event=' . $db2->id . '#shifts-link"><b>'.date('l', strtotime($db2->dateStart)).'</b> - ' . date('M d, Y', strtotime($db2->dateStart)) . '
+								<br />' .
+								date('h:i A', strtotime($db2->dateStart)) . ' - ' . date('h:i A', strtotime($db2->dateEnd)) .
+								'</a>
+								</div>';
+							}
 						}
 					}
 				}
