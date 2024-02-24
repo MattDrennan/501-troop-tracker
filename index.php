@@ -254,38 +254,41 @@ if(loggedIn())
 	';
 	
 	$threads = getThreadsFromForum();
-	
-	echo '<div class="container-announce">';
-	foreach($threads['sticky'] as $thread => $thread_value) {
-		echo '
-		<div class="box">
-			<div class="user">
-				<img src="'.$thread_value['User']['avatar_urls']['s'].'" />
-				<br />
-				<a href="'. $thread_value['User']['view_url'] .'">'.$thread_value['User']['username'].'</a>
-			</div>
-			
-			<div class="title">
-				<a href="' . $thread_value['view_url'] . '">' . $thread_value['title'] . '</a>
-			</div>
-		</div>';
+
+	// Check if threads has data
+	if(!isset($threads['errors'])) {
+		echo '<div class="container-announce">';
+		foreach($threads['sticky'] as $thread => $thread_value) {
+			echo '
+			<div class="box">
+				<div class="user">
+					<img src="'.$thread_value['User']['avatar_urls']['s'].'" />
+					<br />
+					<a href="'. $thread_value['User']['view_url'] .'">'.$thread_value['User']['username'].'</a>
+				</div>
+				
+				<div class="title">
+					<a href="' . $thread_value['view_url'] . '">' . $thread_value['title'] . '</a>
+				</div>
+			</div>';
+		}
+		
+		foreach($threads['threads'] as $thread => $thread_value) {
+			echo '
+			<div class="box">
+				<div class="user">
+					<img src="'.$thread_value['User']['avatar_urls']['s'].'" />
+					<br />
+					<a href="'. $thread_value['User']['view_url'] .'">'.$thread_value['User']['username'].'</a>
+				</div>
+				
+				<div class="title">
+					<a href="' . $thread_value['view_url'] . '">' . $thread_value['title'] . '</a>
+				</div>
+			</div>';
+		}
+		echo '</div>';
 	}
-	
-	foreach($threads['threads'] as $thread => $thread_value) {
-		echo '
-		<div class="box">
-			<div class="user">
-				<img src="'.$thread_value['User']['avatar_urls']['s'].'" />
-				<br />
-				<a href="'. $thread_value['User']['view_url'] .'">'.$thread_value['User']['username'].'</a>
-			</div>
-			
-			<div class="title">
-				<a href="' . $thread_value['view_url'] . '">' . $thread_value['title'] . '</a>
-			</div>
-		</div>';
-	}
-	echo '</div>';
 }
 
 // Show the account page

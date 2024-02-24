@@ -2908,7 +2908,7 @@ function checkTroopCounts($count, $message, $trooperid, $club)
 	
 	// Search notifications for previous notifications, so we don't duplicate - check message for club name
 	$statement = $conn->prepare("SELECT * FROM notifications WHERE trooperid = ? AND message LIKE CONCAT('%', ?, '%')");
-	$statement->bind_param("is", $id, $club);
+	$statement->bind_param("is", $trooperid, $club);
 	$statement->execute();
 
 	if ($result = $statement->get_result())
