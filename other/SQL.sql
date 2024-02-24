@@ -2,8 +2,8 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Generation Time: Feb 19, 2024 at 03:16 PM
--- Server version: 8.0.33
+-- Generation Time: Feb 24, 2024 at 09:11 PM
+-- Server version: 8.0.35
 -- PHP Version: 7.4.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -258,7 +258,7 @@ CREATE TABLE `notifications` (
   `message` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
   `trooperid` int NOT NULL,
   `type` int NOT NULL DEFAULT '0',
-  `json` text NOT NULL,
+  `json` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
   `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
