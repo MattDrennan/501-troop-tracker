@@ -253,7 +253,7 @@ if(loggedIn())
 	<p style="text-align: center; border: 1px; border-style: dotted;"><a href="https://fl501st.com/boards/">Welcome '.getName($_SESSION['id']).', you have '.@count($alerts).' notifications and '.@count($conversations).' unread messages on the boards.</a></p>
 	';
 	
-	$threads = getThreadsFromForum();
+	$threads = getThreadsFromForum($userID);
 
 	// Check if threads has data
 	if(!isset($threads['errors'])) {

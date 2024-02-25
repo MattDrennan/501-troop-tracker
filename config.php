@@ -1172,9 +1172,10 @@ function createAlert($to, $message)
 /**
  * Gets threads from forum
  * 
+ * @param int $userID (optional) The user ID of the user you want to load announcements from
  * @return json Return's the thread data from forum if success
 */
-function getThreadsFromForum()
+function getThreadsFromForum($userID = xenforoAPI_userID)
 {
 	global $forumURL, $forumAnnounceID;
 	
@@ -1189,7 +1190,7 @@ function getThreadsFromForum()
 	  CURLOPT_TIMEOUT => 0,
 	  CURLOPT_HTTPHEADER => [
 	    "XF-Api-Key: " . xenforoAPI_superuser,
-	    "XF-Api-User: " . xenforoAPI_userID,
+	    "XF-Api-User: " . $userID,
 	  ],
 	]);
 	
