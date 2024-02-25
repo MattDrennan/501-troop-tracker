@@ -2863,8 +2863,9 @@ function troopCheck($id)
 	$statement = $conn->prepare("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = ? AND status = '3' AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume))");
 	$statement->bind_param("i", $id);
 	$statement->execute();
-	$statement->store_result();
-	$count = $statement->num_rows;
+	$statement->bind_result($count);
+	$statement->fetch();
+	$statement->close();
 	
 	// 501st
 	checkTroopCounts($count, "501ST: " . getName($id) . " now has [COUNT] troop(s)", $id, "501ST");
@@ -2879,8 +2880,9 @@ function troopCheck($id)
 		$statement = $conn->prepare("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = ? AND status = '3' AND ".getCostumeQueryValues($clubID)."");
 		$statement->bind_param("i", $id);
 		$statement->execute();
-		$statement->store_result();
-		$count = $statement->num_rows;
+		$statement->bind_result($count);
+		$statement->fetch();
+		$statement->close();
 		
 		// Check troop count of club
 		checkTroopCounts($count, strtoupper($club_value['name']) . ": " . getName($id) . " now has [COUNT] troop(s)", $id, strtoupper($club_value['name']));
