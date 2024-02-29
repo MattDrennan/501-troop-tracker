@@ -1360,7 +1360,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		// If All
 		if($_POST['squad'] == 0)
 		{
-			$statement = $conn->prepare("SELECT events.id AS id, events.dateStart, events.dateEnd, events.name, events.charityDirectFunds, events.charityAddHours, events.charityDirectFunds, events.charityIndirectFunds, events.charityName, events.charityNote FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE dateStart >= ? AND dateEnd <= ?");
+			$statement = $conn->prepare("SELECT (SELECT COUNT(event_sign_up.id) FROM event_sign_up WHERE event_sign_up.troopid = events.id AND event_sign_up.status = 3) AS troopercount, events.id AS id, events.dateStart, events.dateEnd, events.name, events.charityDirectFunds, events.charityAddHours, events.charityDirectFunds, events.charityIndirectFunds, events.charityName, events.charityNote FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE dateStart >= ? AND dateEnd <= ? GROUP BY events.id");
 			$statement->bind_param("ss", $dateStartQuery, $dateEndQuery);
 
 			// Get troop counts
@@ -1389,7 +1389,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		else if(($_POST['squad'] >= 1 && $_POST['squad'] <= count($squadArray)))
 		{
 			// If 501st
-			$statement = $conn->prepare("SELECT events.id AS id, events.dateStart, events.dateEnd, events.name, events.charityDirectFunds, events.charityAddHours, events.charityDirectFunds, events.charityIndirectFunds, events.charityName, events.charityNote FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE dateStart >= ? AND dateEnd <= ? AND squad = ?");
+			$statement = $conn->prepare("SELECT (SELECT COUNT(event_sign_up.id) FROM event_sign_up WHERE event_sign_up.troopid = events.id AND event_sign_up.status = 3) AS troopercount, events.id AS id, events.dateStart, events.dateEnd, events.name, events.charityDirectFunds, events.charityAddHours, events.charityDirectFunds, events.charityIndirectFunds, events.charityName, events.charityNote FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE dateStart >= ? AND dateEnd <= ? AND squad = ? GROUP BY events.id");
 			$statement->bind_param("ssi", $dateStartQuery, $dateEndQuery, $_POST['squad']);
 			
 			// Get troop counts
@@ -1416,8 +1416,8 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			$statement1->close();
 		} else {
 			// Clubs
-			$statement = $conn->prepare("SELECT events.id AS id, events.dateStart, events.dateEnd, events.name, events.charityDirectFunds, events.charityAddHours, events.charityDirectFunds, events.charityIndirectFunds, events.charityName, events.charityNote FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE dateStart >= ? AND dateEnd <= ? AND ".getCostumeQueryValues($_POST['squad'])." GROUP BY events.id");
-			$statement->bind_param("ssi", $dateStartQuery, $dateEndQuery, $_POST['squad']);
+			$statement = $conn->prepare("SELECT (SELECT COUNT(event_sign_up.id) FROM event_sign_up WHERE event_sign_up.troopid = events.id AND event_sign_up.status = 3 AND ".getCostumeQueryValues($_POST['squad']).") AS troopercount, events.id AS id, events.dateStart, events.dateEnd, events.name, events.charityDirectFunds, events.charityAddHours, events.charityDirectFunds, events.charityIndirectFunds, events.charityName, events.charityNote FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE dateStart >= ? AND dateEnd <= ? AND ".getCostumeQueryValues($_POST['squad'])." GROUP BY events.id");
+			$statement->bind_param("ss", $dateStartQuery, $dateEndQuery);
 
 			// Get troop counts
 			$statement1 = $conn->prepare("SELECT COUNT(total) FROM (SELECT event_sign_up.troopid AS total FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.dateStart >= ? AND events.dateEnd <= ? AND ".getCostumeQueryValues($_POST['squad'])." GROUP BY event_sign_up.troopid) AS ABC");
@@ -1483,7 +1483,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 					array_push($list, ['Direct Charity: ', '$' . number_format($charity_count)]);
 					array_push($list, ['Indirect Charity: ', '$' . number_format($charity_count2)]);
 					array_push($list, ['']);
-					array_push($list, ['Event', 'Direct', 'Indirect', 'Charity Name', 'Hours', 'Notes']);
+					array_push($list, ['Date', 'Event', 'Direct', 'Indirect', 'Charity Name', 'Hours', 'Troopers Attended', 'Notes']);
 
 					echo '
 					<p>
@@ -1501,7 +1501,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 					<div style="overflow-x: auto;">
 					<table border="1">
 					<tr>
-						<th>Event</th>	<th>Direct</th>	<th>Indirect</th>	<th>Charity Name</th>	<th>Hours</th>	<th>Notes</th>
+						<th>Date</th>	<th>Event</th>	<th>Direct</th>	<th>Indirect</th>	<th>Charity Name</th>	<th>Hours</th>	<th>Troopers Attended</th>	<th>Notes</th>
 					</tr>';
 				}
 
@@ -1540,10 +1540,12 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 
 				$hours = timeBetweenDates($db->dateStart, $db->dateEnd);
 				$hours += intval($db->charityAddHours);
+
+				$date = date("m/d/Y", strtotime($db->dateEnd));
 				
 				// Create an array of our count
-				$tempArray = array($db->id, $db->name, $db->charityDirectFunds, $db->charityIndirectFunds, $db->charityName, $hours, $db->charityNote);
-				array_push($list, [$db->name, $db->charityDirectFunds, $db->charityIndirectFunds, $db->charityName, $hours, $db->charityNote]);
+				$tempArray = array($db->id, $db->name, $db->charityDirectFunds, $db->charityIndirectFunds, $db->charityName, $hours, $db->charityNote, $db->dateStart, $db->dateEnd, $db->troopercount);
+				array_push($list, [$date, $db->name, $db->charityDirectFunds, $db->charityIndirectFunds, $db->charityName, $hours, $db->troopercount, $db->charityNote]);
 				
 				// Push to main array
 				array_push($troopArray, $tempArray);
@@ -1551,16 +1553,25 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		}
 		
 		// Sort array for display
-		$keys = array_column($troopArray, 1);
+		$keys = array_column($troopArray, 8);
 		array_multisort($keys, SORT_DESC, $troopArray);
 
 		// Loop through array
 		foreach($troopArray as $value)
 		{
+			$date = date("m/d/Y", strtotime($value[8]));
+
 			// Display
 			echo '
 			<tr>
-				<td><a href="index.php?event='.$value[0].'">'.$value[1].'</a></td>	<td>$'.number_format($value[2]).'</td>	<td>$'.number_format($value[3]).'</td>	<td>'.ifEmpty($value[4], "N/A").'</td>	<td>'.number_format($value[5]).'</td>	<td>'.ifEmpty(nl2br($value[6]), "N/A").'</td>
+				<td>'.$date.'</td>
+				<td><a href="index.php?event='.$value[0].'">'.$value[1].'</a></td>
+				<td>$'.number_format($value[2]).'</td>
+				<td>$'.number_format($value[3]).'</td>
+				<td>'.ifEmpty($value[4], "N/A").'</td>
+				<td>'.number_format($value[5]).'</td>
+				<td>'.$value[9].'</td>
+				<td>'.ifEmpty(nl2br($value[6]), "N/A").'</td>
 			</tr>';
 		}
 	}
@@ -2619,7 +2630,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 					echo '
 					<p class="trooper-confirmation-box" signid="'.$db->signupId.'">
-						<a href="index.php?event='.$db->eventId.'" target="_blank">'. (isLink($db->eventId) > 0 ? '[<b>" . date("l", strtotime($db->dateStart)) . "</b> : <i>" . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "</i>] ' : '') .''.$db->name.' '.$db->trooperName.' '.($db->note != '' ? 'noted as ' . $db->note : '').'</a>
+						<a href="index.php?event='.$db->eventId.'" target="_blank">'. (isLink($db->eventId) > 0 ? '[<b>' . date("l", strtotime($db->dateStart)) . '</b> : <i>' . date("m/d - h:i A", strtotime($db->dateStart)) . ' - ' . date("h:i A", strtotime($db->dateEnd)) . '</i>] ' : '') .''.$db->name.' '.$db->trooperName.' '.($db->note != '' ? 'noted as ' . $db->note : '').'</a>
 						<br />
 						<b>Attended As:</b> '.getCostume($db->costume).'
 						<br /><br />
