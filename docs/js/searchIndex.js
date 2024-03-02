@@ -26,6 +26,11 @@ Search.appendIndex(
             "summary": "Returns\u0020total\u0020troop\u0020counts\u0020for\u0020each\u0020club\u0020of\u0020the\u0020defined\u0020trooper,\u0020as\u0020well\u0020as\u0020favorite\u0020costume\u0020and\u0020money\u0020raised",
             "url": "namespaces/default.html#function_getTroopCounts"
         },                {
+            "fqsen": "\\labelToForumCategory\u0028\u0029",
+            "name": "labelToForumCategory",
+            "summary": "Returns\u0020the\u0020category\u0020ID\u0020in\u0020the\u0020forum,\u0020based\u0020on\u0020the\u0020label",
+            "url": "namespaces/default.html#function_labelToForumCategory"
+        },                {
             "fqsen": "\\showSquadButtons\u0028\u0029",
             "name": "showSquadButtons",
             "summary": "Returns\u0020garrison\u0020and\u0020squad\u0020images\u0020to\u0020display\u0020on\u0020the\u0020front\u0020page.\u0020A\u0020trooper\u0020can\u0020click\u0020images\u0020to\u0020see\u0020events\u0020for\u0020that\u0020squad.",
@@ -105,6 +110,11 @@ Search.appendIndex(
             "name": "createAlert",
             "summary": "Create\u0027s\u0020an\u0020alert\u0020in\u0020Xenforo",
             "url": "namespaces/default.html#function_createAlert"
+        },                {
+            "fqsen": "\\getThreadsFromForum\u0028\u0029",
+            "name": "getThreadsFromForum",
+            "summary": "Gets\u0020threads\u0020from\u0020forum",
+            "url": "namespaces/default.html#function_getThreadsFromForum"
         },                {
             "fqsen": "\\createThread\u0028\u0029",
             "name": "createThread",
@@ -1415,16 +1425,6 @@ Search.appendIndex(
             "name": "convertSquadId",
             "summary": "Returns\u0020the\u0020squad\u0027s\u0020ID\u0020for\u0020troop\u0020tracker",
             "url": "namespaces/default.html#function_convertSquadId"
-        },                {
-            "fqsen": "\\print_r_reverse\u0028\u0029",
-            "name": "print_r_reverse",
-            "summary": "Convert\u0020a\u0020string\u0020\u0028print_r\u0029\u0020back\u0020to\u0020an\u0020array\u0020value",
-            "url": "namespaces/default.html#function_print_r_reverse"
-        },                {
-            "fqsen": "\\contains\u0028\u0029",
-            "name": "contains",
-            "summary": "Checks\u0020if\u0020string\u0020is\u0020inside\u0020another\u0020string",
-            "url": "namespaces/default.html#function_contains"
         },                {
             "fqsen": "\\array_to_csv_download\u0028\u0029",
             "name": "array_to_csv_download",

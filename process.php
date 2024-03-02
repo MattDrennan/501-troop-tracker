@@ -2145,25 +2145,7 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 							$thread_body = threadTemplate($_POST['eventName'], $_POST['eventVenue'], $_POST['location'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['comments'], $_POST['referred'], $last_id);
 
 							// ID of forum category
-							$forumCat = 0;
-							
-							// If a virtual troop, send to distance category
-							if($_POST['label'] == 7)
-							{
-								$forumCat = $virtualTroop;
-							}
-							else if($_POST['label'] == 4)
-							{
-								$forumCat = $conventionTroop;
-							}
-							else if($_POST['label'] == 3)
-							{
-								$forumCat = $disneyTroop;
-							}
-							else
-							{
-								$forumCat = $squadArray[intval($_POST['squadm'] - 1)]['eventForum'];
-							}
+							$forumCat = labelToForumCategory($_POST['label'], $_POST['squadm']);
 
 							// Create thread on forum
 							$thread = createThread($forumCat, date("m/d/y h:i A", strtotime($date1)) . " - " . date("h:i A", strtotime($date2)) . " " . $_POST['eventName'], $thread_body, getUserID($_SESSION['id']));
@@ -2187,25 +2169,7 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 				$thread_body = threadTemplate($_POST['eventName'], $_POST['eventVenue'], $_POST['location'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['comments'], $_POST['referred'], $eventId);
 
 				// ID of forum category
-				$forumCat = 0;
-				
-				// If a virtual troop, send to distance category
-				if($_POST['label'] == 7)
-				{
-					$forumCat = $virtualTroop;
-				}
-				else if($_POST['label'] == 4)
-				{
-					$forumCat = $conventionTroop;
-				}
-				else if($_POST['label'] == 3)
-				{
-					$forumCat = $disneyTroop;
-				}
-				else
-				{
-					$forumCat = $squadArray[intval($_POST['squadm'] - 1)]['eventForum'];
-				}
+				$forumCat = labelToForumCategory($_POST['label'], $_POST['squadm']);
 
 				// Set title
 				$title = date("m/d/y", strtotime($date1)) . " " . $_POST['eventName'];

@@ -357,6 +357,35 @@ function getTroopCounts($id)
 }
 
 /**
+ * Returns the category ID in the forum, based on the label
+ * 
+ * @param int $label The label category for the event
+ * @param int $squad The chosen squad territory for the event
+ * @return int Returns the forum category ID
+*/
+function labelToForumCategory($label, $squad) {
+	global $virtualTroop, $conventionTroop, $disneyTroop, $squadArray;
+
+	switch($label) {
+		case 3:
+			return $disneyTroop;
+		break;
+
+		case 4:
+			return $conventionTroop;
+		break;
+
+		case 7:
+			return $virtualTroop;
+		break;
+
+		default:
+			return $squadArray[intval($squad - 1)]['eventForum'];
+		break;
+	}
+}
+
+/**
  * Returns garrison and squad images to display on the front page. A trooper can click images to see events for that squad.
  * 
  * @return string Returns an HTML string to display to trooper
