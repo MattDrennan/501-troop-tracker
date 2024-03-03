@@ -2,7 +2,7 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Generation Time: Feb 24, 2024 at 09:11 PM
+-- Generation Time: Mar 03, 2024 at 10:42 PM
 -- Server version: 8.0.35
 -- PHP Version: 7.4.7
 
@@ -181,8 +181,22 @@ CREATE TABLE `events` (
   `charityAddHours` int DEFAULT NULL,
   `charityNote` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
   `squad` int NOT NULL,
-  `link` int NOT NULL DEFAULT '0'
+  `link` int NOT NULL DEFAULT '0',
+  `link2` int NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `event_link`
+--
+
+CREATE TABLE `event_link` (
+  `id` int NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `allowed_sign_ups` int NOT NULL DEFAULT '500',
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -475,6 +489,12 @@ ALTER TABLE `events`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `event_link`
+--
+ALTER TABLE `event_link`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `event_sign_up`
 --
 ALTER TABLE `event_sign_up`
@@ -552,6 +572,12 @@ ALTER TABLE `costumes`
 --
 ALTER TABLE `events`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `event_link`
+--
+ALTER TABLE `event_link`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `event_sign_up`

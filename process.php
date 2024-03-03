@@ -992,10 +992,10 @@ if(isset($_GET['do']) && $_GET['do'] == "eventlink" && loggedIn() && isAdmin())
 	{
 		// Query the database
 		$_POST['editEventLinkName'] = cleanInput($_POST['editEventLinkName']);
-		$_POST['allowed_sign_ups'] = cleanInput($_POST['allowed_sign_ups']);
+		$_POST['allowed_sign_ups_edit'] = cleanInput($_POST['allowed_sign_ups_edit']);
 
 		$statement = $conn->prepare("UPDATE event_link SET name = ?, allowed_sign_ups = ? WHERE id = ?");
-		$statement->bind_param("sii", $_POST['editEventLinkName'], $_POST['allowed_sign_ups'], $_POST['eventLinkIDEdit']);
+		$statement->bind_param("sii", $_POST['editEventLinkName'], $_POST['allowed_sign_ups_edit'], $_POST['eventLinkIDEdit']);
 		$statement->execute();
 
 		$statement = $conn->prepare("UPDATE events SET link2 = 0 WHERE link2 = ?");
@@ -1005,7 +1005,7 @@ if(isset($_GET['do']) && $_GET['do'] == "eventlink" && loggedIn() && isAdmin())
 		// Update link2 for events that were linked
 		foreach ($_POST['events'] as $troopid) {
 			$statement = $conn->prepare("UPDATE events SET link2 = ? WHERE id = ?");
-			$statement->bind_param("ii", $eventLinkIDEdit, $troopid);
+			$statement->bind_param("ii", $_POST['eventLinkIDEdit'], $troopid);
 			$statement->execute();
 		}
 
@@ -1086,7 +1086,7 @@ if(isset($_GET['do']) && $_GET['do'] == "eventlink" && loggedIn() && isAdmin())
 						<option value="0" SELECTED>Please select an event link...</option>';
 				}
 
-				$returnMessage .= '<option value="'.$db->id.'" eventLinkName="'.readInput($db->name).'" eventLinkID="'.$db->id.'" allowed_sign_ups="'.$db->allowed_sign_ups.'">'.readInput($db->name).'</option>';
+				$returnMessage .= '<option value="'.$db->id.'" eventLinkName="'.readInput($db->name).'" eventLinkID="'.$db->id.'" allowed_sign_ups="'.$db->allowed_sign_ups.'">' . $db->name . '</option>';
 
 				// Increment
 				$i++;
@@ -1127,7 +1127,7 @@ if(isset($_GET['do']) && $_GET['do'] == "eventlink" && loggedIn() && isAdmin())
 					}
 
 					$returnMessage .= '
-						<option value="' . $db->id . '">' . $db->name . '</option>';
+						<option value="' . $db->id . '">'.(isLink($db->id) > 0 ? date('l', strtotime($db->dateStart)).' - ' . date('M d, Y', strtotime($db->dateStart)) . ': ' . $db->name : date('M d, Y', strtotime($db->dateStart)) . ': ' . $db->name).'</option>';
 
 					$i++;
 				}

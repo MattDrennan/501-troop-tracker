@@ -2865,8 +2865,6 @@ $(document).ready(function()
 	{
 		e.preventDefault();
 
-		console.log("aaa");
-
 		var form = $("#eventLinkEdit");
 		var url = form.attr("action");
 

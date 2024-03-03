@@ -4175,7 +4175,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						}
 
 						echo '
-							<option value="' . $db->id . '">' . $db->name . '</option>';
+							<option value="' . $db->id . '">' . date('M d, Y', strtotime($db->dateStart)) . ': ' . $db->name . '</option>';
 
 						$i++;
 					}
@@ -4216,7 +4216,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<option value="0" SELECTED>Please select an event link...</option>';
 					}
 
-					echo '<option value="'.$db->id.'" eventLinkName="'.readInput($db->name).'" eventLinkID="'.$db->id.'" allowed_sign_ups="'.$db->allowed_sign_ups.'">'.readInput($db->name).'</option>';
+					echo '<option value="'.$db->id.'" eventLinkName="'.readInput($db->name).'" eventLinkID="'.$db->id.'" allowed_sign_ups="'.$db->allowed_sign_ups.'">' . $db->name . '</option>';
 
 					// Increment
 					$i++;
@@ -4259,7 +4259,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						}
 
 						echo '
-							<option value="' . $db->id . '">' . $db->name . '</option>';
+							<option value="' . $db->id . '">' . (isLink($db->id) > 0 ? date('l', strtotime($db->dateStart)).' - ' . date('M d, Y', strtotime($db->dateStart)) . ': ' . $db->name : date('M d, Y', strtotime($db->dateStart)) . ': ' . $db->name) . '</option>';
 
 						$i++;
 					}
@@ -5674,7 +5674,7 @@ if(isset($_GET['event']) && loggedIn())
 					echo '
 					<h2 class="tm-section-header" id="shifts-link">Shifts</h2>';
 					
-					// Query database for photos
+					// Query database for shifts
 					$statement = $conn->prepare("SELECT * FROM events WHERE (id = ? OR link = ?) ORDER BY dateStart DESC");
 					$statement->bind_param("ii", $link, $link);
 					$statement->execute();
@@ -5701,6 +5701,36 @@ if(isset($_GET['event']) && loggedIn())
 								'</a>
 								</div>';
 							}
+						}
+					}
+				}
+
+				// Get link2
+				$link2 = isLink2($db->id);
+
+				// Show linked events
+				if($link2 > 0) {
+					echo '
+					<h2 class="tm-section-header">Related Troops</h2>';
+
+					// Query database for linked events
+					$statement = $conn->prepare("SELECT * FROM events WHERE link2 = ? AND id != ? ORDER BY dateStart DESC");
+					$statement->bind_param("ii", $link2, $db->id);
+					$statement->execute();
+					
+					if ($result2 = $statement->get_result())
+					{
+						while ($db2 = mysqli_fetch_object($result2))
+						{
+							echo '
+							<div style="border: 1px solid gray; margin-bottom: 10px; text-align: center;">
+							<a href="index.php?event=' . $db2->id . '">' . (isLink($db2->id) > 0 ? '<b>'.date('l', strtotime($db2->dateStart)).'</b> - ' . date('M d, Y', strtotime($db2->dateStart)) . '
+							<br />' .
+							date('h:i A', strtotime($db2->dateStart)) . ' - ' . date('h:i A', strtotime($db2->dateEnd)) .
+							'
+							<br />
+							'. $db2->name : date('M d, Y', strtotime($db2->dateStart)) . '<br />' . $db2->name) .'</a>
+							</div>';
 						}
 					}
 				}

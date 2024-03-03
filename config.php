@@ -3905,7 +3905,31 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 		}
 
 		$returnString .= '
-		[b]To view all shift event forum posts on one page, view the event page on the Troop Tracker. This forum page will only show this shifts forum posts.[/b]';
+		[b]To view all shift event forum posts on one page, view the event page on the Troop Tracker. This forum page will only show this shifts forum posts.[/b]
+		';
+	}
+
+	// Get link2
+	$link2 = isLink2($eventId);
+
+	// Show linked events
+	if($link2 > 0) {
+		echo '
+		[b][u]Related Troops:[/u][/b]';
+
+		// Query database for linked events
+		$statement = $conn->prepare("SELECT * FROM events WHERE link2 = ? AND id != ? ORDER BY dateStart DESC");
+		$statement->bind_param("ii", $link2, $eventId);
+		$statement->execute();
+		
+		if ($result = $statement->get_result())
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				$returnString .= '
+				[url="https://fl501st.com/troop-tracker/index.php?event=' . $db->id . '"]' . (isLink($db->id) > 0 ? '[b]'.date('l', strtotime($db->dateStart)).'[/b] - ' . date('M d, Y', strtotime($db->dateStart)) . ' ' . date('h:i A', strtotime($db->dateStart)) . ' - ' . date('h:i A', strtotime($db->dateEnd)) . ''. $db->name : date('M d, Y', strtotime($db->dateStart)) . ': ' . $db->name) .'[/url]';
+			}
+		}
 	}
 
 	return $returnString;
@@ -5818,7 +5842,7 @@ function emailSettingStatus($column, $print = false)
  * Returns if an event is linked
  *
  * @param int $id ID of the event
- * @return string ID of the linked event
+ * @return int ID of the linked event
 */
 function isLink($id)
 {
@@ -5857,6 +5881,27 @@ function isLink($id)
 	}
 	
 	return $link;
+}
+
+/**
+ * Returns value of link2 from event ID
+ *
+ * @param int $id ID of the event
+ * @return int ID of the link2
+*/
+function isLink2($id)
+{
+	global $conn;
+	
+	// Get link ID
+	$statement = $conn->prepare("SELECT link2 FROM events WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($link2);
+	$statement->fetch();
+	$statement->close();
+	
+	return $link2;
 }
 
 /**
