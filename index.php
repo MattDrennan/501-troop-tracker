@@ -2194,6 +2194,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 		<p>
 			<a href="index.php?action=commandstaff&do=createevent" class="button">Create an Event</a> 
 			<a href="index.php?action=commandstaff&do=editevent" class="button">Edit an Event</a> 
+			<a href="index.php?action=commandstaff&do=eventlinkmanager" class="button">Event Link Manager</a> 
 			<a href="index.php?action=commandstaff&do=roster" class="button">Roster</a> 
 			<a href="index.php?action=commandstaff&do=notifications" class="button">Notifications</a> 
 			<a href="index.php?action=commandstaff&do=approvetroopers" class="button" id="trooperRequestButton" name="trooperRequestButton">Approve Trooper Requests - ('.$getTrooperNotifications.')</a> ';
@@ -4138,6 +4139,187 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				</div>';
 			}
 		}
+
+		/**************************** EVENT LINK MANAGER *********************************/
+
+		if(isset($_GET['do']) && $_GET['do'] == "eventlinkmanager" && hasPermission(1, 2))
+		{
+			echo '<br /><hr /><br /><h3>Create Event Link</h3>
+
+			<form action="process.php?do=eventlink" method="POST" name="addEventLink" id="addEventLink">
+				<p>
+					<b>Event Link Name:</b></br />
+					<input type="text" name="eventLinkName" id="eventLinkName" />
+				</p>
+
+				<p>
+					<b>Max Sign Ups Per Trooper:</b></br />
+					<input type="number" name="allowed_sign_ups" id="allowed_sign_ups" value="500" />
+				</p>
+
+				<p>';
+
+				// Get data
+				$statement = $conn->prepare("SELECT * FROM events ORDER BY id DESC LIMIT 200");
+				$statement->execute();
+				$i = 0;
+
+				if ($result = $statement->get_result())
+				{
+					while ($db = mysqli_fetch_object($result))
+					{
+						if($i == 0) {
+							echo '
+							<b>Events:</b></br />
+							<select id="multiple_event_select" name="events[]" multiple="multiple">';
+						}
+
+						echo '
+							<option value="' . $db->id . '">' . $db->name . '</option>';
+
+						$i++;
+					}
+				}
+
+				if($i > 0) {
+					echo '</select>';
+				} else {
+					echo 'No events to display.';
+				}
+
+				echo '
+				</p>
+				<input type="submit" name="submitEventLinkAdd" id="submitEventLinkAdd" value="Add Event Link" />
+			</form>';
+
+			echo '
+			<div id="eventlinkarea">
+			<br /><hr /><br />
+			<h3>Edit Event Link</h3>';
+
+			// Get data
+			$statement = $conn->prepare("SELECT * FROM event_link ORDER BY name");
+			$statement->execute();
+
+			$i = 0;
+			if ($result = $statement->get_result())
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					// Formatting
+					if($i == 0)
+					{
+						echo '
+						<form action="process.php?do=eventlink" method="POST" name="eventLinkEdit" id="eventLinkEdit">
+
+						<select name="eventLinkIDEdit" id="eventLinkIDEdit">
+							<option value="0" SELECTED>Please select an event link...</option>';
+					}
+
+					echo '<option value="'.$db->id.'" eventLinkName="'.readInput($db->name).'" eventLinkID="'.$db->id.'" allowed_sign_ups="'.$db->allowed_sign_ups.'">'.readInput($db->name).'</option>';
+
+					// Increment
+					$i++;
+				}
+			}
+
+			if($i == 0) {
+				echo 'No event links to display.<br />';
+			} else {
+				echo '
+				</select>
+
+				<br /><br />
+
+				<div id="editEventLinkList" name="editEventLinkList" style="display: none;">
+
+				<p>
+					<b>Event Link Name:</b><br />
+					<input type="text" name="editEventLinkName" id="editEventLinkName" />
+				</p>
+
+				<p>
+					<b>Max Sign Ups Per Trooper:</b></br />
+					<input type="number" name="allowed_sign_ups_edit" id="allowed_sign_ups_edit" value="500" />
+				</p>';
+
+				// Get data
+				$statement = $conn->prepare("SELECT * FROM events ORDER BY id DESC LIMIT 200");
+				$statement->execute();
+				$i = 0;
+
+				if ($result = $statement->get_result())
+				{
+					while ($db = mysqli_fetch_object($result))
+					{
+						if($i == 0) {
+							echo '
+							<b>Events:</b></br />
+							<select id="multiple_event_selectEdit" name="events[]" multiple="multiple">';
+						}
+
+						echo '
+							<option value="' . $db->id . '">' . $db->name . '</option>';
+
+						$i++;
+					}
+				}
+
+				if($i > 0) {
+					echo '</select>';
+				} else {
+					echo 'No events to display.';
+				}
+
+				echo '
+				<input type="submit" name="submitEditEventLink" id="submitEditEventLink" value="Edit Event Link" />
+
+				</div>
+				</form>';
+			}
+
+			echo '<br /><hr /><br /><h3>Delete Event Link</h3>';
+
+			// Get data
+			$statement = $conn->prepare("SELECT * FROM event_link ORDER BY name");
+			$statement->execute();
+
+			$i = 0;
+			if ($result = $statement->get_result())
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					// Formatting
+					if($i == 0)
+					{
+						echo '
+						<form action="process.php?do=eventlink" method="POST" name="eventLinkDelete" id="eventLinkDelete">
+						<select name="eventLinkID" id="eventLinkID">
+							<option value="0" SELECTED>Please select an event link...</option>';
+					}
+
+					echo '<option value="' . $db->id . '">' . $db->name . '</option>';
+
+					// Increment
+					$i++;
+				}
+			}
+
+			if($i == 0) {
+				echo 'No event links to display.';
+			} else {
+				echo '
+				</select>
+
+				<input type="submit" name="submitDeleteEventLink" id="submitDeleteEventLink" value="Delete Event Link" />
+				</form>';
+			}
+			
+			echo '
+			</div>';
+		}
+
+		/*********** APPROVE TROOPERS ***********/
 
 		// Approve troopers
 		if(isset($_GET['do']) && $_GET['do'] == "approvetroopers" && hasPermission(1, 2))

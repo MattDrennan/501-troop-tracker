@@ -963,6 +963,230 @@ if(isset($_GET['do']) && $_GET['do'] == "eventsubscribe" && isset($_POST['events
 	echo json_encode($array);
 }
 
+/************************ EVENT LINK ***************************************/
+
+if(isset($_GET['do']) && $_GET['do'] == "eventlink" && loggedIn() && isAdmin())
+{
+	if(isset($_POST['geteventlinks']))
+	{
+		$statement = $conn->prepare("SELECT id FROM events WHERE link2 = ?");
+		$statement->bind_param("i", $_POST['link2']);
+		$statement->execute();
+
+		// Set up return value
+		$array = array();
+
+		if ($result = $statement->get_result())
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				array_push($array, $db->id);
+			}
+		}
+
+		echo json_encode($array);
+	}
+
+	// Edit an event link
+	if(isset($_POST['submitEditEventLink']))
+	{
+		// Query the database
+		$_POST['editEventLinkName'] = cleanInput($_POST['editEventLinkName']);
+		$_POST['allowed_sign_ups'] = cleanInput($_POST['allowed_sign_ups']);
+
+		$statement = $conn->prepare("UPDATE event_link SET name = ?, allowed_sign_ups = ? WHERE id = ?");
+		$statement->bind_param("sii", $_POST['editEventLinkName'], $_POST['allowed_sign_ups'], $_POST['eventLinkIDEdit']);
+		$statement->execute();
+
+		$statement = $conn->prepare("UPDATE events SET link2 = 0 WHERE link2 = ?");
+		$statement->bind_param("i", $_POST['eventLinkIDEdit']);
+		$statement->execute();
+
+		// Update link2 for events that were linked
+		foreach ($_POST['events'] as $troopid) {
+			$statement = $conn->prepare("UPDATE events SET link2 = ? WHERE id = ?");
+			$statement->bind_param("ii", $eventLinkIDEdit, $troopid);
+			$statement->execute();
+		}
+
+		// Send notification to command staff
+		sendNotification(getName($_SESSION['id']) . " has edited event link ID [" . $_POST['eventLinkIDEdit'] . "] to " . $_POST['editEventLinkName'], $_SESSION['id'], 29, convertDataToJSON("SELECT * FROM event_link WHERE id = '".$_POST['awardIDEdit']."'"));
+	}
+
+	// Event link submitted for deletion...
+	if(isset($_POST['submitDeleteEventLink']))
+	{
+		// Send notification to command staff
+		sendNotification(getName($_SESSION['id']) . " has deleted event link ID: " . $_POST['eventLinkID'], $_SESSION['id'], 28, convertDataToJSON("SELECT * FROM event_link WHERE id = '".$_POST['eventLinkID']."'"));
+
+		// Query the database
+		$statement = $conn->prepare("DELETE FROM event_link WHERE id = ?");
+		$statement->bind_param("i", $_POST['eventLinkID']);
+		$statement->execute();
+
+		// Clear link when deleted
+		$statement = $conn->prepare("UPDATE events SET link2 = 0 WHERE link2 = ?");
+		$statement->bind_param("i", $_POST['eventLinkID']);
+		$statement->execute();
+	}
+
+	// Add event link...
+	if(isset($_POST['submitAddEventLink']))
+	{
+		$message = "Event link added!";
+
+		// Set up in advance to prevent error
+		$last_id = 0;
+
+		// Check if has value
+		if($_POST['eventLinkName'] == "")
+		{
+			$message = "Event link must have a name.";
+		}
+		else
+		{
+			// Query the database
+			$_POST['eventLinkName'] = cleanInput($_POST['eventLinkName']);
+			$_POST['allowed_sign_ups'] = cleanInput($_POST['allowed_sign_ups']);
+			$statement = $conn->prepare("INSERT INTO event_link (name, allowed_sign_ups) VALUES (?, ?)");
+			$statement->bind_param("si", $_POST['eventLinkName'], $_POST['allowed_sign_ups']);
+			$statement->execute();
+			$last_id = $conn->insert_id;
+
+			// Update link2 for events that were linked
+			foreach ($_POST['events'] as $troopid) {
+				$statement = $conn->prepare("UPDATE events SET link2 = ? WHERE id = ?");
+				$statement->bind_param("ii", $last_id, $troopid);
+				$statement->execute();
+			}
+			
+			// Send notification to command staff
+			sendNotification(getName($_SESSION['id']) . " has added event link: " . $_POST['eventLinkName'], $_SESSION['id'], 27, convertDataToJSON("SELECT * FROM event_link WHERE id = '".$last_id."'"));
+		}
+		
+		$returnMessage = '<br /><hr /><br /><h3>Edit Event Link</h3>';
+
+		// Get data
+		$statement = $conn->prepare("SELECT * FROM event_link ORDER BY name");
+		$statement->execute();
+
+		$i = 0;
+		if ($result = $statement->get_result())
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				// Formatting
+				if($i == 0)
+				{
+					$returnMessage .= '
+					<form action="process.php?do=eventlink" method="POST" name="eventLinkEdit" id="eventLinkEdit">
+
+					<select name="eventLinkIDEdit" id="eventLinkIDEdit">
+
+						<option value="0" SELECTED>Please select an event link...</option>';
+				}
+
+				$returnMessage .= '<option value="'.$db->id.'" eventLinkName="'.readInput($db->name).'" eventLinkID="'.$db->id.'" allowed_sign_ups="'.$db->allowed_sign_ups.'">'.readInput($db->name).'</option>';
+
+				// Increment
+				$i++;
+			}
+		}
+
+		if($i == 0) {
+			$returnMessage .= 'No event links to display.';
+		} else {
+			$returnMessage .= '
+			</select>
+
+			<div id="editEventLinkList" name="editEventLinkList" style="display: none;">
+
+			<p>
+				<b>Event Link Name:</b><br />
+				<input type="text" name="editEventLinkName" id="editEventLinkName" />
+			</p>
+
+			<p>
+				<b>Max Sign Ups Per Trooper:</b></br />
+				<input type="number" name="allowed_sign_ups_edit" id="allowed_sign_ups_edit" value="500" />
+			</p>';
+
+			// Get data
+			$statement = $conn->prepare("SELECT * FROM events ORDER BY id DESC LIMIT 200");
+			$statement->execute();
+			$i = 0;
+
+			if ($result = $statement->get_result())
+			{
+				while ($db = mysqli_fetch_object($result))
+				{
+					if($i == 0) {
+						$returnMessage .= '
+						<b>Events:</b></br />
+						<select id="multiple_event_selectEdit" name="events[]" multiple="multiple">';
+					}
+
+					$returnMessage .= '
+						<option value="' . $db->id . '">' . $db->name . '</option>';
+
+					$i++;
+				}
+			}
+
+			if($i > 0) {
+				$returnMessage .= '</select>';
+			} else {
+				$returnMessage .= 'No events to display.';
+			}
+
+			$returnMessage .= '
+			<input type="submit" name="submitEditEventLink" id="submitEditEventLink" value="Edit Event Link" />
+
+			</div>
+			</form>';
+		}
+
+		$returnMessage .= '<br /><hr /><br /><h3>Delete Award</h3>';
+
+		// Get data
+		$statement = $conn->prepare("SELECT * FROM event_link ORDER BY name");
+		$statement->execute();
+
+		$i = 0;
+		if ($result = $statement->get_result())
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				// Formatting
+				if($i == 0) {
+					$returnMessage .= '
+					<form action="process.php?do=eventlink" method="POST" name="eventLinkDelete" id="eventLinkDelete">
+
+					<select name="eventLinkID" id="eventLinkID">';
+				}
+
+				$returnMessage .= '<option value="'.$db->id.'">'.readInput($db->name).'</option>';
+
+				// Increment
+				$i++;
+			}
+		}
+
+		if($i == 0) {
+			$returnMessage .= 'No event links to display.';
+		} else {
+			$returnMessage .= '
+			</select>
+
+			<input type="submit" name="submitDeleteEventLink" id="submitDeleteEventLink" value="Delete Event Link" />
+			</form>';
+		}
+
+		$array = array(array('message' => $message, 'id' => $last_id, 'result' => $returnMessage));
+		echo json_encode($array);
+	}
+}
+
 /************************ AWARDS ***************************************/
 // Awards to troopers
 if(isset($_GET['do']) && $_GET['do'] == "assignawards" && loggedIn() && isAdmin())

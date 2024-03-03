@@ -256,6 +256,10 @@ function selectAdd()
 	$("select[name^=modiftybackupcostumeForm2]").select2();
 	$("select[name^=costumeValSelect]").select2();
 	$("select[name^=costumeVal]").select2();
+	$("#eventLinkIDEdit").select2();
+	$("#multiple_event_select").select2();
+	$("#multiple_event_selectEdit").select2();
+	$("#eventLinkID").select2();
 }
 
 $(document).ready(function()
@@ -2727,7 +2731,174 @@ $(document).ready(function()
 		{
 			alert("Please select a costume.");
 		}
+	});
+
+	/************ EVENT LINK ********************/
+
+	// EVENT LINK - ADD EVENT LINK
+	$("body").on("click", "#submitEventLinkAdd", function(e)
+	{
+		e.preventDefault();
+
+		var form = $("#addEventLink");
+		var url = form.attr("action");
+
+		var r = confirm("Are you sure you want to add this event link?");
+
+		if (r == true)
+		{
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitAddEventLink=1",
+				success: function(data)
+				{
+					var json = JSON.parse(data);
+
+					// Clear form
+					$("#eventLinkName").val("");
+					$("#allowed_sign_ups").val(500);
+					$("#multiple_event_select").val("");
+
+					// Alert to success
+			  		alert(json[0].message);
+					
+					// Populate result
+					$("#eventlinkarea").html(json[0].result);
+					selectAdd();
+				}
+			});
+		}
 	})
+
+	// Event Link - Edit select change
+	$("body").on("change", "#eventLinkIDEdit", function(e)
+	{
+		// Clear
+		$("#multiple_event_selectEdit").val("");
+
+		// If click please select, hide list
+		if($("#eventLinkEdit :selected").val() == 0)
+		{
+			$("#editEventLinkList").hide();
+		}
+		else
+		{
+			$("#editEventLinkList").show();
+		}
+
+		$("#editEventLinkName").val($("#eventLinkIDEdit :selected").attr("eventLinkName"));
+		$("#allowed_sign_ups_edit").val($("#eventLinkIDEdit :selected").attr("allowed_sign_ups"));
+
+		// Load events
+		$.ajax({
+			type: "POST",
+			url: "process.php?do=eventlink",
+			data: "link2=" + $("#eventLinkIDEdit").val() + "&geteventlinks=1",
+			success: function(data)
+			{
+				var json = JSON.parse(data);
+
+				// Loop data array
+				for (let index = 0; index < json.length; index++) {
+				    const element = json[index];
+				    
+				    // Select items in list
+				    $("#multiple_event_selectEdit option[value=" + element + "]").prop("selected", true);
+				}
+
+				// Update
+				selectAdd();
+			}
+		});
+	});
+
+	// Delete Event Link
+	$("body").on("click", "#submitDeleteEventLink", function(e)
+	{
+		e.preventDefault();
+
+		var form = $("#eventLinkDelete");
+		var url = form.attr("action");
+
+		var r = confirm("Are you sure you want to delete this event link?");
+
+		if (r == true)
+		{
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitDeleteEventLink=1",
+				success: function(data)
+				{
+					// Delete from event link list
+					$("#eventLinkIDEdit").children("option[value='" + $("#eventLinkID :selected").val() + "']").remove();
+					
+					// Clear
+					$("#eventLinkID").find("option:selected").remove();
+
+					// Clear edit area
+					$("#editEventLinkList").hide();
+
+					// Alert to success
+			  		alert("The event link was deleted successfully!");
+
+			  		// Show message if empty - edit
+			  		if($("#eventLinkIDEdit option").length <= 1)
+			  		{
+			  			$("#eventLinkEdit").html("No event link to display.");
+			  		}
+
+			  		// Show message if empty
+			  		if($("#eventLinkID option").length <= 0)
+			  		{
+			  			$("#eventLinkDelete").html("No event link to display.");
+			  		}
+				}
+			});
+		}
+	});
+
+	// Event Link - Finsih Edit
+	$("body").on("click", "#submitEditEventLink", function(e)
+	{
+		e.preventDefault();
+
+		console.log("aaa");
+
+		var form = $("#eventLinkEdit");
+		var url = form.attr("action");
+
+		var r = confirm("Are you sure you want to edit this event link?");
+
+		if (r == true)
+		{
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize() + "&submitEditEventLink=1",
+				success: function(data)
+				{
+					// Change values for delete form
+					$("#eventLinkID").children("option[value='" + $("#eventLinkIDEdit :selected").val() + "']").text($("#editEventLinkName").val());
+					$("#eventLinkID").select2();
+					
+					// Change values in edit form select
+					$("#eventLinkIDEdit :selected").text($("#editAwardTitle").val());
+					$("#eventLinkIDEdit :selected").attr("eventLinkName", $("#editEventLinkName").val());
+					$("#eventLinkIDEdit :selected").attr("allowed_sign_ups", $("#allowed_sign_ups_edit").val());
+					$("#eventLinkIDEdit").select2();
+
+					$("#editEventLinkList").hide();
+
+					$("#eventLinkIDEdit").val(0);
+
+					// Alert to success
+			  		alert("The event link was edited successfully!");
+				}
+			});
+		}
+	});
 	
 	/************ AWARD ********************/
 	

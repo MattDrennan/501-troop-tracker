@@ -2860,6 +2860,9 @@ function hasAward($trooperid, $awardid, $echo = false, $remove = false)
  * 24 - Remove Title
  * 25 - Remove Award
  * 26 - Update Advanced Options
+ * 27 - Add event link
+ * 28 - Delete event link
+ * 29 - Edit event link
  * 
  * @param string $message Body of the message for the log
  * @param int $trooperid The ID of the trooper
