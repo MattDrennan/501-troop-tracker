@@ -326,6 +326,11 @@ Search.appendIndex(
             "summary": "Sends\u0020a\u0020notification\u0020to\u0020the\u0020log",
             "url": "namespaces/default.html#function_sendNotification"
         },                {
+            "fqsen": "\\checkLinkedEvents\u0028\u0029",
+            "name": "checkLinkedEvents",
+            "summary": "Checks\u0020if\u0020a\u0020trooper\u0020can\u0020enter\u0020an\u0020event,\u0020if\u0020the\u0020event\u0020is\u0020linked",
+            "url": "namespaces/default.html#function_checkLinkedEvents"
+        },                {
             "fqsen": "\\troopCheck\u0028\u0029",
             "name": "troopCheck",
             "summary": "Checks\u0020the\u0020troop\u0020counts\u0020of\u0020all\u0020clubs,\u0020to\u0020determine\u0020if\u0020a\u0020trooper\u0020has\u0020reached\u0020a\u0020milestone",
@@ -660,6 +665,11 @@ Search.appendIndex(
             "name": "isLink",
             "summary": "Returns\u0020if\u0020an\u0020event\u0020is\u0020linked",
             "url": "namespaces/default.html#function_isLink"
+        },                {
+            "fqsen": "\\isLink2\u0028\u0029",
+            "name": "isLink2",
+            "summary": "Returns\u0020value\u0020of\u0020link2\u0020from\u0020event\u0020ID",
+            "url": "namespaces/default.html#function_isLink2"
         },                {
             "fqsen": "\\custom_sort\u0028\u0029",
             "name": "custom_sort",
