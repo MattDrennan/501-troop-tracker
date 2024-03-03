@@ -2883,6 +2883,64 @@ function sendNotification($message, $trooperid, $type = 0, $json = "")
 }
 
 /**
+ * Checks if a trooper can enter an event, if the event is linked
+ * 
+ * @param int $trooperid The ID of the trooper to check
+ * @param int $troopid The ID of the event to check
+ * @return bool
+*/
+function checkLinkedEvents($trooperid, $troopid) {
+	global $conn;
+
+	// Get link2
+	$statement = $conn->prepare("SELECT link2 FROM events WHERE id = ?");
+	$statement->bind_param("i", $troopid);
+	$statement->execute();
+	$statement->bind_result($link2);
+	$statement->fetch();
+	$statement->close();
+
+	// Setup troop count
+	$troopCount = 0;
+
+	if($link2 > 0) {
+		// Get link2 limit
+		$statement = $conn->prepare("SELECT allowed_sign_ups FROM event_link WHERE id = ?");
+		$statement->bind_param("i", $link2);
+		$statement->execute();
+		$statement->bind_result($allowed_sign_ups);
+		$statement->fetch();
+		$statement->close();
+
+		// Loop through events with link2
+		$statement = $conn->prepare("SELECT * FROM events WHERE link2 = ?");
+		$statement->bind_param("i", $link2);
+		$statement->execute();
+
+		if ($result = $statement->get_result()) {
+			while ($db = mysqli_fetch_object($result)) {
+				$statement2 = $conn->prepare("SELECT id FROM event_sign_up WHERE trooperid = ? AND troopid = ?");
+				$statement2->bind_param("ii", $trooperid, $db->id);
+				$statement2->execute();
+				$statement2->store_result();
+
+				// Add to count
+				$troopCount += $statement2->num_rows;
+			}
+		}
+
+		// Check if we can enter troop
+		if($troopCount < $allowed_sign_ups) {
+			return true;
+		} else {
+			return false;
+		}
+	} else {
+		return true;
+	}
+}
+
+/**
  * Checks the troop counts of all clubs, to determine if a trooper has reached a milestone
  * 
  * @param int $id The ID of the trooper

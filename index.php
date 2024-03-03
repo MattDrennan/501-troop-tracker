@@ -4160,7 +4160,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<p>';
 
 				// Get data
-				$statement = $conn->prepare("SELECT * FROM events ORDER BY id DESC LIMIT 200");
+				$statement = $conn->prepare("SELECT * FROM events ORDER BY id DESC LIMIT 1000");
 				$statement->execute();
 				$i = 0;
 

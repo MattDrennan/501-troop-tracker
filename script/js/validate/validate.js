@@ -559,6 +559,10 @@ $(function()
                     {
                         alert(json.data);
                     }
+                    else if(json.success == "check_linked_fail")
+                    {
+                        alert(json.success_message);
+                    }
                     else
                     {
                         // Put data in html

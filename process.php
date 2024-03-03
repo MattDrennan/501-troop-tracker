@@ -1112,7 +1112,7 @@ if(isset($_GET['do']) && $_GET['do'] == "eventlink" && loggedIn() && isAdmin())
 			</p>';
 
 			// Get data
-			$statement = $conn->prepare("SELECT * FROM events ORDER BY id DESC LIMIT 200");
+			$statement = $conn->prepare("SELECT * FROM events ORDER BY id DESC LIMIT 1000");
 			$statement->execute();
 			$i = 0;
 
@@ -3498,6 +3498,11 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 				$success = "friend_fail";
 				$success_message = "You cannot add anymore friends!";
 			}
+			else if(!checkLinkedEvents($_POST['trooperSelect'], $_POST['event']))
+			{
+				$success = "check_linked_fail";
+				$success_message = "This friend has exceeded their sign ups for these linked events.";
+			}
 			else
 			{
 				// Query the database
@@ -3513,15 +3518,20 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 		}
 		else
 		{
-			// Query the database
-			$statement = $conn->prepare("INSERT INTO event_sign_up (trooperid, troopid, costume, status, costume_backup) VALUES (?, ?, ?, ?, ?)");
-			$statement->bind_param("iiiii", $_SESSION['id'], $_POST['event'], $_POST['costume'], $status, $_POST['backupcostume']);
-			$statement->execute();
-			
-			// Send to database to send out notifictions later
-			$statement = $conn->prepare("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES (?, ?, '1')");
-			$statement->bind_param("ii", $_POST['event'], $_SESSION['id']);
-			$statement->execute();
+			if(!checkLinkedEvents($_SESSION['id'], $_POST['event'])) {
+				$success = "check_linked_fail";
+				$success_message = "You have exceeded your sign ups for these linked events.";
+			} else {
+				// Query the database
+				$statement = $conn->prepare("INSERT INTO event_sign_up (trooperid, troopid, costume, status, costume_backup) VALUES (?, ?, ?, ?, ?)");
+				$statement->bind_param("iiiii", $_SESSION['id'], $_POST['event'], $_POST['costume'], $status, $_POST['backupcostume']);
+				$statement->execute();
+				
+				// Send to database to send out notifictions later
+				$statement = $conn->prepare("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES (?, ?, '1')");
+				$statement->bind_param("ii", $_POST['event'], $_SESSION['id']);
+				$statement->execute();
+			}
 		}
 
 		$rosterUpdate = getRoster($_POST['event'], $limitTotal, $totalTrooperEvent, isset($_POST['addfriend']));
