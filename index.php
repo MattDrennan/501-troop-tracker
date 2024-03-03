@@ -320,7 +320,7 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 	<div id="favoriteCostumesArea" style="display:none;">
 		<p>Select your favorite costumes, and they will display at the top of the costume drop down boxes.</p>
 		
-		<select multiple style="height: 500px;" id="favoriteCostumeSelect" name="favoriteCostumeSelect">';
+		<select multiple="multiple" id="favoriteCostumeSelect" name="favoriteCostumeSelect">';
 		
 		$statement = $conn->prepare("SELECT costumes.id AS id, costumes.costume, favorite_costumes.costumeid, favorite_costumes.trooperid FROM costumes LEFT JOIN favorite_costumes ON favorite_costumes.costumeid = costumes.id ORDER BY costume");
 		$statement->execute();

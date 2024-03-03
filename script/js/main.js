@@ -260,6 +260,7 @@ function selectAdd()
 	$("#multiple_event_select").select2();
 	$("#multiple_event_selectEdit").select2();
 	$("#eventLinkID").select2();
+	$("#favoriteCostumeSelect").select2();
 }
 
 $(document).ready(function()
