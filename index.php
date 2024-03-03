@@ -6290,41 +6290,82 @@ if(isset($_GET['event']) && loggedIn())
 					// Get thread
 					$thread = getThreadPosts($thread_id, 1);
 
+					// Get link
+					$link = isLink($_GET['event']);
+
+					// Get a seperate link ID, so we can differentiate between a shift and regular event
+					$link_event_id = $link;
+
+					// Event is not a shift, revert to regular event
+					if($link == 0) { $link_event_id = $_GET['event']; }
+
 					if(!isset($thread['errors'])) {
-						for($page = $thread['pagination']['last_page']; $page >= 1; $page--)
-						{
-							$thread = getThreadPosts($thread_id, $page);
-							
-							// Remove first post from thread
-							if($page == 1)
-							{
-								array_shift($thread['posts']);
-							}
+						// Loop through linked events to add posts to discussion
+						$statement = $conn->prepare("SELECT * FROM events WHERE (id = ? OR link = ?)");
+						$statement->bind_param("ii", $link_event_id, $link_event_id);
+						$statement->execute();
+
+						$thread = array();
 						
-							// Loop through posts
-							foreach(array_reverse($thread['posts']) as $key => $post)
+						if ($result = $statement->get_result())
+						{
+							while ($db = mysqli_fetch_object($result))
 							{
-								// Only show messages that are visible // Example: We don't want to show messages that are hidden from public view
-								if($post['message_state'] == "visible")
+								// Combine data
+								$linked_threads = getThreadPosts($db->thread_id, 1);
+
+								// If pagination not defined, just continue...
+								if(!isset($linked_threads['pagination'])) { continue; }
+
+								for($page = $linked_threads['pagination']['last_page']; $page >= 1; $page--)
 								{
-									echo '
-									<table border="1" style="width: 100%">
-									<tr>
-										<td>
-											<a href="index.php?profile='.$post['User']['custom_fields']['trackerid'].'">'.$post['User']['custom_fields']['fullname'].' - '.$post['User']['custom_fields']['tkid'].'<br />'.$post['username'].'</a>'.($post['User']['avatar_urls']['m'] != '' ? '<br /><img src="'.$post['User']['avatar_urls']['m'].'" />' : '').'
-											<br />
-											'.date("F j, Y, g:i a", $post['post_date']).'
-										</td>
-									</tr>
+									$tempArray = getThreadPosts($db->thread_id, $page);
 									
-									<tr>
-										<td>'.$post['message_parsed'].'</td>
-									</tr>
-
-									</table>
-
-									<br />';
+									// Remove first post from thread
+									if($page == 1)
+									{
+										array_shift($tempArray['posts']);
+									}
 								}
+
+								foreach($tempArray['posts'] as $key => $post)
+								{
+									$tempArray['posts'][$key]['dateStart'] = $db->dateStart;
+									$tempArray['posts'][$key]['dateEnd'] = $db->dateEnd;
+									$tempArray['posts'][$key]['eventID'] = $db->id;
+								}
+
+								//array_push($thread, $tempArray);
+								$thread = array_merge_recursive($thread, $tempArray);
+							}
+						}
+
+						usort($thread['posts'], "custom_sort");
+
+						// Loop through posts
+						foreach($thread['posts'] as $key => $post)
+						{
+							// Only show messages that are visible // Example: We don't want to show messages that are hidden from public view
+							if($post['message_state'] == "visible")
+							{
+								echo '
+								<table border="1" style="width: 100%">
+								<tr>
+									<td>
+										<a href="index.php?profile='.$post['User']['custom_fields']['trackerid'].'">'.$post['User']['custom_fields']['fullname'].' - '.$post['User']['custom_fields']['tkid'].'<br />'.$post['username'].'</a>'.($post['User']['avatar_urls']['m'] != '' ? '<br /><img src="'.$post['User']['avatar_urls']['m'].'" />' : '').'
+										<br />
+										'.date("F j, Y, g:i a", $post['post_date']).'
+										'. (($link > 0) ? '<br /><span' . ($post['eventID'] == $_GET['event'] ? ' style="color: yellow;"' : '') . '><b>Shift:</b> ' . date('l, m/d - h:i A', strtotime($post['dateStart'])) . ' - ' . date('h:i A', strtotime($post['dateEnd'])) . '</span>' : '') .'
+									</td>
+								</tr>
+								
+								<tr>
+									<td>'.$post['message_parsed'].'</td>
+								</tr>
+
+								</table>
+
+								<br />';
 							}
 						}
 

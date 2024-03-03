@@ -5773,6 +5773,17 @@ function isLink($id)
 }
 
 /**
+ * Sorts post_date for shift and regular events
+ *
+ * @param int $a Date value 1
+ * @param int $b Date value 2
+ * @return array Returns sorted array
+*/
+function custom_sort($a, $b) {
+	return $a['post_date'] < $b['post_date'] ? 1 : -1;
+}
+
+/**
  * Get's Google Sheet
  *
  * @param int $spreadsheetId ID of the spreadsheet

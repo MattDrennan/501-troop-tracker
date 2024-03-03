@@ -661,6 +661,11 @@ Search.appendIndex(
             "summary": "Returns\u0020if\u0020an\u0020event\u0020is\u0020linked",
             "url": "namespaces/default.html#function_isLink"
         },                {
+            "fqsen": "\\custom_sort\u0028\u0029",
+            "name": "custom_sort",
+            "summary": "Sorts\u0020post_date\u0020for\u0020shift\u0020and\u0020regular\u0020events",
+            "url": "namespaces/default.html#function_custom_sort"
+        },                {
             "fqsen": "\\getSheet\u0028\u0029",
             "name": "getSheet",
             "summary": "Get\u0027s\u0020Google\u0020Sheet",
