@@ -3821,6 +3821,32 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 
 	[url]https://fl501st.com/troop-tracker/index.php?event=' . $eventId . '[/url]';
 
+	$link = isLink($eventId);
+
+	if($link > 0) {
+		$returnString .= '
+
+		[b][u]Other Shifts:[/u][/b]
+		';
+
+		$statement = $conn->prepare("SELECT * FROM events WHERE (id = ? OR link = ?) AND id != ? ORDER BY dateStart DESC");
+		$statement->bind_param("iii", $link, $link, $eventId);
+		$statement->execute();
+		
+		if ($result = $statement->get_result())
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				$returnString .= '
+				-[url=https://fl501st.com/troop-tracker/index.php?event='.$db->id.'][b]' . date("l", strtotime($db->dateStart)) . '[/b] : [i]' . date("m/d - h:i A", strtotime($db->dateStart)) . ' - ' . date("h:i A", strtotime($db->dateEnd)) . '[/i] ' .''.$db->name.'[/url]
+				';
+			}
+		}
+
+		$returnString .= '
+		[b]To view all shift event forum posts on one page, view the event page on the Troop Tracker. This forum page will only show this shifts forum posts.[/b]';
+	}
+
 	return $returnString;
 }
 
