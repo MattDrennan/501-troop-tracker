@@ -7215,7 +7215,7 @@ if(!isWebsiteClosed())
 					echo ', ';
 				}
 
-				echo '<a href="index.php?profile='.$db->id.'">' . readTKNumber($db->tkid, $db->squad) . '</a>';
+				echo '<a href="index.php?profile='.$db->id.'">'  . $db->forum_id . ' (' . readTKNumber($db->tkid, $db->squad) . ')</a>';
 
 				$i++;
 			}
