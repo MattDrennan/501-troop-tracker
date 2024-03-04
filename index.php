@@ -2478,6 +2478,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			echo '
 			</div>
 
+			<div style="text-align: center;">
+
+			<br />
+			<hr />
+			<br />
+
 			<h2>Statistics</h2>';
 
 			// Get settings
@@ -2499,6 +2505,10 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			}
 
 			echo '
+			<br />
+			<hr />
+			<br />
+			
 			<h3>Troop Tracker Usage</h3>
 
 			<p><b>501st Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUp501).'</p>';
@@ -2521,6 +2531,8 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			}
 			
 			echo '
+			<br />
+			<hr />
 			<br />';
 			
 			// Loop through clubs
@@ -2535,19 +2547,23 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			
 			echo '
 			<br />
+			<hr />
+			<br />
 			
 			<p><b>Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUp).'</p>
 			<p><b>Total Accounts (Not Set Up):</b> '.number_format($totalNotSet).'</p>
 			<p><b>Total Accounts:</b> '.number_format($totalAccounts).'</p>
 			
 			<br />
-			
-			<h3>Active/Reserve/Retired Members</h3>
+			<hr />
+			<br />
 			
 			<p><b>501st Total Accounts (Active):</b> '.number_format($totalActive501).'</p>
 			<p><b>501st Total Accounts (Reserve):</b> '.number_format($totalReserve501).'</p>
 			<p><b>501st Total Accounts (Retired):</b> '.number_format($totalRetired501).'</p>
 			
+			<br />
+			<hr />
 			<br />';
 			
 			// Loop through clubs
@@ -2561,8 +2577,13 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<p><b>'.$club_value['name'].' Total Accounts (Reserve):</b> ' . number_format(${"totalReserve" . $clubName}) . '</p>
 				<p><b>'.$club_value['name'].' Total Accounts (Retired):</b> ' . number_format(${"totalRetired" . $clubName}) . '</p>
 				
+				<br />
+				<hr />
 				<br />';
 			}
+
+			echo '
+			</div>';
 		}
 
 		/**************************** Roster - Trooper Confirmation *********************************/
