@@ -665,6 +665,10 @@ table[name*="comment_"] textarea {
 	text-decoration: line-through;
 }
 
+.tentative-troop, .tentative-troop a {
+	color: orange;
+}
+
 /* Trooper count list */
 
 div[name="troopersRemainingDisplay"] {

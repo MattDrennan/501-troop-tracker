@@ -4304,13 +4304,14 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 					}
 					
 					// Create row, change based on status
-					if($db2->status == 4 || $db2->status == 6 || $db2->status == 7)
-					{
+					if($db2->status == 4 || $db2->status == 6 || $db2->status == 7) {
 						$data .= '
 						<tr class="canceled-troop">';
 					}
-					else
-					{
+					else if($db2->status == 2) {
+						$data .= '
+						<tr class="tentative-troop">';
+					} else {
 						$data .= '
 						<tr>';
 					}

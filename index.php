@@ -7009,7 +7009,7 @@ else
 						while ($db = mysqli_fetch_object($result))
 						{
 							echo '
-							<li><a href="index.php?event='.$db->id.'" '. (isset($db->status) && $db->status == 4 ? 'class = "canceled-troop"' : '') .'>'. (isLink($db->id) > 0 ? '[<b>' . date("l", strtotime($db->dateStart)) . '</b> : <i>' . date("m/d - h:i A", strtotime($db->dateStart)) . ' - ' . date("h:i A", strtotime($db->dateEnd)) . '</i>] ' : '') .''.$db->name.'</a></li>';
+							<li><a href="index.php?event='.$db->id.'" '. (isset($db->status) && $db->status == 2 ? 'class = "tenative-troop"' : '') . (isset($db->status) && $db->status == 4 ? 'class = "canceled-troop"' : '') .'>'. (isLink($db->id) > 0 ? '[<b>' . date("l", strtotime($db->dateStart)) . '</b> : <i>' . date("m/d - h:i A", strtotime($db->dateStart)) . ' - ' . date("h:i A", strtotime($db->dateEnd)) . '</i>] ' : '') .''.$db->name.'</a></li>';
 						}
 					}
 					
