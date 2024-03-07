@@ -762,8 +762,9 @@ $(document).ready(function()
 		$("#datepicker" + (shifts + 1)).on("change", function()
 		{
 			// Only allow one day option
-			$("#datepicker2" + $(this).attr("shifts2")).datetimepicker("option", "minDate", $("#datepicker" + $(this).attr("shifts1")).val());
-			$("#datepicker2" + $(this).attr("shifts2")).datetimepicker("option", "maxDate", $("#datepicker" + $(this).attr("shifts1")).val());
+			$("#datepicker2" + $(this).attr("shifts2")).datetimepicker("option", "minDate", moment(new Date($("#datepicker" + $(this).attr("shifts1")).val())).format('MM/DD/YYYY'));
+			$("#datepicker2" + $(this).attr("shifts2")).datetimepicker("option", "maxDate", moment(new Date($("#datepicker" + $(this).attr("shifts1")).val())).format('MM/DD/YYYY'));
+			$("#datepicker2" + $(this).attr("shifts2")).datetimepicker("option", "minTime", moment(new Date($("#datepicker" + $(this).attr("shifts1")).val())).format('H:mm'));
 		});
 		
 		// Increment
@@ -1362,7 +1363,7 @@ $(document).ready(function()
 	})
 
 	// Edit Event Drop Down - Show Edit Form
-	$("#submitEdit").button().click(function(e)
+	$("body").on("click", "#submitEdit", function(e)
 	{
 		e.preventDefault();
 
@@ -1424,8 +1425,8 @@ $(document).ready(function()
 					$("#eventVenue").val(json.venue);
 					$("#location").val(json.location);
 					$("#squadm").val(json.squad);
-					$("#datepicker").val(date1);
-					$("#datepicker2").val(date2);
+					$("#datepicker").datetimepicker("setDate", moment(json.dateStart).format('MM/DD/YYYY H:mm'));
+					$("#datepicker2").datetimepicker("setDate", moment(json.dateEnd).format('MM/DD/YYYY H:mm'));
 					$("#website").val(json.website);
 					$("#numberOfAttend").val(json.numberOfAttend);
 					$("#requestedNumber").val(json.requestedNumber);
@@ -1445,6 +1446,11 @@ $(document).ready(function()
 					$("#limitTotalTroopers").val(json.limitTotalTroopers);
 					$("#friendLimit").val(json.friendLimit);
 					$("#allowTentative").val(json.allowTentative);
+
+					// Update date picker rules for edit
+					$("#datepicker2").datetimepicker("option", "minDate", moment(json.dateStart).format('MM/DD/YYYY'));
+					$("#datepicker2").datetimepicker("option", "maxDate", moment(json.dateStart).format('MM/DD/YYYY'));
+					$("#datepicker2").datetimepicker("option", "minTime", moment(json.dateStart).format('H:mm'));
 
 					// Loop through clubs
 					for(var i = 0; i <= (clubArray.length - 1); i++)
@@ -2402,8 +2408,9 @@ $(document).ready(function()
 	$("#datepicker").on("change", function()
 	{
 		// Only allow one day option
-		$("#datepicker2").datetimepicker("option", "minDate", $("#datepicker").val());
-		$("#datepicker2").datetimepicker("option", "maxDate", $("#datepicker").val());
+		$("#datepicker2").datetimepicker("option", "minDate", moment(new Date($("#datepicker").val())).format('MM/DD/YYYY'));
+		$("#datepicker2").datetimepicker("option", "maxDate", moment(new Date($("#datepicker").val())).format('MM/DD/YYYY'));
+		$("#datepicker2").datetimepicker("option", "minTime", moment(new Date($("#datepicker").val())).format('H:mm'));
 	});
 
 	// When command staff event select box is changed

@@ -2342,13 +2342,21 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 	// Event submitted...
 	if(isset($_POST['submitEvent']))
 	{
+		// Clean date input
+		$date1 = date('Y-m-d H:i:s', strtotime($_POST['dateStart']));
+		$date2 = date('Y-m-d H:i:s', strtotime($_POST['dateEnd']));
+
+		// Check if date data is correct
+		if(strtotime($date2) < strtotime($date1))
+		{
+			$array = array('success' => 'failed', 'data' => 'Date data is incorrect. Date start is greater than date end.');
+			echo json_encode($array);
+			exit;
+		}
+
 		// Check we have all the data we need server side. JQuery should do this, but this is a backup
 		if($_POST['eventName'] != "" && $_POST['eventVenue'] != "" && $_POST['location'] != "" && $_POST['dateStart'] != "" && $_POST['dateEnd'] != "" && $_POST['numberOfAttend'] != "" && $_POST['requestedNumber'] != "" && $_POST['secure'] != "" && $_POST['blasters'] != "" && $_POST['lightsabers'] != "" && $_POST['parking'] != "null" && $_POST['mobility'] != "null" && $_POST['label'] != "null" && $_POST['limitedEvent'] != "null")
-		{
-			// Clean date input
-			$date1 = date('Y-m-d H:i:s', strtotime($_POST['dateStart']));
-			$date2 = date('Y-m-d H:i:s', strtotime($_POST['dateEnd']));
-			
+		{	
 			// Create event and grab last inserted event ID
 			$eventId = createEvent($_POST['eventName'], $_POST['eventVenue'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['referred'], $_POST['poc'], $_POST['comments'], $_POST['location'], $_POST['label'], $_POST['limitedEvent'], $_POST['limit501st'], $_POST['limitTotalTroopers'], $_POST['limitHandlers'], $_POST['friendLimit'], $_POST['allowTentative'], $_POST['squadm']);
 
@@ -2391,6 +2399,12 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 						// Clean date input
 						$date1 = date('Y-m-d H:i:s', strtotime($_POST['adddateStart' . $pair]));
 						$date2 = date('Y-m-d H:i:s', strtotime($_POST['adddateEnd' . $pair]));
+
+						// Check if date data is correct
+						if(strtotime($date2) < strtotime($date1))
+						{
+							continue;
+						}
 
 						// Create event and grab last inserted event ID
 						$last_id = createEvent($_POST['eventName'], $_POST['eventVenue'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['referred'], $_POST['poc'], $_POST['comments'], $_POST['location'], $_POST['label'], $_POST['limitedEvent'], $_POST['limit501st'], $_POST['limitTotalTroopers'], $_POST['limitHandlers'], $_POST['friendLimit'], $_POST['allowTentative'], $_POST['squadm']);
@@ -3064,13 +3078,21 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 	// Event edit submitted
 	if(isset($_POST['submitEventEdit']))
 	{
+		// Convert date
+		$date1 = date('Y-m-d H:i:s', strtotime($_POST['dateStart']));
+		$date2 = date('Y-m-d H:i:s', strtotime($_POST['dateEnd']));
+
+		// Check if date data is correct
+		if(strtotime($date2) < strtotime($date1))
+		{
+			$array = array('success' => 'failed', 'data' => 'Date data is incorrect. Date start is greater than date end.');
+			echo json_encode($array);
+			exit;
+		}
+
 		// Check we have all the data we need server side. JQuery should do this, but this is a backup
 		if($_POST['eventName'] != "" && $_POST['eventVenue'] != "" && $_POST['location'] != "" && $_POST['dateStart'] != "" && $_POST['dateEnd'] != "" && $_POST['numberOfAttend'] != "" && $_POST['requestedNumber'] != "" && $_POST['secure'] != "" && $_POST['blasters'] != "" && $_POST['lightsabers'] != "" && $_POST['parking'] != "null" && $_POST['mobility'] != "null" && $_POST['label'] != "null" && $_POST['limitedEvent'] != "null")
-		{
-			// Convert date
-			$date1 = date('Y-m-d H:i:s', strtotime($_POST['dateStart']));
-			$date2 = date('Y-m-d H:i:s', strtotime($_POST['dateEnd']));
-			
+		{	
 			// Get number of events with link
 			$statement = $conn->prepare("SELECT id FROM events WHERE link = ?");
 			$statement->bind_param("i", $_POST['eventIdE']);
@@ -3230,6 +3252,12 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 						// Clean date input
 						$date1 = date('Y-m-d H:i:s', strtotime($_POST['adddateStart' . $pair]));
 						$date2 = date('Y-m-d H:i:s', strtotime($_POST['adddateEnd' . $pair]));
+
+						// Check if date data is correct
+						if(strtotime($date2) < strtotime($date1))
+						{
+							continue;
+						}
 					
 						// Query the database
 						$last_id = createEvent($_POST['eventName'], $_POST['eventVenue'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['referred'], $_POST['poc'], $_POST['comments'], $_POST['location'], $_POST['label'], $_POST['limitedEvent'], $_POST['limit501st'], $_POST['limitTotalTroopers'], $_POST['limitHandlers'], $_POST['friendLimit'], $_POST['allowTentative'], $_POST['squadm'], $link);
