@@ -10,8 +10,8 @@
 
 include '../../config.php';
 
-if(isset($_POST['charity'])) {
-    array_to_csv_download(unserialize($_POST['charity']));
+if(isset($_POST['data'])) {
+    array_to_csv_download(unserialize($_POST['data']));
     die("Finished");
 }
 

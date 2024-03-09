@@ -1121,6 +1121,9 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 	}
 	else if(isset($_POST['searchType']) && $_POST['searchType'] == "costumecount")
 	{	
+		// Don't allow empty result
+		if(!isset($_POST['costumes_choice_search_box'])) { echo 'No data available.'; exit; }
+
 		// Loop through clubs
 		foreach($_POST['costumes_choice_search_box'] as $costume)
 		{
@@ -1177,6 +1180,9 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 	// Trooper search
 	else if(isset($_POST['searchType']) && $_POST['searchType'] == "trooper")
 	{
+		// Set up array for CSV
+		$list = array();
+
 		// Get the squad search type
 		if($_POST['squad'] == 0)
 		{
@@ -1321,8 +1327,14 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 					<div style="overflow-x: auto;">
 					<table border="1">
 					<tr>
-						<th>Trooper TKID</th>	<th>Troop Count</th>
+						<th>Trooper TKID</th>	<th>Troop Count</th>	<th>Last Troop</th>
 					</tr>';
+
+					array_push($list, ["Total Troops: " . $troop_count]);
+					array_push($list, ["Direct Charity: $" . number_format($charity_count)]);
+					array_push($list, ["Indirect Charity: $" . number_format($charity_count2)]);
+					array_push($list, [""]);
+					array_push($list, ["Trooper TKID", "Troop Count", "Last Troop"]);
 				}
 
 				// Increment $i
@@ -1343,10 +1355,10 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				{
 					// If 501st
 					// Get troop counts - 501st
-					$statement1 = $conn->prepare("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.closed = '1' AND event_sign_up.trooperid = ? AND events.dateStart >= ? AND events.dateEnd <= ? AND ".getCostumeQueryValuesSquad($_POST['squad'])."");
+					$statement1 = $conn->prepare("SELECT COUNT(event_sign_up.id), max(events.dateStart), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.closed = '1' AND event_sign_up.trooperid = ? AND events.dateStart >= ? AND events.dateEnd <= ? AND ".getCostumeQueryValuesSquad($_POST['squad'])."");
 					$statement1->bind_param("iss", $db->id, $dateStartQuery, $dateEndQuery);
 					$statement1->execute();
-					$statement1->bind_result($count, $eventid);
+					$statement1->bind_result($count, $date, $eventid);
 					$statement1->fetch();
 					$statement1->close();
 				} else {
@@ -1360,7 +1372,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				}
 				
 				// Create an array of our count
-				$tempArray = array($db->tkid, $count, $db->name, $db->id, $db->squad);
+				$tempArray = array($db->tkid, $count, $db->name, $db->id, $db->squad, $date);
 				
 				// Push to main array
 				array_push($troopArray, $tempArray);
@@ -1374,11 +1386,15 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		// Loop through array
 		foreach($troopArray as $value)
 		{
+			$value[5] = (!empty($value[5]) ? date("m/d/Y", strtotime($value[5])) : 'N/A');
+
 			// Display
 			echo '
 			<tr>
-				<td><a href="index.php?profile='.$value[3].'">'.readTKNumber($value[0], $value[4]).' - '.$value[2].'</a></td>	<td>'.$value[1].'</td>
+				<td><a href="index.php?profile='.$value[3].'">'.readTKNumber($value[0], $value[4]).' - '.$value[2].'</a></td>	<td>'.$value[1].'</td>	<td>'.$value[5].'</td>
 			</tr>';
+
+			array_push($list, [readTKNumber($value[0], $value[4]).' - '.$value[2], $value[1], $value[5]]);
 		}
 	}
 	// Donation search
@@ -1611,12 +1627,15 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 		{
 			echo '
 			</table>
-			</div>
+			</div>';
 
-			<form action="script/php/gencsv.php" method="POST" target="_blank">
-				<input type="hidden" name="charity" value="'.htmlspecialchars(serialize($list)).'" />
-				<input type="submit" value="Download CSV" />
-			</form>';
+			if($_POST['searchType'] == 'donations' || $_POST['searchType'] == 'trooper') {
+				echo '
+				<form action="script/php/gencsv.php" method="POST" target="_blank">
+					<input type="hidden" name="data" value="'.htmlspecialchars(serialize($list)).'" />
+					<input type="submit" value="Download CSV" />
+				</form>';
+			}
 		}
 		else
 		{
@@ -1913,7 +1932,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn())
 
 			echo '
 			<tr>
-				<td><a href="index.php?event='.$db->eventId.'">'. (isLink($db->eventId) > 0 ? '[<b>' . date("l", strtotime($db->dateStart)) . '</b> : '.date("m/d - h:i A", strtotime($db->dateStart)).' - '.date("h:i A", strtotime($db->dateEnd)).'] ' : '') .''.$db->eventName.'</a></td>	<td>'.$count.'</td>	<td>Direct: $'.number_format($db->charityDirectFunds).'<br />Indirect: $'.number_format($db->charityIndirectFunds).'<br />Hours: '.number_format($db->charityHours).'</td>
+				<td><a href="index.php?event='.$db->eventId.'">'. (isLink($db->eventId) > 0 ? '[<b>' . date("l", strtotime($db->dateStart)) . '</b> : '.date("m/d - h:i A", strtotime($db->dateStart)).' - '.date("h:i A", strtotime($db->dateEnd)).'] ' : '') .''.$db->eventName.'</a></td>	<td>'.$count.'</td>	<td>Direct: $'.@number_format($db->charityDirectFunds).'<br />Indirect: $'.@number_format($db->charityIndirectFunds).'<br />Hours: '.@number_format($db->charityHours).'</td>
 			</tr>';
 
 			$i++;
