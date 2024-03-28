@@ -2618,10 +2618,15 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 	// Charity submitted for event...
 	if(isset($_POST['submitCharity']))
 	{
+		// Ensure value is int
+		$_POST['charityDirectFunds'] = intval($_POST['charityDirectFunds']);
+		$_POST['charityIndirectFunds'] = intval($_POST['charityIndirectFunds']);
+		$_POST['charityAddHours'] = intval($_POST['charityAddHours']);
+
 		// Form Check
-		if(!is_numeric($_POST['charityDirectFunds'])) { return false; }
-		if(!is_numeric($_POST['charityIndirectFunds'])) { return false; }
-		if(!is_numeric($_POST['charityAddHours'])) { return false; }
+		if(!is_numeric(intval($_POST['charityDirectFunds']))) { return false; }
+		if(!is_numeric(intval($_POST['charityIndirectFunds']))) { return false; }
+		if(!is_numeric(intval($_POST['charityAddHours']))) { return false; }
 
 		// Query the database
 		$_POST['charityName'] = cleanInput($_POST['charityName']);
