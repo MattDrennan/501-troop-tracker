@@ -4388,7 +4388,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<option value="-1" SELECTED>Please select a trooper...</option>';
 					}
 
-					echo '<option value="'.$db->id.'">'.$db->name.' '.($db->tkid == 0 ? ' **HANDLER REQUEST**' : '').'</option>';
+					echo '<option value="'.$db->id.'">'.$db->name.' ('.getSquadName($db->squad).')'.($db->tkid == 0 ? ' **HANDLER REQUEST**' : '').'</option>';
 
 					// Increment
 					$i++;
