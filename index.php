@@ -5715,7 +5715,7 @@ if(isset($_GET['event']) && loggedIn())
 					<h2 class="tm-section-header" id="shifts-link">Shifts</h2>';
 					
 					// Query database for shifts
-					$statement = $conn->prepare("SELECT * FROM events WHERE (id = ? OR link = ?) ORDER BY dateStart DESC");
+					$statement = $conn->prepare("SELECT * FROM events WHERE (id = ? OR link = ?) ORDER BY dateStart ASC");
 					$statement->bind_param("ii", $link, $link);
 					$statement->execute();
 					

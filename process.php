@@ -2407,7 +2407,7 @@ if(isset($_GET['do']) && $_GET['do'] == "createevent" && loggedIn() && isAdmin()
 						}
 
 						// Create event and grab last inserted event ID
-						$last_id = createEvent($_POST['eventName'], $_POST['eventVenue'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['referred'], $_POST['poc'], $_POST['comments'], $_POST['location'], $_POST['label'], $_POST['limitedEvent'], $_POST['limit501st'], $_POST['limitTotalTroopers'], $_POST['limitHandlers'], $_POST['friendLimit'], $_POST['allowTentative'], $_POST['squadm']);
+						$last_id = createEvent($_POST['eventName'], $_POST['eventVenue'], $date1, $date2, $_POST['website'], $_POST['numberOfAttend'], $_POST['requestedNumber'], $_POST['requestedCharacter'], $_POST['secure'], $_POST['blasters'], $_POST['lightsabers'], $_POST['parking'], $_POST['mobility'], $_POST['amenities'], $_POST['referred'], $_POST['poc'], $_POST['comments'], $_POST['location'], $_POST['label'], $_POST['limitedEvent'], $_POST['limit501st'], $_POST['limitTotalTroopers'], $_POST['limitHandlers'], $_POST['friendLimit'], $_POST['allowTentative'], $_POST['squadm'], $eventId);
 
 						// Loop through clubs
 						foreach($clubArray as $club => $club_value)
