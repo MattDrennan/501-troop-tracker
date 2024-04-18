@@ -4311,6 +4311,10 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 					else if($db2->status == 2) {
 						$data .= '
 						<tr class="tentative-troop">';
+					}
+					else if($db2->status == 1) {
+						$data .= '
+						<tr class="standby-troop">';
 					} else {
 						$data .= '
 						<tr>';
