@@ -410,4 +410,4 @@ $clubArray = array(
 drennanmattheww@gmail.com
 
 ## Visit the live website here:
-https://trooptracking.com](https://www.fl501st.com/troop-tracker/
+https://www.fl501st.com/troop-tracker/
