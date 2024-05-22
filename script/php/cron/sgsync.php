@@ -23,8 +23,8 @@ $statement->execute();
 $values = getSheet("1PcveycMujakkKeG2m4y8iFunrFbo2KVpQJ00GyPI3b8", "Sheet1");
 
 // Reset Saber Guild Status
-$statement = $conn->prepare("UPDATE troopers SET pSG = 0");
-$statement->execute();
+/*$statement = $conn->prepare("UPDATE troopers SET pSG = 0");
+$statement->execute();*/
 
 // Set up count
 $i = 0;
@@ -56,10 +56,10 @@ foreach($values as $value)
 		$statement->execute();
 		
 		// Update status to regular member
-		$sgid = str_replace("SG-", "", $value[2]);
+		/*$sgid = str_replace("SG-", "", $value[2]);
 		$statement = $conn->prepare("UPDATE troopers SET pSG = 1 WHERE sgid = ? AND sgid > 0");
 		$statement->bind_param("i", $sgid);
-		$statement->execute();
+		$statement->execute();*/
 	}
 
 	// Increment
