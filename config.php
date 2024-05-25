@@ -379,7 +379,7 @@ function labelToForumCategory($label, $squad) {
 			return $virtualTroop;
 		break;
 
-		case 9:
+		case 11:
 			return $lflTroop;
 		break;
 
@@ -412,7 +412,7 @@ function labelToForumCategoryArchive($label, $squad) {
 			return $virtualTroopArchive;
 		break;
 
-		case 9:
+		case 11:
 			return $lflTroopArchive;
 		break;
 
