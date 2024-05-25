@@ -120,10 +120,22 @@ define('garrisonImage', 'garrison_emblem.png');
 $virtualTroop = 445;
 
 /**
+ * virtualTroopArchive: This variable is used to determine which forum to archive virtual troops
+*/
+
+$virtualTroopArchive = 513;
+
+/**
  * conventionTroop: This variable is used to determine which forum to post convention troops
 */
 
 $conventionTroop = 213;
+
+/**
+ * conventionTroopArchive: This variable is used to determine which forum to archive convention troops
+*/
+
+$conventionTroopArchive = 514;
 
 /**
  * lflTroop: This variable is used to determine which forum to post LFL troops
@@ -132,10 +144,22 @@ $conventionTroop = 213;
 $lflTroop = 212;
 
 /**
+ * lflTroopArchive: This variable is used to determine which forum to archive LFL troops
+*/
+
+$lflTroopArchive = 224;
+
+/**
  * disneyTroop: This variable is used to determine which forum to post Disney troops
 */
 
 $disneyTroop = 211;
+
+/**
+ * disneyTroopArchive: This variable is used to determine which forum to archive Disney troops
+*/
+
+$disneyTroopArchive = 225;
 
 /**
  * dualCostume: This array is used to determine which costume club ID should be counted as a dual costume.
@@ -249,6 +273,7 @@ $squadArray = array(
 		"rankReserve" => "",
 		"rankRetired" => "",
 		"eventForum" => 9,
+		"eventForumArchive" => 107,
 		"userGroup" => 44),
 	array(
 		"name" => "Makaze Squad",
@@ -260,6 +285,7 @@ $squadArray = array(
 		"rankReserve" => "",
 		"rankRetired" => "",
 		"eventForum" => 8,
+		"eventForumArchive" => 109,
 		"userGroup" => 45),
 	array(
 		"name" => "Parjai Squad",
@@ -271,6 +297,7 @@ $squadArray = array(
 		"rankReserve" => "",
 		"rankRetired" => "",
 		"eventForum" => 186,
+		"eventForumArchive" => 111,
 		"userGroup" => 250),
 	array(
 		"name" => "Squad 7",
@@ -282,6 +309,7 @@ $squadArray = array(
 		"rankReserve" => "",
 		"rankRetired" => "",
 		"eventForum" => 7,
+		"eventForumArchive" => 113,
 		"userGroup" => 683),
 	array(
 		"name" => "Tampa Bay Squad",
@@ -293,6 +321,7 @@ $squadArray = array(
 		"rankReserve" => "",
 		"rankRetired" => "",
 		"eventForum" => 73,
+		"eventForumArchive" => 115,
 		"userGroup" => 43)
 );
 

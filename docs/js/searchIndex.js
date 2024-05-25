@@ -31,6 +31,11 @@ Search.appendIndex(
             "summary": "Returns\u0020the\u0020category\u0020ID\u0020in\u0020the\u0020forum,\u0020based\u0020on\u0020the\u0020label",
             "url": "namespaces/default.html#function_labelToForumCategory"
         },                {
+            "fqsen": "\\labelToForumCategoryArchive\u0028\u0029",
+            "name": "labelToForumCategoryArchive",
+            "summary": "Returns\u0020the\u0020category\u0020ID\u0020in\u0020the\u0020forum,\u0020based\u0020on\u0020the\u0020label",
+            "url": "namespaces/default.html#function_labelToForumCategoryArchive"
+        },                {
             "fqsen": "\\showSquadButtons\u0028\u0029",
             "name": "showSquadButtons",
             "summary": "Returns\u0020garrison\u0020and\u0020squad\u0020images\u0020to\u0020display\u0020on\u0020the\u0020front\u0020page.\u0020A\u0020trooper\u0020can\u0020click\u0020images\u0020to\u0020see\u0020events\u0020for\u0020that\u0020squad.",
@@ -355,6 +360,16 @@ Search.appendIndex(
             "name": "getEventTitle",
             "summary": "Returns\u0020the\u0020event\u0020title",
             "url": "namespaces/default.html#function_getEventTitle"
+        },                {
+            "fqsen": "\\getEventLabel\u0028\u0029",
+            "name": "getEventLabel",
+            "summary": "Returns\u0020the\u0020event\u0027s\u0020label",
+            "url": "namespaces/default.html#function_getEventLabel"
+        },                {
+            "fqsen": "\\getEventSquad\u0028\u0029",
+            "name": "getEventSquad",
+            "summary": "Returns\u0020the\u0020event\u0027s\u0020label",
+            "url": "namespaces/default.html#function_getEventSquad"
         },                {
             "fqsen": "\\getEventThreadID\u0028\u0029",
             "name": "getEventThreadID",

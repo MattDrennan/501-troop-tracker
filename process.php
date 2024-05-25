@@ -2692,6 +2692,9 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			$statement = $conn->prepare("UPDATE events SET closed = '1' WHERE id = ?");
 			$statement->bind_param("i", $_POST['eventId']);
 			$statement->execute();
+
+			// Move thread
+			moveThread(getEventThreadID($_POST['eventId']), labelToForumCategoryArchive(getEventLabel($_POST['eventId']), getEventSquad($_POST['eventId'])));
 			
 			// Send notification to command staff
 			sendNotification(getName($_SESSION['id']) . " has finished event ID: [" . $_POST['eventId'] . "]", $_SESSION['id']);
@@ -2703,6 +2706,9 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			$statement = $conn->prepare("UPDATE events SET closed = '0' WHERE id = ?");
 			$statement->bind_param("i", $_POST['eventId']);
 			$statement->execute();
+
+			// Move thread
+			moveThread(getEventThreadID($_POST['eventId']), labelToForumCategory(getEventLabel($_POST['eventId']), getEventSquad($_POST['eventId'])));
 			
 			// Send notification to command staff
 			sendNotification(getName($_SESSION['id']) . " has reopened event ID: [" . $_POST['eventId'] . "]", $_SESSION['id']);

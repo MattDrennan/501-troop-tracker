@@ -2041,6 +2041,13 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn())
 		$statement->fetch();
 		$statement->close();
 
+		// How many LFL troops
+		$statement = $conn->prepare("SELECT COUNT(*) FROM events WHERE label = '9'");
+		$statement->execute();
+		$statement->bind_result($count12);
+		$statement->fetch();
+		$statement->close();
+
 		// How much total money was raised
 		$statement = $conn->prepare("SELECT SUM(charityDirectFunds) FROM events WHERE closed = '1'");
 		$statement->execute();
@@ -2103,6 +2110,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn())
 			<p><b>Charity Troops:</b> '.number_format($count3).'</p>
 			<p><b>PR Troops:</b> '.number_format($count4).'</p>
 			<p><b>Disney Troops:</b> '.number_format($count5).'</p>
+			<p><b>LFL Troops:</b> '.number_format($count12).'</p>
 			<p><b>Convention Troops:</b> '.number_format($count6).'</p>
 			<p><b>Hospital Troops:</b> '.number_format($count12).'</p>
 			<p><b>Wedding Troops:</b> '.number_format($count7).'</p>
@@ -4091,6 +4099,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<option value="1">Charity</option>
 							<option value="2">PR</option>
 							<option value="3">Disney</option>
+							<option value="9">LFL</option>
 							<option value="4">Convention</option>
 							<option value="9">Hospital</option>
 							<option value="5">Wedding</option>
@@ -4857,6 +4866,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					<option value="1" '.copyEventSelect($eid, $label, 1).'>Charity</option>
 					<option value="2" '.copyEventSelect($eid, $label, 2).'>PR</option>
 					<option value="3" '.copyEventSelect($eid, $label, 3).'>Disney</option>
+					<option value="9" '.copyEventSelect($eid, $label, 9).'>LFL</option>
 					<option value="4" '.copyEventSelect($eid, $label, 4).'>Convention</option>
 					<option value="9" '.copyEventSelect($eid, $label, 9).'>Hospital</option>
 					<option value="5" '.copyEventSelect($eid, $label, 5).'>Wedding</option>

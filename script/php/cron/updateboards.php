@@ -66,4 +66,24 @@ if ($result = mysqli_query($conn, $query))
 	}
 }
 
+// Check for events that need to be closed
+$date = date('Y-m-d H:i:s', strtotime('-1 HOUR'));
+$statement = $conn->prepare("SELECT * FROM events WHERE dateEnd < ? AND closed != '2' AND closed != '1'");
+$statement->bind_param("s", $date);
+$statement->execute();
+
+if ($result = $statement->get_result())
+{
+	while ($db = mysqli_fetch_object($result))
+	{
+		// Close them
+		$statement2 = $conn->prepare("UPDATE events SET closed = '1' WHERE id = ?");
+		$statement2->bind_param("i", $db->id);
+		$statement2->execute();
+
+		// Move thread
+		moveThread($db->thread_id, labelToForumCategoryArchive($db->label, $db->squad));
+	}
+}
+
 ?>

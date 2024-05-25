@@ -379,8 +379,45 @@ function labelToForumCategory($label, $squad) {
 			return $virtualTroop;
 		break;
 
+		case 9:
+			return $lflTroop;
+		break;
+
 		default:
 			return $squadArray[intval($squad - 1)]['eventForum'];
+		break;
+	}
+}
+
+/**
+ * Returns the category ID in the forum, based on the label
+ * 
+ * @param int $label The label category for the event
+ * @param int $squad The chosen squad territory for the event
+ * @return int Returns the forum category ID
+*/
+function labelToForumCategoryArchive($label, $squad) {
+	global $virtualTroop, $conventionTroop, $disneyTroop, $squadArray;
+
+	switch($label) {
+		case 3:
+			return $disneyTroopArchive;
+		break;
+
+		case 4:
+			return $conventionTroopArchive;
+		break;
+
+		case 7:
+			return $virtualTroopArchive;
+		break;
+
+		case 9:
+			return $lflTroopArchive;
+		break;
+
+		default:
+			return $squadArray[intval($squad - 1)]['eventForumArchive'];
 		break;
 	}
 }
@@ -3132,6 +3169,46 @@ function getEventTitle($id, $link = false)
 			}
 		}
 	}
+}
+
+/**
+ * Returns the event's label
+ * 
+ * @param int $id The ID of the event
+ * @return int Returns event label
+*/
+function getEventLabel($id)
+{
+	global $conn;
+
+	$statement = $conn->prepare("SELECT label FROM events WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
+}
+
+/**
+ * Returns the event's label
+ * 
+ * @param int $id The ID of the event
+ * @return int Returns event squad
+*/
+function getEventSquad($id)
+{
+	global $conn;
+
+	$statement = $conn->prepare("SELECT squad FROM events WHERE id = ?");
+	$statement->bind_param("i", $id);
+	$statement->execute();
+	$statement->bind_result($value);
+	$statement->fetch();
+	$statement->close();
+
+	return $value;
 }
 
 /**
@@ -6120,23 +6197,6 @@ if(loggedIn())
 	$statement = $conn->prepare("UPDATE troopers SET last_active = NOW() WHERE id = ?");
 	$statement->bind_param("i", $_SESSION['id']);
 	$statement->execute();
-}
-
-// Check for events that need to be closed
-$date = date('Y-m-d H:i:s', strtotime('-1 HOUR'));
-$statement = $conn->prepare("SELECT * FROM events WHERE dateEnd < ? AND closed != '2' AND closed != '1'");
-$statement->bind_param("s", $date);
-$statement->execute();
-
-if ($result = $statement->get_result())
-{
-	while ($db = mysqli_fetch_object($result))
-	{
-		// Close them
-		$statement2 = $conn->prepare("UPDATE events SET closed = '1' WHERE id = ?");
-		$statement2->bind_param("i", $db->id);
-		$statement2->execute();
-	}
 }
 
 ?>
