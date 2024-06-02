@@ -5240,6 +5240,16 @@ if(isset($_GET['action']) && $_GET['action'] == "login" && !loggedIn())
 					break;
 				}
 
+				// Check if RIP trooper
+				if($db->permissions == 3) {
+					echo '
+					<p>
+						You cannot access this account.
+					</p>';
+
+					break;
+				}
+
 				// Check credentials
 				if(isset($forumLogin['success']) && $forumLogin['success'] == 1 || (password_verify($_POST['password'], $db->password) && $db->permissions == 1))
 				{
