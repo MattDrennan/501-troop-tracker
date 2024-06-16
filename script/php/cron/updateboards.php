@@ -21,6 +21,9 @@ if ($result = mysqli_query($conn, $query))
 		// Make roster
 		$roster = '[b]Roster:[/b]';
 
+		// Count troopers
+		$i = 0;
+
 		// Loop through all events to update threads
 		$query2 = "SELECT * FROM event_sign_up WHERE troopid = '".$db->id."' ORDER BY signuptime ASC";
 		if ($result2 = mysqli_query($conn, $query2))
@@ -39,7 +42,16 @@ if ($result = mysqli_query($conn, $query))
 				$roster .= '
 				-[i]'.getStatus($db2->status).'[/i]: '.$name.' ('.getCostume($db2->costume).')
 				';
+
+				$i++;
 			}
+		}
+
+		// If no troopers
+		if($i == 0) {
+			$roster .= '
+			-No troopers are signed up for this event.
+			';
 		}
 
 		// Make thread body

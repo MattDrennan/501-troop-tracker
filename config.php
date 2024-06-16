@@ -3987,7 +3987,7 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 
 	// Show linked events
 	if($link2 > 0) {
-		echo '
+		$returnString .= '
 		[b][u]Related Troops:[/u][/b]';
 
 		// Query database for linked events
@@ -4003,6 +4003,10 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 				[url="https://fl501st.com/troop-tracker/index.php?event=' . $db->id . '"]' . (isLink($db->id) > 0 ? '[b]'.date('l', strtotime($db->dateStart)).'[/b] - ' . date('M d, Y', strtotime($db->dateStart)) . ' ' . date('h:i A', strtotime($db->dateStart)) . ' - ' . date('h:i A', strtotime($db->dateEnd)) . ''. $db->name : date('M d, Y', strtotime($db->dateStart)) . ': ' . $db->name) .'[/url]';
 			}
 		}
+
+		$returnString .= '
+		[b]To view all related event forum posts on one page, view the event page on the Troop Tracker. This forum page will only show this events forum posts.[/b]
+		';
 	}
 
 	return $returnString;
