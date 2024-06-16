@@ -6564,17 +6564,20 @@ if(isset($_GET['event']) && loggedIn())
 
 					// Get link
 					$link = isLink($_GET['event']);
+					$link2 = isLink2($_GET['event']);
 
 					// Get a seperate link ID, so we can differentiate between a shift and regular event
 					$link_event_id = $link;
+					$link_event_id2 = $link2;
 
 					// Event is not a shift, revert to regular event
 					if($link == 0) { $link_event_id = $_GET['event']; }
+					if($link2 == 0) { $link_event_id2 = $_GET['event']; }
 
 					if(!isset($thread['errors'])) {
 						// Loop through linked events to add posts to discussion
-						$statement = $conn->prepare("SELECT * FROM events WHERE (id = ? OR link = ?)");
-						$statement->bind_param("ii", $link_event_id, $link_event_id);
+						$statement = $conn->prepare("SELECT * FROM events WHERE (id = ? OR link = ? OR link2 = ?)");
+						$statement->bind_param("iii", $link_event_id, $link_event_id, $link_event_id2);
 						$statement->execute();
 
 						$thread = array();
