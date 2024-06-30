@@ -2,7 +2,7 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Generation Time: Mar 03, 2024 at 10:42 PM
+-- Generation Time: Jun 30, 2024 at 03:15 PM
 -- Server version: 8.0.35
 -- PHP Version: 7.4.7
 
@@ -474,7 +474,9 @@ ALTER TABLE `comments`
 -- Indexes for table `costumes`
 --
 ALTER TABLE `costumes`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id` (`id`),
+  ADD KEY `costume` (`costume`);
 
 --
 -- Indexes for table `donations`
@@ -486,7 +488,12 @@ ALTER TABLE `donations`
 -- Indexes for table `events`
 --
 ALTER TABLE `events`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id` (`id`),
+  ADD KEY `dateStart` (`dateStart`),
+  ADD KEY `dateEnd` (`dateEnd`),
+  ADD KEY `link` (`link`),
+  ADD KEY `link2` (`link2`);
 
 --
 -- Indexes for table `event_link`
@@ -500,7 +507,9 @@ ALTER TABLE `event_link`
 ALTER TABLE `event_sign_up`
   ADD PRIMARY KEY (`id`),
   ADD KEY `troopid` (`troopid`),
-  ADD KEY `trooperid` (`trooperid`);
+  ADD KEY `trooperid` (`trooperid`),
+  ADD KEY `status` (`status`),
+  ADD KEY `id` (`id`);
 
 --
 -- Indexes for table `mando_troopers`
