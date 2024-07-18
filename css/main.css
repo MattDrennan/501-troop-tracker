@@ -67,7 +67,7 @@
 }
 
 html, body {
-	max-width: 100%;
+	max-width: 100% !important;
 	overflow-x: hidden !important;
 }
 
@@ -84,6 +84,8 @@ body {
 .tm-container {
 	margin-left: auto;
 	margin-right: auto;
+	word-wrap: break-word;
+	overflow: hidden;
 }
 
 .tm-main-content { background-color: var(--main-content-color); }
@@ -197,7 +199,7 @@ figcaption span {
 }
 
 hr {
-	width: 300px;
+	width: 60%;
 	border: 0.5px solid #ccc;
 }
 
