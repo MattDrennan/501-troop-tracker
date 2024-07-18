@@ -825,7 +825,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 				}
 
 				$returnMessage .= '
-				<option value="'.$db->id.'" costumeName="'.$db->costume.'" costumeID="'.$db->id.'" costumeClub="'.$db->club.'">'.$db->costume.'</option>';
+				<option value="'.$db->id.'" costumeName="'.$db->costume.'" costumeID="'.$db->id.'" costumeClub="'.$db->club.'">'.getCostumeAbbreviation($db->club).' '.$db->costume.'</option>';
 
 				// Increment
 				$i++;
@@ -887,7 +887,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 					<select name="costumeID" id="costumeID">';
 				}
 
-				$returnMessage .= '<option value="'.$db->id.'">'.$db->costume.'</option>';
+				$returnMessage .= '<option value="'.$db->id.'">'.getCostumeAbbreviation($db->club).' '.$db->costume.'</option>';
 
 				// Increment
 				$i++;
@@ -2771,6 +2771,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		// Array of costumes
 		$costumesName = array();
 		$costumesID = array();
+		$costumesClub = array();
 		
 		// Display costumes
 		$statement = $conn->prepare("SELECT * FROM costumes ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id']).") DESC, costume");
@@ -2782,6 +2783,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			{
 				array_push($costumesID, $db->id);
 				array_push($costumesName, $db->costume);
+				array_push($costumesClub, $db->club);
 			}
 		}
 		
@@ -2791,6 +2793,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 
 			var jArray1 = ' . json_encode($costumesName) . ';
 			var jArray2 = ' . json_encode($costumesID) . ';
+			var jArray3 = ' . json_encode($costumesClub) . ';
 		</script>';
 							
 		// Load users assigned to event
@@ -2850,11 +2853,11 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 								// Select the costume the user chose to wear
 								if($db->costume == intval($costumesID[$a]))
 								{
-									echo '<option value="'.$costumesID[$a].'" SELECTED>'.$key.'</option>';
+									echo '<option value="'.$costumesID[$a].'" SELECTED>'.getCostumeAbbreviation($costumesClub[$a]).' '.$key.'</option>';
 								}
 								else
 								{
-									echo '<option value="'.$costumesID[$a].'">'.$key.'</option>';
+									echo '<option value="'.$costumesID[$a].'">'.getCostumeAbbreviation($costumesClub[$a]).' '.$key.'</option>';
 								}
 								
 								$a++;
@@ -2887,13 +2890,13 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 							if($db->costume_backup == intval($costumesID[$a]))
 							{
 								// The users costume
-								echo '<option value="'.$costumesID[$a].'" SELECTED>'.$key.'</option>';
+								echo '<option value="'.$costumesID[$a].'" SELECTED>'.getCostumeAbbreviation($costumesClub[$a]).' '.$key.'</option>';
 								$p++;
 							}
 							else
 							{
 								// Display costume
-								echo '<option value="'.$costumesID[$a].'">'.$key.'</option>';
+								echo '<option value="'.$costumesID[$a].'">'.getCostumeAbbreviation($costumesClub[$a]).' '.$key.'</option>';
 							}
 
 							$c++;
@@ -3011,7 +3014,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				foreach($costumesName as $key)
 				{
 					echo '
-					<option value="'. $costumesID[$a] .'">'.$key.'</option>';
+					<option value="'. $costumesID[$a] .'">'.getCostumeAbbreviation($costumesClub[$a]).' '.$key.'</option>';
 					
 					$a++;
 				}

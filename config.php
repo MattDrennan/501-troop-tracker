@@ -53,7 +53,7 @@ if ($conn->connect_error)
  * 
  * @var string
 */
-$mainCostumes = "'501st: N/A', '501st: Command Staff', '501st: Handler'";
+$mainCostumes = "'N/A', 'Command Staff', 'Handler'";
 
 /**
  * This is used to format the time to Eastern Standard Time
@@ -2135,7 +2135,7 @@ function getMyCostumes($id, $squad)
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				$costume .= ", '501st: " . addslashes($db->costumename) . "'";
+				$costume .= ", '" . addslashes($db->costumename) . "'";
 			}
 		}
 	}
@@ -2575,6 +2575,55 @@ function getSquad($address)
 	}
 
     return $squad;
+}
+
+/**
+ * Returns the shortened name for the particular costume club value
+ * 
+ * @param int $club The costume club value to get the shortened name
+ * @return string Returns the shortened name
+*/
+function getCostumeAbbreviation($clubid)
+{
+	global $clubArray, $squadArray;
+	
+	// Set return value
+	$returnValue = "";
+
+	if(in_array($clubid, $squadArray[0]['costumes']))
+	{
+		// Set
+		$returnValue .= '(501st) ';
+	}
+	
+	// Loop through clubs
+	foreach($clubArray as $club => $club_value)
+	{
+		// Check if squad ID matches value
+		if(in_array($clubid, $club_value['costumes']))
+		{
+			// Set
+			$returnValue .= '(' . $club_value['name'] . ') ';
+		}
+	}
+
+	// Remove whitespace
+	$returnValue = rtrim($returnValue);
+
+	$returnValue .= ': ';
+
+	$strCount = substr_count($returnValue, '(');
+
+	// Add dual, triple, or multiple for easy searching
+	if($strCount == 2) {
+		$returnValue = '(DUAL) ' . $returnValue;
+	} else if ($strCount == 3) {
+		$returnValue = '(TRIPLE) ' . $returnValue;
+	} else if ($strCount > 3) {
+		$returnValue = '(MULTIPLE) ' . $returnValue;
+	}
+
+	return $returnValue;
 }
 
 /**
@@ -4441,13 +4490,13 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 									{
 										// If this is the selected costume, make it selected
 										$data .= '
-										<option value="'. $db3->id .'" SELECTED>'.$db3->costume.'</option>';
+										<option value="'. $db3->id .'" SELECTED>'.getCostumeAbbreviation($db3->club).' '.$db3->costume.'</option>';
 									}
 									else
 									{
 										// Default
 										$data .= '
-										<option value="'. $db3->id .'">'.$db3->costume.'</option>';
+										<option value="'. $db3->id .'">'.getCostumeAbbreviation($db3->club).' '.$db3->costume.'</option>';
 									}
 								}
 							}
@@ -4489,13 +4538,13 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 									if($db2->costume_backup == $db3->id)
 									{
 										$data .= '
-										<option value="'.$db3->id.'" SELECTED>'.$db3->costume.'</option>';
+										<option value="'.$db3->id.'" SELECTED>'.getCostumeAbbreviation($db3->club).' '.$db3->costume.'</option>';
 									}
 									// Start showing costumes
 									else
 									{
 										$data .= '
-										<option value="'.$db3->id.'">'.$db3->costume.'</option>';
+										<option value="'.$db3->id.'">'.getCostumeAbbreviation($db3->club).' '.$db3->costume.'</option>';
 									}
 									
 									// Increment

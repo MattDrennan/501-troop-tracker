@@ -322,7 +322,7 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 		
 		<select multiple="multiple" id="favoriteCostumeSelect" name="favoriteCostumeSelect">';
 		
-		$statement = $conn->prepare("SELECT costumes.id AS id, costumes.costume, favorite_costumes.costumeid, favorite_costumes.trooperid FROM costumes LEFT JOIN favorite_costumes ON favorite_costumes.costumeid = costumes.id ORDER BY costume");
+		$statement = $conn->prepare("SELECT costumes.id AS id, costumes.club, costumes.costume, favorite_costumes.costumeid, favorite_costumes.trooperid FROM costumes LEFT JOIN favorite_costumes ON favorite_costumes.costumeid = costumes.id ORDER BY costume");
 		$statement->execute();
 
 		if ($result = $statement->get_result())
@@ -332,7 +332,7 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 				$isFavorite = ($db->trooperid == $_SESSION['id']) ? echoSelect($db->id, $db->costumeid) : "";
 
 				echo '
-				<option value="'.$db->id.'" '. $isFavorite .'>'.$db->costume .'</option>';
+				<option value="'.$db->id.'" '. $isFavorite .'>'.getCostumeAbbreviation($db->club).' '.$db->costume .'</option>';
 			}
 		}
 		
@@ -1026,7 +1026,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				echo '
 				<select multiple style="height: 500px;" id="costumes_choice_search_box" name="costumes_choice_search_box[]">';
 				
-				$statement = $conn->prepare("SELECT costumes.id AS id, costumes.costume FROM costumes ORDER BY costume");
+				$statement = $conn->prepare("SELECT costumes.id AS id, costumes.club, costumes.costume FROM costumes ORDER BY costume");
 				$statement->execute();
 
 				if ($result = $statement->get_result())
@@ -1045,7 +1045,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 						}
 
 						echo '
-						<option value="'.$db->id.'" '.$check.'>'.$db->costume .'</option>';
+						<option value="'.$db->id.'" '.$check.'>'.getCostumeAbbreviation($db->club).' '.$db->costume .'</option>';
 					}
 				}
 				
@@ -2177,7 +2177,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn())
 			<div id="costumes_choice_search" style="display: none;">
 				<select multiple style="height: 500px;" id="costumes_choice_search_box" name="costumes_choice_search_box[]">';
 				
-				$statement = $conn->prepare("SELECT costumes.id AS id, costumes.costume FROM costumes ORDER BY costume");
+				$statement = $conn->prepare("SELECT costumes.id AS id, costumes.club, costumes.costume FROM costumes ORDER BY costume");
 				$statement->execute();
 
 				if ($result = $statement->get_result())
@@ -2185,7 +2185,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn())
 					while ($db = mysqli_fetch_object($result))
 					{
 						echo '
-						<option value="'.$db->id.'">'.$db->costume .'</option>';
+						<option value="'.$db->id.'">'.getCostumeAbbreviation($db->club).' '.$db->costume .'</option>';
 					}
 				}
 				
@@ -3541,7 +3541,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					}
 
 					echo '
-					<option value="'.$db->id.'" costumeName="'.$db->costume.'" costumeID="'.$db->id.'" costumeClub="'.$db->club.'">'.$db->costume.'</option>';
+					<option value="'.$db->id.'" costumeName="'.$db->costume.'" costumeID="'.$db->id.'" costumeClub="'.$db->club.'">'.getCostumeAbbreviation($db->club).' '.$db->costume.'</option>';
 
 
 					// Increment
@@ -3620,7 +3620,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<select name="costumeID" id="costumeID">';
 					}
 
-					echo '<option value="'.$db->id.'">'.$db->costume.'</option>';
+					echo '<option value="'.$db->id.'">'.getCostumeAbbreviation($db->club).' '.$db->costume.'</option>';
 
 					// Increment
 					$i++;
@@ -6085,7 +6085,7 @@ if(isset($_GET['event']) && loggedIn())
 											while ($db3 = mysqli_fetch_object($result3))
 											{
 												echo '
-												<option value="'. $db3->id .'"  club="'. $db3->club .'">'.$db3->costume.'</option>';
+												<option value="'. $db3->id .'"  club="'. $db3->club .'">'.getCostumeAbbreviation($db3->club).' '.$db3->costume.'</option>';
 											}
 										}
 
@@ -6140,7 +6140,7 @@ if(isset($_GET['event']) && loggedIn())
 												}
 
 												// Display costume
-												echo '<option value="'.$db2->id.'">'.$db2->costume.'</option>';
+												echo '<option value="'.$db2->id.'">'.getCostumeAbbreviation($db2->club).' '.$db2->costume.'</option>';
 
 												$c++;
 											}
@@ -6435,7 +6435,7 @@ if(isset($_GET['event']) && loggedIn())
 							while ($db3 = mysqli_fetch_object($result3))
 							{
 								echo '
-								<option value="'. $db3->id .'" club="'. $db3->club .'">'.$db3->costume.'</option>';
+								<option value="'. $db3->id .'" club="'. $db3->club .'">'.getCostumeAbbreviation($db3->club).' '.$db3->costume.'</option>';
 							}
 						}
 
@@ -6490,7 +6490,7 @@ if(isset($_GET['event']) && loggedIn())
 								}
 
 								// Display costume
-								echo '<option value="'.$db2->id.'">'.$db2->costume.'</option>';
+								echo '<option value="'.$db2->id.'">'.getCostumeAbbreviation($db2->club).' '.$db2->costume.'</option>';
 
 								$c++;
 							}
@@ -7118,7 +7118,7 @@ else
 								}
 
 								echo '
-								<option value="'. $db3->id .'">'.$db3->costume.'</option>';
+								<option value="'. $db3->id .'">'.getCostumeAbbreviation($db3->club).' '.$db3->costume.'</option>';
 
 								$l++;
 							}
