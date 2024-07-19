@@ -67,8 +67,9 @@
 }
 
 html, body {
-	max-width: 100% !important;
-	overflow-x: hidden !important;
+	max-width: 100%;
+	overflow-x: hidden;
+	position:relative;	// This fixes scrollbar still showing on overflow-x
 }
 
 body {
