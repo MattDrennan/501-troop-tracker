@@ -4906,7 +4906,11 @@ function getCostume($id)
 	$statement->fetch();
 	$statement->close();
 
-	return $value;
+	if(is_null($value)) {
+		return '';
+	} else {
+		return getCostumeAbbreviation(getCostumeClub($id)) . ' ' . $value;
+	}
 }
 
 /**
