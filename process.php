@@ -841,10 +841,14 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 			$returnMessage .= '
 			</select>
 
+			<br /><br />
+
 			<div id="editCostumeList" name="editCostumeList" style="display: none;">
 
 			<b>Costume Name:</b></br />
 			<input type="text" name="costumeNameEdit" id="costumeNameEdit" />
+
+			<br /><br />
 			
 			<b>Costume Club:</b></br />
 			<select name="costumeClubEdit" id="costumeClubEdit">

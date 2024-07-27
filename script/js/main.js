@@ -2652,20 +2652,12 @@ $(document).ready(function()
 				{
 					var json = JSON.parse(data);
 					
-					// Add to lists
-					$("#costumeID").append("<option value='" + json[0].id + "'>" + $("#costumeName").val() + "</option>");
-					$("#costumeIDEdit").append("<option value='" + json[0].id + "' costumeName='" + $("#costumeName").val() + "' costumeID='" + json[0].id + "' costumeClub='" + $("#costumeClub").val() + "'>" + $("#costumeName").val() + "</option>");
-
 					// Clear form
 					$("#costumeName").val("");
 					$("#costumeClub").val("0");
-					
-					if($("#costumeID option").length <= 1)
-					{
-						// Populate result
-						$("#costumearea").html(json[0].result);
-						selectAdd();
-					}
+
+					$("#costumearea").html(json[0].result);
+					selectAdd();
 
 					// Alert to success
 			  		alert(json[0].message);
