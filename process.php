@@ -9,6 +9,283 @@
 
 include 'config.php';
 
+/******************** LOAD ADD A FRIEND *******************************/
+
+if(isset($_GET['do']) && isset($_GET['event']) && $_GET['do'] == "load-add-friend" && loggedIn())
+{
+	echo '
+	<form action="process.php?do=signup" method="POST" name="signupForm3" id="signupForm3">
+		<input type="hidden" name="event" value="'.cleanInput($_GET["event"]).'" />';
+			
+	// Load all users
+	$statement = $conn->prepare("SELECT troopers.id AS troopida, troopers.name AS troopername, troopers.tkid, troopers.squad FROM troopers WHERE NOT EXISTS (SELECT event_sign_up.trooperid FROM event_sign_up WHERE event_sign_up.trooperid = troopers.id AND event_sign_up.troopid = ? AND event_sign_up.trooperid != ".placeholder.") AND troopers.approved = 1 ORDER BY troopers.name");
+	$statement->bind_param("i", $_GET['event']);
+	$statement->execute();
+
+	$i = 0;
+	if ($result = $statement->get_result())
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// First add this to make a list
+			if($i == 0)
+			{
+				echo '
+				<form action="process.php?do=editevent" method="POST" name="troopRosterFormAdd" id="troopRosterFormAdd">
+					<input type="hidden" name="troopid" id="troopid" value="'.cleanInput($_GET['event']).'" />
+
+					<p>Select a trooper to add:</p>
+					<select name="trooperSelect" id="trooperSelect">';
+			}
+			
+			// Get TKID
+			$tkid = readTKNumber($db->tkid, $db->squad);
+
+			// List troopers
+			echo '
+			<option value="'.$db->troopida.'" tkid="'.$tkid.'" troopername="'.$db->troopername.'">'.$db->troopername.' - '.$tkid.'</option>';
+			$i++;
+		}
+	}
+
+	// If no troopers
+	if($i == 0)
+	{
+		echo 'No troopers to add.';
+	}
+	else
+	{
+		echo '
+		</select>
+		
+		<a href="#/" class="button" id="withoutAccount" aria-label="Once you add a friend without an account using placeholder. Click on the blank textbox on the roster to set a name. To save, click off to the side after writing the name." data-balloon-pos="down" data-balloon-length="fit">Add a friend without an account</a>';
+	}
+			
+	echo '
+	<p>What costume will they wear?</p>
+	<select name="costume" id="costume">
+		<option value="null" SELECTED>Please choose an option...</option>';
+
+	$statement = $conn->prepare("SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id']).") DESC, costume");
+	$statement->execute();
+
+	if ($result3 = $statement->get_result())
+	{
+		while ($db3 = mysqli_fetch_object($result3))
+		{
+			echo '
+			<option value="'. $db3->id .'" club="'. $db3->club .'">'.getCostumeAbbreviation($db3->club).' '.$db3->costume.'</option>';
+		}
+	}
+
+	echo '
+	</select>
+
+	<br />
+
+	<p>Select a status:</p>
+
+	<select name="status">
+		<option value="null" SELECTED>Please choose an option...</option>';
+
+	if($limitedEvent != 1)
+	{
+		echo '
+			<option value="0">I\'ll be there!</option>';
+			
+		// Check if tentative allowed
+		if($allowTentative == 1)
+		{
+			echo '
+			<option value="2">Tentative</option>';
+		}
+	}
+	else
+	{
+		echo '
+		<option value="5">Request to attend (Pending)</option>';								
+	}
+
+	echo '
+	</select>
+
+	<p>Back up costume (if applicable):</p>
+
+	<select name="backupcostume" id="backupcostume">';
+
+	// Display costumes
+	$statement = $conn->prepare("SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND " . costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id']).") DESC, costume");
+	$statement->execute();
+
+	// Amount of costumes
+	$c = 0;
+	if ($result2 = $statement->get_result())
+	{
+		while ($db2 = mysqli_fetch_object($result2))
+		{
+			if($c == 0)
+			{
+				echo '<option value="0">Select a costume...</option>';
+			}
+
+			// Display costume
+			echo '<option value="'.$db2->id.'">'.getCostumeAbbreviation($db2->club).' '.$db2->costume.'</option>';
+
+			$c++;
+		}
+	}
+
+	echo '
+	</select>
+
+	<br />
+	<br />
+
+	<input type="submit" value="Add Friend" name="submitSignUp" />
+	</form>';
+}
+
+/******************** LOAD SUBSCRIBE UPDATES *******************************/
+
+if(isset($_GET['do']) && isset($_GET['event']) && isset($_GET['thread_id']) && $_GET['do'] == "load-subscribe-updates" && loggedIn())
+{
+	// Query to see if trooper is subscribed
+	$statement = $conn->prepare("SELECT * FROM event_notifications WHERE trooperid = ? AND troopid = ?");
+	$statement->bind_param("ii", $_SESSION['id'], $_GET['event']);
+	$statement->execute();
+	$statement->store_result();
+	$isSubscribed = $statement->num_rows;
+
+	// Set default subscribe button text
+	$subscribeText = "Subscribe Updates";
+
+	// Check if we are subscribed
+	if($isSubscribed > 0)
+	{
+		$subscribeText = "Unsubscribe Updates";
+	}
+	
+	// Create button variable
+	echo '
+	<p style="text-align: center;">
+		<a href="#/" class="button" id="subscribeupdates" event="'.cleanInput($_GET['event']).'" aria-label="Get updates on sign ups and cancellations." data-balloon-pos="up" data-balloon-length="fit">'.$subscribeText.'</a>
+		<a href="https://www.fl501st.com/boards/index.php?threads/'.cleanInput($_GET['thread_id']).'/watch" target="_blank" class="button" aria-label="Get updates on replies to this event." data-balloon-pos="up" data-balloon-length="fit">Watch Discussion</a>
+	</p>';
+}
+
+/******************** LOAD DISCUSSION *******************************/
+
+if(isset($_GET['do']) && isset($_GET['event']) && isset($_GET['thread_id']) && $_GET['do'] == "load-discussion" && loggedIn())
+{
+	// Set thread_id
+	$thread_id = $_GET['thread_id'];
+
+	// Get thread
+	$thread = getThreadPosts($thread_id, 1);
+
+	// Get link
+	$link = isLink($_GET['event']);
+	$link2 = isLink2($_GET['event']);
+
+	// Get a seperate link ID, so we can differentiate between a shift and regular event
+	$link_event_id = $link;
+	$link_event_id2 = $link2;
+
+	// Event is not a shift, revert to regular event
+	if($link == 0) { $link_event_id = $_GET['event']; }
+	if($link2 == 0) { $link_event_id2 = $_GET['event']; }
+
+	if(!isset($thread['errors'])) {
+		// Loop through linked events to add posts to discussion
+		$statement = $conn->prepare("SELECT * FROM events WHERE (id = ? OR link = ? OR link2 = ?)");
+		$statement->bind_param("iii", $link_event_id, $link_event_id, $link_event_id2);
+		$statement->execute();
+
+		$thread = array();
+		
+		if ($result = $statement->get_result())
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				// Combine data
+				$linked_threads = getThreadPosts($db->thread_id, 1);
+
+				// If pagination not defined, just continue...
+				if(!isset($linked_threads['pagination'])) { continue; }
+
+				for($page = $linked_threads['pagination']['last_page']; $page >= 1; $page--)
+				{
+					$tempArray = getThreadPosts($db->thread_id, $page);
+					
+					// Remove first post from thread
+					if($page == 1)
+					{
+						array_shift($tempArray['posts']);
+					}
+				}
+
+				foreach($tempArray['posts'] as $key => $post)
+				{
+					$tempArray['posts'][$key]['dateStart'] = $db->dateStart;
+					$tempArray['posts'][$key]['dateEnd'] = $db->dateEnd;
+					$tempArray['posts'][$key]['eventID'] = $db->id;
+				}
+
+				//array_push($thread, $tempArray);
+				$thread = array_merge_recursive($thread, $tempArray);
+			}
+		}
+
+		usort($thread['posts'], "custom_sort");
+
+		// Loop through posts
+		foreach($thread['posts'] as $key => $post)
+		{
+			// Only show messages that are visible // Example: We don't want to show messages that are hidden from public view
+			if($post['message_state'] == "visible")
+			{
+				echo '
+				<table border="1" style="width: 100%">
+				<tr>
+					<td>
+						<a href="index.php?profile='.$post['User']['custom_fields']['trackerid'].'">'.$post['User']['custom_fields']['fullname'].' - '.$post['User']['custom_fields']['tkid'].'<br />'.$post['username'].'</a>'.($post['User']['avatar_urls']['m'] != '' ? '<br /><img src="'.$post['User']['avatar_urls']['m'].'" />' : '').'
+						<br />
+						'.date("F j, Y, g:i a", $post['post_date']).'
+						'. (($link > 0) ? '<br /><span' . ($post['eventID'] == $_GET['event'] ? ' style="color: yellow;"' : '') . '><b>Shift:</b> ' . date('l, m/d - h:i A', strtotime($post['dateStart'])) . ' - ' . date('h:i A', strtotime($post['dateEnd'])) . '</span>' : '') .'
+					</td>
+				</tr>
+				
+				<tr>
+					<td>'.$post['message_parsed'].'</td>
+				</tr>
+
+				</table>
+
+				<br />';
+			}
+		}
+
+		// If no posts
+		if(count($thread['posts']) == 0)
+		{
+			echo '
+			<br />
+			<b>No discussion to display.</b>';
+		}
+	} else {
+			echo '
+			<br />
+			<b>Thread for this event, not found.</b>';
+	}
+}
+
+/******************** LOAD ROSTER *******************************/
+
+if(isset($_GET['do']) && isset($_GET['event']) && $_GET['do'] == "load-roster" && loggedIn())
+{
+	echo getRoster($_GET['event'])[0];
+}
+
 /******************** ROSTER TROOPER CONFIRMATION *******************************/
 
 if(isset($_GET['do']) && $_GET['do'] == "roster-trooper-confirmation" && loggedIn() && isAdmin())

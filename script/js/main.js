@@ -268,6 +268,26 @@ $(document).ready(function()
 	// Add select2 to DOM
 	selectAdd();
 
+	// Load add friend
+	if($('#add-friend-form').length) {
+		$("#add-friend-form").load('process.php?do=load-add-friend&event=' + $("#troopid").val());
+	}
+
+	// Load subscribe updates
+	if($('#subscribe-area').length) {
+		$("#subscribe-area").load('process.php?do=load-subscribe-updates&event=' + $("#troopid").val() + '&thread_id=' + $("#thread_id").val());
+	}
+
+	// Load roster
+	if($('#signuparea1').length) {
+		$("#signuparea1").load('process.php?do=load-roster&event=' + $("#troopid").val());
+	}
+
+	// Load discussion
+	if($('#commentArea').length) {
+		$("#commentArea").load('process.php?do=load-discussion&event=' + $("#troopid").val() + '&thread_id=' + $("#thread_id").val());
+	}
+
 	// Placeholder save note
 	$(document).on('blur', '[name=placeholdertext]', function()
 	{
