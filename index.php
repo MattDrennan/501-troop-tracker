@@ -6675,7 +6675,34 @@ else if(isset($_GET['event']) && !loggedIn())
 	{
 		setcookie("TroopTrackerLastEvent", cleanInput($_GET['event']), time() + 3600);
 	}
-	echo '<p style="text-align: center;"><b>Please login to view this event.</b></p>';
+
+	// Query database for event info
+	$statement = $conn->prepare("SELECT * FROM events WHERE id = ?");
+	$statement->bind_param("i", $_GET['event']);
+	$statement->execute();
+
+	if ($result = $statement->get_result())
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			// Set up string to add to title if a linked event
+			$add = "";
+			
+			// If this a linked event?
+			if(isLink($db->id) > 0)
+			{
+				$add .= "[" . date("h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "] ";
+			}
+
+			echo '
+			<meta property="og:title" content="'.$add.''.$db->name.'" />
+			<meta property="og:description" content="'.ifEmpty(nl2br($db->comments)).'" />
+			<meta property="og:image" content="https://www.fl501st.com/troop-tracker/images/logo.png" />';
+		}
+	}
+
+	echo '
+	<p style="text-align: center;"><b>Please login to view this event.</b></p>';
 }
 else
 {
