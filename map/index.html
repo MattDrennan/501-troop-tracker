@@ -1,0 +1,81 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+		<link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.0.0/dist/geosearch.css" />
+
+		<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+		<script src="https://unpkg.com/leaflet-geosearch@latest/dist/bundle.min.js"></script>
+
+		<style>
+			#map { width: 100%; height: 300px; }
+		</style>
+	</head>
+
+	<body>
+		 <div id="map"></div>
+
+		 <script>
+			async function checkLocation(event) {
+			    const provider = new window.GeoSearch.OpenStreetMapProvider(); // Define provider if not defined globally
+			    const results = await provider.search({ query: event.location });
+			    if (results && results.length > 0) {
+			        const { x: lon, y: lat } = results[0];
+			        L.marker([lat, lon], {icon: stormtrooperIcon}).addTo(map).bindPopup('<b><a href="../index.php?event=' + event.troopid + '">' + event.name + '</a></b><br />' + event.dateStart + ' -  ' + event.dateEnd + '');
+			        console.log(`Latitude: ${lat}, Longitude: ${lon}`);
+			    } else {
+			        console.log("No results found.");
+			    }
+			}
+
+        	document.addEventListener("DOMContentLoaded", async () => {
+				var xhr = new XMLHttpRequest();
+
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState === 4) {
+						if (xhr.status === 200) {
+							var json = JSON.parse(xhr.responseText);
+							json.forEach(
+								(event) => {
+									console.log(event);
+									if (event.location) {
+										checkLocation(event);
+									}
+								}
+							);
+						}
+						else {
+							error(xhr);
+						}
+					}
+				};
+				xhr.open('GET', '../api.php?events=1', true);
+				xhr.send();
+	        });
+
+		 	var map = L.map('map').setView([28.2, -81.379], 5);
+
+		 	// Icon
+			var stormtrooperIcon = L.icon({
+				iconUrl: 'icon.png',
+
+				iconSize:     [38, 95], // size of the icon
+				iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+				popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+			});
+
+			L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			    maxZoom: 19,
+			    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+			}).addTo(map);
+
+			const search = new GeoSearch.GeoSearchControl({
+				provider: new GeoSearch.OpenStreetMapProvider(),
+			});
+
+			map.addControl(search);
+		 </script>
+	</body>
+
+</html>

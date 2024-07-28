@@ -88,6 +88,29 @@ else if(isset($_GET['photos']) && isset($_GET['amount']))
 	// Set data
 	array_push($data, $uploadArray);
 }
+else if(isset($_GET['events']))
+{
+	// Query
+	$statement = $conn->prepare("SELECT * FROM events WHERE dateStart >= CURDATE() AND (closed = '0' OR closed = '3' OR closed = '4') ORDER BY dateStart");
+	$statement->execute();
+
+	// Load events that are today or in the future
+	if ($result = $statement->get_result())
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+	        $tempArray = array(
+	        	'troopid' => $db->id,
+	            'name' => $db->name,
+	            'dateStart' => $db->dateStart,
+	            'dateEnd' => $db->dateEnd,
+	            'location' => $db->location
+	        );
+
+			array_push($data, $tempArray);
+		}
+	}
+}
 
 // If output not set
 if(!isset($_GET['slideshow']))
