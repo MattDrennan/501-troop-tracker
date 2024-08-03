@@ -286,10 +286,20 @@ Search.appendIndex(
             "summary": "Send\u0027s\u0020a\u0020notification\u0020to\u0020the\u0020Discord\u0020event\u0020channel\u0020using\u0020a\u0020WebHook",
             "url": "namespaces/default.html#function_sendEventNotify"
         },                {
+            "fqsen": "\\getLatLong\u0028\u0029",
+            "name": "getLatLong",
+            "summary": "Gets\u0020the\u0020latitude\u0020and\u0020longitude\u0020of\u0020an\u0020address",
+            "url": "namespaces/default.html#function_getLatLong"
+        },                {
             "fqsen": "\\getSquad\u0028\u0029",
             "name": "getSquad",
             "summary": "Gets\u0020squad\u0020by\u0020location\u0020using\u0020the\u0020Google\u0020API",
             "url": "namespaces/default.html#function_getSquad"
+        },                {
+            "fqsen": "\\getCostumeAbbreviation\u0028\u0029",
+            "name": "getCostumeAbbreviation",
+            "summary": "Returns\u0020the\u0020shortened\u0020name\u0020for\u0020the\u0020particular\u0020costume\u0020club\u0020value",
+            "url": "namespaces/default.html#function_getCostumeAbbreviation"
         },                {
             "fqsen": "\\getSquadName\u0028\u0029",
             "name": "getSquadName",

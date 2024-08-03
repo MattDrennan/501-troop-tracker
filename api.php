@@ -91,7 +91,7 @@ else if(isset($_GET['photos']) && isset($_GET['amount']))
 else if(isset($_GET['events']))
 {
 	// Query
-	$statement = $conn->prepare("SELECT * FROM events WHERE dateStart >= CURDATE() AND (closed = '0' OR closed = '3' OR closed = '4') ORDER BY dateStart");
+	$statement = $conn->prepare("SELECT * FROM events WHERE dateStart >= CURDATE() AND (closed = '0' OR closed = '3' OR closed = '4') AND latitude != '' AND longitude != '' ORDER BY dateStart");
 	$statement->execute();
 
 	// Load events that are today or in the future
@@ -104,7 +104,9 @@ else if(isset($_GET['events']))
 	            'name' => $db->name,
 	            'dateStart' => $db->dateStart,
 	            'dateEnd' => $db->dateEnd,
-	            'location' => $db->location
+	            'location' => $db->location,
+	            'latitude' => $db->latitude,
+	            'longitude' => $db->longitude,
 	        );
 
 			array_push($data, $tempArray);

@@ -2520,6 +2520,28 @@ function sendEventNotify($id, $name, $description, $squad)
 }
 
 /**
+ * Gets the latitude and longitude of an address 
+ * 
+ * @param string $address The address of the event
+ * @return json Returns the latitude and longitude of an address
+*/
+function getLatLong($address) {
+	// Get geo data from Google Maps API by address 
+	$geocodeFromAddr = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=" . urlencode($address) . "&key=" . googleKey . ""); 
+	 
+	// Decode JSON data returned by API 
+	$apiResponse = json_decode($geocodeFromAddr); 
+	 
+	// Retrieve latitude and longitude from API data 
+	$latitude  = $apiResponse->results[0]->geometry->location->lat;  
+	$longitude = $apiResponse->results[0]->geometry->location->lng;
+
+	// Create array of data
+	$array = array("latitude" => $latitude, "longitude" => $longitude);
+	return $array;
+}
+
+/**
  * Gets squad by location using the Google API
  * 
  * @param string $address The address of the event
