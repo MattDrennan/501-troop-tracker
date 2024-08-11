@@ -485,182 +485,184 @@ $(function()
         }
     });
 
-    $("form[name='signupForm']").validate(
-    {
-        rules:
+    $("body").on("click", "[name=submitSignUp]", function(e) {
+        $("form[name='signupForm']").validate(
         {
-            costume:
+            rules:
             {
-                required: true,
-                digits: true
-            },
-            status:
-            {
-                required: true,
-                range: [0, 5]
-            }
-        },
-        messages:
-        {
-            costume: "Please choose a costume.",
-            status: "Please choose your status."
-        },
-        submitHandler: function(form)
-        {
-            $.ajax(
-            {
-                type: "POST",
-                url: form.action,
-                data: $(form).serialize() + "&submitSignUp=1",
-                success: function(data)
+                costume:
                 {
-                    $("#signeduparea").show();
-                    $("#signuparea").hide();
-                    $("#addfriend").show();
-                    selectAdd();
+                    required: true,
+                    digits: true
+                },
+                status:
+                {
+                    required: true,
+                    range: [0, 5]
                 }
-            });
-        }
-    });
-
-    $("form[name='signupForm2']").validate(
-    {
-        rules:
-        {
-            costume:
-            {
-                required: true,
-                digits: true
             },
-            status:
+            messages:
             {
-                required: true,
-                range: [0, 5]
-            }
-        },
-        messages:
-        {
-            costume: "Please choose a costume.",
-            status: "Please choose your status."
-        },
-        submitHandler: function(form)
-        {
-            $.ajax(
+                costume: "Please choose a costume.",
+                status: "Please choose your status."
+            },
+            submitHandler: function(form)
             {
-                type: "POST",
-                url: form.action,
-                data: $(form).serialize() + "&submitSignUp=1",
-                success: function(data)
+                $.ajax(
                 {
-                    // Get JSON Data
-                    var json = JSON.parse(data);
-
-                    if (json.success == "failed")
+                    type: "POST",
+                    url: form.action,
+                    data: $(form).serialize() + "&submitSignUp=1",
+                    success: function(data)
                     {
-                        alert(json.data);
-                    }
-                    else if(json.success == "check_linked_fail")
-                    {
-                        alert(json.success_message);
-                    }
-                    else
-                    {
-                        // Put data in html
-                        $("#signuparea").html(json.data);
-                        selectAdd();
-
-                        // Do the rest...
                         $("#signeduparea").show();
+                        $("#signuparea").hide();
                         $("#addfriend").show();
                         selectAdd();
-                        $("#signuparea1").hide();
-                        $("#hr1").hide();
-                        $("#rosterTableNoData").hide();
-
-                        // Update troopers remaining on the page
-                        $("div[name=troopersRemainingDisplay]").html(json.troopersRemaining);
                     }
-                }
-            });
-        }
-    });
-
-    $("form[name='signupForm3']").validate(
-    {
-        rules:
-        {
-            trooperSelect:
-            {
-                required: true,
-                digits: true
-            },
-            costume:
-            {
-                required: true,
-                digits: true
-            },
-            status:
-            {
-                required: true,
-                range: [0, 5]
+                });
             }
-        },
-        messages:
+        });
+
+        $("form[name='signupForm2']").validate(
         {
-            costume: "Please choose a costume.",
-            status: "Please choose your status."
-        },
-        submitHandler: function(form)
-        {
-            $.ajax(
+            rules:
             {
-                type: "POST",
-                url: form.action,
-                data: $(form).serialize() + "&submitSignUp=1&addfriend=1",
-                success: function(data)
+                costume:
                 {
-                    // Get JSON Data
-                    var json = JSON.parse(data);
-
-                    if (json.success == "success")
-                    {
-                        // Put data in html
-                        $("#signuparea1").html(json.data);
-                        $("#signuparea1").show();
-                        $("#signuparea").hide();
-
-                        // Set search boxes
-                        selectAdd();
-
-						// Check if placeholder account
-						if($("select[name=trooperSelect]").find("option:selected").val() != placeholder)
-						{
-							// Remove friend from list
-							$("select[name=trooperSelect]").find("option:selected").remove();
-						}
-
-                        // Reset fields
-						$("#trooperSelect").val($("#trooperSelect option:first").val()).trigger("change");
-                        $("#costume").val("null").trigger("change");
-                        $("select[name=status]").val("null");
-                        $("#backupcostume").val(0).trigger("change");
-
-                        // Update troopers remaining on the page
-                        $("div[name=troopersRemainingDisplay]").html(json.troopersRemaining);
-                    }
-					else
-					{
-						alert(json.success_message);
-					}
-					
-					// Check number of friends
-					if(json.numFriends <= 0)
-					{
-						$("#addfriend").hide();
-					}
+                    required: true,
+                    digits: true
+                },
+                status:
+                {
+                    required: true,
+                    range: [0, 5]
                 }
-            });
-        }
+            },
+            messages:
+            {
+                costume: "Please choose a costume.",
+                status: "Please choose your status."
+            },
+            submitHandler: function(form)
+            {
+                $.ajax(
+                {
+                    type: "POST",
+                    url: form.action,
+                    data: $(form).serialize() + "&submitSignUp=1",
+                    success: function(data)
+                    {
+                        // Get JSON Data
+                        var json = JSON.parse(data);
+
+                        if (json.success == "failed")
+                        {
+                            alert(json.data);
+                        }
+                        else if(json.success == "check_linked_fail")
+                        {
+                            alert(json.success_message);
+                        }
+                        else
+                        {
+                            // Put data in html
+                            $("#signuparea").html(json.data);
+                            selectAdd();
+
+                            // Do the rest...
+                            $("#signeduparea").show();
+                            $("#addfriend").show();
+                            selectAdd();
+                            $("#signuparea1").hide();
+                            $("#hr1").hide();
+                            $("#rosterTableNoData").hide();
+
+                            // Update troopers remaining on the page
+                            $("div[name=troopersRemainingDisplay]").html(json.troopersRemaining);
+                        }
+                    }
+                });
+            }
+        });
+
+        $("form[name='signupForm3']").validate(
+        {
+            rules:
+            {
+                trooperSelect:
+                {
+                    required: true,
+                    digits: true
+                },
+                costume:
+                {
+                    required: true,
+                    digits: true
+                },
+                status:
+                {
+                    required: true,
+                    range: [0, 5]
+                }
+            },
+            messages:
+            {
+                costume: "Please choose a costume.",
+                status: "Please choose your status."
+            },
+            submitHandler: function(form)
+            {
+                $.ajax(
+                {
+                    type: "POST",
+                    url: form.action,
+                    data: $(form).serialize() + "&submitSignUp=1&addfriend=1",
+                    success: function(data)
+                    {
+                        // Get JSON Data
+                        var json = JSON.parse(data);
+
+                        if (json.success == "success")
+                        {
+                            // Put data in html
+                            $("#signuparea1").html(json.data);
+                            $("#signuparea1").show();
+                            $("#signuparea").hide();
+
+                            // Set search boxes
+                            selectAdd();
+
+    						// Check if placeholder account
+    						if($("select[name=trooperSelect]").find("option:selected").val() != placeholder)
+    						{
+    							// Remove friend from list
+    							$("select[name=trooperSelect]").find("option:selected").remove();
+    						}
+
+                            // Reset fields
+    						$("#trooperSelect").val($("#trooperSelect option:first").val()).trigger("change");
+                            $("#costume").val("null").trigger("change");
+                            $("select[name=status]").val("null");
+                            $("#backupcostume").val(0).trigger("change");
+
+                            // Update troopers remaining on the page
+                            $("div[name=troopersRemainingDisplay]").html(json.troopersRemaining);
+                        }
+    					else
+    					{
+    						alert(json.success_message);
+    					}
+    					
+    					// Check number of friends
+    					if(json.numFriends <= 0)
+    					{
+    						$("#addfriend").hide();
+    					}
+                    }
+                });
+            }
+        });
     });
 
     $("form[name='commentForm']").validate(

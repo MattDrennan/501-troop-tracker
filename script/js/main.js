@@ -270,7 +270,9 @@ $(document).ready(function()
 
 	// Load add friend
 	if($('#add-friend-form').length) {
-		$("#add-friend-form").load('process.php?do=load-add-friend&event=' + $("#troopid").val());
+		$("#add-friend-form").load('process.php?do=load-add-friend&event=' + $("#troopid").val(), function() {
+			selectAdd();
+		});
 	}
 
 	// Load subscribe updates
@@ -280,7 +282,9 @@ $(document).ready(function()
 
 	// Load roster
 	if($('#signuparea1').length) {
-		$("#signuparea1").load('process.php?do=load-roster&event=' + $("#troopid").val());
+		$("#signuparea1").load('process.php?do=load-roster&event=' + $("#troopid").val(), function() {
+			selectAdd();
+		});
 	}
 
 	// Load discussion
