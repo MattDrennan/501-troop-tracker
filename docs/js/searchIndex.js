@@ -306,6 +306,11 @@ Search.appendIndex(
             "summary": "Returns\u0020the\u0020squad\u0020name\u0020\/\u0020club\u0020name",
             "url": "namespaces/default.html#function_getSquadName"
         },                {
+            "fqsen": "\\getSquadLogo\u0028\u0029",
+            "name": "getSquadLogo",
+            "summary": "Returns\u0020the\u0020squad\u0020logo",
+            "url": "namespaces/default.html#function_getSquadLogo"
+        },                {
             "fqsen": "\\getCostumeQueryValues\u0028\u0029",
             "name": "getCostumeQueryValues",
             "summary": "Returns\u0020query\u0020for\u0020costume\u0020values\u0020for\u0020club.\u0020This\u0020will\u0020display\u0020costumes\u0020from\u0020the\u0020club\u0020specified.",

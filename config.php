@@ -558,7 +558,7 @@ function pendingTroopsDisplay($trooperid)
 	$i = 0;
 
 	// Get data
-	$statement = $conn->prepare("SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.dateStart, events.dateEnd, troopers.id, troopers.name FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = ? AND troopers.id != ".placeholder." AND events.closed = '0' AND event_sign_up.status = '0' ORDER BY events.dateEnd ASC");
+	$statement = $conn->prepare("SELECT events.squad AS eventSquad, event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.dateStart, events.dateEnd, troopers.id, troopers.name FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id = ? AND troopers.id != ".placeholder." AND events.closed = '0' AND event_sign_up.status = '0' ORDER BY events.dateEnd ASC");
 	$statement->bind_param("i", $trooperid);
 	$statement->execute();
 	
@@ -581,7 +581,13 @@ function pendingTroopsDisplay($trooperid)
 
 			$returnString .= '
 			<tr>
-				<td><a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.$dateFormat.'</td>	<td>'.ifEmpty('<a href="index.php?action=costume&costumeid='.$db->costume.'">' . getCostume($db->costume) . '</a>', "N/A").'</td>
+				<td>
+
+				'.getSquadLogo($db->eventSquad).'
+
+				<a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.$dateFormat.'</td>	<td>'.ifEmpty('<a href="index.php?action=costume&costumeid='.$db->costume.'">' . getCostume($db->costume) . '</a>', "N/A").'
+
+				</td>
 			</tr>';
 
 			// Increment
@@ -2686,6 +2692,39 @@ function getSquadName($value)
 		{
 			// Set
 			$returnValue = $club_value['name'];
+		}
+		
+		// Increment
+		$squadID++;
+	}
+
+	return $returnValue;
+}
+
+/**
+ * Returns the squad logo
+ * 
+ * @param int $value The ID of the squad or club to get the name
+ * @return string Returns the logo of the squad
+*/
+function getSquadLogo($value)
+{
+	global $squadArray;
+	
+	// Set return value
+	$returnValue = '<img src="images/'.garrisonImage.'" alt="'.garrison.'" style="width: 32px; height: 32px;" />';
+	
+	// Set squad ID
+	$squadID = 1;
+	
+	// Loop through squads
+	foreach($squadArray as $squad => $squad_value)
+	{
+		// Check if squad ID matches value
+		if($squadID == $value)
+		{
+			// Set
+			$returnValue = '<img src="images/'.$squad_value['logo'].'" alt="'.$squad_value['name'].'" style="width: 32px; height: 32px;" />';
 		}
 		
 		// Increment
