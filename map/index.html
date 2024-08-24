@@ -4,6 +4,8 @@
 
 		<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
 		<style>
 			#map { width: 100%; height: 300px; }
 		</style>
@@ -24,7 +26,7 @@
 								(event) => {
 									console.log(event);
 									if (event.location) {
-			        					L.marker([event.latitude, event.longitude], {icon: stormtrooperIcon}).addTo(map).bindPopup('<b><a href="../index.php?event=' + event.troopid + '">' + event.name + '</a></b><br />' + event.dateStart + ' -  ' + event.dateEnd + '');
+			        					L.marker([event.latitude, event.longitude], {icon: stormtrooperIcon}).addTo(map).bindPopup('<b><a href="../index.php?event=' + event.troopid + '" target="_parent">' + event.name + '</a></b><br />' + moment(new Date(event.dateStart)).format('MM/DD/YYYY hh:mm A') + ' -  ' + moment(new Date(event.dateEnd)).format('hh:mm A') + '');
 									}
 								}
 							);

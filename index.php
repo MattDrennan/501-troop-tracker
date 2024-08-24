@@ -4973,7 +4973,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 if(isset($_GET['action']) && $_GET['action'] == "mapview" && loggedIn())
 {
 	echo '
-	<h3>Map View</h3>
+	<h3>Map View (BETA)</h3>
 	<iframe src="map/" style="width: 100%; height: 400px; border: none;" frameborder:="0"></iframe>';
 }
 
@@ -6624,7 +6624,7 @@ else
 				echo '
 				<p>
 					<a href="#/" id="changeview" class="button">Calendar View</a> 
-					<a href="index.php?action=mapview" class="button">Map View</a>
+					<a href="index.php?action=mapview" class="button">Map View (BETA)</a>
 				</p>
 				
 				<div id="listview">
