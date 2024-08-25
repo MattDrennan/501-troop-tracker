@@ -209,41 +209,6 @@ $handlerUserGroup = 1490;
 
 $userGroupRIP = 1496;
 
-/**
- * userGroupRankImages: These get matched with Xenforo secondary groups and will show images on Troop Tracker profile
-*/
-
-$userGroupRankImages = array(
-	1479 => '<img src="https://www.nightshiftsabers.com/images/GML/gmlteambanner3.png" class="rankTitle" />',
-	1480 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/everglades_charity.png" class="rankTitle" />',
-	1464 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/everglades_sl.png" class="rankTitle" />',
-	1465 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/everglades_xo.png" class="rankTitle" />',
-	1434 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/gcr.png" class="rankTitle" />',
-	1466 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/commander.png" class="rankTitle" />',
-	1495 => '<img src="https://www.nightshiftsabers.com/images/GML/garrisonmembership.png" class="rankTitle" />',
-	1435 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/gmo.png" class="rankTitle" />',
-	1493 => '<img src="https://fl501st.com/troop-tracker/images/ranks/qm.png" class="rankTitle" />',
-	1498 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/gwl.png" class="rankTitle" />',
-	1467 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/gwm.png" class="rankTitle" />',
-	1468 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/xo.png" class="rankTitle" />',
-	1481 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/gktw.png" class="rankTitle" />',
-	1482 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/hospital.png" class="rankTitle" />',
-	1469 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/makaze_sl.png" class="rankTitle" />',
-	1483 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/makaze_staff.png" class="rankTitle" />',
-	1470 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/makaze_xo.png" class="rankTitle" />',
-	1471 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/parjai_sl.png" class="rankTitle" />',
-	1472 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/parjai_xo.png" class="rankTitle" />',
-	1492 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/mushu.png" class="rankTitle" />',
-	1473 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/ra_kura.png" class="rankTitle" />',
-	1474 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/saberguildcs.png" class="rankTitle" />',
-	1497 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/s7_charity_tracker.png.png" class="rankTitle" />',
-	1475 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/s7_sl.png" class="rankTitle" />',
-	1476 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/s7_XO.png" class="rankTitle" />',
-	1477 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/tampa_sl.png" class="rankTitle" />',
-	1478 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/tampa_xo.png" class="rankTitle" />',
-	1494 => '<img src="https://www.fl501st.com/troop-tracker/images/ranks/tt-guru.png" class="rankTitle" />',
-);
-
 // Please note: Do not change the order of squads and clubs after your set up your troop tracker, otherwise you will mess up the squad IDs
 // Make sure you run queries on your database if you need to change the order after installation.
 
@@ -254,9 +219,6 @@ $userGroupRankImages = array(
  * costumes: An array of costumes that this squad accepts as troop credit
  * db: The field in the troopers table that determines if a trooper is a member of the club
  * db2: A blank variable with no use as of now
- * rankRegular: An image file that will show on troopers profiles of this squad (Active Regular Members)
- * rankReserve: An image file that will show on troopers profiles of this squad (Reserve Members)
- * rankRetired: An image file that will show on troopers profiles of this squad (Inactive Retired Members)
  * eventForum: The forum ID in Xenforo that corresponds to the event forum for this squad
  * userGroup: The Xenforo user group ID assigned to this squad
  */
@@ -269,9 +231,6 @@ $squadArray = array(
 		"costumes" => array(0, 5, 7, 9, 11),
 		"db" => "p501",
 		"db2" => "",
-		"rankRegular" => "everglades_sm.png",
-		"rankReserve" => "",
-		"rankRetired" => "",
 		"eventForum" => 9,
 		"eventForumArchive" => 107,
 		"userGroup" => 44),
@@ -281,9 +240,6 @@ $squadArray = array(
 		"costumes" => array(0, 5, 7, 9, 11),
 		"db" => "p501",
 		"db2" => "",
-		"rankRegular" => "makaze_sm.png",
-		"rankReserve" => "",
-		"rankRetired" => "",
 		"eventForum" => 8,
 		"eventForumArchive" => 109,
 		"userGroup" => 45),
@@ -293,9 +249,6 @@ $squadArray = array(
 		"costumes" => array(0, 5, 7, 9, 11),
 		"db" => "p501",
 		"db2" => "",
-		"rankRegular" => "parjai_sm.png",
-		"rankReserve" => "",
-		"rankRetired" => "",
 		"eventForum" => 186,
 		"eventForumArchive" => 111,
 		"userGroup" => 250),
@@ -305,9 +258,6 @@ $squadArray = array(
 		"costumes" => array(0, 5, 7, 9, 11),
 		"db" => "p501",
 		"db2" => "",
-		"rankRegular" => "s7_sm.png",
-		"rankReserve" => "",
-		"rankRetired" => "",
 		"eventForum" => 7,
 		"eventForumArchive" => 113,
 		"userGroup" => 683),
@@ -317,9 +267,6 @@ $squadArray = array(
 		"costumes" => array(0, 5, 7, 9, 11),
 		"db" => "p501",
 		"db2" => "",
-		"rankRegular" => "tampa_sm.png",
-		"rankReserve" => "",
-		"rankRetired" => "",
 		"eventForum" => 73,
 		"eventForumArchive" => 115,
 		"userGroup" => 43)
@@ -336,9 +283,6 @@ $squadArray = array(
  * db3Name: A field that stores a corresponding name for the identifer used in db3
  * db3Require: Special code used to determine if form validation needs to ensure db3 has a value
  * dbLimit: The field in events table that holds the amount of allowed members from this club
- * rankRegular: An image file that will show on troopers profiles of this club (Active Regular Members)
- * rankReserve: An image file that will show on troopers profiles of this club (Reserve Members)
- * rankRetired: An image file that will show on troopers profiles of this club (Inactive Retired Members)
  * naCostume: The ID of the costume that is the clubs other or N/A
  * userGroup: The Xenforo user group ID assigned to this club
  */
@@ -355,9 +299,6 @@ $clubArray = array(
 		"db3Name" => "Rebel Legion Forum Username",
 		"db3Require" => "0,0,squad:6",
 		"dbLimit" => "limitRebels",
-		"rankRegular" => "rebel.png",
-		"rankReserve" => "rebel_reserve.png",
-		"rankRetired" => "rebel_retired.png",
 		"naCostume" => 720,
 		"userGroup" => 1486),
 	array(
@@ -369,9 +310,6 @@ $clubArray = array(
 		"db3Name" => "",
 		"db3Require" => "0,0,0",
 		"dbLimit" => "limitDroid",
-		"rankRegular" => "r2.png",
-		"rankReserve" => "r2_reserve.png",
-		"rankRetired" => "r2_retired.png",
 		"naCostume" => 716,
 		"userGroup" => 1487),
 	array(
@@ -385,9 +323,6 @@ $clubArray = array(
 		"db3Require" => "0,digits,squad:8",
 		"db3Link" => "",
 		"dbLimit" => "limitMando",
-		"rankRegular" => "mercs.png",
-		"rankReserve" => "mercs_reserve.png",
-		"rankRetired" => "mercs_retired.png",
 		"naCostume" => 715,
 		"userGroup" => 1488),
 	array(
@@ -401,9 +336,6 @@ $clubArray = array(
 		"db3Require" => "0,digits,0",
 		"db3Link" => "",
 		"dbLimit" => "limitOther",
-		"rankRegular" => "",
-		"rankReserve" => "",
-		"rankRetired" => "",
 		"naCostume" => 717,
 		"userGroup" => 1415),
 	array(
@@ -417,9 +349,6 @@ $clubArray = array(
 		"db3Require" => "0,digits,0",
 		"db3Link" => "",
 		"dbLimit" => "limitSG",
-		"rankRegular" => "saberguildmember.png",
-		"rankReserve" => "",
-		"rankRetired" => "",
 		"naCostume" => 724,
 		"userGroup" => 1491)
 );
@@ -433,6 +362,7 @@ $clubArray = array(
 <li>Set up a Google Cloud API for Google Sheets, then create a service account under "Credentials"</li>
 <li>Download the JSON file from the service account, rename it to "sheets_api_secret.json", and upload it the root directory"</li>
 <li>On a live server, set up cron jobs located in other/cron.txt</li>
+<li>Upload 'other/xenforo_extra/groups.php' to your Xenforo main directory</li>
 </ol>
 
 ## Please contact me with any questions, comments, or concerns

@@ -3575,7 +3575,7 @@ function getFileName($file)
 */
 function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 {
-	global $conn, $squadArray, $clubArray, $userGroupRankImages;
+	global $conn, $squadArray, $clubArray, $userGroupRankImages, $forumURL;
 	
 	// Command Staff Edit Link
 	if(isAdmin())
@@ -3679,153 +3679,66 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	}
 
 	echo '
-	<div style="text-align: center;">';
+	<style>
+	#rankBars {
+		text-align: center;
+	}
+
+	#rankBars img {
+		display: block;
+		text-align: center;
+		margin: auto;
+		width: 150px;
+		height: 30px;
+	}
+	</style>
+
+	<div id="rankBars">';
 
 	// Show rank images
 	$xenforo = @getUserForumID(getUserID($id))['user']['secondary_group_ids'];
 
 	if($xenforo != "")
 	{
+		// Setup URL
+		// Find the position of the last slash
+		$lastSlashPos = strrpos($forumURL, '/');
+
+		// If a slash was found, truncate the URL after it
+		if ($lastSlashPos !== false) {
+		    $cleanedURL = substr($forumURL, 0, $lastSlashPos + 1);
+		}
+
+		// Get JSON
+		$json = file_get_contents($cleanedURL . 'groups.php');
+		$obj = json_decode($json, true);
+
+		$ranks = array();
+
+		// Loop through all groups associated with trooper
 		foreach($xenforo as $value)
 		{
-			if(array_key_exists($value, $userGroupRankImages))
-			{
-				echo $userGroupRankImages[$value];
-			}
+			array_push($ranks,
+				array(
+				"bannerText" => $obj[$value]['bannerText'],
+				"order" => $obj[$value]['order']
+			));
+		}
+
+		// Sort the array by 'order' (order) in descending order
+		uasort($ranks, function ($a, $b) {
+		    return $b['order'] <=> $a['order']; // Descending order
+		});
+
+		// Display after being ordered
+		foreach($ranks as $value)
+		{
+			echo $value['bannerText'];
 		}
 	}
 
 	echo '
 	</div>';
-	
-	// Ranks for members
-	$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
-	$statement->bind_param("i", $id);
-	$statement->execute();
-
-	if ($result = $statement->get_result())
-	{
-		while ($db = mysqli_fetch_object($result))
-		{			
-			// Is a 501 member?
-			$is501Member = false;
-
-			// Is a handler
-			$isHandler = false;
-
-			echo '
-			<div style="text-align: center;">';
-			
-			// 501
-			// Active
-			if($db->p501 == 1)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/legion_member.png" class="rankTitle" />
-				</p>';
-
-				$is501Member = true;
-			}
-			// Reserve
-			else if($db->p501 == 2)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/legion_reserve.png" class="rankTitle" />
-				</p>';
-
-				$is501Member = true;
-			}
-			// Retired
-			else if($db->p501 == 3)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/legion_retired.png" class="rankTitle" />
-				</p>';
-
-				$is501Member = true;
-			}
-			// Handler
-			else if($db->p501 == 4)
-			{
-				$isHandler = true;
-			}
-
-			// Set up squad count
-			$squadCount = 1;
-
-			// Loop through clubs
-			foreach($squadArray as $squad => $squad_value)
-			{
-				// Check
-				if($db->squad == $squadCount)
-				{
-					echo '
-					<p>
-						<img src="images/ranks/'.$squad_value['rankRegular'].'" class="rankTitle" />
-					</p>';
-				}
-
-				// Increment
-				$squadCount++;
-			}
-
-			// Loop through clubs
-			foreach($clubArray as $club => $club_value)
-			{
-				// Check rank
-				if($db->{$club_value['db']} == 1)
-				{
-					// If blank, don't show
-					if($club_value['rankRegular'] == "") { continue; }
-					
-					echo '
-					<p>
-						<img src="images/ranks/'.$club_value['rankRegular'].'" class="rankTitle" />
-					</p>';
-				}
-				else if($db->{$club_value['db']} == 2)
-				{
-					// If blank, don't show
-					if($club_value['rankReserve'] == "") { continue; }
-					
-					echo '
-					<p>
-						<img src="images/ranks/'.$club_value['rankReserve'].'" class="rankTitle" />
-					</p>';
-				}
-				else if($db->{$club_value['db']} == 3)
-				{
-					// If blank, don't show
-					if($club_value['rankRetired'] == "") { continue; }
-					
-					echo '
-					<p>
-						<img src="images/ranks/'.$club_value['rankRetired'].'" class="rankTitle" />
-					</p>';
-				}
-				// Handler
-				else if($db->{$club_value['db']} == 4)
-				{
-					$isHandler = true;
-				}
-			}
-
-			// Handler set
-			if($isHandler)
-			{
-				echo '
-				<p>
-					<img src="images/ranks/handler.png" class="rankTitle" />
-				</p>';
-			}
-			
-			echo '
-			</div>';
-		}
-	}
 	
 	// Check if the username was found
 	if(isset(getUserForum($forum)['exact']['user_id'])) {
@@ -3841,7 +3754,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 		<b>Troop Tracker Rank:</b><br />#'.getTrooperRanking($id).'
 	</p>';
 
-	if(isset(get501Info($tkid, $squad)['joindate']) && $is501Member && !is_null(get501Info($tkid, $squad)['joindate']))
+	if(isset(get501Info($tkid, $squad)['joindate']) && !is_null(get501Info($tkid, $squad)['joindate']))
 	{
 		echo '
 		<p style="text-align: center;">
