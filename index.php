@@ -6757,7 +6757,7 @@ else
 						echo '
 						<div style="border: 1px solid gray; margin-bottom: 10px;">
 
-						'.(!isset($_GET['squad']) ? '<div style="margin-top: 5px;">' . getSquadLogo($db->squad) . '</div>' : '').'
+						'.(!isset($_GET['squad']) || (isset($_GET['squad']) && $_GET['squad'] == "mytroops") || (isset($_GET['squad']) && $_GET['squad'] == "canceledtroops") ? '<div style="margin-top: 5px;">' . getSquadLogo($db->squad) . '</div>' : '').'
 
 						<a href="index.php?event=' . $db->id . '">' . date('M d, Y', strtotime($db->dateStart)) . '' . '<br />';
 						
@@ -6935,7 +6935,7 @@ else
 						}
 
 						// Query
-						$statement = $conn->prepare("SELECT events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, events.link, ".$addToQuery."events.limit501st FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = ? AND events.closed = 1 ORDER BY dateEnd DESC LIMIT 20");
+						$statement = $conn->prepare("SELECT events.squad, events.id AS id, events.name, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, events.link, ".$addToQuery."events.limit501st FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = ? AND events.closed = 1 ORDER BY dateEnd DESC LIMIT 20");
 						$statement->bind_param("i", $_SESSION['id']);
 					}
 					// If on squad
@@ -6960,7 +6960,7 @@ else
 						while ($db = mysqli_fetch_object($result))
 						{
 							echo '
-							<li><a href="index.php?event='.$db->id.'" '. (isset($db->status) && $db->status == 2 ? 'class = "tenative-troop"' : '') . (isset($db->status) && $db->status == 4 ? 'class = "canceled-troop"' : '') .'>'. (isLink($db->id) > 0 ? '[<b>' . date("l", strtotime($db->dateStart)) . '</b> : <i>' . date("m/d - h:i A", strtotime($db->dateStart)) . ' - ' . date("h:i A", strtotime($db->dateEnd)) . '</i>] ' : '') .''.$db->name.'</a></li>';
+							<li style="margin-top: 15px;">'.(!isset($_GET['squad']) || (isset($_GET['squad']) && $_GET['squad'] == "mytroops") || (isset($_GET['squad']) && $_GET['squad'] == "canceledtroops") ? getSquadLogo($db->squad) : '').' <a href="index.php?event='.$db->id.'" '. (isset($db->status) && $db->status == 2 ? 'class = "tenative-troop"' : '') . (isset($db->status) && $db->status == 4 ? 'class = "canceled-troop"' : '') .'>'. (isLink($db->id) > 0 ? '[<b>' . date("l", strtotime($db->dateStart)) . '</b> : <i>' . date("m/d - h:i A", strtotime($db->dateStart)) . ' - ' . date("h:i A", strtotime($db->dateEnd)) . '</i>] ' : '') .''.$db->name.'</a></li>';
 						}
 					}
 					
@@ -6969,7 +6969,7 @@ else
 				}
 				
 				// Load events that need confirmation
-				$statement = $conn->prepare("SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = ? AND events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC");
+				$statement = $conn->prepare("SELECT events.squad, events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = ? AND events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC");
 				$statement->bind_param("i", $_SESSION['id']);
 				$statement->execute();
 
@@ -6994,7 +6994,7 @@ else
 
 						echo '
 						<div name="confirmListBox_'.$db->eventId.'" id="confirmListBox_'.$db->eventId.'">
-							<input type="checkbox" name="confirmList[]" id="confirmList_'.$db->eventId.'" value="'.$db->eventId.'" /> ' . (isLink($db->eventId) > 0 ? '[<b>' . date("l", strtotime($db->dateStart)) . '</b> : <i>' . date("m/d - h:i A", strtotime($db->dateStart)) . ' - ' . date("h:i A", strtotime($db->dateEnd)) . '</i>] ' : '') . ''.$db->name.'<br /><br />
+							<input type="checkbox" name="confirmList[]" id="confirmList_'.$db->eventId.'" value="'.$db->eventId.'" /> ' . getSquadLogo($db->squad) . ' ' . (isLink($db->eventId) > 0 ? '[<b>' . date("l", strtotime($db->dateStart)) . '</b> : <i>' . date("m/d - h:i A", strtotime($db->dateStart)) . ' - ' . date("h:i A", strtotime($db->dateEnd)) . '</i>] ' : '') . ''.$db->name.'<br /><br />
 						</div>';
 						
 						// If a shift exists to attest to
@@ -7041,7 +7041,7 @@ else
 				}
 				
 				// Load events that need confirmation
-				$statement = $conn->prepare("SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, event_sign_up.addedby, event_sign_up.costume, event_sign_up.note FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.addedby = ? AND events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC");
+				$statement = $conn->prepare("SELECT events.squad, events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, event_sign_up.addedby, event_sign_up.costume, event_sign_up.note FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.addedby = ? AND events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC");
 				$statement->bind_param("i", $_SESSION['id']);
 				$statement->execute();
 
@@ -7087,7 +7087,7 @@ else
 
 						echo '
 						<div name="confirmListBox_'.$db->eventId.'_'.$db->trooperid.'" id="confirmListBox_'.$db->eventId.'_'.$db->trooperid.'">
-							'.$add.''.$db->name.'<br /><br />
+							'.$add.' ' . getSquadLogo($db->squad) . ' '.$db->name.'<br /><br />
 						</div>';
 						
 						// If a shift exists to attest to

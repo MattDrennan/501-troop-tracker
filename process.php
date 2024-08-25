@@ -3953,7 +3953,7 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmList")
 	$dataMain = "";
 
 	// Load events that need confirmation
-	$statement = $conn->prepare("SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = ? AND events.dateEnd < NOW() AND status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC");
+	$statement = $conn->prepare("SELECT events.squad, events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = ? AND events.dateEnd < NOW() AND status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC");
 	$statement->bind_param("i", $_SESSION['id']);
 	$statement->execute();
 
@@ -3970,7 +3970,7 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmList")
 			// Show confirm
 			$dataMain .= '
 			<div name="confirmListBox_'.$db->eventId.'" id="confirmListBox_'.$db->eventId.'">
-				<input type="checkbox" name="confirmList[]" id="confirmList_'.$db->eventId.'" value="'.$db->eventId.'" /> '.$db->name.'<br /><br />';
+				<input type="checkbox" name="confirmList[]" id="confirmList_'.$db->eventId.'" value="'.$db->eventId.'" /> ' . getSquadLogo($db->squad) . ' '.$db->name.'<br /><br />';
 
 			$dataMain .= '
 			</div>';
@@ -3998,7 +3998,7 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmfriend")
 	$dataMain = "";
 
 	// Load events that need confirmation
-	$statement = $conn->prepare("SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.addedby, event_sign_up.costume, event_sign_up.note FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.addedby = ? AND events.dateEnd < NOW() AND status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC");
+	$statement = $conn->prepare("SELECT events.squad, events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.addedby, event_sign_up.costume, event_sign_up.note FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.addedby = ? AND events.dateEnd < NOW() AND status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC");
 	$statement->bind_param("i", $_SESSION['id']);
 	$statement->execute();
 
@@ -4037,7 +4037,7 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmfriend")
 
 			$dataMain .= '
 			<div name="confirmListBox_'.$db->eventId.'_'.$db->trooperid.'" id="confirmListBox_'.$db->eventId.'_'.$db->trooperid.'">
-				'.$add.''.$db->name.'<br /><br />
+				'.$add.' ' . getSquadLogo($db->squad) . ' '.$db->name.'<br /><br />
 			</div>';
 
 			$dataMain .= '
