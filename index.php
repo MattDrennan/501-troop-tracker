@@ -257,7 +257,7 @@ if(loggedIn())
 			<br />
 			'.(getForumAvatar($_SESSION['id']) != "" ? '<img src="' . getForumAvatar($_SESSION['id']) . '" />' : '').'
 			<br />
-			You have '.@count($alerts).' notifications and '.@count($conversations).' unread messages on the boards.</a>
+			<a href="https://fl501st.com/boards/">You have '.@count($alerts).' notifications and '.@count($conversations).' unread messages on the boards.</a>
 		</p>';
 	}
 	
