@@ -76,6 +76,9 @@ function formatTime($date, $format)
 */
 function dailyTip()
 {
+	// Prevent on certain pages
+	if(@$_GET['action'] == "login" || @$_GET['action'] == "logout") { return; }
+
 	// Get a random number
 	$randomNumber = rand(0, 15);
 
@@ -871,6 +874,9 @@ function drawSupportBadge($id)
 function drawSupportGraph()
 {
 	global $conn;
+
+	// Prevent on certain pages
+	if(@$_GET['action'] == "login" || @$_GET['action'] == "logout") { return; }
 	
 	// Set return value
 	$return = "";
@@ -1124,14 +1130,11 @@ function getForumAvatar($id)
 
 	if($xenforo != "")
 	{
-		return '
-		<p style="text-align: center;">
-			<img src="'.$xenforo.'" />
-		</p>';
+		return $xenforo;
 	}
 	else
 	{
-		return '<br />';
+		return '';
 	}
 }
 

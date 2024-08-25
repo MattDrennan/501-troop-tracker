@@ -248,10 +248,18 @@ if(loggedIn())
 	$alerts = @getAlerts($userID)['alerts'];
 	$conversations = @getConversations($userID)['conversations'];
 
-	// Forum notifications
-	echo '
-	<p style="text-align: center; border: 1px; border-style: dotted;"><a href="https://fl501st.com/boards/">Welcome '.getName($_SESSION['id']).', you have '.@count($alerts).' notifications and '.@count($conversations).' unread messages on the boards.</a></p>
-	';
+	// Don't show on logout page
+	if(@$_GET['action'] != "logout") {
+		// Forum notifications
+		echo '
+		<p style="text-align: center; border: 1px; border-style: dotted;">
+			<a href="https://fl501st.com/boards/">Welcome '.getName($_SESSION['id']).'!</a>
+			<br />
+			'.(getForumAvatar($_SESSION['id']) != "" ? '<img src="' . getForumAvatar($_SESSION['id']) . '" />' : '').'
+			<br />
+			You have '.@count($alerts).' notifications and '.@count($conversations).' unread messages on the boards.</a>
+		</p>';
+	}
 	
 	$threads = getThreadsFromForum($userID);
 
@@ -5320,7 +5328,12 @@ if(isset($_GET['action']) && $_GET['action'] == "login" && !loggedIn())
 							{
 								echo '
 								<meta http-equiv="refresh" content="5; URL=index.php?event='.cleanInput($_COOKIE["TroopTrackerLastEvent"]).'" />
-								You have now logged in! <a href="index.php?event='.cleanInput($_COOKIE["TroopTrackerLastEvent"]).'">Click here to view the event</a> or you will be redirected shortly.';
+
+								<div style="margin-top: 25px; color: green; text-align: center; font-weight: bold;">
+								You have now logged in!
+								<br /><br />
+								<a href="index.php?event='.cleanInput($_COOKIE["TroopTrackerLastEvent"]).'">Click here to view the event</a> or you will be redirected shortly.
+								</div>';
 								
 								// Clear cookie
 								setcookie("TroopTrackerLastEvent", "", time() - 3600);
@@ -5329,7 +5342,11 @@ if(isset($_GET['action']) && $_GET['action'] == "login" && !loggedIn())
 							{
 								// Cookie not set
 								echo '
-								You have now logged in! <a href="index.php">Click here to go home.</a>';
+								<div style="margin-top: 25px; color: green; text-align: center; font-weight: bold;">
+								You have now logged in!
+								<br /><br />
+								<a href="index.php">Click here to go home.</a>
+								</div>';
 							}
 						}
 						else
@@ -5537,8 +5554,10 @@ if(isset($_GET['action']) && $_GET['action'] == "logout")
 
 	// Show logout message
 	echo '
-	<div style="margin-top: 25px;">
-		You have logged out! <a href="index.php">Click here to go home.</a>
+	<div style="margin-top: 25px; color: red; text-align: center;">
+		<b>You have logged out!
+		<br /><br />
+		<a href="index.php">Click here to go home.</a></b>
 	</div>';
 }
 
