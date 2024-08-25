@@ -6667,7 +6667,9 @@ else
 
 						echo '
 						<div style="border: 1px solid gray; margin-bottom: 10px;">
-						
+
+						'.(!isset($_GET['squad']) ? '<div style="margin-top: 5px;">' . getSquadLogo($db->squad) . '</div>' : '').'
+
 						<a href="index.php?event=' . $db->id . '">' . date('M d, Y', strtotime($db->dateStart)) . '' . '<br />';
 						
 						// If has links to event, or is linked, show shift data
