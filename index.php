@@ -538,6 +538,9 @@ if(isset($_GET['profile']) && loggedIn())
 	// Count
 	$i = 0;
 
+	// Check if trooped all squads
+	$troopedSquads = array();
+
 	if ($result = $statement->get_result())
 	{
 		while ($db = mysqli_fetch_object($result))
@@ -582,6 +585,9 @@ if(isset($_GET['profile']) && loggedIn())
 			echo '
 				<td>'.$dateFormat.'</td>	<td>'.ifEmpty('<a href="index.php?action=costume&costumeid='.$db->costume.'">' . getCostume($db->costume) . '</a>', "N/A").'</td>
 			</tr>';
+
+			// Increment trooped squads
+			array_push($troopedSquads, $db->eventSquad);
 
 			// Increment i
 			$i++;
@@ -639,6 +645,17 @@ if(isset($_GET['profile']) && loggedIn())
 			
 			echo'
 			<ul>';
+
+			// Reduce array to unique values
+			$troopedSquads = array_unique($troopedSquads);
+
+			// Remove garrison from array
+			$troopedSquads = array_diff($troopedSquads, array(0, -1));
+
+			// If trooped in every squad, show an award
+			if(count($troopedSquads) == (count($squadArray) - 1)) {
+				echo '<li><b>Trooped Every Squad!<b></li>';
+			}
 
 			if($count >= 1)
 			{
