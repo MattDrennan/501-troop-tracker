@@ -311,7 +311,7 @@ if(isset($_GET['action']) && $_GET['action'] == "store" && loggedIn())
 
 	echo '<h1>Troop Tracker Store</h1>
 	<p style="text-align: center;">
-	<b>Thanks to a new initiative by the Florida Garrison you can exchange your virtual troop credits for real life items!</b>
+	<b>Thanks to a new initiative by the Florida Garrison, you can now exchange your virtual troop credits for real life items!</b>
 	</p>
 
 	<p style="text-align: center; color: green; font-weight: bold;">
