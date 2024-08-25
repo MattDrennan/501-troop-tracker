@@ -5620,31 +5620,7 @@ if(isset($_GET['event']) && loggedIn())
 			$date1 = date("m/d/Y - h:i A", strtotime($db->dateStart)); 
 			$date2 = date("m/d/Y - h:i A", strtotime($db->dateEnd));
 
-			// If this event is over, don't show it
-			if(strtotime($db->dateEnd) >= strtotime("-1 day") && $db->closed != 1)
-			{					
-				// Subscribe button
-				echo '
-				<div id="subscribe-area">
-					<div style="text-align: center;">
-						<img src="images/loading.gif" />
-					</div>
-				</div>';
-				
-				// Add to calendar links
-				echo showCalendarLinks($db->name, $db->location, "Troop Tracker Event", $db->dateStart, $db->dateEnd);
-			}
-			// If subscribed, allow to unsubscribe
-			else if($subscribeText == "Unsubscribe Updates")
-			{
-				// Subscribe button
-				echo '
-				<div id="subscribe-area">
-					<div style="text-align: center;">
-						<img src="images/loading.gif" />
-					</div>
-				</div>';
-			}
+			echo '<input type="hidden" name="troopid" id="troopid" value="'.cleanInput($_GET['event']).'" />';
 			
 			// Is this merged data?
 			if($db->venue == NULL && $db->numberOfAttend == NULL && $db->requestedCharacter == NULL && $db->secureChanging == NULL && $db->lightsabers == NULL && $db->parking == NULL && $db->mobility == NULL && $db->amenities == NULL && $db->referred == NULL)
@@ -5659,6 +5635,32 @@ if(isset($_GET['event']) && loggedIn())
 			}
 			else
 			{
+				// If this event is over, don't show it
+				if(strtotime($db->dateEnd) >= strtotime("-1 day") && $db->closed != 1)
+				{					
+					// Subscribe button
+					echo '
+					<div id="subscribe-area">
+						<div style="text-align: center;">
+							<img src="images/loading.gif" />
+						</div>
+					</div>';
+					
+					// Add to calendar links
+					echo showCalendarLinks($db->name, $db->location, "Troop Tracker Event", $db->dateStart, $db->dateEnd);
+				}
+				// If subscribed, allow to unsubscribe
+				else if($subscribeText == "Unsubscribe Updates")
+				{
+					// Subscribe button
+					echo '
+					<div id="subscribe-area">
+						<div style="text-align: center;">
+							<img src="images/loading.gif" />
+						</div>
+					</div>';
+				}
+
 				// If canceled, show trooper
 				if($db->closed == 2)
 				{
@@ -5720,7 +5722,6 @@ if(isset($_GET['event']) && loggedIn())
 				}
 				
 				echo '
-				<input type="hidden" name="troopid" id="troopid" value="'.cleanInput($_GET['event']).'" />
 				<p><b>Venue:</b> '.$db->venue.'</p>
 				<p><b>Address:</b> <a href="https://www.google.com/maps/search/?api=1&query='.$db->location.'" target="_blank">'.$db->location.'</a></p>
 				<p><b>Event Start:</b> '.$date1.' ('.date('l', strtotime($db->dateStart)).')</p>
