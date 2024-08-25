@@ -299,6 +299,30 @@ if(loggedIn())
 	}
 }
 
+// Joke
+if(isset($_GET['action']) && $_GET['action'] == "store" && loggedIn())
+{
+	// Troop Credits
+	$statement = $conn->prepare("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$_SESSION['id']."' AND status = 3");
+	$statement->execute();
+	$statement->bind_result($troopCredits);
+	$statement->fetch();
+	$statement->close();
+
+	echo '<h1>Troop Tracker Store</h1>
+	<p style="text-align: center;">
+	<b>Thanks to a new initiative by the Florida Garrison you can exchange your virtual troop credits for real life items!</b>
+	</p>
+
+	<p style="text-align: center; color: green; font-weight: bold;">
+	You have '.$troopCredits.' troop credits to spend.
+	</p>
+
+	<p style="text-align: center; color: green; font-weight: bold;">
+	<a href="javascript: alert(\'You really fell for this? :)\')" class="button" />Lunch with Timmy (10 Troop Credits)</a> <a href="javascript: alert(\'You really fell for this? :)\')" class="button" />Dinner Date with Mushu (5 Troop Credits)</a> <a href="javascript: alert(\'You really fell for this? :)\')" class="button" />TK Kit (501 Troop Credits)</a> <a href="javascript: alert(\'You really fell for this? :)\')" class="button" />Florida Garrison Stickers (1 Troop Credit)</a>
+	</p>';
+}
+
 // Show the account page
 if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 {
