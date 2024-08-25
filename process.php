@@ -909,7 +909,7 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				createAlert($db->user_id, $db->forum_id . ' is requesting command staff for ' . getEventTitle($_POST['eventId']) . '.', 'https://fl501st.com/troop-tracker/index.php?event=' . $_POST['eventId']);
+				createAlert($db->user_id, getTrooperForum($_SESSION['id']) . ' is requesting command staff for ' . getEventTitle($_POST['eventId']) . '.', 'https://fl501st.com/troop-tracker/index.php?event=' . $_POST['eventId']);
 			}
 		}
 	}
