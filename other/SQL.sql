@@ -2,7 +2,7 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Generation Time: Jun 30, 2024 at 03:15 PM
+-- Generation Time: Aug 25, 2024 at 01:09 AM
 -- Server version: 8.0.35
 -- PHP Version: 7.4.7
 
@@ -160,6 +160,8 @@ CREATE TABLE `events` (
   `poc` text,
   `comments` text,
   `location` varchar(500) DEFAULT NULL,
+  `latitude` varchar(255) DEFAULT NULL,
+  `longitude` varchar(255) DEFAULT NULL,
   `label` varchar(100) DEFAULT NULL,
   `postComment` text,
   `notes` text,
@@ -502,6 +504,12 @@ ALTER TABLE `event_link`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `event_notifications`
+--
+ALTER TABLE `event_notifications`
+  ADD KEY `troopid` (`troopid`,`trooperid`);
+
+--
 -- Indexes for table `event_sign_up`
 --
 ALTER TABLE `event_sign_up`
@@ -546,7 +554,8 @@ ALTER TABLE `troopers`
 -- Indexes for table `uploads`
 --
 ALTER TABLE `uploads`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id` (`id`,`troopid`,`trooperid`);
 
 --
 -- AUTO_INCREMENT for dumped tables
