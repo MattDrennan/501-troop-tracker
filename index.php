@@ -660,7 +660,7 @@ if(isset($_GET['profile']) && loggedIn())
 			$troopedSquads = array_diff($troopedSquads, array(0, -1));
 
 			// If trooped in every squad, show an award
-			if(count($troopedSquads) == (count($squadArray) - 1)) {
+			if(count($troopedSquads) == count($squadArray)) {
 				echo '<li><b>Trooped Every Squad!<b></li>';
 			}
 
