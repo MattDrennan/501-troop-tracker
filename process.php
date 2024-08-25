@@ -3607,6 +3607,17 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				}
 			}
 
+			// If location changed, get new coordinates for map
+			if($_POST['location'] != $_POST['locationChangeCheck']) {
+				// Get data
+				$event = getLatLong($_POST['location']);
+				
+				// Update
+				$statement = $conn->prepare("UPDATE events SET latitude = ?, longitude = ? WHERE id = ?");
+				$statement->bind_param("ssi", $event['latitude'], $event['longitude'], $_POST['eventIdE']);
+				$statement->execute();
+			}
+
 			$array = array('success' => 'true', 'data' => 'Event has been updated!', 'returnData' => $returnData);
 			echo json_encode($array);
 		}

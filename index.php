@@ -4070,6 +4070,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<input type="text" name="eventVenue" id="eventVenue" />
 
 						<p>Location:</p>
+						<input type="hidden" name="locationChangeCheck" id="locationChangeCheck" />
 						<input type="text" name="location" id="location" />
 						<input type="button" name="getLocation" id="getLocation" value="Get Squad Based On Location" />
 						

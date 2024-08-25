@@ -1447,6 +1447,7 @@ $(document).ready(function()
 					$("#eventIdE").val(json.id);
 					$("#eventName").val(json.name);
 					$("#eventVenue").val(json.venue);
+					$("#locationChangeCheck").val(json.location);	// Used to check against to see if the location changed for map
 					$("#location").val(json.location);
 					$("#squadm").val(json.squad);
 					$("#datepicker").datetimepicker("setDate", moment(json.dateStart).format('MM/DD/YYYY H:mm'));
