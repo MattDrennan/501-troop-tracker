@@ -215,39 +215,6 @@ function showCalendarLinks($name, $location, $description, $date1, $date2)
 }
 
 /**
- * This is used to display squad links to the trooper. These are used on the Troop Tracker page to go through all the events of a squad.
- * 
- * @param int $squadLink The ID of the squad to be used in the link
- * @return string Returns an HTML string to display links to each squad to trooper
-*/
-function displaySquadLinks($squadLink)
-{
-	global $squadArray;
-	
-	// Return var
-	$returnVar = '';
-	
-	// Set count
-	$squadID = 1;
-	
-	// Set up garrison link
-	$returnVar .= addSquadLink(0, $squadLink, "All");
-	
-	// Loop through squads
-	foreach($squadArray as $squad => $squad_value)
-	{
-		// Add to return var
-		$returnVar .= 
-		' | ' . addSquadLink($squadID, $squadLink, $squad_value['name']);
-		
-		// Increment
-		$squadID++;
-	}
-	
-	return $returnVar;
-}
-
-/**
  * Returns total troop counts for each club of the defined trooper, as well as favorite costume and money raised
  * 
  * @param int $id The trooper to get troop counts for
@@ -607,33 +574,6 @@ function pendingTroopsDisplay($trooperid)
 	}
 
 	return $returnString;
-}
-
-/**
- * Returns a link for a squad based on selection
- * 
- * @param int $squad The squad that is to be linked
- * @param int $match Used to filter out results, for example if a squad is selected, and does not need to be displayed
- * @param string $name Name of the squad to be displayed on the link
- * @return string Returns an HTML link string
-*/
-function addSquadLink($squad, $match, $name)
-{
-	// Set up link
-	$link = "";
-	
-	// If squad's don't match show link
-	if($squad != $match)
-	{
-		$link = '<a href="index.php?action=trooptracker&squad='.$squad.'">'.$name.'</a>';
-	}
-	else
-	{
-		$link = $name;
-	}
-	
-	// Return
-	return $link;
 }
 
 /**

@@ -16,11 +16,6 @@ Search.appendIndex(
             "summary": "Returns\u0020an\u0020HTML\u0020string\u0020of\u0020links\u0020to\u0020add\u0020an\u0020event\u0020to\u0020calendar",
             "url": "namespaces/default.html#function_showCalendarLinks"
         },                {
-            "fqsen": "\\displaySquadLinks\u0028\u0029",
-            "name": "displaySquadLinks",
-            "summary": "This\u0020is\u0020used\u0020to\u0020display\u0020squad\u0020links\u0020to\u0020the\u0020trooper.\u0020These\u0020are\u0020used\u0020on\u0020the\u0020Troop\u0020Tracker\u0020page\u0020to\u0020go\u0020through\u0020all\u0020the\u0020events\u0020of\u0020a\u0020squad.",
-            "url": "namespaces/default.html#function_displaySquadLinks"
-        },                {
             "fqsen": "\\getTroopCounts\u0028\u0029",
             "name": "getTroopCounts",
             "summary": "Returns\u0020total\u0020troop\u0020counts\u0020for\u0020each\u0020club\u0020of\u0020the\u0020defined\u0020trooper,\u0020as\u0020well\u0020as\u0020favorite\u0020costume\u0020and\u0020money\u0020raised",
@@ -50,11 +45,6 @@ Search.appendIndex(
             "name": "pendingTroopsDisplay",
             "summary": "Returns\u0020an\u0020HTML\u0020results\u0020of\u0020pending\u0020troops",
             "url": "namespaces/default.html#function_pendingTroopsDisplay"
-        },                {
-            "fqsen": "\\addSquadLink\u0028\u0029",
-            "name": "addSquadLink",
-            "summary": "Returns\u0020a\u0020link\u0020for\u0020a\u0020squad\u0020based\u0020on\u0020selection",
-            "url": "namespaces/default.html#function_addSquadLink"
         },                {
             "fqsen": "\\costume_restrict_query\u0028\u0029",
             "name": "costume_restrict_query",

@@ -1104,7 +1104,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 	{
 		// Get data
 		$i = 0;
-		$statement = $conn->prepare("SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id != ".placeholder." AND troopers.tkid LIKE CONCAT('%', ?, '%') AND events.name LIKE CONCAT('%', ?, '%') AND events.dateStart >= ? AND events.dateEnd <= ? AND troopers.name LIKE CONCAT('%', ?, '%')");
+		$statement = $conn->prepare("SELECT events.squad AS eventSquad, event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id != ".placeholder." AND troopers.tkid LIKE CONCAT('%', ?, '%') AND events.name LIKE CONCAT('%', ?, '%') AND events.dateStart >= ? AND events.dateEnd <= ? AND troopers.name LIKE CONCAT('%', ?, '%')");
 		$statement->bind_param("sssss", $_POST['tkID'], $_POST['searchName'], $dateStartQuery, $dateEndQuery, $_POST['searchTrooperName']);
 		$statement->execute();
 
@@ -1126,7 +1126,11 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 
 				echo '
 				<tr>
-					<td><a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.$dateFormat.'</td>';
+					<td>
+
+					' . getSquadLogo($db->eventSquad) . '
+
+					<a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.$dateFormat.'</td>';
 					
 					// Prevent search from showing blank trooper
 					if(isset($db->trooperid))
@@ -1141,7 +1145,9 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 					}
 					
 					echo '
-					<td>'.ifEmpty('<a href="index.php?action=costume&costumeid='.$db->costume.'">' . getCostume($db->costume) . '</a>', "N/A").'</td>	<td>'.getStatus($db->status).'</td>
+					<td>'.ifEmpty('<a href="index.php?action=costume&costumeid='.$db->costume.'">' . getCostume($db->costume) . '</a>', "N/A").'</td>	<td>'.getStatus($db->status).'
+
+					</td>
 				</tr>';
 
 				$i++;
@@ -1856,7 +1862,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn())
 	if(!isset($_GET['squad']))
 	{
 		// Get data
-		$statement = $conn->prepare("SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, (TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) AS charityHours FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND events.dateEnd > CURRENT_DATE - INTERVAL 60 DAY GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT 20");
+		$statement = $conn->prepare("SELECT events.squad AS eventSquad, event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, (TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) AS charityHours FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT 20");
 	}
 	else
 	{		
@@ -1878,7 +1884,6 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn())
 		{
 			// Count event total
 			$statement2 = $conn->prepare("SELECT COUNT(id) AS total FROM events");
-			$statement2->bind_param("i", $_GET['squad']);
 			$statement2->execute();
 			$statement2->bind_result($row);
 			$statement2->fetch();
@@ -1910,13 +1915,13 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn())
 		if($_GET['squad'] != 0)
 		{
 			// Squad is set, show only that data
-			$statement = $conn->prepare("SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, (TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) AS charityHours FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND events.squad = ? GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT ".$startFrom.", ".$results."");
+			$statement = $conn->prepare("SELECT events.squad AS eventSquad, event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, (TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) AS charityHours FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND events.squad = ? GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT ".$startFrom.", ".$results."");
 			$statement->bind_param("i", $_GET['squad']);
 		}
 		else
 		{
 			// Squad is set, show only that data
-			$statement = $conn->prepare("SELECT event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, (TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) AS charityHours FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT ".$startFrom.", ".$results."");
+			$statement = $conn->prepare("SELECT events.squad AS eventSquad, event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, (TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) AS charityHours FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT ".$startFrom.", ".$results."");
 		}
 	}
 
@@ -1946,8 +1951,25 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn())
 				}
 
 				echo '
-				<p style="text-align: center;">
-					'.displaySquadLinks($squadLink).'
+				<p style="text-align: center;">';
+
+				// Set count
+				$squadID = 1;
+				
+				echo '<a href="index.php?action=trooptracker&squad=0" '.(!isset($_GET['squad']) || @$_GET['squad'] == 0 ? 'style="font-weight: bold; color: yellow;"' : '').'>All</a>';
+				
+				// Loop through squads
+				foreach($squadArray as $squad => $squad_value)
+				{
+					// Add to return var
+					echo
+					' | ' . '<a href="index.php?action=trooptracker&squad='.$squadID.'" '.(@$_GET['squad'] == $squadID ? 'style="font-weight: bold; color: yellow;"' : '').'>'.$squad_value['name'].'</a>';
+					
+					// Increment
+					$squadID++;
+				}
+
+				echo '
 				</p>
 
 				<div style="overflow-x: auto;">
@@ -1967,7 +1989,13 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn())
 
 			echo '
 			<tr>
-				<td><a href="index.php?event='.$db->eventId.'">'. (isLink($db->eventId) > 0 ? '[<b>' . date("l", strtotime($db->dateStart)) . '</b> : '.date("m/d - h:i A", strtotime($db->dateStart)).' - '.date("h:i A", strtotime($db->dateEnd)).'] ' : '') .''.$db->eventName.'</a></td>	<td>'.$count.'</td>	<td>Direct: $'.@number_format($db->charityDirectFunds).'<br />Indirect: $'.@number_format($db->charityIndirectFunds).'<br />Hours: '.@number_format($db->charityHours).'</td>
+				<td>
+
+				' . ((@$_GET['squad'] == 0) ? getSquadLogo($db->eventSquad) : '') . '
+
+				<a href="index.php?event='.$db->eventId.'">'. (isLink($db->eventId) > 0 ? '[<b>' . date("l", strtotime($db->dateStart)) . '</b> : '.date("m/d - h:i A", strtotime($db->dateStart)).' - '.date("h:i A", strtotime($db->dateEnd)).'] ' : '') .''.$db->eventName.'</a></td>	<td>'.$count.'</td>	<td>Direct: $'.@number_format($db->charityDirectFunds).'<br />Indirect: $'.@number_format($db->charityIndirectFunds).'<br />Hours: '.@number_format($db->charityHours).'
+
+				</td>
 			</tr>';
 
 			$i++;
@@ -2159,7 +2187,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn())
 	{
 		// No troops attended
 		echo '
-		<p style="text-align: center;"><b>No one has attended a troop recently!</b></p>';
+		<p style="text-align: center;"><b>No troops found!</b></p>';
 	}
 
 	echo '
