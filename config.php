@@ -1150,9 +1150,10 @@ function loginWithForum($username, $password)
  * 
  * @param int $to The forum ID the alert is to be sent to
  * @param string $message The message of the alert to be sent
+ * @param string $link The link where you want the alert to direct to
  * @return json Return alert success
 */
-function createAlert($to, $message)
+function createAlert($to, $message, $link = 'https://fl501st.com/troop-tracker')
 {
 	global $forumURL;
 	
@@ -1162,7 +1163,7 @@ function createAlert($to, $message)
 	curl_setopt_array($curl, [
 	  CURLOPT_URL => $forumURL . "api/alerts",
 	  CURLOPT_POST => 1,
-	  CURLOPT_POSTFIELDS => "from_user_id=0&to_user_id=" . urlencode($to) . "&alert=" . urlencode($message) . "&link_url=https%3A%2F%2Ffl501st.com%2Ftroop-tracker%2F&link_title=From Troop%20Tracker",
+	  CURLOPT_POSTFIELDS => "from_user_id=0&to_user_id=" . urlencode($to) . "&alert=" . urlencode($message) . "&link_url=" . urlencode($link) . "&link_title=Troop%20Tracker%20Link",
 	  CURLOPT_CUSTOMREQUEST => "POST",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
@@ -4132,46 +4133,6 @@ function getName($id)
 	global $conn;
 
 	$statement = $conn->prepare("SELECT name FROM troopers WHERE id = ?");
-	$statement->bind_param("i", $id);
-	$statement->execute();
-	$statement->bind_result($value);
-	$statement->fetch();
-	$statement->close();
-
-	return $value;
-}
-
-/**
- * Return's the troopers's address
- * 
- * @param int $id ID of the trooper
- * @return string Returns trooper's address
-*/
-function getTrooperAddress($id)
-{
-	global $conn;
-
-	$statement = $conn->prepare("SELECT address FROM troopers WHERE id = ?");
-	$statement->bind_param("i", $id);
-	$statement->execute();
-	$statement->bind_result($value);
-	$statement->fetch();
-	$statement->close();
-
-	return $value;
-}
-
-/**
- * Return's the troopers's radius
- * 
- * @param int $id ID of the trooper
- * @return string Returns trooper's radius
-*/
-function getTrooperRadius($id)
-{
-	global $conn;
-
-	$statement = $conn->prepare("SELECT radius FROM troopers WHERE id = ?");
 	$statement->bind_param("i", $id);
 	$statement->execute();
 	$statement->bind_result($value);

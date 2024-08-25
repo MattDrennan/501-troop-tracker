@@ -481,16 +481,6 @@ Search.appendIndex(
             "summary": "Return\u0027s\u0020the\u0020troopers\u0027s\u0020name",
             "url": "namespaces/default.html#function_getName"
         },                {
-            "fqsen": "\\getTrooperAddress\u0028\u0029",
-            "name": "getTrooperAddress",
-            "summary": "Return\u0027s\u0020the\u0020troopers\u0027s\u0020address",
-            "url": "namespaces/default.html#function_getTrooperAddress"
-        },                {
-            "fqsen": "\\getTrooperRadius\u0028\u0029",
-            "name": "getTrooperRadius",
-            "summary": "Return\u0027s\u0020the\u0020troopers\u0027s\u0020radius",
-            "url": "namespaces/default.html#function_getTrooperRadius"
-        },                {
             "fqsen": "\\getEmail\u0028\u0029",
             "name": "getEmail",
             "summary": "Return\u0027s\u0020the\u0020troopers\u0027s\u0020e\u002Dmail",

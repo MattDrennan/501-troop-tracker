@@ -903,6 +903,15 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 		$statement = $conn->prepare("INSERT INTO comments (troopid, trooperid, comment) VALUES (?, ?, ?)");
 		$statement->bind_param("iis", $_POST['eventId'], $_SESSION['id'], $_POST['comment']);
 		$statement->execute();
+
+		$query = "SELECT troopers.user_id, troopers.forum_id FROM troopers WHERE (troopers.permissions = '1' OR troopers.permissions = '2')";
+		if ($result = mysqli_query($conn, $query))
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				createAlert($db->user_id, $db->forum_id . ' is requesting command staff for ' . getEventTitle($_POST['eventId']) . '.', 'https://fl501st.com/troop-tracker/index.php?event=' . $_POST['eventId']);
+			}
+		}
 	}
 	
 	// Set up return data
@@ -910,7 +919,7 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 
 	// Get link
 	$link = isLink($_POST['eventId']);
-	$link2 = isLink2($_GET['event']);
+	$link2 = isLink2($_POST['eventId']);
 
 	// Get a seperate link ID, so we can differentiate between a shift and regular event
 	$link_event_id = $link;
@@ -918,7 +927,7 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 
 	// Event is not a shift, revert to regular event
 	if($link == 0) { $link_event_id = $_POST['eventId']; }
-	if($link2 == 0) { $link_event_id2 = $_GET['event']; }
+	if($link2 == 0) { $link_event_id2 = $_POST['eventId']; }
 
 
 	// Loop through linked events to add posts to discussion
