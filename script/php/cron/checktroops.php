@@ -85,7 +85,7 @@ if ($result = mysqli_query($conn, $query))
 			while ($db2 = mysqli_fetch_object($result2))
 			{
 				// Update message
-				${"sM" . $db2->squad} .= $db->message . "\n\n";
+				${"sM" . $db2->squad} .= '[' . getSquadName($db2->squad) . '] ' . $db->message . "\n\n";
 				
 				// Update last notification
 				$conn->query("UPDATE settings SET lastnotification = '".$db->id."'");
