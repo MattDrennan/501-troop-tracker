@@ -40,7 +40,11 @@
 				xhr.send();
 	        });
 
-		 	var map = L.map('map').setView([28.2, -81.379], 5);
+			var map = L.map('map', {
+			    center: [28.2, -81.379],
+			    zoom: 5,
+			    worldCopyJump: true
+			});
 
 		 	// Icon
 			var stormtrooperIcon = L.icon({
