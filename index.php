@@ -250,11 +250,11 @@ if(loggedIn())
 		// Forum notifications
 		echo '
 		<p style="text-align: center; border: 1px; border-style: dotted;">
-			<a href="https://fl501st.com/boards/" style="color: yellow;">Welcome '.getName($_SESSION['id']).'!</a>
+			<a href="https://www.fl501st.com/boards/index.php?members/' . $userID . '/" style="color: yellow;">Welcome '.getName($_SESSION['id']).'!</a>
 			<br />
 			'.(getForumAvatar($_SESSION['id']) != "" ? '<img src="' . getForumAvatar($_SESSION['id']) . '" />' : '').'
 			<br />
-			<a href="https://fl501st.com/boards/" '. ((@count($alerts) > 0 || @count($conversations) > 0) ? 'style="color:red;"' : '') .'>You have '.@count($alerts).' notifications and '.@count($conversations).' unread messages on the boards.</a>
+			<a href="https://www.fl501st.com/boards/index.php?account/alerts" '. ((@count($alerts) > 0 || @count($conversations) > 0) ? 'style="color:red;"' : '') .'>You have '.@count($alerts).' notifications and '.@count($conversations).' unread messages on the boards.</a>
 
 			'.dailyTip().'
 		</p>';

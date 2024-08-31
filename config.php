@@ -5362,11 +5362,14 @@ function sendEventUpdate($troopid, $trooperid, $subject, $message)
 {
 	global $conn;
 
+	// Alert message
+	$messageAlert = $message;
+
 	// Add footer to message
-	$message = $message . "https://www.fl501st.com/troop-tracker/index.php?event=".$troopid."\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com\n\nTo turn off this notification, go to the event page, and press the \"Unsubscribe\" button.";
+	$message = $message . "https://www.fl501st.com/troop-tracker/index.php?event=".$troopid."\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://fl501st.com/troop-tracker/\n\nTo turn off this notification, go to the event page, and press the \"Unsubscribe\" button.";
 
 	// Query database for trooper information and make sure they are subscribed to e-mail
-	$statement = $conn->prepare("SELECT troopers.email, troopers.name, troopers.subscribe FROM troopers LEFT JOIN event_notifications ON troopers.id = event_notifications.trooperid WHERE event_notifications.troopid = ? AND troopers.subscribe = '1' AND troopers.email != ''");
+	$statement = $conn->prepare("SELECT troopers.user_id, troopers.email, troopers.name, troopers.subscribe FROM troopers LEFT JOIN event_notifications ON troopers.id = event_notifications.trooperid WHERE event_notifications.troopid = ? AND troopers.subscribe = '1' AND troopers.email != ''");
 	$statement->bind_param("i", $troopid);
 	$statement->execute();
 
@@ -5374,7 +5377,11 @@ function sendEventUpdate($troopid, $trooperid, $subject, $message)
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
+			// Send e-mail
 			@sendEmail($db->email, $db->name, $subject, $message);
+
+			// Create alert
+			createAlert($db->user_id, $messageAlert, 'https://fl501st.com/troop-tracker/index.php?event=' . $troopid);
 		}
 	}
 }
