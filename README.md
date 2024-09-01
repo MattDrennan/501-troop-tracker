@@ -364,6 +364,110 @@ $clubArray = array(
 <li>Upload 'other/xenforo_extra/groups.php' and 'other/xenforo_extra/user-upgrades.php' to your Xenforo main directory</li>
 </ol>
 
+## Xenforo Template Modifications (OPTIONAL)
+
+message_macros:
+
+Under:
+
+```
+<h4 class="message-name"><xf:username user="$user" rich="true" defaultname="{$fallbackName}" itemprop="{{ $includeMicrodata ? 'name' : '' }}" /></h4>
+```
+
+Add:
+
+```
+<xf:if is="{$user.Profile.custom_fields.trackerid} > 0 && {$user.Profile.custom_fields.fullname} != ''">
+<div style="text-align: center; margin-top: 10px;">
+	<a href="https://fl501st.com/troop-tracker/index.php?profile={$user.Profile.custom_fields.trackerid}">{$user.Profile.custom_fields.tkid}</a>
+	<br />
+	{$user.Profile.custom_fields.fullname}
+</div>
+</xf:if>
+```
+
+member_view:
+
+Under:
+
+```
+<xf:if contentcheck="true">
+	<div class="memberHeader-blurb">
+		<dl class="pairs pairs--inline">
+			<dt>{{ phrase('last_seen') }}</dt>
+			<dd dir="auto">
+				<xf:contentcheck><xf:useractivity user="$user" class="pairs--plainLabel" /></xf:contentcheck>
+			</dd>
+		</dl>
+	</div>
+</xf:if>
+```
+
+Add:
+
+```
+<xf:if is="{$user.Profile.custom_fields.trackerid} > 0 && {$user.Profile.custom_fields.fullname} != ''">
+	<div class="memberHeader-blurb">
+		<dl class="pairs pairs--inline">
+			<dt>TKID</dt>
+			<dd dir="auto">
+				<a href="https://fl501st.com/troop-tracker/index.php?profile={$user.Profile.custom_fields.trackerid}">{$user.Profile.custom_fields.tkid}</a>
+			</dd>
+		</dl>
+	</div>
+	
+	<div class="memberHeader-blurb">
+		<dl class="pairs pairs--inline">
+			<dt>Name</dt>
+			<dd dir="auto">
+				{$user.Profile.custom_fields.fullname}
+			</dd>
+		</dl>
+	</div>
+</xf:if>
+```
+
+member_tooltip:
+
+Under:
+
+```
+<xf:if contentcheck="true">
+	<div class="memberTooltip-blurb">
+		<dl class="pairs pairs--inline">
+			<dt>{{ phrase('last_seen') }}</dt>
+			<dd dir="auto">
+				<xf:contentcheck><xf:useractivity user="$user" class="pairs--plainLabel" /></xf:contentcheck>
+			</dd>
+		</dl>
+	</div>
+</xf:if>
+```
+
+Add:
+
+```
+<xf:if is="{$user.Profile.custom_fields.trackerid} > 0 && {$user.Profile.custom_fields.fullname} != ''">
+	<div class="memberTooltip-blurb">
+		<dl class="pairs pairs--inline">
+			<dt>TKID</dt>
+			<dd dir="auto">
+				<a href="https://fl501st.com/troop-tracker/index.php?profile={$user.Profile.custom_fields.trackerid}">{$user.Profile.custom_fields.tkid}</a>
+			</dd>
+		</dl>
+	</div>
+
+	<div class="memberTooltip-blurb">
+		<dl class="pairs pairs--inline">
+			<dt>Name</dt>
+			<dd dir="auto">
+				{$user.Profile.custom_fields.fullname}
+			</dd>
+		</dl>
+	</div>
+</xf:if>
+```
+
 ## Please contact me with any questions, comments, or concerns
 drennanmattheww@gmail.com
 
