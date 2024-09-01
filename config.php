@@ -739,67 +739,19 @@ function showBBcodes($text)
 }
 
 /**
- * Counts the number of donations between two dates
- * 
- * @param int $trooperid ID of trooper to get number of donations
- * @param string $dateStart Optional. This is the start date to start searching for donations
- * @param string $dateEnd Optional. This is the end date to finish searching for donations
- * @return int Returns the number of donations between the two dates
-*/
-function countDonations($trooperid = "*", $dateStart = "1900-12-1", $dateEnd = "9999-12-1")
-{
-	global $conn;
-	
-	// Query
-	if($trooperid != "*")
-	{
-		// Trooper ID specified
-		$statement = $conn->prepare("SELECT * FROM donations WHERE trooperid = ? AND datetime > ? AND datetime < ?");
-		$statement->bind_param("iss", $trooperid, $dateStart, $dateEnd);
-		$statement->execute();
-		$statement->store_result();
-		$getNumOfDonators = $statement->num_rows;
-	}
-	else
-	{
-		// Trooper ID not specified - wild card
-		$statement = $conn->prepare("SELECT * FROM donations WHERE datetime > ? AND datetime < ?");
-		$statement->bind_param("ss", $dateStart, $dateEnd);
-		$statement->execute();
-		$statement->store_result();
-		$getNumOfDonators = $statement->num_rows;
-	}
-	
-	// Return rows
-	return $getNumOfDonators;
-}
-
-/**
  * Draws a support badge if the user is a supporter
  * 
  * @param int $id The ID of the trooper to determine if they are a supporter
  * @return string Returns an HTML image string, displaying the suppoer badge
 */
-function drawSupportBadge($id)
-{
+function drawSupportBadge($id) {
 	global $conn;
 	
 	// Set up value
 	$value = "";
 	
-	// Get data
-	$statement = $conn->prepare("SELECT supporter FROM troopers WHERE id = ? AND supporter = '1'");
-	$statement->bind_param("i", $id);
-	$statement->execute();
-	
-	// Run query...
-	if ($result = $statement->get_result())
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			// Set
-			$value = '<img src="images/FLGHeart_small.png" width="32px" height="32px" /><br />';
-		}
+	if(isSupporter($id)) {
+		$value = '<img src="images/FLGHeart_small.png" width="32px" height="32px" /><br />';
 	}
 	
 	// Return
@@ -813,7 +765,7 @@ function drawSupportBadge($id)
 */
 function drawSupportGraph()
 {
-	global $conn;
+	global $conn, $forumURL;
 
 	// Prevent on certain pages
 	if(@$_GET['action'] == "login" || @$_GET['action'] == "logout") { return; }
@@ -824,19 +776,38 @@ function drawSupportGraph()
 	// Check if user is logged in and don't show for command staff
 	if(loggedIn())
 	{
-		// Count number of troopers supporting
-		$statement = $conn->prepare("SELECT SUM(amount) FROM donations WHERE datetime > date_add(date_add(LAST_DAY(NOW()),interval 1 DAY),interval -1 MONTH)");
-		$statement->execute();
-		$statement->bind_result($getSupportNum);
-		$statement->fetch();
-		$statement->close();
-		
-		// Count times contribute
-		$statement = $conn->prepare("SELECT trooperid FROM donations WHERE datetime > date_add(date_add(LAST_DAY(NOW()),interval 1 DAY),interval -1 MONTH) AND trooperid = ?");
-		$statement->bind_param("i", $_SESSION['id']);
-		$statement->execute();
-		$statement->store_result();
-		$didSupportCount = $statement->num_rows;
+		// Find the position of the last slash
+		$lastSlashPos = strrpos($forumURL, '/');
+
+		// If a slash was found, truncate the URL after it
+		if ($lastSlashPos !== false) {
+		    $cleanedURL = substr($forumURL, 0, $lastSlashPos + 1);
+		}
+
+		// Get JSON
+		$json = file_get_contents($cleanedURL . 'user-upgrades.php?api_key=' . xenforoAPI_superuser);
+		$obj = json_decode($json, true);
+
+		// Check if the JSON was decoded properly
+		if ($obj === null) {
+		    die('Error decoding JSON data.');
+		}
+
+		// Initialize a variable to store the total cost
+		$getSupportNum = 0;
+
+		// Check if the combinedResults array exists
+		if (isset($obj['combinedResults']) && is_array($obj['combinedResults'])) {
+		    // Loop through each result in combinedResults
+		    foreach ($obj['combinedResults'] as $result) {
+			    foreach ($obj['userUpgrades'] as $result2) {
+			        // Check if this result has the specific user_upgrade_id
+			        if (isset($result2['user_upgrade_id']) && $result2['user_upgrade_id'] == $result['user_upgrade_id']) {
+		            	$getSupportNum += $result2['cost_amount'];
+			        }
+			    }
+		    }
+		}
 		
 		// Set goal from site settings
 		$statement = $conn->prepare("SELECT supportgoal FROM settings");
@@ -906,31 +877,19 @@ function drawSupportGraph()
 			else
 			{
 				// Don't show link if they are a supporter
-				if($didSupportCount == 0)
+				if(isSupporter($_SESSION['id']))
 				{
-					// If not 100%, show learn more
-					if($percent != 100)
-					{
-						$return .= '
-						<p style="text-align: center;">
-							<a href="index.php?action=donation">The '.garrison.' needs your support! Click here to learn more.</a>
-						</p>';
-					}
-					else
-					{
-						// Reached 100%
-						$return .= '
-						<p style="text-align: center;">
-							<a href="index.php?action=donation">Thank you for helping the garrison reach it\'s goal! Click here to help contribute.</a>
-						</p>';
-					}
+					$return .= '
+					<p style="text-align: center;">
+						<a href="https://www.fl501st.com/boards/index.php?account/upgrades">The '.garrison.' needs your support! Click here to learn more.</a>
+					</p>';
 				}
 				else
 				{
 					// Did support
 					$return .= '
 					<p style="text-align: center;">
-						<a href="index.php?action=donation">Thank you for your contribution! Click here to help contribute further.</a>
+						<a href="https://www.fl501st.com/boards/index.php?account/upgrades">Thank you for your contribution! Manage your donations here.</a>
 					</p>';
 				}
 			}
@@ -1788,7 +1747,7 @@ function deleteThread($id, $hard_delete = false)
 */
 function isSupporter($id)
 {
-	global $conn;
+	global $conn, $userGroupSupporter;
 	
 	// Set up value
 	$value = 0;
@@ -1799,6 +1758,15 @@ function isSupporter($id)
 	$statement->bind_result($value);
 	$statement->fetch();
 	$statement->close();
+
+	$xenforo = @getUserForumID(getUserID($id))['user']['secondary_group_ids'];
+	
+	if($xenforo != null) {
+		// If in Xenforo supporter group, change value
+		if(@in_array($userGroupSupporter, $xenforo)) {
+			$value = 1;
+		}
+	}
 	
 	// Return
 	return $value;

@@ -250,9 +250,9 @@ if(loggedIn())
 		// Forum notifications
 		echo '
 		<p style="text-align: center; border: 1px; border-style: dotted;">
-			<a href="https://www.fl501st.com/boards/index.php?members/' . $userID . '/" style="color: yellow;">Welcome '.getName($_SESSION['id']).'!</a>
+			<a href="index.php?profile='.$_SESSION['id'].'" style="color: yellow;">Welcome '.getName($_SESSION['id']).'!</a>
 			<br />
-			'.(getForumAvatar($_SESSION['id']) != "" ? '<img src="' . getForumAvatar($_SESSION['id']) . '" />' : '').'
+			<a href="index.php?profile='.$_SESSION['id'].'">'.(getForumAvatar($_SESSION['id']) != "" ? '<img src="' . getForumAvatar($_SESSION['id']) . '" />' : '').'</a>
 			<br />
 			<a href="https://www.fl501st.com/boards/index.php?account/alerts" '. ((@count($alerts) > 0 || @count($conversations) > 0) ? 'style="color:red;"' : '') .'>You have '.@count($alerts).' notifications and '.@count($conversations).' unread messages on the boards.</a>
 
@@ -344,7 +344,7 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 	<a href="#/" id="changenameLink" class="button">Change Name</a> 
 	<a href="#/" id="changethemeLink" class="button">Change Theme</a> 
 	<a href="#/" id="favoriteCostumes" class="button">Favorite Costumes</a> 
-	<a href="index.php?action=donation" class="button">Donate</a> 
+	<a href="https://www.fl501st.com/boards/index.php?account/upgrades" class="button">Donate</a> 
 	<a href="index.php?profile='.$_SESSION['id'].'" class="button">View Your Profile</a>
 	<br /><br />
 	
@@ -791,6 +791,42 @@ if(isset($_GET['profile']) && loggedIn())
 			<h2 class="tm-section-header">Donations</h2>
 			
 			<ul>';
+	
+			// Find the position of the last slash
+			$lastSlashPos = strrpos($forumURL, '/');
+
+			// If a slash was found, truncate the URL after it
+			if ($lastSlashPos !== false) {
+			    $cleanedURL = substr($forumURL, 0, $lastSlashPos + 1);
+			}
+
+			// Get JSON
+			$json = file_get_contents($cleanedURL . 'user-upgrades.php?api_key=' . xenforoAPI_superuser);
+			$obj = json_decode($json, true);
+
+			// Check if the JSON was decoded properly
+			if ($obj === null) {
+			    die('Error decoding JSON data.');
+			}
+
+			// Initialize a variable to store the total cost
+			$getSupportNum = 0;
+
+			// Get user_id
+			$user_id = getUserID($profile);
+
+			// Check if the combinedResults array exists
+			if (isset($obj['combinedResults']) && is_array($obj['combinedResults'])) {
+			    // Loop through each result in combinedResults
+			    foreach ($obj['combinedResults'] as $result) {
+				    foreach ($obj['userUpgrades'] as $result2) {
+				        // Check if this result has the specific user_upgrade_id
+				        if (isset($result2['user_upgrade_id']) && $result2['user_upgrade_id'] == $result['user_upgrade_id'] && $result['user_id'] == $user_id) {
+			            	echo '<li>$' . $result2['cost_amount'] . ' on ' . date('m/d/Y', $result['start_date']) . '</li>';
+				        }
+				    }
+			    }
+			}
 			
 			// Reset for donations
 			$j = 0;
@@ -846,41 +882,6 @@ else
 	{
 		echo '<p style="text-align: center;"><b>Please login to view this profile.</b></p>';
 	}
-}
-
-// Show the donation page
-if(isset($_GET['action']) && $_GET['action'] == "donation" && loggedIn())
-{
-	// If donated...
-	if(isSupporter($_SESSION['id']))
-	{
-		echo '
-		<p style="text-align: center;">
-			<b>Thank you for supporting the '.garrison.'!</b>
-		</p>
-		<hr />';
-	}
-	
-	echo '
-	<h2 class="tm-section-header">Support the '.garrison.'!</h2>
-	
-	<p style="text-align: center;">With a monthly contribution of only $5.00, you can help support paying for the website server, prop storage, and general expenses of the '.garrison.'. Without your assistance, other members are left to pay for all expenses out of their pocket. Donations are only available to '.garrison.' members, and all the money goes to garrison expenses.</p>
-	
-	<h2 class="tm-section-header">What you get...</h2>
-	
-	<ul>
-		<li>"'.garrison.' Supporter" award on your troop tracker profile</li>
-		<li>"'.garrison.' Supporter" icon on troop sign ups</li>
-	</ul>
-	
-	<h2 class="tm-section-header">Donate Below!</h2>
-	<form action="https://www.paypal.com/donate" method="post" target="_top" style="text-align: center;">
-		<input type="hidden" name="notify_url" value="'.ipn.'?trooperid='.$_SESSION['id'].'">
-		<input type="hidden" name="custom" value="'.$_SESSION['id'].'">
-		<input type="hidden" name="hosted_button_id" value="ULH54MMQKGL5Q" />
-		<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
-		<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
-	</form>';
 }
 
 // Photo Page

@@ -92,13 +92,6 @@ define('emailPort', SMTP_PORT);
 define('googleKey', 'GOOGLE_MAP_API_KEY_HERE');
 
 /**
- * ipn: This variable is where all the PayPal payment webhooks are sent. This is how the Troop Tracker knows which trooper has donated.
- * https://developer.paypal.com/api/nvp-soap/ipn/IPNIntro/
-*/
-
-define('ipn', 'script/php/paypal.php');
-
-/**
  * discordWeb1: This variable is the webhook URL from the Discord server.
  * https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks
 */
@@ -208,6 +201,12 @@ $handlerUserGroup = 1490;
 */
 
 $userGroupRIP = 1496;
+
+/**
+ * userGroupSupporter: The Xenforo user group ID for supporter members
+*/
+
+$userGroupSupporter = 1507;
 
 // Please note: Do not change the order of squads and clubs after your set up your troop tracker, otherwise you will mess up the squad IDs
 // Make sure you run queries on your database if you need to change the order after installation.
@@ -362,7 +361,7 @@ $clubArray = array(
 <li>Set up a Google Cloud API for Google Sheets, then create a service account under "Credentials"</li>
 <li>Download the JSON file from the service account, rename it to "sheets_api_secret.json", and upload it the root directory"</li>
 <li>On a live server, set up cron jobs located in other/cron.txt</li>
-<li>Upload 'other/xenforo_extra/groups.php' to your Xenforo main directory</li>
+<li>Upload 'other/xenforo_extra/groups.php' and 'other/xenforo_extra/user-upgrades.php' to your Xenforo main directory</li>
 </ol>
 
 ## Please contact me with any questions, comments, or concerns

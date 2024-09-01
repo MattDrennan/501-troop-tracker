@@ -61,11 +61,6 @@ Search.appendIndex(
             "summary": "Converts\u0020text\u0020to\u0020BB\u0020Code",
             "url": "namespaces/default.html#function_showBBcodes"
         },                {
-            "fqsen": "\\countDonations\u0028\u0029",
-            "name": "countDonations",
-            "summary": "Counts\u0020the\u0020number\u0020of\u0020donations\u0020between\u0020two\u0020dates",
-            "url": "namespaces/default.html#function_countDonations"
-        },                {
             "fqsen": "\\drawSupportBadge\u0028\u0029",
             "name": "drawSupportBadge",
             "summary": "Draws\u0020a\u0020support\u0020badge\u0020if\u0020the\u0020user\u0020is\u0020a\u0020supporter",
@@ -1456,69 +1451,9 @@ Search.appendIndex(
             "summary": "Generate\u0020CSV\u0020file\u0020from\u0020array",
             "url": "namespaces/default.html#function_array_to_csv_download"
         },                {
-            "fqsen": "\\PaypalIPN",
-            "name": "PaypalIPN",
-            "summary": "",
-            "url": "classes/PaypalIPN.html"
-        },                {
-            "fqsen": "\\PaypalIPN\u003A\u003AuseSandbox\u0028\u0029",
-            "name": "useSandbox",
-            "summary": "Sets\u0020the\u0020IPN\u0020verification\u0020to\u0020sandbox\u0020mode\u0020\u0028for\u0020use\u0020when\u0020testing,\nshould\u0020not\u0020be\u0020enabled\u0020in\u0020production\u0029.",
-            "url": "classes/PaypalIPN.html#method_useSandbox"
-        },                {
-            "fqsen": "\\PaypalIPN\u003A\u003AusePHPCerts\u0028\u0029",
-            "name": "usePHPCerts",
-            "summary": "Sets\u0020curl\u0020to\u0020use\u0020php\u0020curl\u0027s\u0020built\u0020in\u0020certs\u0020\u0028may\u0020be\u0020required\u0020in\u0020some\nenvironments\u0029.",
-            "url": "classes/PaypalIPN.html#method_usePHPCerts"
-        },                {
-            "fqsen": "\\PaypalIPN\u003A\u003AgetPaypalUri\u0028\u0029",
-            "name": "getPaypalUri",
-            "summary": "Determine\u0020endpoint\u0020to\u0020post\u0020the\u0020verification\u0020data\u0020to.",
-            "url": "classes/PaypalIPN.html#method_getPaypalUri"
-        },                {
-            "fqsen": "\\PaypalIPN\u003A\u003AverifyIPN\u0028\u0029",
-            "name": "verifyIPN",
-            "summary": "Verification\u0020Function\nSends\u0020the\u0020incoming\u0020post\u0020data\u0020back\u0020to\u0020PayPal\u0020using\u0020the\u0020cURL\u0020library.",
-            "url": "classes/PaypalIPN.html#method_verifyIPN"
-        },                {
-            "fqsen": "\\PaypalIPN\u003A\u003AVERIFY_URI",
-            "name": "VERIFY_URI",
-            "summary": "Production\u0020Postback\u0020URL",
-            "url": "classes/PaypalIPN.html#constant_VERIFY_URI"
-        },                {
-            "fqsen": "\\PaypalIPN\u003A\u003ASANDBOX_VERIFY_URI",
-            "name": "SANDBOX_VERIFY_URI",
-            "summary": "Sandbox\u0020Postback\u0020URL",
-            "url": "classes/PaypalIPN.html#constant_SANDBOX_VERIFY_URI"
-        },                {
-            "fqsen": "\\PaypalIPN\u003A\u003AVALID",
-            "name": "VALID",
-            "summary": "Response\u0020from\u0020PayPal\u0020indicating\u0020validation\u0020was\u0020successful",
-            "url": "classes/PaypalIPN.html#constant_VALID"
-        },                {
-            "fqsen": "\\PaypalIPN\u003A\u003AINVALID",
-            "name": "INVALID",
-            "summary": "Response\u0020from\u0020PayPal\u0020indicating\u0020validation\u0020failed",
-            "url": "classes/PaypalIPN.html#constant_INVALID"
-        },                {
-            "fqsen": "\\PaypalIPN\u003A\u003A\u0024use_sandbox",
-            "name": "use_sandbox",
-            "summary": "",
-            "url": "classes/PaypalIPN.html#property_use_sandbox"
-        },                {
-            "fqsen": "\\PaypalIPN\u003A\u003A\u0024use_local_certs",
-            "name": "use_local_certs",
-            "summary": "",
-            "url": "classes/PaypalIPN.html#property_use_local_certs"
-        },                {
             "fqsen": "\\",
             "name": "\\",
             "summary": "",
             "url": "namespaces/default.html"
-        },                {
-            "fqsen": "\\Listener",
-            "name": "Listener",
-            "summary": "",
-            "url": "namespaces/listener.html"
         }            ]
 );
