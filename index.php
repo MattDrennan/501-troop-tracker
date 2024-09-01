@@ -498,7 +498,7 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 	<h2 class="tm-section-header">Request Access</h2>
 	
 	<div name="requestAccessFormArea" id="requestAccessFormArea">
-		<p style="text-align: center;">New to the 501st and/or '.garrison.'? Or are you solely a member of another club? Use this form below to start signing up for troops. Command Staff will need to approve your account prior to use.</p>
+		<p style="text-align: center; border: dashed white;">New to the 501st and/or '.garrison.'? Or are you solely a member of another club? Use this form below to start signing up for troops. Command Staff will need to approve your account prior to use.</p>
 		
 		<form action="process.php?do=requestaccess" name="requestAccessForm" id="requestAccessForm" method="POST">
 			First & Last Name (use a nickname if you wish to remain anonymous): <input type="text" name="name" id="name" />
@@ -5554,7 +5554,7 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed() && 
 	{
 		// Display form to register an account
 		echo '
-		<p style="text-align: center;">Were you already using the old trooper tracker? Set up your account by using the form below.</p>
+		<p style="text-align: center; border: dashed white;">Were you already using the old trooper tracker? Set up your account by using the form below.</p>
 		
 		<form method="POST" action="index.php?action=setup" name="registerForm" id="registerForm">
 			<p>What is your TKID (numbers only) or Rebel Forum username (if Rebel Legion member only):</p>
@@ -6593,13 +6593,19 @@ else
 			if(!loggedIn())
 			{
 				echo '
-				<h2 class="tm-section-header">Welcome</h2>';
+				<h2 class="tm-section-header">Welcome to the '.garrison.' Troop Tracker!</h2>';
 				
 				// If sign ups are not closed
 				if(!isSignUpClosed())
 				{
 					echo '
-					<p style="text-align: center;">Welcome to the '.garrison.' troop tracker!<br /><br /><a href="index.php?action=requestaccess">Are you new to the '.garrison.' and/or 501st? Or are you solely a member of another club? Click here.</a><br /><br /><a href="index.php?action=setup">Have you used the old troop tracker and need to set up your account? Click here.</a></p>';
+					<p style="text-align: center; border: dashed white;">
+						<a href="index.php?action=requestaccess">Are you new to the '.garrison.' and/or 501st? Or are you solely a member of another club? Click here.</a>
+					</p>
+
+					<p style="text-align: center; border: dashed white;">
+						<a href="index.php?action=setup">Have you used the old troop tracker and need to set up your account? Click here.</a>
+					</p>';
 				}
 				else
 				{
