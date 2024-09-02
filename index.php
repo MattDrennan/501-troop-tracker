@@ -3457,6 +3457,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 
 						// Nothing to show
 						$json = '<a href="index.php?profile='.$db->trooperid.'" target="_blank" class="button">View '.$add.'Profile</a>';
+
+						if (preg_match('/\[(\d+)\]/', $db->message, $matches) && strpos($db->message, "event ID") !== false) {
+						    // $matches[1] will contain the event ID
+						    $eventId = $matches[1];
+						    $json .= ' <a href="index.php?event='.$eventId.'" target="_blank" class="button">View Troop</a>';
+						}
 					}
 					else
 					{
@@ -3467,7 +3473,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<a href="index.php?profile='.$db->trooperid.'" target="_blank" class="button">View Staff Profile</a>';
 
 						// Decode JSON data - Avoid null results
-						$data = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $db->json));
+						$data = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $db->json), true);
 
 						// If array or object
 						if(is_array($data) || is_object($data))
@@ -3481,13 +3487,20 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 									$json .= ' <a href="index.php?profile='.$value.'" target="_blank" class="button">View Trooper</a>';
 								}
 
+								// Trooper ID as ID
+								if($key == "id" && strpos($db->message, "user") !== false && !isset($data->trooperid))
+								{
+									$json .= ' <a href="index.php?profile='.$value.'" target="_blank" class="button">View Trooper</a>';
+								}
+
 								// Troop ID
 								if($key == "troopid")
 								{
 									$json .= ' <a href="index.php?event='.$value.'" target="_blank" class="button">View Troop</a>';
 								}
-								// Troop ID #2
-								else if($key == "id" && ($db->type == 13 || $db->type == 14 || $db->type == 19 || $db->type == 17) && !isset($data->troopid))
+
+								// Troop ID as ID
+								if($key == "id" && strpos($db->message, "event") !== false && strpos($db->message, "updating trooper") === false && strpos($db->message, "added trooper") === false && !isset($data['troopid']))
 								{
 									$json .= ' <a href="index.php?event='.$value.'" target="_blank" class="button">View Troop</a>';
 								}
