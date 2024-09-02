@@ -776,6 +776,13 @@ function drawSupportGraph()
 	// Check if user is logged in and don't show for command staff
 	if(loggedIn())
 	{
+		// Count number of troopers supporting
+		$statement = $conn->prepare("SELECT SUM(amount) FROM donations WHERE datetime > date_add(date_add(LAST_DAY(NOW()),interval 1 DAY),interval -1 MONTH)");
+		$statement->execute();
+		$statement->bind_result($getSupportNum);
+		$statement->fetch();
+		$statement->close();
+
 		// Find the position of the last slash
 		$lastSlashPos = strrpos($forumURL, '/');
 
@@ -794,7 +801,7 @@ function drawSupportGraph()
 		}
 
 		// Initialize a variable to store the total cost
-		$getSupportNum = 0;
+		//$getSupportNum = 0;
 
 		// Check if the combinedResults array exists
 		if (isset($obj['combinedResults']) && is_array($obj['combinedResults'])) {
