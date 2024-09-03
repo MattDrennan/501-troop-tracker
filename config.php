@@ -174,11 +174,11 @@ function dailyTip()
 	// If link set
 	if($link != "")
 	{
-		return '<span style="text-align: center; display: block;"><a href="'.$link.'" target="_blank" style="color: purple;"><b>TIP:</b> ' . $tip . '</a></span>';
+		return '<span style="text-align: center; display: block;"><a href="'.$link.'" target="_blank" style="color: #54f77d;"><b>TIP:</b> ' . $tip . '</a></span>';
 	}
 	else
 	{
-		return '<span style="text-align: center; color: purple; display: block;"><b>TIP:</b> ' . $tip . '</span>';
+		return '<span style="text-align: center; color: #54f77d; display: block;"><b>TIP:</b> ' . $tip . '</span>';
 	}
 }
 

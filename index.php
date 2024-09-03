@@ -3473,7 +3473,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<a href="index.php?profile='.$db->trooperid.'" target="_blank" class="button">View Staff Profile</a>';
 
 						// Decode JSON data - Avoid null results
-						$data = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $db->json), true);
+						$data = json_decode(htmlspecialchars_decode($db->json, ENT_QUOTES), true);
 
 						// If array or object
 						if(is_array($data) || is_object($data))
