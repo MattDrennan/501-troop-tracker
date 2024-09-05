@@ -23,7 +23,7 @@ if ($result = mysqli_query($conn, $query))
 		$count = $troops_get->fetch_row();
 		
 		// Set up message
-		$message = "Hello!\n\nYou have ".$count[0]." troops that need to be confirmed in order to give you troop credit. Please login to the troop tracker and confirm these troops.\n\nConfirm troops here: https://fl501st.com/troop-tracker/index.php#confirmtroops\n\nIf you need assistance, please contact your squad leader.\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com";
+		$message = "Hello!\n\nYou have ".$count[0]." troops that need to be confirmed in order to give you troop credit. Please login to the troop tracker and confirm these troops.\n\nConfirm troops here: https://fl501st.com/troop-tracker/index.php#confirmtroops\n\nIf you need assistance, please contact your squad leader.\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://fl501st.com/troop-tracker/";
 		
 		// Send E-mail
 		sendEmail($db->email, readInput($db->name), "Troop Tracker: Troops need your attention!", readInput($message));
@@ -273,7 +273,7 @@ if ($result = mysqli_query($conn, $query))
 		}
 		
 		// Add footer to e-mail
-		$message .= "\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com";
+		$message .= "\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://fl501st.com/troop-tracker/";
 		
 		// Send e-mail if something to send
 		if($mC > 0 || $cC > 0)
@@ -383,7 +383,7 @@ if($i > 0)
 			}
 
 			// Add footer of e-mail
-			$emailBody .= "You can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com";
+			$emailBody .= "You can opt out of e-mails under: \"Manage Account\"\n\nhttps://fl501st.com/troop-tracker/";
 
 			// Check if to send e-mail
 			if($k > 0)

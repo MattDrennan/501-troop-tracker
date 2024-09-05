@@ -21,7 +21,7 @@ if ($result = mysqli_query($conn, $query))
 		// Build e-mail
 		$emailBody = "";
 		$emailBody .= readInput($db->name) . " has been added in " . getSquadName($db->squad) . "\n\nhttps://www.fl501st.com/troop-tracker/index.php?event=".$db->id."\n\n\n\n";
-		$emailBody .= "You can opt out of e-mails under: \"Manage Account\"\n\nhttps://trooptracking.com";
+		$emailBody .= "You can opt out of e-mails under: \"Manage Account\"\n\nhttps://fl501st.com/troop-tracker/";
 
 		// Loop through all troopers
 		$query2 = "SELECT * FROM troopers WHERE email != '' AND subscribe = '1' AND efast = '1' AND esquad".$db->squad." = '1'";
