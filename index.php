@@ -18,8 +18,37 @@ echo '
 	<!-- Meta Data -->
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
-	
+	<meta http-equiv="X-UA-Compatible" content="ie=edge" />';
+
+	if(isset($_GET['event']) && !loggedIn())
+	{
+		// Query database for event info
+		$statement = $conn->prepare("SELECT * FROM events WHERE id = ?");
+		$statement->bind_param("i", $_GET['event']);
+		$statement->execute();
+
+		if ($result = $statement->get_result())
+		{
+			while ($db = mysqli_fetch_object($result))
+			{
+				// Set up string to add to title if a linked event
+				$add = "";
+				
+				// If this a linked event?
+				if(isLink($db->id) > 0)
+				{
+					$add .= "[" . date("h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "] ";
+				}
+
+				echo '
+				<meta property="og:title" content="'.$add.''.$db->name.'" />
+				<meta property="og:description" content="'.ifEmpty(cleanInput($db->comments)).'" />
+				<meta property="og:image" content="https://www.fl501st.com/troop-tracker/images/logo.png" />';
+			}
+		}
+	}
+
+	echo '
 	<!-- Title -->
 	<title>501st '.garrison.' - Troop Tracker</title>
 	
@@ -6565,31 +6594,6 @@ else if(isset($_GET['event']) && !loggedIn())
 	if(!loggedIn())
 	{
 		setcookie("TroopTrackerLastEvent", cleanInput($_GET['event']), time() + 3600);
-	}
-
-	// Query database for event info
-	$statement = $conn->prepare("SELECT * FROM events WHERE id = ?");
-	$statement->bind_param("i", $_GET['event']);
-	$statement->execute();
-
-	if ($result = $statement->get_result())
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			// Set up string to add to title if a linked event
-			$add = "";
-			
-			// If this a linked event?
-			if(isLink($db->id) > 0)
-			{
-				$add .= "[" . date("h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "] ";
-			}
-
-			echo '
-			<meta property="og:title" content="'.$add.''.$db->name.'" />
-			<meta property="og:description" content="'.ifEmpty(nl2br($db->comments)).'" />
-			<meta property="og:image" content="https://www.fl501st.com/troop-tracker/images/logo.png" />';
-		}
 	}
 
 	echo '
