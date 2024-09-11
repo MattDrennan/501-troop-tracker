@@ -6781,7 +6781,7 @@ else
 						echo '
 						<div style="border: 1px solid gray; margin-bottom: 10px;">
 
-						'.(!isset($_GET['squad']) || (isset($_GET['squad']) && $_GET['squad'] == "mytroops") || (isset($_GET['squad']) && $_GET['squad'] == "canceledtroops") ? '<div style="margin-top: 5px;">' . getSquadLogo($db->squad) . '</div>' : '').'
+						'.(!isset($_GET['squad']) || (isset($_GET['squad']) && $_GET['squad'] == "mytroops") || (isset($_GET['squad']) && $_GET['squad'] == "canceledtroops") ? '<span style="margin-top: 5px; display: block;">' . getSquadLogo($db->squad) . '</span>' : '').'
 
 						<a href="index.php?event=' . $db->id . '">' . date('M d, Y', strtotime($db->dateStart)) . '' . '<br />';
 						
