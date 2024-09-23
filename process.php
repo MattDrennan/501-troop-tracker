@@ -3970,9 +3970,7 @@ if(isset($_GET['do']) && $_GET['do'] == "confirmList")
 			// Show confirm
 			$dataMain .= '
 			<div name="confirmListBox_'.$db->eventId.'" id="confirmListBox_'.$db->eventId.'">
-				<input type="checkbox" name="confirmList[]" id="confirmList_'.$db->eventId.'" value="'.$db->eventId.'" /> ' . getSquadLogo($db->squad) . ' '.$db->name.'<br /><br />';
-
-			$dataMain .= '
+				<input type="checkbox" name="confirmList[]" id="confirmList_'.$db->eventId.'" value="'.$db->eventId.'" /> ' . getSquadLogo($db->squad) . ' ' . (isLink($db->eventId) > 0 ? '[<b>' . date("l", strtotime($db->dateStart)) . '</b> : <i>' . date("m/d - h:i A", strtotime($db->dateStart)) . ' - ' . date("h:i A", strtotime($db->dateEnd)) . '</i>] ' : '') . ''.$db->name.'<br /><br />
 			</div>';
 		}
 	}
