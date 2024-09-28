@@ -912,6 +912,34 @@ function drawSupportGraph()
 }
 
 /**
+ * Returns whether the trooper is tagged in a photo
+ * 
+ * @param int $photoid The ID of the photo
+ * @param int $trooperid The ID of the trooper
+ * @return boolean
+*/
+function isInPhoto($photoid, $trooperid) {
+	global $conn;
+
+	// Query database for photos
+	$statement = $conn->prepare("SELECT * FROM tagged WHERE trooperid = ? AND photoid = ?");
+	$statement->bind_param("ii", $trooperid, $photoid);
+	$statement->execute();
+
+	$value = false;
+
+	if ($result = $statement->get_result())
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			$value = true;
+		}
+	}
+
+	return $value;
+}
+
+/**
  * Returns the troopers ranking
  * 
  * @param int $trooperID The ID of the trooper

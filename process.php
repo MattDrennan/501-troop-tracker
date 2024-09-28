@@ -533,6 +533,31 @@ if(isset($_GET['do']) && $_GET['do'] == "troopercheckretired" && loggedIn() && i
 /******************** PHOTOS *******************************/
 
 // Delete Photo
+if(isset($_GET['do']) && $_GET['do'] == "tagphoto" && loggedIn())
+{
+	// Check if in photo
+	if(isInPhoto($_POST['photoid'], $_SESSION['id'])) {
+		// In photo, untag
+		$statement = $conn->prepare("DELETE FROM tagged WHERE photoid = ? AND trooperid = ?");
+		$statement->bind_param("ii", $_POST['photoid'], $_SESSION['id']);
+		$statement->execute();
+
+		// Send JSON
+		$array = array('data' => 'Untagged from photo!');
+		echo json_encode($array);
+	} else {
+		// Not in photo, tag
+		$statement = $conn->prepare("INSERT INTO tagged (photoid, trooperid) VALUES (?, ?)");
+		$statement->bind_param("ii", $_POST['photoid'], $_SESSION['id']);
+		$statement->execute();
+
+		// Send JSON
+		$array = array('data' => 'You are now tagged in this photo!');
+		echo json_encode($array);
+	}
+}
+
+// Delete Photo
 if(isset($_GET['do']) && $_GET['do'] == "deletephoto" && loggedIn())
 {
 	// Query database for photos
@@ -558,6 +583,11 @@ if(isset($_GET['do']) && $_GET['do'] == "deletephoto" && loggedIn())
 				
 				// Query database
 				$statement2 = $conn->prepare("DELETE FROM uploads WHERE id = ?");
+				$statement2->bind_param("i", $_POST['photoid']);
+				$statement2->execute();
+
+				// Query tagged database
+				$statement2 = $conn->prepare("DELETE FROM tagged WHERE photoid = ?");
 				$statement2->bind_param("i", $_POST['photoid']);
 				$statement2->execute();
 				

@@ -1061,6 +1061,36 @@ $(document).ready(function()
 			});
 		}
 	})
+
+	// Photo - Tag Photo
+	$("a[name='tagged']").click(function(e)
+	{
+		e.preventDefault();
+
+		var textG = $(this);
+		
+		// Send data
+		$.ajax({
+			type: "POST",
+			url: "process.php?do=tagphoto",
+			data: { photoid: $(this).attr("photoid") },
+			success: function(data)
+			{
+				// Get JSON
+				var json = JSON.parse(data);
+
+				// Change text
+				if(json.data.includes('Untagged')) {
+					textG.text('Tag Me');
+				} else {
+					textG.text('Untag Me');
+				}
+				
+				// Alert user
+				alert(json.data);
+			}
+		});
+	})
 	
 	// Photo Management - Delete Photo
 	$("a[name='deletephoto']").click(function(e)

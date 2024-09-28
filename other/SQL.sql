@@ -2,9 +2,6 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Generation Time: Aug 25, 2024 at 01:09 AM
--- Server version: 8.0.35
--- PHP Version: 7.4.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -354,6 +351,18 @@ CREATE TABLE `sg_troopers` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tagged`
+--
+
+CREATE TABLE `tagged` (
+  `id` int NOT NULL,
+  `photoid` int NOT NULL,
+  `trooperid` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `titles`
 --
 
@@ -532,6 +541,13 @@ ALTER TABLE `notifications`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `tagged`
+--
+ALTER TABLE `tagged`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id` (`id`);
+
+--
 -- Indexes for table `titles`
 --
 ALTER TABLE `titles`
@@ -607,6 +623,12 @@ ALTER TABLE `event_sign_up`
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `tagged`
+--
+ALTER TABLE `tagged`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --

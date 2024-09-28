@@ -814,6 +814,122 @@ if(isset($_GET['profile']) && loggedIn())
 			echo '
 			</ul>
 			</div>
+
+			<h2 class="tm-section-header" id="photo_section">Tagged Photos</h2>
+
+			<div class="profile-donations">';
+
+			// Set results per page
+			$results = 5;
+			
+			// Get total results - query
+			$statement = $conn->prepare("SELECT COUNT(uploads.id) AS total FROM uploads LEFT JOIN tagged ON uploads.id = tagged.photoid WHERE tagged.trooperid = ? AND admin = 0");
+			$statement->bind_param("i", $profile);
+			$statement->execute();
+			$statement->bind_result($rowPage);
+			$statement->fetch();
+			$statement->close();
+			
+			// Set total pages
+			$total_pages = ceil($rowPage / $results);
+			
+			// If page set
+			if(isset($_GET['page']))
+			{
+				// Get page
+				$page = intval($_GET['page']);
+				
+				// Start from
+				$startFrom = ($page - 1) * $results;
+			}
+			else
+			{
+				// Default
+				$page = 1;
+				
+				// Start from - default
+				$startFrom = 0;
+			}
+			
+			// Query database for photos
+			$statement = $conn->prepare("SELECT uploads.filename, uploads.trooperid, uploads.id FROM uploads LEFT JOIN tagged ON uploads.id = tagged.photoid WHERE tagged.trooperid = ? AND admin = 0 ORDER BY uploads.date DESC LIMIT ?, ?");
+			$statement->bind_param("iii", $profile, $startFrom, $results);
+			$statement->execute();
+			
+			// Count photos
+			$i = 0;
+			
+			if ($result = $statement->get_result())
+			{
+				while ($db = mysqli_fetch_object($result))
+				{	
+					echo '
+					<div class="container-image">
+						<a href="images/uploads/'.$db->filename.'" data-lightbox="photosadmin" data-title="Uploaded by '.getName($db->trooperid).'" id="photo'.$db->id.'"><img src="images/uploads/resize/'.getFileName($db->filename).'.jpg" width="200px" height="200px" class="image-c" /></a>
+						
+						<p class="container-text">';
+						
+							// If owned by trooper or is admin
+							if(isAdmin() || isset($_SESSION['id']) && $db->trooperid == $_SESSION['id'])
+							{
+								echo '<a href="index.php?action=editphoto&id='.$db->id.'">Edit</a>';
+							}
+
+							echo '<br /><a href="#" photoid="'.$db->id.'" name="tagged">' . (isInPhoto($db->id, $_SESSION['id']) ? 'Untag Me' : 'Tag Me') . '</a>';
+							
+						echo '
+						</p>
+					</div>';
+					
+					$i++;
+				}
+
+				// If photos
+				if($i > 0) {
+					echo '
+					<p class="center-content">
+						<i>Press photos for full resolution version.</i>
+					</p>';
+				} else {
+					echo '
+					<p class="center-content">
+						No tagged photos to display.
+					</p>';
+				}
+			}
+			
+			// If photos
+			if($total_pages > 1)
+			{
+				echo '<p>Pages: ';
+				
+				// Loop through pages
+				for ($j = 1; $j <= $total_pages; $j++)
+				{
+					// If we are on this page...
+					if($page == $j)
+					{
+						echo '
+						'.$j.'';
+					}
+					else
+					{
+						echo '
+						<a href="index.php?event='.cleanInput($_GET['event']).'&page='.$j.'#photo_section">'.$j.'</a>';
+					}
+					
+					// If not that last page, add a comma
+					if($j != $total_pages)
+					{
+						echo ', ';
+					}
+				}
+				
+				echo '</p>';
+			}
+
+			echo '
+			</div>
 			
 			<div class="profile-donations">
 			
@@ -5763,17 +5879,6 @@ if(isset($_GET['event']) && loggedIn())
 					// Add to calendar links
 					echo showCalendarLinks($db->name, $db->location, "Troop Tracker Event", $db->dateStart, $db->dateEnd);
 				}
-				// If subscribed, allow to unsubscribe
-				else if($subscribeText == "Unsubscribe Updates")
-				{
-					// Subscribe button
-					echo '
-					<div id="subscribe-area">
-						<div style="text-align: center;">
-							<img src="images/loading.gif" />
-						</div>
-					</div>';
-				}
 
 				// If canceled, show trooper
 				if($db->closed == 2)
@@ -5966,7 +6071,7 @@ if(isset($_GET['event']) && loggedIn())
 									{
 										echo '<a href="index.php?action=editphoto&id='.$db2->id.'">Edit</a>';
 									}
-									
+
 								echo '
 								</p>
 							</div>';
@@ -6393,6 +6498,8 @@ if(isset($_GET['event']) && loggedIn())
 								{
 									echo '<a href="index.php?action=editphoto&id='.$db->id.'">Edit</a>';
 								}
+
+								echo '<br /><a href="#" photoid="'.$db->id.'" name="tagged">' . (isInPhoto($db->id, $_SESSION['id']) ? 'Untag Me' : 'Tag Me') . '</a>';
 								
 							echo '
 							</p>
@@ -6747,7 +6854,7 @@ else
 				echo '
 				<p>
 					<a href="#/" id="changeview" class="button">Calendar View</a> 
-					<a href="index.php?action=mapview" class="button">Map View (BETA)</a>
+					<a href="index.php?action=mapview" class="button">Map View</a>
 				</p>
 				
 				<div id="listview">
@@ -7343,7 +7450,7 @@ echo '
 
 echo '
 <!-- External JS File -->
-<script type="text/javascript" src="script/js/main.js?v=1"></script>
+<script type="text/javascript" src="script/js/main.js?v=2"></script>
 </body>
 </html>';
 
