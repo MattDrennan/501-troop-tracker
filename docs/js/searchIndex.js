@@ -71,6 +71,11 @@ Search.appendIndex(
             "summary": "Draws\u0020a\u0020visual\u0020graph\u0020for\u0020troopers\u0020to\u0020see\u0020what\u0020we\u0020need\u0020to\u0020support\u0020the\u0020garrison",
             "url": "namespaces/default.html#function_drawSupportGraph"
         },                {
+            "fqsen": "\\isInPhoto\u0028\u0029",
+            "name": "isInPhoto",
+            "summary": "Returns\u0020whether\u0020the\u0020trooper\u0020is\u0020tagged\u0020in\u0020a\u0020photo",
+            "url": "namespaces/default.html#function_isInPhoto"
+        },                {
             "fqsen": "\\getTrooperRanking\u0028\u0029",
             "name": "getTrooperRanking",
             "summary": "Returns\u0020the\u0020troopers\u0020ranking",
@@ -1450,6 +1455,16 @@ Search.appendIndex(
             "name": "array_to_csv_download",
             "summary": "Generate\u0020CSV\u0020file\u0020from\u0020array",
             "url": "namespaces/default.html#function_array_to_csv_download"
+        },                {
+            "fqsen": "\\getAccessToken\u0028\u0029",
+            "name": "getAccessToken",
+            "summary": "",
+            "url": "namespaces/default.html#function_getAccessToken"
+        },                {
+            "fqsen": "\\getTransactions\u0028\u0029",
+            "name": "getTransactions",
+            "summary": "",
+            "url": "namespaces/default.html#function_getTransactions"
         },                {
             "fqsen": "\\",
             "name": "\\",
