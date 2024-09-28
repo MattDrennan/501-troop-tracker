@@ -5219,7 +5219,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 if(isset($_GET['action']) && $_GET['action'] == "mapview" && loggedIn())
 {
 	echo '
-	<h3>Map View (BETA)</h3>
+	<h3>Map View</h3>
 	<iframe src="map/" style="width: 100%; height: 400px; border: none;" frameborder:="0"></iframe>';
 }
 
