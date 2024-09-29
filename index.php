@@ -915,7 +915,7 @@ if(isset($_GET['profile']) && loggedIn())
 					else
 					{
 						echo '
-						<a href="index.php?event='.cleanInput($_GET['event']).'&page='.$j.'#photo_section">'.$j.'</a>';
+						<a href="index.php?profile='.cleanInput($_GET['profile']).'&page='.$j.'#photo_section">'.$j.'</a>';
 					}
 					
 					// If not that last page, add a comma
