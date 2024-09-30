@@ -616,7 +616,7 @@ if(isset($_GET['profile']) && loggedIn())
 				<div style="overflow-x: auto;">
 				'.pendingTroopsDisplay($profile).'
 
-				<h2 class="tm-section-header">Troop History</h2>
+				<h2 class="tm-section-header" id="troop-history-header">Troop History</h2>
 				<table border="1">
 				<tr>
 					<th>Event Name</th>	<th>Date</th>	<th>Attended Costume</th>
@@ -695,7 +695,7 @@ if(isset($_GET['profile']) && loggedIn())
 			
 			<div class="profile-awards">
 			
-			<h2 class="tm-section-header">Awards</h2>';
+			<h2 class="tm-section-header" id="awards-header">Awards</h2>';
 			
 			// Check if supporter
 			if(isSupporter($profile))
@@ -933,7 +933,7 @@ if(isset($_GET['profile']) && loggedIn())
 			
 			<div class="profile-donations">
 			
-			<h2 class="tm-section-header">Donations</h2>
+			<h2 class="tm-section-header" id="donation-header">Donations</h2>
 			
 			<ul>';
 	
@@ -967,7 +967,14 @@ if(isset($_GET['profile']) && loggedIn())
 				    foreach ($obj['userUpgrades'] as $result2) {
 				        // Check if this result has the specific user_upgrade_id
 				        if (isset($result2['user_upgrade_id']) && $result2['user_upgrade_id'] == $result['user_upgrade_id'] && $result['user_id'] == $user_id) {
-			            	echo '<li>$' . $result2['cost_amount'] . ' on ' . date('m/d/Y', $result['start_date']) . '</li>';
+							$startDate = new DateTime('@' . $result['start_date']);
+							$endDate = new DateTime('@' . $result['end_date']);
+
+							// Calculate the difference in months between the two dates
+							$interval = $startDate->diff($endDate);
+							$months = ($interval->y * 12) + $interval->m;
+
+		            		echo '<li>$' . (intval($result2['cost_amount']) * $months) . ' on ' . $startDate->format('m/d/Y') . ' - ' . $endDate->format('m/d/Y') . '</li>';
 				        }
 				    }
 			    }
@@ -1003,7 +1010,7 @@ if(isset($_GET['profile']) && loggedIn())
 		}
 		
 		echo '
-		<h2 class="tm-section-header">Costumes</h2>';
+		<h2 class="tm-section-header" id="costumes-header">Costumes</h2>';
 		
 		// Show 501st costumes
 		showCostumes(getTKNumber($profile), getTrooperSquad($profile));

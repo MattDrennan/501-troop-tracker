@@ -542,7 +542,7 @@ function pendingTroopsDisplay($trooperid)
 			if($i == 0)
 			{
 				$returnString .= '
-				<h2 class="tm-section-header">Upcoming Troops</h2>
+				<h2 class="tm-section-header" id="upcoming-troops-header">Upcoming Troops</h2>
 				<table border="1" class="space-content">
 				<tr>
 					<th>Event Name</th>	<th>Date</th>	<th>Pending Costume</th>
@@ -3587,6 +3587,21 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 		<h2 class="tm-section-header">Admin Controls</h2>
 		<p style="text-align: center;"><a href="index.php?action=commandstaff&do=managetroopers&uid='.$id.'" class="button">Edit/View Member in Command Staff Area</a></p>';
 	}
+
+	echo '
+	<p style="text-align: center;">
+		<a href="#upcoming-troops-header" class="button">Upcoming Troops</a>
+
+		<a href="#troop-history-header" class="button">Troop History</a>
+
+		<a href="#awards-header" class="button">Awards</a>
+
+		<a href="#photo_section" class="button">Tagged Photos</a>
+
+		<a href="#donation-header" class="button">Donations</a>
+
+		<a href="#costumes-header" class="button">Costumes</a>
+	</p>';
 	
 	// Only show 501st thumbnail, if a 501st member
 	if(getTrooperSquad($tkid) <= count($squadArray))
