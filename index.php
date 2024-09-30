@@ -5406,7 +5406,7 @@ if(isset($_GET['action']) && $_GET['action'] == "editphoto" && loggedIn())
 			<p>
 				<img src="images/uploads/'.$db->filename.'" width="200px" height="200px" />
 			</p>
-			
+
 			<p>
 				<b>Uploaded by:</b> <a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.getTKNumber($db->trooperid, true).'</a>
 			</p>
@@ -6575,7 +6575,8 @@ if(isset($_GET['event']) && loggedIn())
 					  
 					    var myDropzone = new Dropzone(".dropzone", { 
 					       maxFilesize: 10,
-					       acceptedFiles: ".jpeg,.jpg,.png,.gif"
+					       acceptedFiles: ".jpeg,.jpg,.png,.gif",
+					       dictDefaultMessage: "Drop NON-INSTRUCTIONAL images here<br />(use button above to change upload type)"
 					    });
 					      
 					</script>
@@ -7459,7 +7460,7 @@ echo '
 
 echo '
 <!-- External JS File -->
-<script type="text/javascript" src="script/js/main.js?v=2"></script>
+<script type="text/javascript" src="script/js/main.js?v=3"></script>
 </body>
 </html>';
 

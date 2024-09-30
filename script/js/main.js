@@ -626,11 +626,13 @@ $(document).ready(function()
 		{
 			$("#changeUpload").text("Change To: Regular Upload");
 			$("input[name=admin]").val(1);
+			$(".dropzone .dz-default.dz-message").html("Drop INSTRUCTIONAL images here");
 		}
 		else
 		{
 			$("#changeUpload").text("Change To: Troop Instructional Image Upload");
 			$("input[name=admin]").val(0);
+			$(".dropzone .dz-default.dz-message").html("Drop NON-INSTRUCTIONAL images here");
 		}
 	})
 
