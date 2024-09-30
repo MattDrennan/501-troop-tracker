@@ -532,7 +532,7 @@ if(isset($_GET['do']) && $_GET['do'] == "troopercheckretired" && loggedIn() && i
 
 /******************** PHOTOS *******************************/
 
-// Delete Photo
+// Tag Photo
 if(isset($_GET['do']) && $_GET['do'] == "tagphoto" && loggedIn())
 {
 	// Check if in photo
@@ -554,6 +554,23 @@ if(isset($_GET['do']) && $_GET['do'] == "tagphoto" && loggedIn())
 		// Send JSON
 		$array = array('data' => 'You are now tagged in this photo!');
 		echo json_encode($array);
+	}
+}
+
+// Edit Photo - Tag Photo Form
+if(isset($_GET['do']) && $_GET['do'] == "tagphotobulk" && loggedIn())
+{
+	// Delete all from database
+	$statement = $conn->prepare("DELETE FROM tagged WHERE photoid = ?");
+	$statement->bind_param("i", $_POST['photoid']);
+	$statement->execute();
+
+	// Insert into database
+	foreach(explode(",", $_POST['troopers']) as $value)
+	{
+		$statement = $conn->prepare("INSERT INTO tagged (photoid, trooperid) VALUES (?, ?)");
+		$statement->bind_param("ii", $_POST['photoid'], $value);
+		$statement->execute();
 	}
 }
 

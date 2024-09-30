@@ -867,17 +867,10 @@ if(isset($_GET['profile']) && loggedIn())
 					<div class="container-image">
 						<a href="images/uploads/'.$db->filename.'" data-lightbox="photosadmin" data-title="Uploaded by '.getName($db->trooperid).'" id="photo'.$db->id.'"><img src="images/uploads/resize/'.getFileName($db->filename).'.jpg" width="200px" height="200px" class="image-c" /></a>
 						
-						<p class="container-text">';
-						
-							// If owned by trooper or is admin
-							if(isAdmin() || isset($_SESSION['id']) && $db->trooperid == $_SESSION['id'])
-							{
-								echo '<a href="index.php?action=editphoto&id='.$db->id.'">Edit</a>';
-							}
-
-							echo '<br /><a href="#" photoid="'.$db->id.'" name="tagged">' . (isInPhoto($db->id, $_SESSION['id']) ? 'Untag Me' : 'Tag Me') . '</a>';
-							
-						echo '
+						<p class="container-text">
+							<a href="index.php?action=editphoto&id='.$db->id.'">Edit</a>
+							<br />
+							<a href="#" photoid="'.$db->id.'" name="tagged">' . (isInPhoto($db->id, $_SESSION['id']) ? 'Untag Me' : 'Tag Me') . '</a>
 						</p>
 					</div>';
 					
@@ -5395,7 +5388,7 @@ if(isset($_GET['action']) && $_GET['action'] == "faq")
 
 /**************************** Edit Photo *********************************/
 
-if(isset($_GET['action']) && $_GET['action'] == "editphoto")
+if(isset($_GET['action']) && $_GET['action'] == "editphoto" && loggedIn())
 {
 	// Get data
 	$statement = $conn->prepare("SELECT * FROM uploads WHERE id = ?");
@@ -5407,50 +5400,66 @@ if(isset($_GET['action']) && $_GET['action'] == "editphoto")
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
+			echo '
+			<h3>Edit Photo: '.$db->filename.'</h3>
+			
+			<p>
+				<img src="images/uploads/'.$db->filename.'" width="200px" height="200px" />
+			</p>
+			
+			<p>
+				<b>Uploaded by:</b> <a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.getTKNumber($db->trooperid, true).'</a>
+			</p>
+
+			<p>
+				<b>Tagged troopers:</b>
+
+				<select multiple="multiple" id="tagTroopersSelect" name="tagTroopersSelect">';
+				
+				$statement3 = $conn->prepare("SELECT * FROM troopers");
+				$statement3->execute();
+
+				if ($result3 = $statement3->get_result())
+				{
+					while ($db3 = mysqli_fetch_object($result3))
+					{
+						$isTagged = (isInPhoto($_GET['id'], $db3->id)) ? 'SELECTED' : '';
+
+						echo '
+						<option value="'.$db3->id.'" photoid="'.cleanInput($_GET['id']).'" '.$isTagged.'>'.$db3->name.' - '.$db3->forum_id.' - '.readTKNumber($db3->tkid, $db3->squad).'</option>';
+					}
+				}
+		
+			echo '
+				</select>
+			</p>
+
+			<hr />
+
+			<p style="text-align: center">';
+
 			// If admin or trooper that uploaded it
 			if(isAdmin() || $db->trooperid == $_SESSION['id'])
 			{
-				echo '
-				<h3>Edit Photo: '.$db->filename.'</h3>
-				
-				<p>
-					<img src="images/uploads/'.$db->filename.'" width="200px" height="200px" />
-				</p>';
-
-				// If is admin
-				if(isAdmin())
-				{
-					echo '
-					<p>
-						<b>Uploaded by:</b> <a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.getTKNumber($db->trooperid, true).'</a>
-					</p>';
-				}
-
 				// Check if admin photo
 				if($db->admin == 0)
 				{
 					echo '
-					<p>
-						<a href="#/" photoid="'.$db->id.'" class="button" name="adminphoto">Make Troop Instruction Photo</a>
-					</p>';
+					<a href="#/" photoid="'.$db->id.'" class="button" name="adminphoto">Make Troop Instruction Photo</a>';
 				}
 				else
 				{
 					echo '
-					<p>
-						<a href="#/" photoid="'.$db->id.'" class="button" name="adminphoto">Make Regular Photo</a>
-					</p>';
+					<a href="#/" photoid="'.$db->id.'" class="button" name="adminphoto">Make Regular Photo</a>';
 				}
 				
 				echo '
-				<p>
-					<a href="#/" photoid="'.$db->id.'" troopid="'.$db->troopid.'" class="button" name="deletephoto">Delete Photo</a>
-				</p>
-				
-				<p>
-					<a href="index.php?event='.$db->troopid.'" class="button">View Event</a>
-				</p>';
+					<a href="#/" photoid="'.$db->id.'" troopid="'.$db->troopid.'" class="button" name="deletephoto">Delete Photo</a>';
 			}
+
+			echo '
+				<a href="index.php?event='.$db->troopid.'" class="button">View Event</a>
+			</p>';
 		}
 	}
 }
@@ -6498,17 +6507,10 @@ if(isset($_GET['event']) && loggedIn())
 						<div class="container-image">
 							<a href="images/uploads/'.$db->filename.'" data-lightbox="photosadmin" data-title="Uploaded by '.getName($db->trooperid).'" id="photo'.$db->id.'"><img src="images/uploads/resize/'.getFileName($db->filename).'.jpg" width="200px" height="200px" class="image-c" /></a>
 							
-							<p class="container-text">';
-							
-								// If owned by trooper or is admin
-								if(isAdmin() || isset($_SESSION['id']) && $db->trooperid == $_SESSION['id'])
-								{
-									echo '<a href="index.php?action=editphoto&id='.$db->id.'">Edit</a>';
-								}
-
-								echo '<br /><a href="#" photoid="'.$db->id.'" name="tagged">' . (isInPhoto($db->id, $_SESSION['id']) ? 'Untag Me' : 'Tag Me') . '</a>';
-								
-							echo '
+							<p class="container-text">
+								<a href="index.php?action=editphoto&id='.$db->id.'">Edit</a>
+								<br />
+								<a href="#" photoid="'.$db->id.'" name="tagged">' . (isInPhoto($db->id, $_SESSION['id']) ? 'Untag Me' : 'Tag Me') . '</a>
 							</p>
 						</div>';
 						

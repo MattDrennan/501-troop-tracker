@@ -261,6 +261,7 @@ function selectAdd()
 	$("#multiple_event_selectEdit").select2();
 	$("#eventLinkID").select2();
 	$("#favoriteCostumeSelect").select2();
+	$("#tagTroopersSelect").select2();
 }
 
 $(document).ready(function()
@@ -429,6 +430,22 @@ $(document).ready(function()
 			type: "POST",
 			url: "process.php?do=savefavoritecostumes",
 			data: "costumes=" + $("#favoriteCostumeSelect").val(),
+			success: function(data)
+			{
+				// Save
+			}
+		});
+	})
+
+	// Favorite Costume - Save favorite costumes
+	$("body").on("change", "#tagTroopersSelect", function(e)
+	{
+		var photoid = $("#tagTroopersSelect option:selected").attr("photoid");
+
+		$.ajax({
+			type: "POST",
+			url: "process.php?do=tagphotobulk",
+			data: "photoid=" + photoid + "&troopers=" + $("#tagTroopersSelect").val(),
 			success: function(data)
 			{
 				// Save
