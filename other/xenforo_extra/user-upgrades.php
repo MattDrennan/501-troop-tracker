@@ -60,7 +60,7 @@ try {
     ", [$startOfMonth, $endOfMonth]);
 
     // Combine the results into one array
-    $combinedResults = array_merge($activeResults, $expiredResults);
+    $combinedResults = array_merge($userUpgradeActive, $userUpgradeExpired);
 
     // Fetch data from xf_user_upgrade
     $userUpgrades = $db->fetchAll("SELECT * FROM xf_user_upgrade");
