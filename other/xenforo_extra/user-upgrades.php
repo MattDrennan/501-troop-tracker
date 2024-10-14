@@ -64,6 +64,9 @@ try {
 
     // Fetch data from xf_user_upgrade
     $userUpgrades = $db->fetchAll("SELECT * FROM xf_user_upgrade");
+
+    // Fetch payment log
+    $paymentLog = $db->fetchAll("SELECT * FROM xf_payment_provider_log WHERE log_message = 'Payment received, upgraded\/extended.' ORDER BY provider_log_id DESC");
 } catch (\Exception $e) {
     http_response_code(500);  // Internal Server Error
     echo json_encode(['error' => 'Database query failed', 'details' => $e->getMessage()]);
@@ -75,7 +78,8 @@ $response = [
     'userUpgradeActive' => $userUpgradeActive,
     'userUpgradeExpired' => $userUpgradeExpired,
     'userUpgrades' => $userUpgrades,
-    'combinedResults' => $combinedResults
+    'combinedResults' => $combinedResults,
+    'paymentLog' => $paymentLog
 ];
 
 // Output the combined array as JSON

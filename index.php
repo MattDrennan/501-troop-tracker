@@ -960,14 +960,17 @@ if(isset($_GET['profile']) && loggedIn())
 				    foreach ($obj['userUpgrades'] as $result2) {
 				        // Check if this result has the specific user_upgrade_id
 				        if (isset($result2['user_upgrade_id']) && $result2['user_upgrade_id'] == $result['user_upgrade_id'] && $result['user_id'] == $user_id) {
-							$startDate = new DateTime('@' . $result['start_date']);
-							$endDate = new DateTime('@' . $result['end_date']);
+						    foreach ($obj['paymentLog'] as $result3) {
+						        // Check if this result has the specific purchase_request_key
+						        if($result['purchase_request_key'] == $result3['purchase_request_key']) {
+						        	$obj2 = json_decode($result3['log_details'], true);
+						        	$timestamp = strtotime($obj2['payment_date']);
+									$date = new DateTime();
+									$date->setTimestamp($timestamp);
 
-							// Calculate the difference in months between the two dates
-							$interval = $startDate->diff($endDate);
-							$months = ($interval->y * 12) + $interval->m;
-
-		            		echo '<li>$' . (intval($result2['cost_amount']) * $months) . ' on ' . $startDate->format('m/d/Y') . ' - ' . $endDate->format('m/d/Y') . '</li>';
+									echo '<li>$' . intval($obj2['payment_gross']) . ' on ' . $date->format('m/d/Y') . '</li>';
+						        }
+						    }
 				        }
 				    }
 			    }

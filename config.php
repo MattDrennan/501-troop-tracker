@@ -800,9 +800,6 @@ function drawSupportGraph()
 		    die('Error decoding JSON data.');
 		}
 
-		// Initialize a variable to store the total cost
-		//$getSupportNum = 0;
-
 		// Check if the combinedResults array exists
 		if (isset($obj['combinedResults']) && is_array($obj['combinedResults'])) {
 		    // Loop through each result in combinedResults
