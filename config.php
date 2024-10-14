@@ -800,16 +800,44 @@ function drawSupportGraph()
 		    die('Error decoding JSON data.');
 		}
 
+		// Get the current month and year
+		$currentMonth = date('m');
+		$currentYear = date('Y');
+
+		// Get the current month and year
+		$currentMonth = date('m');
+		$currentYear = date('Y');
+
 		// Check if the combinedResults array exists
 		if (isset($obj['combinedResults']) && is_array($obj['combinedResults'])) {
 		    // Loop through each result in combinedResults
 		    foreach ($obj['combinedResults'] as $result) {
-			    foreach ($obj['userUpgrades'] as $result2) {
-			        // Check if this result has the specific user_upgrade_id
-			        if (isset($result2['user_upgrade_id']) && $result2['user_upgrade_id'] == $result['user_upgrade_id']) {
-		            	$getSupportNum += $result2['cost_amount'];
-			        }
-			    }
+		        // Ensure the 'start_date' and 'end_date' exist and are valid timestamps
+		        if (isset($result['start_date']) && isset($result['end_date']) &&
+		            is_numeric($result['start_date']) && is_numeric($result['end_date'])) {
+
+		            // Get the month and year of the result's start_date
+		            $startMonth = date('m', $result['start_date']);
+		            $startYear = date('Y', $result['start_date']);
+
+		            // Get the month and year of the result's end_date
+		            $endMonth = date('m', $result['end_date']);
+		            $endYear = date('Y', $result['end_date']);
+
+		            // Check if the current month is between the start_date and end_date
+		            if (
+		                ($startYear < $currentYear || ($startYear == $currentYear && $startMonth <= $currentMonth)) &&
+		                ($endYear > $currentYear || ($endYear == $currentYear && $endMonth >= $currentMonth))
+		            ) {
+		                // Loop through each userUpgrade
+		                foreach ($obj['userUpgrades'] as $result2) {
+		                    // Check if this result has the specific user_upgrade_id
+		                    if (isset($result2['user_upgrade_id']) && $result2['user_upgrade_id'] == $result['user_upgrade_id']) {
+		                        $getSupportNum += $result2['cost_amount'];
+		                    }
+		                }
+		            }
+		        }
 		    }
 		}
 		
