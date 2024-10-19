@@ -4814,9 +4814,10 @@ function ifEmpty($value, $message = "EMPTY")
  * Returns costume string from costume ID
  * 
  * @param int $value ID of costume
+ * @param bool $abbreviation Return the abbreviation
  * @return string Returns costume name
 */
-function getCostume($id)
+function getCostume($id, $abbreviation = true)
 {
 	global $conn;
 
@@ -4829,6 +4830,8 @@ function getCostume($id)
 
 	if(is_null($value)) {
 		return '';
+	} else if(!$abbreviation) {
+		return $value;
 	} else {
 		return getCostumeAbbreviation(getCostumeClub($id)) . ' ' . $value;
 	}
@@ -4910,7 +4913,7 @@ function mainCostumesBuild($trooperid)
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
-			$returnQuery .= ", '".@addslashes(getCostume($db->costumeid))."'";
+			$returnQuery .= ", '".@addslashes(getCostume($db->costumeid, false))."'";
 		}
 	}
 	
