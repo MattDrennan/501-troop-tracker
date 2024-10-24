@@ -6577,9 +6577,45 @@ if(isset($_GET['event']) && loggedIn())
 					    Dropzone.autoDiscover = false;
 					  
 					    var myDropzone = new Dropzone(".dropzone", { 
-					       maxFilesize: 10,
-					       acceptedFiles: ".jpeg,.jpg,.png,.gif",
-					       dictDefaultMessage: "Drop NON-INSTRUCTIONAL images here<br />(use button above to change upload type)"
+							maxFilesize: 10,
+							acceptedFiles: ".jpeg,.jpg,.png,.gif",
+							dictDefaultMessage: "Drop NON-INSTRUCTIONAL images here<br />(use button above to change upload type)",
+							// Error Handling Events
+							init: function() {
+							    // Handle errors on client-side (e.g., invalid file type or size)
+							    this.on("error", function(file, message) {
+							        if (file.size > this.options.maxFilesize * 1024 * 1024) {
+							            alert("Error: File size exceeds 10MB!");
+							        } else if (message.includes("You can\'t upload files of this type.")) {
+							            alert("Error: Invalid file type. Please upload JPEG, PNG, or GIF.");
+							        } else {
+							            alert("Upload Error: " + message);
+							        }
+							        console.error("Client-side error:", message);
+							    });
+
+							    // Handle server-side errors (e.g., HTTP errors)
+							    this.on("error", function(file, response) {
+							        if (response.status === 413) {
+							            alert("Error: File too large to process on the server.");
+							        } else if (response.status >= 500) {
+							            alert("Server Error: Please try again later.");
+							        }
+							        console.error("Server-side error:", response);
+							    });
+
+							    // Handle network issues and timeout
+							    this.on("timeout", function(file) {
+							        alert("Error: Upload timed out. Please try again.");
+							        console.error("Upload timeout for:", file.name);
+							    });
+
+							    // Handle successful uploads
+							    this.on("success", function(file, response) {
+							        console.log("Upload successful:", response);
+							        //alert("File uploaded successfully!");
+							    });
+							}
 					    });
 					      
 					</script>

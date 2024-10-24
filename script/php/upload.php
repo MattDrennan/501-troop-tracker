@@ -88,19 +88,41 @@ if (!empty($_FILES))
 	imagejpeg($imgResized, $storeFolder . "resize/" . $info['filename'] . ".jpg");
 	
 	// Check if troop instruction image
-	if($_POST['admin'] == 0)
-	{
-		// Insert file into database
-		$statement = $conn->prepare("INSERT INTO uploads (troopid, trooperid, filename) VALUES (?, ?, ?)");
-		$statement->bind_param("iis", $_POST['troopid'], $_POST['trooperid'], $fileName);
-		$statement->execute();
-	}
-	else
-	{
-		// Insert file into database - admin
-		$statement = $conn->prepare("INSERT INTO uploads (troopid, trooperid, filename, admin) VALUES (?, ?, ?, '1')");
-		$statement->bind_param("iis", $_POST['troopid'], $_POST['trooperid'], $fileName);
-		$statement->execute();
+	try {
+	    // Check if troop instruction image
+	    if ($_POST['admin'] == 0) {
+	        // Prepare the SQL statement
+	        $stmt = $conn->prepare("INSERT INTO uploads (troopid, trooperid, filename) VALUES (?, ?, ?)");
+	    } else {
+	        // Prepare the SQL statement for admin
+	        $stmt = $conn->prepare("INSERT INTO uploads (troopid, trooperid, filename, admin) VALUES (?, ?, ?, '1')");
+	    }
+
+	    // Check if the SQL statement was prepared successfully
+	    if (!$stmt) {
+	        throw new Exception("SQL Preparation Error: " . $conn->error);
+	    }
+
+	    // Bind the parameters
+	    $troopid = (int) $_POST['troopid'];
+	    $trooperid = (int) $_POST['trooperid'];
+
+	    $stmt->bind_param("iis", $troopid, $trooperid, $fileName);
+
+	    // Execute the SQL statement
+	    if (!$stmt->execute()) {
+	        throw new Exception("SQL Execution Error: " . $stmt->error);
+	    }
+
+	    // If successful, send a success response
+	    echo json_encode(['success' => true, 'message' => 'File uploaded successfully.']);
+	} catch (Exception $e) {
+	    // Log the MySQL error to a log file
+	    //error_log("[" . date("Y-m-d H:i:s") . "] MySQL Error: " . $e->getMessage() . "\n");
+
+	    // Send a JSON error response to Dropzone
+	    echo json_encode(['success' => false, 'message' => 'Database error: Please contact the administrator.']);
+	    http_response_code(500); // Internal Server Error
 	}
 }
 

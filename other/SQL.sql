@@ -2,6 +2,9 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
+-- Generation Time: Oct 24, 2024 at 07:36 PM
+-- Server version: 8.0.35
+-- PHP Version: 7.4.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -448,10 +451,10 @@ CREATE TABLE `uploads` (
   `id` int NOT NULL,
   `troopid` int NOT NULL,
   `trooperid` int NOT NULL,
-  `filename` varchar(255) NOT NULL,
+  `filename` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `admin` int NOT NULL DEFAULT '0',
   `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Indexes for dumped tables
