@@ -3110,7 +3110,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					echo '
 					<tr name="row_'.$db->id.'">
 						<td>
-							<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.'</a>
+							<a href="index.php?profile='.$db->id.'" target="_blank">'. ($_GET['squad'] <= count($squadArray) ? (ifIn501Roster($db->tkid, $_GET['squad']) ? '' : '(?) ') : '') . $db->name.'</a>
 						</td>
 
 						<td>
@@ -6613,7 +6613,7 @@ if(isset($_GET['event']) && loggedIn())
 							    // Handle successful uploads
 							    this.on("success", function(file, response) {
 							        console.log("Upload successful:", response);
-							        //alert("File uploaded successfully!");
+							        //"alert("File uploaded successfully!");
 							    });
 							}
 					    });

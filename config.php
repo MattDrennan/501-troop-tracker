@@ -2019,6 +2019,39 @@ function getSGINfo($sgid)
 }
 
 /**
+ * Returns a boolean if found in the 501st squad roster
+ * 
+ * @param int $id The ID of the trooper
+ * @param int $squad The ID of the squad to search
+ * @return array Returns an array of 501st information about the trooper
+*/
+function ifIn501Roster($id, $squad)
+{
+	global $conn, $squadArray;
+
+	$found = false;
+	
+	// Check if 501st member
+	if($squad <= count($squadArray))
+	{
+		// Get data
+		$statement = $conn->prepare("SELECT * FROM 501st_troopers WHERE legionid = ? AND squad = ?");
+		$statement->bind_param("ii", $id, $squad);
+		$statement->execute();
+		
+		// Run query...
+		if ($result = $statement->get_result()) {
+			while ($db = mysqli_fetch_object($result)) {
+				$found = true;
+			}
+		}
+	}
+	
+	// Return
+	return $found;
+}
+
+/**
  * Returns an array of 501st info about the trooper
  * 
  * @param int $id The ID of the trooper

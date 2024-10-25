@@ -226,6 +226,11 @@ Search.appendIndex(
             "summary": "Returns\u0020an\u0020array\u0020of\u0020Saber\u0020Guild\u0020info\u0020about\u0020trooper",
             "url": "namespaces/default.html#function_getSGINfo"
         },                {
+            "fqsen": "\\ifIn501Roster\u0028\u0029",
+            "name": "ifIn501Roster",
+            "summary": "Returns\u0020a\u0020boolean\u0020if\u0020found\u0020in\u0020the\u0020501st\u0020squad\u0020roster",
+            "url": "namespaces/default.html#function_ifIn501Roster"
+        },                {
             "fqsen": "\\get501Info\u0028\u0029",
             "name": "get501Info",
             "summary": "Returns\u0020an\u0020array\u0020of\u0020501st\u0020info\u0020about\u0020the\u0020trooper",
