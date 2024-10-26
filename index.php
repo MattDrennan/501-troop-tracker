@@ -3110,11 +3110,11 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					echo '
 					<tr name="row_'.$db->id.'">
 						<td>
-							<a href="index.php?profile='.$db->id.'" target="_blank">'. ($_GET['squad'] <= count($squadArray) ? (ifIn501Roster($db->tkid, $_GET['squad']) ? '' : '(?) ') : '') . $db->name.'</a>
+							'. (isset($_GET['squad']) && ($_GET['squad'] <= count($squadArray) || $_GET['squad'] == "all") ? (ifIn501Roster($db->tkid, $_GET['squad']) ? '' : '<a href="https://www.501st.com/memberAPI/v3/legionId/' . $db->tkid . '" target="_blank">(?)</a> ') : '') . '<a href="index.php?profile='.$db->id.'" target="_blank">' . $db->name.'</a>
 						</td>
 
 						<td>
-							'.$db->forum_id.'
+							'. (($db->user_id > 0) ? '<a href="https://www.fl501st.com/boards/index.php?members/'.$db->forum_id.'.'.$db->user_id.'" target="_blank">'.$db->forum_id.'</a>' : $db->forum_id) .'
 						</td>';
 
 						if(isset($_GET['squad']) && $_GET['squad'] != "all" && $_GET['squad'] > count($squadArray) && $clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3'] != "")

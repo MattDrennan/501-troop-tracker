@@ -2031,18 +2031,31 @@ function ifIn501Roster($id, $squad)
 
 	$found = false;
 	
-	// Check if 501st member
-	if($squad <= count($squadArray))
-	{
+	if($squad == "all") {
 		// Get data
-		$statement = $conn->prepare("SELECT * FROM 501st_troopers WHERE legionid = ? AND squad = ?");
-		$statement->bind_param("ii", $id, $squad);
+		$statement = $conn->prepare("SELECT * FROM 501st_troopers WHERE legionid = ?");
+		$statement->bind_param("i", $id);
 		$statement->execute();
 		
 		// Run query...
 		if ($result = $statement->get_result()) {
 			while ($db = mysqli_fetch_object($result)) {
 				$found = true;
+			}
+		}
+	} else {
+		// Check if 501st member
+		if($squad <= count($squadArray)) {
+			// Get data
+			$statement = $conn->prepare("SELECT * FROM 501st_troopers WHERE legionid = ? AND squad = ?");
+			$statement->bind_param("ii", $id, $squad);
+			$statement->execute();
+			
+			// Run query...
+			if ($result = $statement->get_result()) {
+				while ($db = mysqli_fetch_object($result)) {
+					$found = true;
+				}
 			}
 		}
 	}
