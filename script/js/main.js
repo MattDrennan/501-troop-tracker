@@ -392,15 +392,36 @@ $(document).ready(function()
 	});
 
 	// Request Account - Account Type
-	$("body").on("click", "[name=accountType]", function(e)
-	{
+	$("body").on("click", "[name=accountType]", function(e) {
+		if($("[name=squad_request]").val() > squadCount) {
+			return;
+		}
+
 		if($(this).val() == "4") {
 			$("#tkid").val(0);
 			$("#tkid").prop("readonly", true);
-		}
-		else
-		{
+			$("#tkid_box").hide();
+		} else {
 			$("#tkid").prop("readonly", false);
+			$("#tkid").val('');
+			$("#tkid_box").show();
+		}
+	})
+
+	// Request Account - Account Type
+	$("body").on("change", "[name=squad_request]", function(e) {
+		if($("[name=accountType]:checked").val() == "4") {
+			return;
+		}
+
+		if($(this).val() > squadCount) {
+			$("#tkid").val(0);
+			$("#tkid").prop("readonly", true);
+			$("#tkid_box").hide();
+		} else {
+			$("#tkid").prop("readonly", false);
+			$("#tkid").val('');
+			$("#tkid_box").show();
 		}
 	})
 
@@ -740,21 +761,6 @@ $(document).ready(function()
 				$("div[name=troopersRemainingDisplay]").html(json.message2);
 			}
 		});
-	})
-
-	// Account Setup - Change Squad
-	$("body").on("change", "#squad", function(e)
-	{
-		// If Rebel Legion
-		if($(this).val() == 6)
-		{
-			$("#rebelid").show();
-		}
-		else
-		{
-			// If 501st
-			$("#rebelid").hide();
-		}
 	})
 
 	// Event Notifications - Subscribe / Unsubscribe

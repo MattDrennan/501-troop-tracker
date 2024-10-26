@@ -39,7 +39,7 @@ if(isset($_GET['do']) && isset($_GET['event']) && $_GET['do'] == "load-add-frien
 			}
 			
 			// Get TKID
-			$tkid = readTKNumber($db->tkid, $db->squad);
+			$tkid = readTKNumber($db->tkid, $db->squad, $db->troopida);
 
 			// List troopers
 			echo '
@@ -1899,7 +1899,7 @@ if(isset($_GET['do']) && $_GET['do'] == "getuser" && loggedIn())
 				}
 				
 				// Array variables
-				$array = array('name' => readInput($db->name), 'email' => $db->email, 'forum' => $db->forum_id, 'phone' => $db->phone, 'squad' => getSquadName($db->squad), 'tkid' => readTKNumber($db->tkid, $db->squad), 'link' => $link, 'user_id' => $db->user_id);
+				$array = array('name' => readInput($db->name), 'email' => $db->email, 'forum' => $db->forum_id, 'phone' => $db->phone, 'squad' => getSquadName($db->squad), 'tkid' => readTKNumber($db->tkid, $db->squad, $db->id), 'link' => $link, 'user_id' => $db->user_id);
 
 				// Loop through clubs
 				foreach($clubArray as $club => $club_value)
@@ -2118,7 +2118,7 @@ if(isset($_GET['do']) && $_GET['do'] == "managetroopers" && loggedIn() && isAdmi
 				$statement->execute();
 			}
 
-			$array = array('success' => 'true', 'newname' => $_POST['user'] . " - " . readTKNumber($tkid, getTrooperSquad($_POST['userIDE'])) . " - " . $_POST['forumid'], 'data' => $message);
+			$array = array('success' => 'true', 'newname' => $_POST['user'] . " - " . readTKNumber($tkid, getTrooperSquad($_POST['userIDE']), $_POST['userIDE']) . " - " . $_POST['forumid'], 'data' => $message);
 			echo json_encode($array);
 		}
 		else
@@ -2260,7 +2260,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 		}
 
 		// Set TKID
-		$tkid = $_POST['tkid'];
+		$tkid = !empty($_POST['tkid']) ? $_POST['tkid'] : 0;
 		
 		// If Forum ID empty
 		if($_POST['forumid'] == "")
@@ -2270,35 +2270,35 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 		}
 		
 		// If TKID is greather than 11 characters
-		if(strlen($tkid) > 11)
+		if(strlen($tkid) > 11 && $_POST['squad_request'] <= count($squadArray))
 		{
 			$failed = true;
 			echo '<li>TKID must be less than eleven (11) characters.</li>';
 		}
 
 		// If TKID is not numeric
-		if(!is_numeric($tkid))
+		if(!is_numeric($tkid) && $_POST['squad_request'] <= count($squadArray))
 		{
 			$failed = true;
 			echo '<li>TKID must be an integer.</li>';
 		}
 		
 		// Check if TKID can be 0
-		if($_POST['accountType'] == 1 && $tkid == 0)
+		if($_POST['accountType'] == 1 && $tkid == 0 && $_POST['squad_request'] <= count($squadArray))
 		{
 			$failed = true;
 			echo '<li>TKID cannot be zero.</li>';
 		}
 		
 		// Check if TKID cannot be 0
-		if($_POST['accountType'] == 4 && $tkid > 0)
+		if($_POST['accountType'] == 4 && $tkid > 0 && $_POST['squad_request'] <= count($squadArray))
 		{
 			$failed = true;
 			echo '<li>TKID must be zero for a handler account.</li>';
 		}
 		
 		// Set squad variable
-		$squad = $_POST['squad'];
+		$squad = $_POST['squad_request'];
 		
 		// Check if 501st
 		if($squad <= count($squadArray))
@@ -2310,17 +2310,8 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			$statement->store_result();
 			$idcheck = $statement->num_rows;
 		}
-		else
-		{
-			// In a club - query by club
-			$statement = $conn->prepare("SELECT id FROM troopers WHERE tkid = ? AND squad = ?");
-			$statement->bind_param("ii", $tkid, $squad);
-			$statement->execute();
-			$statement->store_result();
-			$idcheck = $statement->num_rows;
-		}
 		
-		// Query 501st forum
+		// Query forum
 		$statement = $conn->prepare("SELECT forum_id FROM troopers WHERE forum_id = ?");
 		$statement->bind_param("s", $_POST['forumid']);
 		$statement->execute();
@@ -2412,7 +2403,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			
 			// Set permissions
 			// 501
-			if($_POST['squad'] <= count($squadArray))
+			if($_POST['squad_request'] <= count($squadArray))
 			{
 				$p501 = $_POST['accountType'];
 			}
@@ -2453,7 +2444,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 				}
 
 				// Make member of club
-				if($clubID == $_POST['squad'])
+				if($clubID == $_POST['squad_request'])
 				{
 					// Change value
 					${$club_value['db']} = $_POST['accountType'];
@@ -3165,7 +3156,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 					</td>
 
 					<td>
-						<div name="tknumber1'.$db->trooperid.'" signid="'.$db->id.'"><a href="index.php?profile='.$db->trooperid.'" target="_blank">'.readTKNumber(getTKNumber($db->trooperid), getSquadID($db->trooperid)).' - '.getName($db->trooperid).'</a></div>';
+						<div name="tknumber1'.$db->trooperid.'" signid="'.$db->id.'"><a href="index.php?profile='.$db->trooperid.'" target="_blank">'.readTKNumber(getTKNumber($db->trooperid), getSquadID($db->trooperid), $db->trooperid).' - '.getName($db->trooperid).'</a></div>';
 
 						// If placeholder
 						if($db->trooperid == placeholder)
@@ -3321,7 +3312,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				}
 				
 				// Get TKID
-				$tkid = readTKNumber($db->tkid, $db->squad);
+				$tkid = readTKNumber($db->tkid, $db->squad, $db->troopida);
 
 				// List troopers
 				echo '

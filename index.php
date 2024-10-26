@@ -189,7 +189,7 @@ echo '
 	<script src="script/lib/jquery-ui-timepicker-addon.js"></script>
 	<script src="script/js/validate/jquery.validate.min.js"></script>
 	<script src="script/js/validate/additional-methods.min.js"></script>
-	<script src="script/js/validate/validate.js?v=1"></script>
+	<script src="script/js/validate/validate.js?v=2"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
 	
@@ -532,9 +532,7 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 		<form action="process.php?do=requestaccess" name="requestAccessForm" id="requestAccessForm" method="POST">
 			First & Last Name (use a nickname if you wish to remain anonymous): <input type="text" name="name" id="name" />
 			<br /><br />
-			TKID (numbers only): <input type="number" min="0" name="tkid" id="tkid" />
-			<p><i>Non-501st clubs, please enter an ID number of your choosing.</i></p>
-			<input type="radio" name="accountType" value="1" CHECKED> Regular <input type="radio" name="accountType" value="4"> Handler 
+			Account Type: <input type="radio" name="accountType" value="1" CHECKED> Regular <input type="radio" name="accountType" value="4"> Handler 
 			<br /><br />
 			Phone (Optional): <input type="text" name="phone" id="phone" />
 			<br /><br />
@@ -556,15 +554,19 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 			}
 
 			echo '
-			<p>Squad/Club:</p>
-			<select name="squad" id="squad">
+			Squad/Club:
+			<select name="squad_request" id="squad">
 				'.squadSelectList().'
 				<option value="0">'.garrison.' / 501st Visitor</option>
 			</select>
+			<span id="tkid_box">
+				<br /><br />
+				TKID (numbers only): <input type="number" min="0" name="tkid" id="tkid" />
+			</span>
 			<br /><br />
 			<input type="submit" name="submitRequest" value="Request" />
 			<br />
-			<b>If you are a dual member, you will only need one account. Make sure your account is registered as a 501st Legion member.</b>
+			<b>If you are a dual member, you will only need one account.</b>
 		</form>
 	</div>
 
@@ -1115,7 +1117,7 @@ if(isset($_GET['action']) && $_GET['action'] == "costume" && isset($_GET['costum
 
 			echo '
 			<tr>
-				<td><a href="index.php?profile='.$db->trooperid.'">'.$db->trooperName.'</a></td>	<td>'.readTKNumber($db->tkid, $db->squad).'</td>	<td>'.$db->troopCount.'</td>
+				<td><a href="index.php?profile='.$db->trooperid.'">'.$db->trooperName.'</a></td>	<td>'.readTKNumber($db->tkid, $db->squad, $db->trooperid).'</td>	<td>'.$db->troopCount.'</td>
 			</tr>';
 
 			$i++;
@@ -1308,7 +1310,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 					if(isset($db->trooperid))
 					{
 						echo '
-						<td><a href="index.php?profile='.$db->trooperid.'">'.readTKNumber(getTKNumber($db->trooperid), getTrooperSquad($db->trooperid)).'</a></td>';
+						<td><a href="index.php?profile='.$db->trooperid.'">'.readTKNumber(getTKNumber($db->trooperid), getTrooperSquad($db->trooperid), $db->trooperid).'</a></td>';
 					}
 					else
 					{
@@ -1361,7 +1363,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 
 					echo '
 					<tr>
-						<td><a href="index.php?profile='.$db->trooperid.'">'.$db->trooperName.'</a></td>	<td>'.readTKNumber($db->tkid, $db->squad).'</td>	<td>'.$db->troopCount.'</td>
+						<td><a href="index.php?profile='.$db->trooperid.'">'.$db->trooperName.'</a></td>	<td>'.readTKNumber($db->tkid, $db->squad, $db->trooperid).'</td>	<td>'.$db->troopCount.'</td>
 					</tr>';
 
 					$i++;
@@ -1598,10 +1600,10 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			// Display
 			echo '
 			<tr>
-				<td><a href="index.php?profile='.$value[3].'">'.readTKNumber($value[0], $value[4]).' - '.$value[2].'</a></td>	<td>'.$value[1].'</td>	<td>'.$value[5].'</td>
+				<td><a href="index.php?profile='.$value[3].'">'.readTKNumber($value[0], $value[4], $value[3]).' - '.$value[2].'</a></td>	<td>'.$value[1].'</td>	<td>'.$value[5].'</td>
 			</tr>';
 
-			array_push($list, [readTKNumber($value[0], $value[4]).' - '.$value[2], $value[1], $value[5]]);
+			array_push($list, [readTKNumber($value[0], $value[4], $value[3]).' - '.$value[2], $value[1], $value[5]]);
 		}
 	}
 	// Donation search
@@ -2688,7 +2690,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				{
 					echo '
 					<div class="title">
-						<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.'<br /><br />'.readTKNumber($db->tkid, $db->squad).'</a>
+						<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.'<br /><br />'.readTKNumber($db->tkid, $db->squad, $db->id).'</a>
 						'.($db->note != "" ? '<br /><br />' . $db->note : '').'
 					</div>';
 					
@@ -2722,7 +2724,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				{
 					echo '
 					<div class="title">
-						<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.'<br /><br />'.readTKNumber($db->tkid, $db->squad).'</a>
+						<a href="index.php?profile='.$db->id.'" target="_blank">'.$db->name.'<br /><br />'.readTKNumber($db->tkid, $db->squad, $db->id).'</a>
 						'.($db->note != "" ? '<br /><br />' . $db->note : '').'
 					</div>';
 					
@@ -3244,7 +3246,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						echo '
 						<option
 						value="'.$db->id.'"
-						tkid="'.readTKNumber($db->tkid, $db->squad).'"
+						tkid="'.readTKNumber($db->tkid, $db->squad, $db->id).'"
 						tkidBasic="'.$db->tkid.'"
 						troopername="'.$db->name.'"
 						forum_id="'.$db->forum_id.'"';
@@ -3257,7 +3259,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						}
 
 						echo '
-						>'.$db->name.' - '.$db->forum_id.' - '.readTKNumber($db->tkid, $db->squad).'</option>';
+						>'.$db->name.' - '.$db->forum_id.' - '.readTKNumber($db->tkid, $db->squad, $db->id).'</option>';
 
 						// Increment
 						$i++;
@@ -3418,7 +3420,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						</td>
 						
 						<td>
-							'.readTKNumber($db->tkid, $db->squad).'
+							'.readTKNumber($db->tkid, $db->squad, $db->id).'
 						</td>';
 						
 						// If squad set
@@ -3924,7 +3926,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<select name="userIDAward" id="userIDAward">';
 					}
 
-					echo '<option value="'.$db->id.'">'.readInput($db->name).' - '.readTKNumber($db->tkid, $db->squad).' - '.$db->forum_id.'</option>';
+					echo '<option value="'.$db->id.'">'.readInput($db->name).' - '.readTKNumber($db->tkid, $db->squad, $db->id).' - '.$db->forum_id.'</option>';
 
 					// Increment
 					$i++;
@@ -4720,7 +4722,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<select name="userID" id="userID">';
 					}
 
-					echo '<option value="'.$db->id.'" '.echoSelect($db->id, $uid).'>'.$db->name.' - '.readTKNumber($db->tkid, $db->squad).' - '.$db->forum_id.'</option>';
+					echo '<option value="'.$db->id.'" '.echoSelect($db->id, $uid).'>'.$db->name.' - '.readTKNumber($db->tkid, $db->squad, $db->id).' - '.$db->forum_id.'</option>';
 
 					// Increment
 					$i++;
@@ -5429,7 +5431,7 @@ if(isset($_GET['action']) && $_GET['action'] == "editphoto" && loggedIn())
 						$isTagged = (isInPhoto($_GET['id'], $db3->id)) ? 'SELECTED' : '';
 
 						echo '
-						<option value="'.$db3->id.'" photoid="'.cleanInput($_GET['id']).'" '.$isTagged.'>'.$db3->name.' - '.$db3->forum_id.' - '.readTKNumber($db3->tkid, $db3->squad).'</option>';
+						<option value="'.$db3->id.'" photoid="'.cleanInput($_GET['id']).'" '.$isTagged.'>'.$db3->name.' - '.$db3->forum_id.' - '.readTKNumber($db3->tkid, $db3->squad, $db3->id).'</option>';
 					}
 				}
 		
@@ -5654,7 +5656,7 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed() && 
 		if(doesTKExist($_POST['tkid'], $_POST['squad']))
 		{
 			// Is this TK ID registered?
-			if(!isTKRegistered($_POST['forum_id'], $_POST['squad']))
+			if(!isTKRegistered($_POST['tkid'], $_POST['squad']))
 			{
 				// Login with forum
 				$forumLogin = loginWithForum($_POST['forum_id'], $_POST['password']);
@@ -5663,7 +5665,7 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed() && 
 				if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
 				{
 					// If 501st
-					if(cleanInput($_POST['squad']) <= count($squadArray))
+					if($_POST['squad'] <= count($squadArray))
 					{
 						// Query the database
 						$password = password_hash($_POST['password'], PASSWORD_DEFAULT);
@@ -5678,38 +5680,17 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed() && 
 					}
 					else
 					{
-						$statement = $conn->prepare("SELECT id FROM troopers WHERE tkid = ? AND squad = ?");
-						$statement->bind_param("ii", $_POST['tkid2'], $_POST['squad']);
+						// If a club
+						// Query the database
+						$password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+						$rebelforum = filter_var($_POST['tkid'], FILTER_SANITIZE_ADD_SLASHES);
+
+						$statement = $conn->prepare("UPDATE troopers SET user_id = ?, email = ?, password = ?, squad = ? WHERE rebelforum = ?");
+						$statement->bind_param("issis", $forumLogin['user']['user_id'], $forumLogin['user']['email'], $password, $_POST['squad'], $rebelforum);
 						$statement->execute();
-						$statement->store_result();
-						$tkIDTaken = $statement->num_rows;
-
 						
-						if($tkIDTaken == 0)
-						{
-							if($_POST['tkid2'] != "")
-							{
-								// If a club
-								// Query the database
-								$password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-								$rebelforum = filter_var($_POST['tkid'], FILTER_SANITIZE_ADD_SLASHES);
-
-								$statement = $conn->prepare("UPDATE troopers SET user_id = ?, email = ?, tkid = ?, password = ?, squad = ? WHERE rebelforum = ?");
-								$statement->bind_param("isisis", $forumLogin['user']['user_id'], $forumLogin['user']['email'], $_POST['tkid2'], $password, $_POST['squad'], $rebelforum);
-								$statement->execute();
-								
-								// Display output
-								echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';
-							}
-							else
-							{
-								echo 'Please enter an ID.';
-							}
-						}
-						else
-						{
-							echo 'The ID you have chosen is already in use. Please pick another.';
-						}
+						// Display output
+						echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';
 					}
 				}
 				else
@@ -5719,7 +5700,7 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed() && 
 			}
 			else
 			{
-				echo 'This TK ID or Rebel Legion user is already registred! Please contact an admin if this issue persists.';
+				echo 'This TK ID or Rebel Legion user is already registered, or there is an issue with your input! Please contact an admin if this issue persists.';
 			}
 		}
 		else
@@ -5748,11 +5729,6 @@ if(isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed() && 
 			<select name="squad" id="squad">
 				'.squadSelectList(true, "", 0, 0, true).'
 			</select>
-
-			<div style="display: none;" id="rebelid">
-				<p>Choose an ID number (1 to 11 digits):</p>
-				<input type="text" maxlength="11" name="tkid2" id="tkid2" />
-			</div>
 			
 			<br /><br />
 
@@ -7367,7 +7343,7 @@ if(!isWebsiteClosed())
 					echo ', ';
 				}
 
-				echo '<a href="index.php?profile='.$db->id.'">'  . $db->forum_id . ' (' . readTKNumber($db->tkid, $db->squad) . ')</a>';
+				echo '<a href="index.php?profile='.$db->id.'">'  . $db->forum_id . ' (' . readTKNumber($db->tkid, $db->squad, $db->id) . ')</a>';
 
 				$i++;
 			}
@@ -7499,7 +7475,7 @@ echo '
 
 echo '
 <!-- External JS File -->
-<script type="text/javascript" src="script/js/main.js?v=3"></script>
+<script type="text/javascript" src="script/js/main.js?v=4"></script>
 </body>
 </html>';
 

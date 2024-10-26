@@ -3391,35 +3391,34 @@ function removeLetters($string)
  * 
  * @param int $tkid The TKID of the trooper
  * @param int $squad The squad or club ID of the trooper
+ * @param int $trooperid The ID of the trooper
  * @return int Returns the TKID of the trooper based on squad or club
 */
-function readTKNumber($tkid, $squad)
+function readTKNumber($tkid, $squad, $trooperid)
 {
 	global $conn, $clubArray, $squadArray;
 
-	if($tkid == 0)
-	{
+	if($tkid == 0) {
 		$tkid = "Not Assigned";
 	} else {
-		// Is the trooper in a club?
-		$inClub = false;
+		// If in a club other than 501st
+		if($squad > count($squadArray)) {
+			if($clubArray[intval($squad) - (count($squadArray) + 1)]['db3'] != "") {
+				// Get TK prefix from database
+				$statement = $conn->prepare("SELECT " . $clubArray[intval($squad) - (count($squadArray) + 1)]['db3'] . " FROM troopers WHERE id = ?");
+				$statement->bind_param("i", $trooperid);
+				$statement->execute();
+				$statement->bind_result($tkid);
+				$statement->fetch();
+				$statement->close();
 
-		// Based on squad ID, is the trooper in a club
-		if($squad > count($squadArray))
-		{
-			// Get first letter of club
-			$firstLetter = strtoupper(substr(getSquadName($squad), 0, 1));
-			
-			// Set TKID return
-			$tkid = $firstLetter . $tkid;
-			
-			// Set inClub
-			$inClub = true;
-		}
-		
-		// If not in club, set default
-		if(!$inClub)
-		{
+				$tkid = $clubArray[intval($squad) - (count($squadArray) + 1)]['db3Short'] . ': ' . $tkid;
+			} else {
+				// In a club without a special ID
+				$tkid = "Not Assigned";
+			}
+		} else {
+			// If in 501st
 			$prefix = "TK";
 			
 			// Get TK prefix from database
@@ -3431,8 +3430,7 @@ function readTKNumber($tkid, $squad)
 			$statement->close();
 			
 			// Make sure TK prefix was found
-			if(isset($getPrefix_value) && $getPrefix_value != "")
-			{
+			if(isset($getPrefix_value) && $getPrefix_value != "") {
 				$prefix = $getPrefix_value;
 			}
 			
@@ -3519,7 +3517,7 @@ function getTKNumber($id, $read = false)
 			}
 			else
 			{
-				return readTKNumber($db->tkid, $db->squad);
+				return readTKNumber($db->tkid, $db->squad, $db->id);
 			}
 		}
 	}
@@ -3705,7 +3703,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	$statement->close();
 	
 	echo '
-	<h2 class="tm-section-header">'.($permission == 3 ? 'In Memoriam...<br />' : '').''.$name.' - '.readTKNumber($tkid, $squad).'</h2>';
+	<h2 class="tm-section-header">'.($permission == 3 ? 'In Memoriam...<br />' : '').''.$name.' - '.readTKNumber($tkid, $squad, $id).'</h2>';
 	
 	// RIP Member
 	if($permission == 3) {
@@ -4439,7 +4437,7 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 						</td>
 							
 						<td>
-							'.readTKNumber($db2->tkid, $db2->squad).'
+							'.readTKNumber($db2->tkid, $db2->squad, $db2->trooperId).'
 						</td>
 						
 						<td name="trooperRosterCostume" id="trooperRosterCostume">
@@ -4632,7 +4630,7 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 						</td>
 							
 						<td>
-							'.readTKNumber($db2->tkid, $db2->squad).'
+							'.readTKNumber($db2->tkid, $db2->squad, $db2->trooperId).'
 						</td>
 						
 						<td>
@@ -5326,7 +5324,7 @@ function isTKRegistered($tk, $squad = 0)
 	if($squad <= count($squadArray))
 	{
 		$statement = $conn->prepare("SELECT * FROM troopers WHERE tkid = ? AND squad <= ".count($squadArray)."");
-		$statement->bind_param("i", $tkid);
+		$statement->bind_param("i", $tk);
 		$statement->execute();
 
 		if ($result = $statement->get_result())
@@ -5344,7 +5342,7 @@ function isTKRegistered($tk, $squad = 0)
 	{
 		// If a club
 		$statement = $conn->prepare("SELECT * FROM troopers WHERE rebelforum = ? AND squad = ?");
-		$statement->bind_param("ii", $tkid, $squad);
+		$statement->bind_param("si", $tk, $squad);
 		$statement->execute();
 
 		if ($result = $statement->get_result())

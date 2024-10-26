@@ -91,7 +91,7 @@ if ($result = $statement->get_result())
 			
 			echo '
 			<br />
-			<a href="index.php?profile='.$db->id.'" target="_blank">'.readInput($db->name).' - '.readTKNumber($db->tkid, $db->squad).'</a>
+			<a href="index.php?profile='.$db->id.'" target="_blank">'.readInput($db->name).' - '.readTKNumber($db->tkid, $db->squad, $db->id).'</a>
 		</div>';
 		
 		// Increment
