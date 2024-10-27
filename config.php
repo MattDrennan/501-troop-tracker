@@ -3438,7 +3438,7 @@ function readTKNumber($tkid, $squad, $trooperid)
 {
 	global $conn, $clubArray, $squadArray;
 
-	if($tkid == 0) {
+	if($tkid == 0 && $squad <= count($squadArray)) {
 		$tkid = "Not Assigned";
 	} else {
 		// If in a club other than 501st
