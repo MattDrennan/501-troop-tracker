@@ -2906,6 +2906,46 @@ function loggedIn()
 }
 
 /**
+ * Checks if handler
+ * 
+ * @param int $trooperid The ID of the trooper
+ * @return boolean Returns if trooper is a handler
+*/
+function isHandler($trooperid)
+{
+	global $conn, $squadArray, $clubArray;
+
+	// Get data
+	$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
+	$statement->bind_param("i", $trooperid);
+	$statement->execute();
+
+	// Set up return variable
+	$isHandler = false;
+	
+	if ($result = $statement->get_result())
+	{
+		while ($db = mysqli_fetch_object($result))
+		{
+			$db_data1 = $squadArray[intval($db->squad - 1)]['db'];
+			$db_data2 = $clubArray[intval($db->squad - 1)]['db'];
+
+			if($db->squad <= count($squadArray)) {
+				if($db->$db_data1 == 4) {
+					$isHandler = true;
+				}
+			} else {
+				if($db->$db_data2 == 4) {
+					$isHandler = true;
+				}
+			}
+		}
+	}
+
+	return $isHandler;
+}
+
+/**
  * Converts a query to JSON. This is used extensively for notifications.
  * 
  * @param string $query The query to run, to convert to JSON

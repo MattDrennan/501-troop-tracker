@@ -326,6 +326,11 @@ Search.appendIndex(
             "summary": "Check\u0020if\u0020the\u0020user\u0020is\u0020logged\u0020into\u0020Troop\u0020Tracker",
             "url": "namespaces/default.html#function_loggedIn"
         },                {
+            "fqsen": "\\isHandler\u0028\u0029",
+            "name": "isHandler",
+            "summary": "Checks\u0020if\u0020handler",
+            "url": "namespaces/default.html#function_isHandler"
+        },                {
             "fqsen": "\\convertDataToJSON\u0028\u0029",
             "name": "convertDataToJSON",
             "summary": "Converts\u0020a\u0020query\u0020to\u0020JSON.\u0020This\u0020is\u0020used\u0020extensively\u0020for\u0020notifications.",
