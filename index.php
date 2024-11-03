@@ -955,6 +955,9 @@ if(isset($_GET['profile']) && loggedIn())
 			// Get user_id
 			$user_id = getUserID($profile);
 
+			// Reset for donations
+			$j = 0;
+
 			// Check if the combinedResults array exists
 			if (isset($obj['combinedResults']) && is_array($obj['combinedResults'])) {
 			    // Loop through each result in combinedResults
@@ -971,15 +974,13 @@ if(isset($_GET['profile']) && loggedIn())
 									$date->setTimestamp($timestamp);
 
 									echo '<li>$' . intval($obj2['payment_gross']) . ' on ' . $date->format('m/d/Y') . '</li>';
+									$j++;
 						        }
 						    }
 				        }
 				    }
 			    }
 			}
-			
-			// Reset for donations
-			$j = 0;
 		
 			// Get data from custom awards - load award user data
 			$statement = $conn->prepare("SELECT * FROM donations WHERE trooperid = ? ORDER BY datetime DESC");
