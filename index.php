@@ -4165,7 +4165,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						$add .= "[" . date("l", strtotime($db->dateStart)) . " : " . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "] ";
 					}
 
-					echo '<option value="'.$db->id.'" link="'.isLink($db->id).'" '.echoSelect($db->id, $eid).'>'.$add.''.$db->name.'</option>';
+					echo '<option value="'.$db->id.'" link="'.isLink($db->id).'" '.echoSelect($db->id, $eid).'>'.$add.''.$db->name.' '.(($db->latitude == 0 || $db->longitude == 0) ? '[LOCATION ERROR]' : '').'</option>';
 
 					// Increment
 					$i++;
@@ -5838,6 +5838,7 @@ if(isset($_GET['event']) && loggedIn())
 				<h2 class="tm-section-header">Admin Controls</h2>
 				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=editevent&eid='.$db->id.'" class="button">Edit/View Event in Command Staff Area</a></p>
 				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=createevent&eid='.$db->id.'" class="button">Copy Event in Command Staff Area</a></p>
+				'.(($db->latitude == 0 || $db->longitude == 0) ? '<span style="display: flex; justify-content: center; align-items: center; height: 100%; color: red; font-weight: bold;" aria-label="To resolve this issue, verify that the location address is accurate; otherwise, the system will not function properly." data-balloon-pos="down" data-balloon-length="fit">[LOCATION ERROR]</span>' : '').'
 				<br />
 				<hr />';
 			}
@@ -7476,7 +7477,7 @@ echo '
 
 echo '
 <!-- External JS File -->
-<script type="text/javascript" src="script/js/main.js?v=4"></script>
+<script type="text/javascript" src="script/js/main.js?v=5"></script>
 </body>
 </html>';
 

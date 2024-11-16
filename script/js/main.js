@@ -231,6 +231,50 @@ function echoSelect(value1, value2)
 	return returnValue;
 }
 
+/**
+ * formatOption
+ * Customizes how each option in the dropdown is rendered.
+ * Ensures "[LOCATION ERROR]" is wrapped in a red <span> if present.
+ * 
+ * @param {Object} option - The option object provided by select2.
+ * @returns {jQuery|String} - A jQuery element with the customized HTML or plain text.
+ */
+function formatOption(option) {
+    if (!option.id) return option.text; // Skip customization for the placeholder option
+
+    const originalText = option.text;
+
+    // Ensure "[LOCATION ERROR]" is always wrapped in a red <span>
+    const formattedText = originalText.replace(
+        '[LOCATION ERROR]', 
+        '<span style="color: red;">[LOCATION ERROR]</span>'
+    );
+
+    return $(`<span>${formattedText}</span>`);
+}
+
+/**
+ * formatSelection
+ * Customizes how the selected option is displayed.
+ * Ensures "[LOCATION ERROR]" is wrapped in a red <span> if present.
+ * 
+ * @param {Object} option - The selected option object provided by select2.
+ * @returns {jQuery|String} - A jQuery element with the customized HTML or plain text.
+ */
+function formatSelection(option) {
+    if (!option.id) return option.text; // Skip customization for the placeholder option
+
+    const originalText = option.text;
+
+    // Ensure "[LOCATION ERROR]" is always wrapped in a red <span>
+    const formattedText = originalText.replace(
+        '[LOCATION ERROR]', 
+        '<span style="color: red;">[LOCATION ERROR]</span>'
+    );
+
+    return $(`<span>${formattedText}</span>`);
+}
+
 // selectAdd: Selects we want to search
 function selectAdd()
 {
@@ -242,7 +286,11 @@ function selectAdd()
 	$("#awardIDAssign").select2();
 	$("#awardIDEdit").select2();
 	$("#awardID").select2();
-	$("select[name^=eventId]").select2();
+	$("").select2();
+    $("select[name^=eventId]").select2({
+        templateResult: formatOption,
+        templateSelection: formatSelection
+    });
 	$("select[name^=userID]").select2();
 	$("select[name^=modifysignupFormCostume]").select2();
 	$("select[name^=modiftybackupcostumeForm]").select2();

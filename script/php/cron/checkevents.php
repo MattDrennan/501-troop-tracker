@@ -20,6 +20,12 @@ if ($result = mysqli_query($conn, $query))
 	{
 		// Get data
 		$event = getLatLong($db->location);
+
+		// Check if null, if null, set to 0 to prevent issues
+		if(is_null($event['latitude']) || is_null($event['longitude'])) {
+			$event['latitude'] = 0;
+			$event['longitude'] = 0;
+		}
 		
 		// Update
 		$statement = $conn->prepare("UPDATE events SET latitude = ?, longitude = ? WHERE id = ?");
