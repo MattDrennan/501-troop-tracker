@@ -2888,7 +2888,15 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				$i++;
 			}
 			
-			echo '<br /><hr />';
+			echo '
+			<br />
+			<hr />
+			<div class="center-content">
+				<h5>Admin Tools</h5>
+				<a href="index.php?action=commandstaff&do=roster" class="button">Roster</a>
+				<a href="index.php?action=commandstaff&do=troopercheck" class="button">Trooper Check</a>
+			</div>
+			<hr />';
 			
 			// Query count
 			$i = 0;
@@ -3011,8 +3019,13 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			}
 			
 			echo '
-			<a href="index.php?action=commandstaff&do=troopercheck" class="button">Trooper Check</a>
-			<a href="index.php?action=commandstaff&do=trooperconfirmation" class="button">Trooper Confirmation</a>';
+			<br />
+			<hr />
+			<div class="center-content">
+				<h5>Admin Tools</h5>
+				<a href="index.php?action=commandstaff&do=troopercheck" class="button">Trooper Check</a>
+				<a href="index.php?action=commandstaff&do=trooperconfirmation" class="button">Trooper Confirmation</a>
+			</div>';
 			
 			echo '
 			<br /><hr />';
@@ -3321,7 +3334,15 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				$i++;
 			}
 			
-			echo '<br /><hr />';
+			echo '
+			<br />
+			<hr />
+			<div class="center-content">
+				<h5>Admin Tools</h5>
+				<a href="index.php?action=commandstaff&do=roster" class="button">Roster</a>
+				<a href="index.php?action=commandstaff&do=trooperconfirmation" class="button">Trooper Confirmation</a>
+			</div>
+			<hr />';
 			
 			// Check if squad is requested
 			if(isset($_GET['squad']))
