@@ -18,6 +18,9 @@ if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))
 	{
+		// If retired or not allowed to access site, skip to next trooper
+		if(!canAccess($db->trooperId)) { continue; }
+
 		// Get total troops that need attention
 		$troops_get = $conn->query("SELECT COUNT(*) FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE events.closed = '1' AND event_sign_up.status = '0' AND troopers.subscribe = '1' AND troopers.id = '".$db->trooperId."'");
 		$count = $troops_get->fetch_row();
@@ -143,11 +146,14 @@ foreach($clubArray as $club => $club_value)
 }
 
 // Loop through all members with admin
-$query = "SELECT troopers.email, troopers.name, troopers.permissions".$addToQuery." FROM troopers WHERE (troopers.permissions = '1' OR troopers.permissions = '2') AND troopers.email != '' AND troopers.subscribe = '1' AND troopers.ecommandnotify = '1'";
+$query = "SELECT troopers.email, troopers.id AS trooperId, troopers.name, troopers.permissions".$addToQuery." FROM troopers WHERE (troopers.permissions = '1' OR troopers.permissions = '2') AND troopers.email != '' AND troopers.subscribe = '1' AND troopers.ecommandnotify = '1'";
 if ($result = mysqli_query($conn, $query))
 {
 	while ($db = mysqli_fetch_object($result))
 	{
+		// If retired or not allowed to access site, skip to next trooper
+		if(!canAccess($db->trooperId)) { continue; }
+
 		// Set up message
 		$message = "";
 		
@@ -338,6 +344,9 @@ if($i > 0)
 	{
 		while ($db = mysqli_fetch_object($result))
 		{
+			// If retired or not allowed to access site, skip to next trooper
+			if(!canAccess($db->id)) { continue; }
+
 			// Set up squad count
 			$l = 1;
 
