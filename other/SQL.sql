@@ -2,7 +2,7 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Generation Time: Oct 24, 2024 at 07:36 PM
+-- Generation Time: Dec 24, 2024 at 04:03 AM
 -- Server version: 8.0.35
 -- PHP Version: 7.4.7
 
@@ -262,6 +262,19 @@ CREATE TABLE `mando_troopers` (
   `name` varchar(255) NOT NULL,
   `costume` varchar(255) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mobile_app`
+--
+
+CREATE TABLE `mobile_app` (
+  `id` int NOT NULL,
+  `userid` int NOT NULL,
+  `fcm` varchar(255) NOT NULL,
+  `date_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -538,6 +551,12 @@ ALTER TABLE `mando_troopers`
   ADD PRIMARY KEY (`mandoid`);
 
 --
+-- Indexes for table `mobile_app`
+--
+ALTER TABLE `mobile_app`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `notifications`
 --
 ALTER TABLE `notifications`
@@ -621,6 +640,12 @@ ALTER TABLE `event_link`
 --
 ALTER TABLE `event_sign_up`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `mobile_app`
+--
+ALTER TABLE `mobile_app`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `notifications`
