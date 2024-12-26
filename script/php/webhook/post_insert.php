@@ -122,8 +122,13 @@ if ($result->num_rows > 0) {
                                     'token' => $fcm['fcm'],
                                     'notification' => [
                                         'title' => $event['event_name'] . ': ' . $username,
-                                        'body' => $message
-                                    ]
+                                        'body' => $message,
+                                    ],
+                                    'data' => [
+                                        'troopName' => $event['event_name'],
+                                        'threadId' => (string)$thread_id,
+                                        'postId' => (string)$postId,
+                                    ],
                                 ];
 
                                 try {
