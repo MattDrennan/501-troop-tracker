@@ -2984,10 +2984,16 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			
 			// Send notification to command staff
 			sendNotification(getName($_SESSION['id']) . " has locked event ID: [" . $_POST['eventId'] . "]", $_SESSION['id']);
+
+			// Send message to troopers
+			alertTroopersInEvent($_POST['eventId'], getEventTitle($_POST['eventId']) . ' has been locked by Command Staff.', 'https://fl501st.com/troop-tracker/index.php?event=' . $_POST['eventId']);
 		}
 		// Event submitted for cancelation...
 		else if($_POST['eventStatus'] == 2)
 		{
+			// Send message to troopers
+			alertTroopersInEvent($_POST['eventId'], getEventTitle($_POST['eventId']) . ' has been canceled by Command Staff.', 'https://fl501st.com/troop-tracker/index.php?event=' . $_POST['eventId']);
+			
 			// Query the database
 			$statement = $conn->prepare("UPDATE events SET closed = '2' WHERE id = ?");
 			$statement->bind_param("i", $_POST['eventId']);
@@ -3044,6 +3050,9 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			
 			// Send notification to command staff
 			sendNotification(getName($_SESSION['id']) . " has reopened event ID: [" . $_POST['eventId'] . "]", $_SESSION['id']);
+
+			// Send message to troopers
+			alertTroopersInEvent($_POST['eventId'], getEventTitle($_POST['eventId']) . ' has been opened by Command Staff.', 'https://fl501st.com/troop-tracker/index.php?event=' . $_POST['eventId']);
 		}
 		// Event submitted for set full...
 		else if($_POST['eventStatus'] == 4)
@@ -3055,6 +3064,9 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			
 			// Send notification to command staff
 			sendNotification(getName($_SESSION['id']) . " has set event ID: [" . $_POST['eventId'] . "] to full.", $_SESSION['id']);
+
+			// Send message to troopers
+			alertTroopersInEvent($_POST['eventId'], getEventTitle($_POST['eventId']) . ' has been set to full by Command Staff.', 'https://fl501st.com/troop-tracker/index.php?event=' . $_POST['eventId']);
 		}
 	}
 

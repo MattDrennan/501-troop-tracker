@@ -5086,6 +5086,34 @@ function hasPermission($permissionLevel1, $permissionLevel2 = -1, $permissionLev
 }
 
 /**
+ * Sends alert to users in an event
+ * 
+ * Must be a moderator to utilize this method
+ * 
+ * @param int $troopid ID of the troop to message troopers
+ * @param string $message The message to send to troopers
+ * @param string $link The link where you want the alert to direct to
+ * @return boolean Returns was a success
+*/
+function alertTroopersInEvent($troopid, $message, $link = 'https://fl501st.com/troop-tracker')
+{
+	global $conn;
+	
+	// Check if the trooper is a moderator
+	$statement = $conn->prepare("SELECT * FROM event_sign_up WHERE troopid = ?");
+	$statement->bind_param("i", $troopid);
+	$statement->execute();
+
+	if ($result = $statement->get_result()) {
+		while ($db = mysqli_fetch_object($result)) {
+			createAlert(getUserID($db->trooperid), $message, $link);
+		}
+	}
+	
+	return true;
+}
+
+/**
  * Determines if trooper has special permission access
  * 
  * Must be a moderator to utilize this method

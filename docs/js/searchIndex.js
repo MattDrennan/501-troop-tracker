@@ -576,6 +576,11 @@ Search.appendIndex(
             "summary": "Determines\u0020if\u0020trooper\u0020has\u0020permission\u0020to\u0020access",
             "url": "namespaces/default.html#function_hasPermission"
         },                {
+            "fqsen": "\\alertTroopersInEvent\u0028\u0029",
+            "name": "alertTroopersInEvent",
+            "summary": "Sends\u0020alert\u0020to\u0020users\u0020in\u0020an\u0020event",
+            "url": "namespaces/default.html#function_alertTroopersInEvent"
+        },                {
             "fqsen": "\\hasSpecialPermission\u0028\u0029",
             "name": "hasSpecialPermission",
             "summary": "Determines\u0020if\u0020trooper\u0020has\u0020special\u0020permission\u0020access",
@@ -1465,16 +1470,6 @@ Search.appendIndex(
             "name": "array_to_csv_download",
             "summary": "Generate\u0020CSV\u0020file\u0020from\u0020array",
             "url": "namespaces/default.html#function_array_to_csv_download"
-        },                {
-            "fqsen": "\\getAccessToken\u0028\u0029",
-            "name": "getAccessToken",
-            "summary": "",
-            "url": "namespaces/default.html#function_getAccessToken"
-        },                {
-            "fqsen": "\\getTransactions\u0028\u0029",
-            "name": "getTransactions",
-            "summary": "",
-            "url": "namespaces/default.html#function_getTransactions"
         },                {
             "fqsen": "\\",
             "name": "\\",
