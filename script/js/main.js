@@ -2662,19 +2662,10 @@ $(document).ready(function()
 					$("#squadTable").html(ifEmpty(json.squad));
 					
 					// Check if link is valid
-					if(json.link != "")
-					{
+					if(json.link != "" && json.tkid != "Not Assigned") {
 						$("#tkTable").html(ifEmpty('<a href="' + json.link + '" target="_blank">' + json.tkid + '</a>'));
-					}
-					else
-					{
+					} else {
 						$("#tkTable").html(ifEmpty(json.tkid));	
-					}
-
-					// If TKID is 0, show as handler request
-					if(json.tkid == "TK0")
-					{
-						$("#tkTable").html("**Handler Request**");
 					}
 
 					$("#approveButtons").show();
