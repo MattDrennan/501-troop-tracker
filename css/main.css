@@ -830,3 +830,16 @@ blockquote {
 	text-align: center;
 	margin: 20px;
 }
+
+/* Notification */
+
+.fading-text {
+    color: red;
+    animation: fadeInOut 2s infinite;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 1; }     /* Fully visible */
+    50% { opacity: 0.5; }  /* Half-visible (fading) */
+    100% { opacity: 1; }   /* Fully visible again */
+}

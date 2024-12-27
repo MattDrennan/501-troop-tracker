@@ -283,7 +283,7 @@ if(loggedIn())
 			<br />
 			<a href="index.php?profile='.$_SESSION['id'].'">'.(getForumAvatar($_SESSION['id']) != "" ? '<img src="' . getForumAvatar($_SESSION['id']) . '" />' : '').'</a>
 			<br />
-			<a href="https://www.fl501st.com/boards/index.php?account/alerts" '. ((@count($alerts) > 0 || @count($conversations) > 0) ? 'style="color:red;"' : '') .'>You have '.@count($alerts).' notifications and '.@count($conversations).' unread messages on the boards.</a>
+			<a href="https://www.fl501st.com/boards/index.php?account/alerts" '. ((@count($alerts) > 0 || @count($conversations) > 0) ? 'class="fading-text"' : '') .'>You have '.@count($alerts).' notifications and '.@count($conversations).' unread messages on the boards.</a>
 
 			'.dailyTip().'
 		</p>';
