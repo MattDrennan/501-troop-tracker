@@ -257,9 +257,20 @@ if(isset($_GET['do']) && isset($_GET['event']) && isset($_GET['thread_id']) && $
 				
 				<tr>
 					<td>'.$post['message_parsed'].'</td>
-				</tr>
+				</tr>';
 
-				</table>
+				// Link attachments
+				if (isset($post['Attachments']) && is_array($post['Attachments'])) {
+				    foreach ($post['Attachments'] as $index => $attachment) {
+				        if (isset($attachment['direct_url']) && isset($attachment['filename'])) {
+				            echo '<tr><td>Attachment #' . ($index + 1) . ': ';
+				            echo '<a href="' . htmlspecialchars($attachment['direct_url']) . '" target="_blank">';
+				            echo htmlspecialchars($attachment['filename']) . '</a></td></tr>';
+				        }
+				    }
+				}
+
+				echo '</table>
 
 				<br />';
 			}
@@ -2492,6 +2503,7 @@ if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin(
 	// Set up return data
 	$message = "";
 	$message2 = "";
+	$status = 0;
 
 	// Load event sign up in roster
 	$statement = $conn->prepare("SELECT * FROM event_sign_up WHERE trooperid = ? AND troopid = ? AND id = ?");
@@ -2511,6 +2523,7 @@ if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin(
 				$statement->execute();
 
 				// Set return data
+				$status = 6;
 				$message = '
 				Not Picked
 				<br />
@@ -2520,7 +2533,6 @@ if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin(
 			if($db->status == 5)
 			{
 				// Set up variables
-				$status = 0;
 				$text = "Reject";
 				$buttonid = 0;
 
@@ -2560,11 +2572,15 @@ if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin(
 				$statement->execute();
 
 				// Set return data
+				$status = 0;
 				$message = '
 				Going
 				<br />
 				<a href="#/" class="button" name="changestatus" trooperid="'.$db->trooperid.'" signid="'.$db->id.'" buttonid="0">Reject</a>';
 			}
+
+			// Notify trooper
+			createAlert(getUserID($_POST['trooperid']), getEventTitle($_POST['eventid']) . ': Your status has been changed to ' . getStatus($status) . '.', 'https://fl501st.com/troop-tracker/index.php?event=' . $_POST['eventid']);
 
 			// If is admin
 			if(isAdmin())
@@ -2841,6 +2857,9 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			troopCheck($_POST['trooperSelectEdit']);
 		}
 
+		// Notify trooper
+		createAlert(getUserID($_POST['trooperSelectEdit']), getEventTitle($_POST['eventId']) . ': Command Staff has updated you on this event. Your status is ' . getStatus($_POST['statusVal' . $_POST['trooperSelectEdit'] . '']) . '.', 'https://fl501st.com/troop-tracker/index.php?event=' . $_POST['eventId']);
+
 		// Send notification to command staff
 		sendNotification(getName($_SESSION['id']) . " has edited event ID: [" . $_POST['eventId'] . "] by updating trooper ID: [" . $_POST['trooperSelectEdit'] . "].", $_SESSION['id'], 14, convertDataToJSON("SELECT * FROM event_sign_up WHERE trooperid = '".$_POST['trooperSelectEdit']."' AND troopid = '".$_POST['eventId']."' AND id = '".$_POST['signid']."'"));
 
@@ -2874,6 +2893,9 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 				// Check troops for notification
 				troopCheck($_POST['trooperSelect']);
 			}
+
+			// Notify trooper
+			createAlert(getUserID($_POST['trooperSelect']), getEventTitle($_POST['troopid']) . ': You have been added to this event.', 'https://fl501st.com/troop-tracker/index.php?event=' . $_POST['troopid']);
 			
 			// Send notification to command staff
 			sendNotification(getName($_SESSION['id']) . " has added trooper ID [".$_POST['trooperSelect']."] to event ID [" . $_POST['troopid'] . "]", $_SESSION['id'], 15, convertDataToJSON("SELECT * FROM event_sign_up WHERE id = '".$last_id."'"));
@@ -2993,7 +3015,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		{
 			// Send message to troopers
 			alertTroopersInEvent($_POST['eventId'], getEventTitle($_POST['eventId']) . ' has been canceled by Command Staff.', 'https://fl501st.com/troop-tracker/index.php?event=' . $_POST['eventId']);
-			
+
 			// Query the database
 			$statement = $conn->prepare("UPDATE events SET closed = '2' WHERE id = ?");
 			$statement->bind_param("i", $_POST['eventId']);
