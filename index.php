@@ -1112,7 +1112,7 @@ if(isset($_GET['action']) && $_GET['action'] == "costume" && isset($_GET['costum
 				<div style="overflow-x: auto;">
 				<table border="1">
 				<tr>
-					<th>Trooper Name</th>	<th>Trooper TKID</th>	<th>Costume Troop Count</th>
+					<th>Trooper Name</th>	<th>TKID</th>	<th>Costume Troop Count</th>
 				</tr>';
 			}
 
@@ -1293,37 +1293,22 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 					<div style="overflow-x: auto;">
 					<table border="1">
 					<tr>
-						<th>Event Name</th>	<th>Date</th>	<th>Trooper TKID</th>	<th>Attended Costume</th>	<th>Status</th>
+						<th>Event Name</th>	<th>Date</th>	<th>Name</th>	<th>TKID</th>	<th>Attended Costume</th>	<th>Status</th>
 					</tr>';
 				}
 				
 				$dateFormat = date('m-d-Y', strtotime($db->dateEnd));
 
-				echo '
-				<tr>
-					<td>
-
-					' . getSquadLogo($db->eventSquad) . '
-
-					<a href="index.php?event='.$db->eventId.'">'.$db->eventName.'</a></td>	<td>'.$dateFormat.'</td>';
-					
-					// Prevent search from showing blank trooper
-					if(isset($db->trooperid))
-					{
-						echo '
-						<td><a href="index.php?profile='.$db->trooperid.'">'.readTKNumber(getTKNumber($db->trooperid), getTrooperSquad($db->trooperid), $db->trooperid).'</a></td>';
-					}
-					else
-					{
-						echo '
-						<td>N/A</td>';
-					}
-					
-					echo '
-					<td>'.ifEmpty('<a href="index.php?action=costume&costumeid='.$db->costume.'">' . getCostume($db->costume) . '</a>', "N/A").'</td>	<td>'.getStatus($db->status).'
-
-					</td>
-				</tr>';
+				echo '<tr><td>' . getSquadLogo($db->eventSquad) .
+				    '<a href="index.php?event=' . $db->eventId . '">' . $db->eventName . '</a></td>' .
+				    '<td>' . $dateFormat . '</td>' .
+				    '<td>' . (isset($db->trooperid) ? getName($db->trooperid) : 'N/A') . '</td>' .
+				    '<td>' . (isset($db->trooperid) 
+				        ? '<a href="index.php?profile=' . $db->trooperid . '">' .
+				          readTKNumber(getTKNumber($db->trooperid), getTrooperSquad($db->trooperid), $db->trooperid) . '</a>'
+				        : 'N/A') . '</td>' .
+				    '<td>' . ifEmpty('<a href="index.php?action=costume&costumeid=' . $db->costume . '">' . getCostume($db->costume) . '</a>', "N/A") . '</td>' .
+				    '<td>' . getStatus($db->status) . '</td></tr>';
 
 				$i++;
 			}
@@ -1358,7 +1343,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 						<div style="overflow-x: auto;">
 						<table border="1">
 						<tr>
-							<th>Trooper Name</th>	<th>Trooper TKID</th>	<th>Costume Troop Count</th>
+							<th>Trooper Name</th>	<th>TKID</th>	<th>Costume Troop Count</th>
 						</tr>';
 					}
 
@@ -1537,14 +1522,14 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 					<div style="overflow-x: auto;">
 					<table border="1">
 					<tr>
-						<th>Trooper TKID</th>	<th>Troop Count</th>	<th>Last Troop</th>
+						<th>Name</th>	<th>TKID</th>	<th>Troop Count</th>	<th>Last Troop</th>
 					</tr>';
 
 					array_push($list, ["Total Troops: " . $troop_count]);
 					array_push($list, ["Direct Charity: $" . number_format($charity_count)]);
 					array_push($list, ["Indirect Charity: $" . number_format($charity_count2)]);
 					array_push($list, [""]);
-					array_push($list, ["Trooper TKID", "Troop Count", "Last Troop"]);
+					array_push($list, ["Name", "TKID", "Troop Count", "Last Troop"]);
 				}
 
 				// Increment $i
@@ -1601,10 +1586,10 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 			// Display
 			echo '
 			<tr>
-				<td><a href="index.php?profile='.$value[3].'">'.readTKNumber($value[0], $value[4], $value[3]).' - '.$value[2].'</a></td>	<td>'.$value[1].'</td>	<td>'.$value[5].'</td>
+				<td>'.$value[2].'</td>	<td><a href="index.php?profile='.$value[3].'">'.readTKNumber($value[0], $value[4], $value[3]).'</a></td>	<td>'.$value[1].'</td>	<td>'.$value[5].'</td>
 			</tr>';
 
-			array_push($list, [readTKNumber($value[0], $value[4], $value[3]).' - '.$value[2], $value[1], $value[5]]);
+			array_push($list, [$value[2], readTKNumber($value[0], $value[4], $value[3]), $value[1], $value[5]]);
 		}
 	}
 	// Donation search
@@ -1824,7 +1809,7 @@ if(isset($_GET['action']) && $_GET['action'] == "search")
 				<td>'.ifEmpty($value[4], "N/A").'</td>
 				<td>'.number_format($value[5]).'</td>
 				<td>'.$value[9].'</td>
-				<td>'.ifEmpty(nl2br($value[6]), "N/A").'</td>
+				<td>'.ifEmpty(nl2br($value[6] ?? ''), "N/A").'</td>
 			</tr>';
 		}
 	}
@@ -5946,7 +5931,7 @@ if(isset($_GET['event']) && loggedIn())
 					$hours += intval($db->charityAddHours);
 
 					echo '
-					<div class="charitybox"><b>Event Raised:</b><br />Direct: $'.number_format($db->charityDirectFunds).'<br />Indirect: $'.number_format($db->charityIndirectFunds).'<br />Charity Name: '.ifEmpty($db->charityName, "N/A").'<br />Charity Hours: '.$hours.'<br />Charity Note:<br />'.ifEmpty(@nl2br($db->charityNote), "N/A").'</div>';
+					<div class="charitybox"><b>Event Raised:</b><br />Direct: $'.number_format($db->charityDirectFunds).'<br />Indirect: $'.number_format($db->charityIndirectFunds).'<br />Charity Name: '.ifEmpty($db->charityName, "N/A").'<br />Charity Hours: '.$hours.'<br />Charity Note:<br />'.ifEmpty(nl2br($db->charityNote ?? ''), "N/A").'</div>';
 				}
 
 				// Set up show options
@@ -5975,7 +5960,7 @@ if(isset($_GET['event']) && loggedIn())
 					<p><b>Is venue accessible to those with limited mobility:</b> '.yesNo($db->mobility).'</p>
 				</div>
 				<p><b>Amenities available at venue:</b> '.ifEmpty($db->amenities, "No amenities for this event.").'</p>
-				<p><b>Comments:</b><br />'.ifEmpty(nl2br(showBBcodes($db->comments)), "No comments for this event.").'</p>
+				<p><b>Comments:</b><br />'.ifEmpty(nl2br(showBBcodes($db->comments) ?? ''), "No comments for this event.").'</p>
 				<p><b>Referred by:</b> '.ifEmpty($db->referred, "Not available").'</p>
 				'.(isAdmin() ? '<p><b>Point of Contact:</b> '.ifEmpty($db->poc, "Not available").'</p>' : '').'';
 
