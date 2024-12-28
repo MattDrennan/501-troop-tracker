@@ -111,6 +111,12 @@ define('googleKey', 'GOOGLE_MAP_API_KEY_HERE');
 define('discordWeb1', 'WEBHOOK_HERE');
 
 /**
+ * discordInviteLink: This variable is the URL invite for the Discord server
+*/
+
+define('discordInviteLink', 'https://discord.gg/C6bCB33gp3');
+
+/**
  * garrison: This variable is used to display the garrison name, and to make it easier to replace all mentions of the garrison
  * garrisonImage: This variable is used to display the garrison logo. The logom should be located in the images folder.
 */

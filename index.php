@@ -7360,10 +7360,10 @@ If you are missing troops or notice incorrect data, please refer to your squad l
 <p class="footer-icons">
 	<a href="https://github.com/MattDrennan/501-troop-tracker" target="_blank"><img src="images/github.png" alt="GitHub" title="Help contribute to the Troop Tracker project!" /></a> ';
 	// Discord
-	if(loggedIn())
+	if(loggedIn() && discordInviteLink != '')
 	{
 		echo '
-		<a href="https://discord.gg/C6bCB33gp3" target="_blank"><img src="images/discord.png" alt="Discord" title="Get event notifications and more on Discord!" /></a>';
+		<a href="'.discordInviteLink.'" target="_blank"><img src="images/discord.png" alt="Discord" title="Get event notifications and more on Discord!" /></a>';
 	}
 echo '
 </p>
