@@ -7350,7 +7350,7 @@ echo '
 
 <section class="tm-section tm-section-small">
 <p class="tm-mb-0">
-Website created by <a href="index.php?profile=644">Matthew Drennan (TK52233)</a>. If you encounter any technical issues with this site, please refer to the <a href="index.php?action=faq">FAQ page</a> for guidance.
+Website created by <a href="https://mattdrennan.com">Matthew Drennan (TK52233)</a>. If you encounter any technical issues with this site, please refer to the <a href="index.php?action=faq">FAQ page</a> for guidance.
 </p>
 
 <p class="tm-mb-0">
