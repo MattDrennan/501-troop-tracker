@@ -26,14 +26,14 @@ if ($result = mysqli_query($conn, $query))
 		$count = $troops_get->fetch_row();
 		
 		// Set up message
-		$message = "Hello!\n\nYou have ".$count[0]." troops that need to be confirmed in order to give you troop credit. Please login to the troop tracker and confirm these troops.\n\nConfirm troops here: https://fl501st.com/troop-tracker/index.php#confirmtroops\n\nIf you need assistance, please contact your squad leader.\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://fl501st.com/troop-tracker/";
+		$message = "Hello!\n\nYou have ".$count[0]." troops that need to be confirmed in order to give you troop credit. Please login to the troop tracker and confirm these troops.\n\nConfirm troops here: ".$trackerURL."/index.php#confirmtroops\n\nIf you need assistance, please contact your squad leader.\n\nYou can opt out of e-mails under: \"Manage Account\"\n\n".$trackerURL."/";
 		
 		// Send E-mail
 		sendEmail($db->email, readInput($db->name), "Troop Tracker: Troops need your attention!", readInput($message));
 	}
 }
 
-// Florida Garrison
+// Garrison
 $sM0 = "";
 
 // Set up squad count - milestones
@@ -59,7 +59,7 @@ foreach($clubArray as $club => $club_value)
 	$y++;
 }
 
-// Florida Garrison
+// Garrison
 $sC0 = "";
 
 // Set up squad count - comments
@@ -110,7 +110,7 @@ if ($result = mysqli_query($conn, $query))
 			while ($db2 = mysqli_fetch_object($result2))
 			{
 				// Update message
-				${"sC" . $db2->squad} .= getName($db->trooperid) . ': ' . $db->comment . "\nhttps://fl501st.com/troop-tracker/index.php?event=".$db->troopid."\n\n";
+				${"sC" . $db2->squad} .= getName($db->trooperid) . ': ' . $db->comment . "\n".$trackerURL."/index.php?event=".$db->troopid."\n\n";
 			}
 		}
 	}
@@ -166,7 +166,7 @@ if ($result = mysqli_query($conn, $query))
 		// Trooper Milestones
 		$message .= "Trooper Milestones:\n\n";
 
-		// Florida Garrison
+		// Garrison
 		if($db->esquad0 == 1)
 		{
 			// Add squad information to e-mail
@@ -234,7 +234,7 @@ if ($result = mysqli_query($conn, $query))
 		// Trooper Comments
 		$message .= "Important Comments:\n\n";
 
-		// Florida Garrison
+		// Garrison
 		if($db->esquad0 == 1)
 		{
 			// Add squad information to e-mail
@@ -279,7 +279,7 @@ if ($result = mysqli_query($conn, $query))
 		}
 		
 		// Add footer to e-mail
-		$message .= "\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://fl501st.com/troop-tracker/";
+		$message .= "\n\nYou can opt out of e-mails under: \"Manage Account\"\n\n".$trackerURL."/";
 		
 		// Send e-mail if something to send
 		if($mC > 0 || $cC > 0)
@@ -289,7 +289,7 @@ if ($result = mysqli_query($conn, $query))
 	}
 }
 
-// Florida Garrison
+// Garrison
 $s0 = "";
 
 // Set up squad count
@@ -322,7 +322,7 @@ if ($result = mysqli_query($conn, $query))
 		$d2 = date('h:i A', strtotime($db->dateEnd));
 		
 		// Add to e-mail
-		${"s" . $db->squad} .= $db->name . "\n\n" . $d1 . " - " . $d2 . "\n\n" . getSquadName($db->squad) . "\n\nhttps://www.fl501st.com/troop-tracker/index.php?event=".$db->id."\n\n\n\n";
+		${"s" . $db->squad} .= $db->name . "\n\n" . $d1 . " - " . $d2 . "\n\n" . getSquadName($db->squad) . "\n\n".$trackerURL."/index.php?event=".$db->id."\n\n\n\n";
 		
 		// Set
 		$lastEventID = $db->id;
@@ -356,7 +356,7 @@ if($i > 0)
 			// Set up e-mail
 			$emailBody = "New events posted:\n\n";
 
-			// Florida Garrison - Check allow e-mails for squad
+			// Garrison - Check allow e-mails for squad
 			if($db->esquad0 == 1)
 			{
 				// Add squad information to e-mail
@@ -392,7 +392,7 @@ if($i > 0)
 			}
 
 			// Add footer of e-mail
-			$emailBody .= "You can opt out of e-mails under: \"Manage Account\"\n\nhttps://fl501st.com/troop-tracker/";
+			$emailBody .= "You can opt out of e-mails under: \"Manage Account\"\n\n".$trackerURL."/";
 
 			// Check if to send e-mail
 			if($k > 0)

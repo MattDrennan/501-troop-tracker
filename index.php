@@ -43,7 +43,7 @@ echo '
 				echo '
 				<meta property="og:title" content="'.$add.''.$db->name.'" />
 				<meta property="og:description" content="'.ifEmpty(cleanInput($db->comments)).'" />
-				<meta property="og:image" content="https://www.fl501st.com/troop-tracker/images/logo.png" />';
+				<meta property="og:image" content="'.$trackerURL.'/images/logo.png" />';
 			}
 		}
 	}
@@ -74,6 +74,7 @@ echo '
 	
 	<!-- Setup Variable -->
 	<script>
+	var forumURL = "'.$forumURL.'";
 	var placeholder = '.placeholder.';
 	var squadCount = '.count($squadArray).';
 	var clubArray = [';
@@ -220,7 +221,7 @@ echo '
 
 <div class="topnav" id="myTopnav">
 <a href="index.php" '.isPageActive("home").'>Home</a>
-<a href="https://fl501st.com/boards/">Forums</a>';
+<a href="'.$forumURL.'">Forums</a>';
 
 // If not logged in
 if(!loggedIn())
@@ -283,7 +284,7 @@ if(loggedIn())
 			<br />
 			<a href="index.php?profile='.$_SESSION['id'].'">'.(getForumAvatar($_SESSION['id']) != "" ? '<img src="' . getForumAvatar($_SESSION['id']) . '" />' : '').'</a>
 			<br />
-			<a href="https://www.fl501st.com/boards/index.php?account/alerts" '. ((@count($alerts) > 0 || @count($conversations) > 0) ? 'class="fading-text"' : '') .'>You have '.@count($alerts).' notifications and '.@count($conversations).' unread messages on the boards.</a>
+			<a href="'.$forumURL.'account/alerts" '. ((@count($alerts) > 0 || @count($conversations) > 0) ? 'class="fading-text"' : '') .'>You have '.@count($alerts).' notifications and '.@count($conversations).' unread messages on the boards.</a>
 
 			'.dailyTip().'
 		</p>';
@@ -327,30 +328,6 @@ if(loggedIn())
 	}
 }
 
-// Joke
-if(isset($_GET['action']) && $_GET['action'] == "store" && loggedIn())
-{
-	// Troop Credits
-	$statement = $conn->prepare("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = '".$_SESSION['id']."' AND status = 3");
-	$statement->execute();
-	$statement->bind_result($troopCredits);
-	$statement->fetch();
-	$statement->close();
-
-	echo '<h1>Troop Tracker Store</h1>
-	<p style="text-align: center;">
-	<b>Thanks to a new initiative by the Florida Garrison, you can now exchange your virtual troop credits for real life items!</b>
-	</p>
-
-	<p style="text-align: center; color: green; font-weight: bold;">
-	You have '.$troopCredits.' troop credits to spend.
-	</p>
-
-	<p style="text-align: center; color: green; font-weight: bold;">
-	<a href="javascript: alert(\'You really fell for this? :)\')" class="button" />Lunch with Timmy (10 Troop Credits)</a> <a href="javascript: alert(\'You really fell for this? :)\')" class="button" />Dinner Date with Mushu (5 Troop Credits)</a> <a href="javascript: alert(\'You really fell for this? :)\')" class="button" />TK Kit (501 Troop Credits)</a> <a href="javascript: alert(\'You really fell for this? :)\')" class="button" />Florida Garrison Stickers (1 Troop Credit)</a>
-	</p>';
-}
-
 // Show the account page
 if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 {
@@ -373,7 +350,7 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 	<a href="#/" id="changenameLink" class="button">Change Name</a> 
 	<a href="#/" id="changethemeLink" class="button">Change Theme</a> 
 	<a href="#/" id="favoriteCostumes" class="button">Favorite Costumes</a> 
-	<a href="https://www.fl501st.com/boards/index.php?account/upgrades" class="button">Donate</a> 
+	<a href="'.$forumURL.'account/upgrades" class="button">Donate</a> 
 	<a href="index.php?profile='.$_SESSION['id'].'" class="button">View Your Profile</a>
 	<br /><br />
 	
@@ -437,9 +414,9 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 			<h3>Squads / Clubs</h3>
 			<form action="process.php?do=emailsettings" method="POST" id="emailsettingsForm" name="emailsettingsForm">';
 
-			// Florida Garrison
+			// Garrison name
 			echo '
-			<input type="checkbox" name="esquad0" id="esquad0" ' . emailSettingStatus("esquad0", true) . ' />501st / Florida Garrison<br />';
+			<input type="checkbox" name="esquad0" id="esquad0" ' . emailSettingStatus("esquad0", true) . ' />501st / '.garrison.'<br />';
 			
 			// Squad count
 			$i = 1;
@@ -491,10 +468,10 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 				while ($db = mysqli_fetch_object($result))
 				{
 					echo '
-					<option value="0" '.echoSelect(0, $db->theme).'>Florida Garrison Theme (Dark Theme)</option>
+					<option value="0" '.echoSelect(0, $db->theme).'>'.garrison.' Theme (Dark Theme)</option>
 					<option value="1" '.echoSelect(1, $db->theme).'>Everglades Theme</option>
 					<option value="2" '.echoSelect(2, $db->theme).'>Makaze Theme</option>
-					<option value="3" '.echoSelect(3, $db->theme).'>Florida Garrison Theme</option>';
+					<option value="3" '.echoSelect(3, $db->theme).'>'.garrison.' Theme</option>';
 				}
 			}
 		echo '
@@ -3115,7 +3092,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						</td>
 
 						<td>
-							'. (($db->user_id > 0) ? '<a href="https://www.fl501st.com/boards/index.php?members/'.$db->forum_id.'.'.$db->user_id.'" target="_blank">'.$db->forum_id.'</a>' : $db->forum_id) .'
+							'. (($db->user_id > 0) ? '<a href="'.$forumURL.'members/'.$db->forum_id.'.'.$db->user_id.'" target="_blank">'.$db->forum_id.'</a>' : $db->forum_id) .'
 						</td>';
 
 						if(isset($_GET['squad']) && $_GET['squad'] != "all" && $_GET['squad'] > count($squadArray) && $clubArray[intval($_GET['squad']) - (count($squadArray) + 1)]['db3'] != "")
@@ -5361,7 +5338,7 @@ if(isset($_GET['action']) && $_GET['action'] == "faq")
 	
 	<h3>I cannot login / I forgot my password</h3>
 	<p>
-		The Troop Tracker has been integrated with the boards. You must use your Florida Garrison boards username and password to login to Troop Tracker. To recover your password, use password recovery on the Florida Garrison forum. If you continue to have issues logging into your account, your '.garrison.' forum username, may not match the Troop Tracker records. Contact the '.garrison.' Webmaster or post a help thread on the forums to get this corrected.
+		The Troop Tracker has been integrated with the boards. You must use your '.garrison.' boards username and password to login to Troop Tracker. To recover your password, use password recovery on the '.garrison.' forum. If you continue to have issues logging into your account, your '.garrison.' forum username, may not match the Troop Tracker records. Contact the '.garrison.' Webmaster or post a help thread on the forums to get this corrected.
 	</p>
 
 	<h3>I am missing troop data / My troop data is incorrect</h3>
@@ -5395,7 +5372,7 @@ if(isset($_GET['action']) && $_GET['action'] == "faq")
 	</p>
 
 	<h3>Contact Garrison Web Master</h3>
-	<p>If you have read and reviewed all the material above and are still experiencing issues, or have noticed a bug on the website, please <a href="mailto: gwm@fl501st.com">send an e-mail here</a>.</p>';
+	<p>If you have read and reviewed all the material above and are still experiencing issues, or have noticed a bug on the website, please <a href="mailto: '.$webmasterEmail.'">send an e-mail here</a>.</p>';
 }
 
 /**************************** Edit Photo *********************************/
@@ -5968,7 +5945,7 @@ if(isset($_GET['event']) && loggedIn())
 				if($db->thread_id > 0)
 				{
 					echo '
-					<p><b>View post on forum:</b> <a href="https://www.fl501st.com/boards/index.php?threads/'.$db->thread_id.'" target="_blank">https://www.fl501st.com/boards/index.php?threads/'.$db->thread_id.'</a></p>';
+					<p><b>View post on forum:</b> <a href="'.$forumURL.'threads/'.$db->thread_id.'" target="_blank">'.$forumURL.'threads/'.$db->thread_id.'</a></p>';
 				}
 			
 				// Get linked event
@@ -6705,7 +6682,7 @@ if(isset($_GET['event']) && loggedIn())
 						<span name="smileyarea" style="display: block;">
 						</span>
 
-						<input type="submit" name="submitComment" value="Quick Reply!" /><br /><a href="https://www.fl501st.com/boards/index.php?threads/'.$thread_id.'/reply?" class="button" target="_blank">Reply On Forum</a>
+						<input type="submit" name="submitComment" value="Quick Reply!" /><br /><a href="'.$forumURL.'threads/'.$thread_id.'/reply?" class="button" target="_blank">Reply On Forum</a>
 						</div>
 					</form>
 

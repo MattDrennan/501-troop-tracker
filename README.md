@@ -44,7 +44,19 @@ define('dbPassword2', 'DB_PASSWORD_HERE');
 define('dbName2', 'DB_NAME_HERE');
 
 /**
- * forumURL: The forum endpoint for the API
+ * Webmaster E-mail: The e-mail for the webmaster
+*/
+
+$webmasterEmail = "gwm@fl501st.com";
+
+/**
+ * trackerURL: The base URL for the tracker
+*/
+
+$trackerURL = "https://www.fl501st.com/troop-tracker";
+
+/**
+ * forumURL: The forum endpoint for the API - include trailing ?
 */
 
 $forumURL = "index.php?api";

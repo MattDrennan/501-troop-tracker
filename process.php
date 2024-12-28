@@ -169,7 +169,7 @@ if(isset($_GET['do']) && isset($_GET['event']) && isset($_GET['thread_id']) && $
 	echo '
 	<p style="text-align: center;">
 		<a href="#/" class="button" id="subscribeupdates" event="'.cleanInput($_GET['event']).'" aria-label="Get updates on sign ups and cancellations." data-balloon-pos="up" data-balloon-length="fit">'.$subscribeText.'</a>
-		<a href="https://www.fl501st.com/boards/index.php?threads/'.cleanInput($_GET['thread_id']).'/watch" target="_blank" class="button" aria-label="Get updates on replies to this event." data-balloon-pos="up" data-balloon-length="fit">Watch Discussion</a>
+		<a href="'.$forumURL.'threads/'.cleanInput($_GET['thread_id']).'/watch" target="_blank" class="button" aria-label="Get updates on replies to this event." data-balloon-pos="up" data-balloon-length="fit">Watch Discussion</a>
 	</p>';
 }
 
@@ -967,7 +967,7 @@ if(isset($_GET['do']) && $_GET['do'] == "postcomment" && isset($_POST['submitCom
 		{
 			while ($db = mysqli_fetch_object($result))
 			{
-				createAlert($db->user_id, getTrooperForum($_SESSION['id']) . ' is requesting command staff for ' . getEventTitle($_POST['eventId']) . '.', 'https://fl501st.com/troop-tracker/index.php?event=' . $_POST['eventId']);
+				createAlert($db->user_id, getTrooperForum($_SESSION['id']) . ' is requesting command staff for ' . getEventTitle($_POST['eventId']) . '.', ''.$trackerURL.'/index.php?event=' . $_POST['eventId']);
 			}
 		}
 	}
@@ -2580,7 +2580,7 @@ if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin(
 			}
 
 			// Notify trooper
-			createAlert(getUserID($_POST['trooperid']), getEventTitle($_POST['eventid']) . ': Your status has been changed to ' . getStatus($status) . '.', 'https://fl501st.com/troop-tracker/index.php?event=' . $_POST['eventid']);
+			createAlert(getUserID($_POST['trooperid']), getEventTitle($_POST['eventid']) . ': Your status has been changed to ' . getStatus($status) . '.', ''.$trackerURL.'/index.php?event=' . $_POST['eventid']);
 
 			// If is admin
 			if(isAdmin())
@@ -2858,7 +2858,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 		}
 
 		// Notify trooper
-		createAlert(getUserID($_POST['trooperSelectEdit']), getEventTitle($_POST['eventId']) . ': Command Staff has updated you on this event. Your status is ' . getStatus($_POST['statusVal' . $_POST['trooperSelectEdit'] . '']) . '.', 'https://fl501st.com/troop-tracker/index.php?event=' . $_POST['eventId']);
+		createAlert(getUserID($_POST['trooperSelectEdit']), getEventTitle($_POST['eventId']) . ': Command Staff has updated you on this event. Your status is ' . getStatus($_POST['statusVal' . $_POST['trooperSelectEdit'] . '']) . '.', ''.$trackerURL.'/index.php?event=' . $_POST['eventId']);
 
 		// Send notification to command staff
 		sendNotification(getName($_SESSION['id']) . " has edited event ID: [" . $_POST['eventId'] . "] by updating trooper ID: [" . $_POST['trooperSelectEdit'] . "].", $_SESSION['id'], 14, convertDataToJSON("SELECT * FROM event_sign_up WHERE trooperid = '".$_POST['trooperSelectEdit']."' AND troopid = '".$_POST['eventId']."' AND id = '".$_POST['signid']."'"));
@@ -2895,7 +2895,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			}
 
 			// Notify trooper
-			createAlert(getUserID($_POST['trooperSelect']), getEventTitle($_POST['troopid']) . ': You have been added to this event.', 'https://fl501st.com/troop-tracker/index.php?event=' . $_POST['troopid']);
+			createAlert(getUserID($_POST['trooperSelect']), getEventTitle($_POST['troopid']) . ': You have been added to this event.', ''.$trackerURL.'/index.php?event=' . $_POST['troopid']);
 			
 			// Send notification to command staff
 			sendNotification(getName($_SESSION['id']) . " has added trooper ID [".$_POST['trooperSelect']."] to event ID [" . $_POST['troopid'] . "]", $_SESSION['id'], 15, convertDataToJSON("SELECT * FROM event_sign_up WHERE id = '".$last_id."'"));
@@ -3008,13 +3008,13 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			sendNotification(getName($_SESSION['id']) . " has locked event ID: [" . $_POST['eventId'] . "]", $_SESSION['id']);
 
 			// Send message to troopers
-			alertTroopersInEvent($_POST['eventId'], getEventTitle($_POST['eventId']) . ' has been locked by Command Staff.', 'https://fl501st.com/troop-tracker/index.php?event=' . $_POST['eventId']);
+			alertTroopersInEvent($_POST['eventId'], getEventTitle($_POST['eventId']) . ' has been locked by Command Staff.', ''.$trackerURL.'/index.php?event=' . $_POST['eventId']);
 		}
 		// Event submitted for cancelation...
 		else if($_POST['eventStatus'] == 2)
 		{
 			// Send message to troopers
-			alertTroopersInEvent($_POST['eventId'], getEventTitle($_POST['eventId']) . ' has been canceled by Command Staff.', 'https://fl501st.com/troop-tracker/index.php?event=' . $_POST['eventId']);
+			alertTroopersInEvent($_POST['eventId'], getEventTitle($_POST['eventId']) . ' has been canceled by Command Staff.', ''.$trackerURL.'/index.php?event=' . $_POST['eventId']);
 
 			// Query the database
 			$statement = $conn->prepare("UPDATE events SET closed = '2' WHERE id = ?");
@@ -3074,7 +3074,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			sendNotification(getName($_SESSION['id']) . " has reopened event ID: [" . $_POST['eventId'] . "]", $_SESSION['id']);
 
 			// Send message to troopers
-			alertTroopersInEvent($_POST['eventId'], getEventTitle($_POST['eventId']) . ' has been opened by Command Staff.', 'https://fl501st.com/troop-tracker/index.php?event=' . $_POST['eventId']);
+			alertTroopersInEvent($_POST['eventId'], getEventTitle($_POST['eventId']) . ' has been opened by Command Staff.', ''.$trackerURL.'/index.php?event=' . $_POST['eventId']);
 		}
 		// Event submitted for set full...
 		else if($_POST['eventStatus'] == 4)
@@ -3088,7 +3088,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 			sendNotification(getName($_SESSION['id']) . " has set event ID: [" . $_POST['eventId'] . "] to full.", $_SESSION['id']);
 
 			// Send message to troopers
-			alertTroopersInEvent($_POST['eventId'], getEventTitle($_POST['eventId']) . ' has been set to full by Command Staff.', 'https://fl501st.com/troop-tracker/index.php?event=' . $_POST['eventId']);
+			alertTroopersInEvent($_POST['eventId'], getEventTitle($_POST['eventId']) . ' has been set to full by Command Staff.', ''.$trackerURL.'/index.php?event=' . $_POST['eventId']);
 		}
 	}
 

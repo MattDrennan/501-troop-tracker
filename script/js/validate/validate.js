@@ -345,8 +345,8 @@ $(function()
         },
         messages:
         {
-            tkid: "Please enter your FL Garrison Board username.",
-            password: "Please enter your FL Garrison Board password."
+            tkid: "Please enter your Garrison Board username.",
+            password: "Please enter your Garrison Board password."
         },
         submitHandler: function(form)
         {
@@ -452,7 +452,7 @@ $(function()
         messages:
         {
             tkid: "Please enter your TKID and make sure it is no more than eleven (11) characters.",
-            forumid: "Please enter your FL 501st Forum Username.",
+            forumid: "Please enter your Garrison 501st Forum Username.",
             forumpassword: "Please enter your password.",
             name: "Please enter your name.",
 			rebelforum: "Please enter your Rebel Legion forum username.",
@@ -739,8 +739,8 @@ $(function()
         messages:
         {
             tkid: "Please enter your TKID.",
-            forum_id: "Please enter your FL Garrison Board username.",
-            password: "Please enter your FL Garrison Board password.",
+            forum_id: "Please enter your Garrison Board username.",
+            password: "Please enter your Garrison Board password.",
             tkid2: "Please enter an ID."
         },
         submitHandler: function(form)

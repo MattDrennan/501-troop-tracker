@@ -913,7 +913,7 @@ function drawSupportGraph()
 				{
 					$return .= '
 					<p style="text-align: center;">
-						<a href="https://www.fl501st.com/boards/index.php?account/upgrades">The '.garrison.' needs your support! Click here to learn more.</a>
+						<a href="'.$forumURL.'account/upgrades">The '.garrison.' needs your support! Click here to learn more.</a>
 					</p>';
 				}
 				else
@@ -921,7 +921,7 @@ function drawSupportGraph()
 					// Did support
 					$return .= '
 					<p style="text-align: center;">
-						<a href="https://www.fl501st.com/boards/index.php?account/upgrades">Thank you for your contribution! Manage your donations here.</a>
+						<a href="'.$forumURL.'account/upgrades">Thank you for your contribution! Manage your donations here.</a>
 					</p>';
 				}
 			}
@@ -1172,9 +1172,13 @@ function loginWithForum($username, $password)
  * @param string $link The link where you want the alert to direct to
  * @return json Return alert success
 */
-function createAlert($to, $message, $link = 'https://fl501st.com/troop-tracker')
+function createAlert($to, $message, $link = null)
 {
 	global $forumURL;
+	global $trackerURL;
+
+	// Use $link if provided, otherwise default to $trackerURL
+	$link = $link ?? $trackerURL;
 	
 	// Create Thread
 	$curl = curl_init();
@@ -2469,7 +2473,7 @@ function squadToDiscord($squad)
 	}
 	else
 	{
-		return 'Florida Garrison';
+		return garrison;
 	}
 }
 
@@ -2516,7 +2520,7 @@ function sendEventNotify($id, $name, $description, $squad)
 	            "description" => $description,
 
 	            // URL of title link
-	            "url" => "https://www.fl501st.com/troop-tracker/index.php?event=" . $id,
+	            "url" => "".$trackerURL."/index.php?event=" . $id,
 
 	            // Timestamp of embed must be formatted as ISO8601
 	            "timestamp" => $timestamp,
@@ -3870,7 +3874,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	// Check if the username was found
 	if(isset(getUserForum($forum)['exact']['user_id'])) {
 		echo '
-		<p style="text-align: center;"><a href="https://www.fl501st.com/boards/index.php?members/'.$forum.'.'.getUserForum($forum)['exact']['user_id'].'" target="_blank" class="button">View Boards Profile</a></p>';
+		<p style="text-align: center;"><a href="'.$forumURL.'members/'.$forum.'.'.getUserForum($forum)['exact']['user_id'].'" target="_blank" class="button">View Boards Profile</a></p>';
 	} else {
 		echo '
 		<p style="text-align: center;">Boards Name: '.$forum.'</p>';
@@ -4039,7 +4043,7 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 		while ($db = mysqli_fetch_object($result))
 		{
 			$returnString .= '
-			[IMG]https://fl501st.com/troop-tracker/images/uploads/'.$db->filename.'[/IMG]
+			[IMG]'.$trackerURL.'/images/uploads/'.$db->filename.'[/IMG]
 			';
 		}
 	}
@@ -4047,7 +4051,7 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 	$returnString .= '
 	[b][u]Sign Up / Event Roster:[/u][/b]
 
-	[url]https://fl501st.com/troop-tracker/index.php?event=' . $eventId . '[/url]';
+	[url]'.$trackerURL.'/index.php?event=' . $eventId . '[/url]';
 
 	$link = isLink($eventId);
 
@@ -4066,7 +4070,7 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 			while ($db = mysqli_fetch_object($result))
 			{
 				$returnString .= '
-				-[url=https://fl501st.com/troop-tracker/index.php?event='.$db->id.'][b]' . date("l", strtotime($db->dateStart)) . '[/b] : [i]' . date("m/d - h:i A", strtotime($db->dateStart)) . ' - ' . date("h:i A", strtotime($db->dateEnd)) . '[/i] ' .''.$db->name.'[/url]
+				-[url='.$trackerURL.'/index.php?event='.$db->id.'][b]' . date("l", strtotime($db->dateStart)) . '[/b] : [i]' . date("m/d - h:i A", strtotime($db->dateStart)) . ' - ' . date("h:i A", strtotime($db->dateEnd)) . '[/i] ' .''.$db->name.'[/url]
 				';
 			}
 		}
@@ -4094,7 +4098,7 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 			while ($db = mysqli_fetch_object($result))
 			{
 				$returnString .= '
-				[url="https://fl501st.com/troop-tracker/index.php?event=' . $db->id . '"]' . (isLink($db->id) > 0 ? '[b]'.date('l', strtotime($db->dateStart)).'[/b] - ' . date('M d, Y', strtotime($db->dateStart)) . ' ' . date('h:i A', strtotime($db->dateStart)) . ' - ' . date('h:i A', strtotime($db->dateEnd)) . ''. $db->name : date('M d, Y', strtotime($db->dateStart)) . ': ' . $db->name) .'[/url]';
+				[url="'.$trackerURL.'/index.php?event=' . $db->id . '"]' . (isLink($db->id) > 0 ? '[b]'.date('l', strtotime($db->dateStart)).'[/b] - ' . date('M d, Y', strtotime($db->dateStart)) . ' ' . date('h:i A', strtotime($db->dateStart)) . ' - ' . date('h:i A', strtotime($db->dateEnd)) . ''. $db->name : date('M d, Y', strtotime($db->dateStart)) . ': ' . $db->name) .'[/url]';
 			}
 		}
 
@@ -5095,9 +5099,13 @@ function hasPermission($permissionLevel1, $permissionLevel2 = -1, $permissionLev
  * @param string $link The link where you want the alert to direct to
  * @return boolean Returns was a success
 */
-function alertTroopersInEvent($troopid, $message, $link = 'https://fl501st.com/troop-tracker')
+function alertTroopersInEvent($troopid, $message, $link = null)
 {
 	global $conn;
+	global $trackerURL;
+
+	// Use $link if provided, otherwise default to $trackerURL
+	$link = $link ?? $trackerURL;
 	
 	// Check if the trooper is a moderator
 	$statement = $conn->prepare("SELECT * FROM event_sign_up WHERE troopid = ?");
@@ -5524,7 +5532,7 @@ function sendEventUpdate($troopid, $trooperid, $subject, $message)
 	$messageAlert = $message;
 
 	// Add footer to message
-	$message = $message . "https://www.fl501st.com/troop-tracker/index.php?event=".$troopid."\n\nYou can opt out of e-mails under: \"Manage Account\"\n\nhttps://fl501st.com/troop-tracker/\n\nTo turn off this notification, go to the event page, and press the \"Unsubscribe\" button.";
+	$message = $message . "".$trackerURL."/index.php?event=".$troopid."\n\nYou can opt out of e-mails under: \"Manage Account\"\n\n".$trackerURL."/\n\nTo turn off this notification, go to the event page, and press the \"Unsubscribe\" button.";
 
 	// Query database for trooper information and make sure they are subscribed to e-mail
 	$statement = $conn->prepare("SELECT troopers.user_id, troopers.email, troopers.name, troopers.subscribe FROM troopers LEFT JOIN event_notifications ON troopers.id = event_notifications.trooperid WHERE event_notifications.troopid = ? AND troopers.subscribe = '1' AND troopers.email != ''");
@@ -5539,7 +5547,7 @@ function sendEventUpdate($troopid, $trooperid, $subject, $message)
 			@sendEmail($db->email, $db->name, $subject, $message);
 
 			// Create alert
-			createAlert($db->user_id, $messageAlert, 'https://fl501st.com/troop-tracker/index.php?event=' . $troopid);
+			createAlert($db->user_id, $messageAlert, ''.$trackerURL.'/index.php?event=' . $troopid);
 		}
 	}
 }
