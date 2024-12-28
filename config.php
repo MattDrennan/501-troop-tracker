@@ -1008,7 +1008,21 @@ function getTrooperRanking($trooperID)
 */
 function resetTrooperStatus($eventID, $link = 0)
 {
-	global $conn, $clubArray;
+	global $conn, $clubArray, $trackerURL;
+
+	// Store changes
+	$before = [];
+
+	// Fetch rows BEFORE update
+	$select = $conn->prepare("SELECT id, trooperid, status FROM event_sign_up WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = ?");
+	$select->bind_param("i", $eventID);
+	$select->execute();
+	$result = $select->get_result();
+
+	// Store trooperid and status in the before array
+	while ($row = $result->fetch_assoc()) {
+	    $before[$row['id']] = ['status' => $row['status'], 'trooperid' => $row['trooperid']];
+	}
 
 	// Get data
 	$statement = $conn->prepare("SELECT * FROM events WHERE closed = '0' AND id = ?");
@@ -1030,6 +1044,21 @@ function resetTrooperStatus($eventID, $link = 0)
 				// Update statuses to going if room
 				$statement = $conn->prepare("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND 0 = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')." ORDER BY signuptime ASC LIMIT " . $db->limit501st);
 				$statement->execute();
+
+				// Send notifications for changed status
+				if ($statement->affected_rows > 0) {
+				    // Fetch rows AFTER update
+				    $select->execute();
+				    $result = $select->get_result();
+
+					// After update
+				    while ($row = $result->fetch_assoc()) {
+				        // Compare before and after values
+				        if ($before[$row['id']]['status'] !== $row['status']) {
+				            createAlert(getUserID($before[$row['id']]['trooperid']), getEventTitle($eventID) . ': Your status on this event is now '.getStatus($row['status']).'.', $trackerURL . '/index.php?event=' . $eventID);
+				        }
+				    }
+				}
 			}
 
 			// Loop through clubs to check limits
@@ -1044,6 +1073,21 @@ function resetTrooperStatus($eventID, $link = 0)
 					// Update statuses to going if room
 					$statement = $conn->prepare("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND ".$club_value['costumes'][0]." = (SELECT club FROM costumes WHERE id = event_sign_up.costume) ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')." ORDER BY signuptime ASC LIMIT " . $db->{$club_value['dbLimit']});
 					$statement->execute();
+
+					// Send notifications for changed status
+					if ($statement->affected_rows > 0) {
+					    // Fetch rows AFTER update
+					    $select->execute();
+					    $result = $select->get_result();
+
+						// After update
+					    while ($row = $result->fetch_assoc()) {
+					        // Compare before and after values
+					        if ($before[$row['id']]['status'] !== $row['status']) {
+				            	createAlert(getUserID($before[$row['id']]['trooperid']), getEventTitle($eventID) . ': Your status on this event is now '.getStatus($row['status']).'.', $trackerURL . '/index.php?event=' . $eventID);
+					        }
+					    }
+					}
 				}
 			}
 
@@ -1057,6 +1101,21 @@ function resetTrooperStatus($eventID, $link = 0)
 				// Update statuses to going if room
 				$statement = $conn->prepare("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' ".($db->limitHandlers > 500 || $db->limitHandlers < 500 ? 'AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) NOT LIKE \'%handler%\'' : '')." ORDER BY signuptime ASC LIMIT " . $db->limitTotalTroopers);
 				$statement->execute();
+
+				// Send notifications for changed status
+				if ($statement->affected_rows > 0) {
+				    // Fetch rows AFTER update
+				    $select->execute();
+				    $result = $select->get_result();
+
+					// After update
+				    while ($row = $result->fetch_assoc()) {
+				        // Compare before and after values
+				        if ($before[$row['id']]['status'] !== $row['status']) {
+				            createAlert(getUserID($before[$row['id']]['trooperid']), getEventTitle($eventID) . ': Your status on this event is now '.getStatus($row['status']).'.', $trackerURL . '/index.php?event=' . $eventID);
+				        }
+				    }
+				}
 			}
 			
 			// Check handler limit
@@ -1069,6 +1128,21 @@ function resetTrooperStatus($eventID, $link = 0)
 				// Update statuses to going if room
 				$statement = $conn->prepare("UPDATE event_sign_up SET status = '0' WHERE (status = 0 OR status = 1 OR status = 2) AND troopid = '".$db->id."' AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) LIKE '%handler%' ORDER BY signuptime ASC LIMIT " . $db->limitHandlers);
 				$statement->execute();
+
+				// Send notifications for changed status
+				if ($statement->affected_rows > 0) {
+				    // Fetch rows AFTER update
+				    $select->execute();
+				    $result = $select->get_result();
+
+					// After update
+				    while ($row = $result->fetch_assoc()) {
+				        // Compare before and after values
+				        if ($before[$row['id']]['status'] !== $row['status']) {
+				            createAlert(getUserID($before[$row['id']]['trooperid']), getEventTitle($eventID) . ': Your status on this event is now '.getStatus($row['status']).'.', $trackerURL . '/index.php?event=' . $eventID);
+				        }
+				    }
+				}
 			}
 		}
 	}
