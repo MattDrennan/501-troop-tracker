@@ -2488,6 +2488,7 @@ function squadToDiscord($squad)
 */
 function sendEventNotify($id, $name, $description, $squad)
 {
+	global $trackerURL;
 	$webhookurl = discordWeb1;
 
 	//=======================================================================================================
@@ -5528,6 +5529,7 @@ function createEvent($name, $venue, $dateStart, $dateEnd, $website, $numberOfAtt
 function sendEventUpdate($troopid, $trooperid, $subject, $message)
 {
 	global $conn;
+	global $trackerURL;
 
 	// Alert message
 	$messageAlert = $message;
