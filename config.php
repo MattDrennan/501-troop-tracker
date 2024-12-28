@@ -3384,6 +3384,55 @@ function myTheme()
 }
 
 /**
+ * Fetches a specific column from the events table.
+ * 
+ * @param string $column The column name to retrieve.
+ * @param int|null $id Optional. The ID of the event to filter by.
+ * @return array|string|null An array of values, a single value, or null if no data is found.
+ */
+function getEventColumn($column, $id = null)
+{
+    global $conn;
+
+    // Validate column name to allow any column safely
+    $column = preg_replace('/[^a-zA-Z0-9_]/', '', $column); // Remove invalid characters
+
+    // Prepare SQL query
+    $sql = "SELECT `$column` FROM events";
+    if ($id !== null) {
+        $sql .= " WHERE id = ?";
+    }
+
+    $statement = $conn->prepare($sql);
+
+    // Bind parameters if ID is provided
+    if ($id !== null) {
+        $statement->bind_param("i", $id);
+    }
+
+    $statement->execute();
+    $result = $statement->get_result();
+
+    // Fetch results
+    $data = [];
+    while ($row = $result->fetch_assoc()) {
+        $data[] = $row[$column];
+    }
+
+    // Cleanup
+    $statement->close();
+    $result->free();
+
+    // Return data
+    if ($id !== null) {
+        // Return a single value if ID was specified
+        return $data[0] ?? null;
+    }
+
+    return $data; // Return all matching values if no ID was specified
+}
+
+/**
  * Returns the event title
  * 
  * @param int $id The ID of the event

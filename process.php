@@ -88,13 +88,13 @@ if(isset($_GET['do']) && isset($_GET['event']) && $_GET['do'] == "load-add-frien
 	<select name="status">
 		<option value="null" SELECTED>Please choose an option...</option>';
 
-	if($limitedEvent != 1)
+	if(getEventColumn('limitedEvent', cleanInput($_GET['event'])) != 1)
 	{
 		echo '
 			<option value="0">I\'ll be there!</option>';
 			
 		// Check if tentative allowed
-		if($allowTentative == 1)
+		if(getEventColumn('allowTentative', cleanInput($_GET['event']) == 1))
 		{
 			echo '
 			<option value="2">Tentative</option>';

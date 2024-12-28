@@ -371,6 +371,11 @@ Search.appendIndex(
             "summary": "Returns\u0020the\u0020trooper\u0027s\u0020set\u0020theme",
             "url": "namespaces/default.html#function_myTheme"
         },                {
+            "fqsen": "\\getEventColumn\u0028\u0029",
+            "name": "getEventColumn",
+            "summary": "Fetches\u0020a\u0020specific\u0020column\u0020from\u0020the\u0020events\u0020table.",
+            "url": "namespaces/default.html#function_getEventColumn"
+        },                {
             "fqsen": "\\getEventTitle\u0028\u0029",
             "name": "getEventTitle",
             "summary": "Returns\u0020the\u0020event\u0020title",
