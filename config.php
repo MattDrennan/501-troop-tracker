@@ -3993,6 +3993,7 @@ function profileExist($id)
 function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $website, $numberOfAttend, $requestedNumber, $requestedCharacter, $secure, $blasters, $lightsabers, $parking, $mobility, $amenities, $comments, $referred, $eventId, $eventType = 0, $roster = "")
 {
 	global $conn;
+	global $trackerURL;
 	
 	$returnString = '';
 
