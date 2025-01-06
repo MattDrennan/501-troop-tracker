@@ -12,8 +12,7 @@ include "../../../config.php";
 use Kreait\Firebase\Factory;
 
 // Set up factory - path to your JSON file
-$factory = (new Factory)
-    ->withServiceAccount('troop-tracker-dfd22-firebase-adminsdk-tfh9o-da0e5ec460.json');
+$factory = (new Factory)->withServiceAccount('troop-tracker-dfd22-firebase-adminsdk-tfh9o-da0e5ec460.json');
 
 // Capture raw POST data
 $input = file_get_contents('php://input');
@@ -39,7 +38,7 @@ $postId = $post['post_id'] ?? 'N/A';
 $thread_id = $post['thread_id'] ?? 'N/A';
 $userId = $post['user_id'] ?? 'N/A';
 $username = $post['username'] ?? 'N/A';
-$message = $post['message'] ?? 'N/A';
+$postMessage = $post['message'] ?? 'N/A';
 $postDate = date('Y-m-d H:i:s', $post['post_date'] ?? time());
 
 // Prepare and execute query to get the event by thread_id
@@ -122,7 +121,7 @@ if ($result->num_rows > 0) {
                                     'token' => $fcm['fcm'],
                                     'notification' => [
                                         'title' => $event['event_name'] . ': ' . $username,
-                                        'body' => $message,
+                                        'body' => $postMessage,
                                     ],
                                     'data' => [
                                         'troopName' => $event['event_name'],
