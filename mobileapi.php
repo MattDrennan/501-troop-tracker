@@ -13,10 +13,9 @@ header('Content-Type: application/json');
 
 // Initialize response data
 $data = new stdClass();
-$data->troops = [];
 
 try {
-    // Validate GET parameters
+    // Get troops for trooper
     if (isset($_GET['user_id'], $_GET['action']) && $_GET['action'] === 'troops') {
         // Prepare SQL query
         $sql = "
@@ -83,6 +82,69 @@ try {
 
         // Close resources
         $statement->close();
+    } else if (isset($_GET['squad'], $_GET['action']) && $_GET['action'] === 'get_troops_by_squad') {
+        // Prepare SQL query
+        $sql = "
+        SELECT 
+            e.*, 
+            COUNT(es.trooperid) AS trooper_count
+        FROM 
+            events e
+        LEFT JOIN 
+            event_sign_up es ON e.id = es.troopid
+        WHERE 
+            e.dateStart >= CURDATE()
+            AND (e.squad = ? OR ? = 0)
+            AND (e.closed = '0' OR e.closed = '3' OR e.closed = '4')
+        GROUP BY 
+            e.id
+        ORDER BY 
+            e.dateStart;";
+
+        // Prepare statement
+        $statement = $conn->prepare($sql);
+        if (!$statement) {
+            throw new Exception('Database error: ' . $conn->error);
+        }
+
+        // Bind parameters
+        $statement->bind_param("ii", $_GET['squad'], $_GET['squad']);
+        $statement->execute();
+
+        // Process query results
+        $result = $statement->get_result();
+        while ($db = $result->fetch_object()) {
+            $tempObject = new stdClass();
+            $tempObject->troopid = $db->id;
+            $tempObject->name = $db->name;
+            $tempObject->dateStart = $db->dateStart;
+            $tempObject->dateEnd = $db->dateEnd;
+            $tempObject->location = $db->location;
+            $tempObject->thread_id = $db->thread_id;
+            $tempObject->post_id = $db->post_id;
+
+            // Event Sign Up
+            $tempObject->trooper_count = $db->trooper_count;
+
+            $data->troops[] = $tempObject;
+        }
+
+        // Close resources
+        $statement->close();
+    // Get Squad/Club Name
+    } else if(isset($_GET['squad'], $_GET['action']) && $_GET['action'] === 'get_squad_club_name') {
+        $data->squadName = getSquadName($_GET['squad']);
+
+        // Add squad names
+        foreach ($squadArray as $squad) {
+            $data->squadNames[] = $squad['name'];
+        }
+
+        // Add club names
+        foreach ($clubArray as $club) {
+            $data->clubNames[] = $club['name'];
+        }
+    // Save FCM
     } else if(isset($_POST['userid'], $_POST['fcm'], $_POST['action']) && $_POST['action'] === 'saveFCM') {
         // Get values
         $userId = $_POST['userid'];
@@ -135,6 +197,7 @@ try {
 
         // Close resources
         $statement->close();
+    // Logout (FCM)
     } else if(isset($_POST['fcm'], $_POST['action']) && $_POST['action'] === 'logoutFCM') {
         // Get values
         $fcmToken = $_POST['fcm'];
