@@ -122,6 +122,7 @@ try {
             $tempObject->location = $db->location;
             $tempObject->thread_id = $db->thread_id;
             $tempObject->post_id = $db->post_id;
+            $tempObject->squad = $db->squad;
 
             // Event Sign Up
             $tempObject->trooper_count = $db->trooper_count;
