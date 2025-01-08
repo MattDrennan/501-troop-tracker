@@ -4209,7 +4209,7 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 	$link2 = isLink2($eventId);
 
 	// Show linked events
-	if($link1 == 0 && $link2 > 0) {
+	if($link == 0 && $link2 > 0) {
 		$returnString .= '
 		[b][u]Related Troops:[/u][/b]';
 
