@@ -82,6 +82,40 @@ try {
 
         // Close resources
         $statement->close();
+    // Get event
+    } else if (isset($_GET['troopid'], $_GET['action']) && $_GET['action'] === 'event') {
+        // Prepare SQL query
+        $sql = "
+            SELECT 
+                *
+            FROM 
+                events 
+            WHERE 
+                id = ?";
+
+        // Prepare statement
+        $statement = $conn->prepare($sql);
+        if (!$statement) {
+            throw new Exception('Database error: ' . $conn->error);
+        }
+
+        // Bind parameters
+        $statement->bind_param("i", $_GET['troopid']);
+        $statement->execute();
+
+        // Process query results
+        $result = $statement->get_result();
+        while ($db = $result->fetch_object()) {
+            $tempObject = new stdClass();
+
+            // Dynamically assign all columns to $data
+            foreach ($db as $key => $value) {
+                $data->$key = $value; // Equivalent to $data->name = $db->name;
+            }
+        }
+
+        // Close resources
+        $statement->close();
     } else if (isset($_GET['squad'], $_GET['action']) && $_GET['action'] === 'get_troops_by_squad') {
         // Prepare SQL query
         $sql = "
