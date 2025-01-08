@@ -4458,8 +4458,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<select id="multiple_event_select" name="events[]" multiple="multiple">';
 						}
 
-						echo '
-							<option value="' . $db->id . '">' . date('M d, Y', strtotime($db->dateStart)) . ': ' . $db->name . '</option>';
+						echo '<option value="' . $db->id . '">' . (isLink($db->id) > 0 ? "[" . date("M d, Y h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "] " : date('M d, Y', strtotime($db->dateStart))) . ': ' . $db->name;
 
 						$i++;
 					}
@@ -4542,8 +4541,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 							<select id="multiple_event_selectEdit" name="events[]" multiple="multiple">';
 						}
 
-						echo '
-							<option value="' . $db->id . '">' . (isLink($db->id) > 0 ? date('l', strtotime($db->dateStart)).' - ' . date('M d, Y', strtotime($db->dateStart)) . ': ' . $db->name : date('M d, Y', strtotime($db->dateStart)) . ': ' . $db->name) . '</option>';
+						echo '<option value="' . $db->id . '">' . (isLink($db->id) > 0 ? "[" . date("M d, Y h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "] " : date('M d, Y', strtotime($db->dateStart))) . ': ' . $db->name;
 
 						$i++;
 					}
@@ -5992,7 +5990,7 @@ if(isset($_GET['event']) && loggedIn())
 				$link2 = isLink2($db->id);
 
 				// Show linked events
-				if($link2 > 0) {
+				if($link2 == 0 && $link2 > 0) {
 					echo '
 					<h2 class="tm-section-header">Related Troops</h2>';
 
@@ -6016,6 +6014,17 @@ if(isset($_GET['event']) && loggedIn())
 							</div>';
 						}
 					}
+
+					echo '
+					<div style="text-align: center;">
+						<b>This event is connected to other related events; therefore, sign-up limits may apply.</b>
+					</div>';
+				} else {
+					// Only show the disclaimer text, if the event is already a shift.
+					echo '
+					<div style="text-align: center;">
+						<b>This event is connected to other related events; therefore, sign-up limits may apply.</b>
+					</div>';
 				}
 				
 				// Don't show photos, if merged data

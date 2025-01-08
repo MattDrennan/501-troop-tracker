@@ -4209,7 +4209,7 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 	$link2 = isLink2($eventId);
 
 	// Show linked events
-	if($link2 > 0) {
+	if($link1 == 0 && $link2 > 0) {
 		$returnString .= '
 		[b][u]Related Troops:[/u][/b]';
 
@@ -4223,13 +4223,19 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 			while ($db = mysqli_fetch_object($result))
 			{
 				$returnString .= '
-				[url="'.$trackerURL.'/index.php?event=' . $db->id . '"]' . (isLink($db->id) > 0 ? '[b]'.date('l', strtotime($db->dateStart)).'[/b] - ' . date('M d, Y', strtotime($db->dateStart)) . ' ' . date('h:i A', strtotime($db->dateStart)) . ' - ' . date('h:i A', strtotime($db->dateEnd)) . ''. $db->name : date('M d, Y', strtotime($db->dateStart)) . ': ' . $db->name) .'[/url]';
+				[url="'.$trackerURL.'/index.php?event=' . $db->id . '"]' . (isLink($db->id) > 0 ? '[b]'.date('l', strtotime($db->dateStart)).'[/b] - ' . date('M d, Y', strtotime($db->dateStart)) . ' ' . date('h:i A', strtotime($db->dateStart)) . ' - ' . date('h:i A', strtotime($db->dateEnd)) . ' '. $db->name : date('M d, Y', strtotime($db->dateStart)) . ': ' . $db->name) .'[/url]
+				';
 			}
 		}
 
 		$returnString .= '
+		[b]This event is connected to other related events; therefore, sign-up limits may apply.[/b]
+
 		[b]To view all related event forum posts on one page, view the event page on the Troop Tracker. This forum page will only show this events forum posts.[/b]
 		';
+	} else {
+		$returnString .= '
+		[b]This event is connected to other related events; therefore, sign-up limits may apply.[/b]
 	}
 
 	return $returnString;
