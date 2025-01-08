@@ -4235,7 +4235,7 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 		';
 	} else {
 		$returnString .= '
-		[b]This event is connected to other related events; therefore, sign-up limits may apply.[/b]
+		[b]This event is connected to other related events; therefore, sign-up limits may apply.[/b]';
 	}
 
 	return $returnString;
