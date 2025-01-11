@@ -116,16 +116,30 @@ try {
 
         // Close resources
         $statement->close();
-    // Get roster for event
+        // Get roster for event
     } else if (isset($_GET['troopid'], $_GET['action']) && $_GET['action'] === 'get_roster_for_event') {
-        // Prepare SQL query
+        // Prepare SQL query with JOINs
         $sql = "
             SELECT 
-                *
+                esu.*,
+                c.costume AS costume_name,
+                b.costume AS backup_costume_name,
+                t.name AS trooper_name,
+                t.forum_id AS forum_id,
+                t.name AS trooper_name,
+                t.tkid AS tkid,
+                t.squad AS squad
             FROM 
-                event_sign_up 
+                event_sign_up esu
+            LEFT JOIN 
+                costumes c ON esu.costume = c.id
+            LEFT JOIN 
+                costumes b ON esu.costume_backup = b.id
+            LEFT JOIN 
+                troopers t ON esu.trooperid = t.id
             WHERE 
-                troopid = ?";
+                esu.troopid = ?
+        ";
 
         // Prepare statement
         $statement = $conn->prepare($sql);
@@ -150,6 +164,12 @@ try {
             foreach ($db as $key => $value) {
                 $tempObject->$key = $value;
             }
+
+            // Get formatted TK Number
+            $tempObject->tkid_formatted = readTKNumber($tempObject->tkid, $tempObject->squad, $tempObject->trooperid);
+
+            // Get status
+            $tempObject->status_formatted = getStatus($tempObject->status);
 
             $data[] = $tempObject; // Add the object to the results array
         }
