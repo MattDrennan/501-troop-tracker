@@ -289,6 +289,253 @@ try {
         foreach ($clubArray as $club) {
             $data->clubNames[] = $club['name'];
         }
+    // Sign Up for troop
+    } else if(isset($_GET['trooperid'], $_GET['troopid'], $_GET['addedby'], $_GET['status'], $_GET['costume'], $_GET['backupcostume'], $_GET['action']) && $_GET['action'] === 'sign_up') {
+        // Set trooper ID
+        $trooperID = 0;
+
+        // Set up success message
+        $success = "success";
+        $success_message = "Success!";
+
+        // Get number of troopers that trooper signed up for event
+        $statement = $conn->prepare("SELECT id FROM event_sign_up WHERE addedby = ? AND troopid = ?");
+        $statement->bind_param("ii", $_GET['trooperid'], $_GET['troopid']);
+        $statement->execute();
+        $statement->store_result();
+        $numFriends = $statement->num_rows;
+
+        // Check if this is add friend
+        if(isset($_GET['addedby']) && $_GET['addedby'] > 0)
+        {
+            // Prevent bug of getting signed up twice
+            $eventCheck = inEvent($_GET['addedby'], $_GET['troopid']);
+
+            // Set
+            $trooperID = $_GET['addedby'];
+        }
+        else
+        {
+            // Prevent bug of getting signed up twice
+            $eventCheck = inEvent($_GET['trooperid'], $_GET['troopid']);
+
+            // Set
+            $trooperID = $_GET['trooperid'];
+        }
+
+        // Check if already in troop and exclude placeholder account
+        if($eventCheck['inTroop'] == 1 && $trooperID != placeholder)
+        {
+            die("ALREADY IN THIS TROOP!");
+        }
+
+        // End prevent bug of getting signed up twice
+
+        // Get status post variable
+        $status = $_GET['status'];
+
+        // Check to see if this event is full
+
+        // Set up limits
+        $limit501st = "";
+
+        // Set up limit total
+        $limit501stTotal = eventClubCount($_GET['troopid'], 0);
+
+        // Set up club count
+        $clubCount = 1;
+
+        // Loop through clubs
+        foreach($clubArray as $club => $club_value)
+        {
+            // Set up limits
+            ${$club_value['dbLimit']} = "";
+
+            // Set up limit totals
+            ${$club_value['dbLimit'] . "Total"} = eventClubCount($_GET['troopid'], $clubCount);
+
+            // Increment club count
+            $clubCount++;
+        }
+
+        // Set limit total
+        $limitTotal = 0;
+
+        // Set handler total
+        $limitHandlers = 0;
+
+        // Set friend limit
+        $friendLimit = 0;
+
+        // Is this a total trooper event?
+        $totalTrooperEvent = false;
+
+
+        // Query to get limits
+        $statement = $conn->prepare("SELECT * FROM events WHERE id = ?");
+        $statement->bind_param("i", $_GET['troopid']);
+        $statement->execute();
+
+        // Output
+        if ($result = $statement->get_result())
+        {
+            while ($db = mysqli_fetch_object($result))
+            {
+                // Set 501
+                $limit501st = $db->limit501st;
+                
+                // Set handlers
+                $limitHandlers = $db->limitHandlers;
+                
+                // Set friend limit
+                $friendLimit = $db->friendLimit;
+
+                // Add
+                $limitTotal += $db->limit501st;
+
+
+                // Loop through clubs
+                foreach($clubArray as $club => $club_value)
+                {
+                    // Set
+                    ${$club_value['dbLimit']} = $db->{$club_value['dbLimit']};
+
+                    // Add
+                    $limitTotal += $db->{$club_value['dbLimit']};
+                }
+
+                // Check for total limit set, if it is, replace limit with it
+                if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+                {
+                    $limitTotal = $db->limitTotalTroopers;
+                    $totalTrooperEvent = true;
+                }
+            }
+        }
+
+        // Set troop full - not used at the moment, but will keep it here for now
+        $troopFull = false;
+
+        // Check for total limit set, if it is, check if troop is full based on total
+        if(strpos(strtolower(getCostume($_GET['costume'])), "handler") === false)
+        {
+            if($totalTrooperEvent)
+            {
+                /* TOTAL TROOPERS */
+                
+                if($limitTotal - eventClubCount($_GET['troopid'], "all") <= 0 && $status != 4)
+                {
+                    // Troop is full, set to stand by
+                    $status = 1;
+
+                    // Set troop full
+                    $troopFull = true;
+                }
+            }
+            else
+            {
+                /* CHECK IF SQUADS / CLUB ARE FULL */
+
+                // 501
+                if((getCostumeClub($_GET['costume']) == 0 && ($limit501st - eventClubCount($_GET['troopid'], 0)) <= 0) && $status != 4)
+                {
+                    // Troop is full, set to stand by
+                    $status = 1;
+
+                    // Set troop full
+                    $troopFull = true;
+                }
+
+                // Loop through clubs
+                foreach($clubArray as $club => $club_value)
+                {
+                    // Loop through costumes
+                    foreach($club_value['costumes'] as $costume)
+                    {
+                        // Make sure not a dual costume
+                        if(!in_array($costume, $dualCostume))
+                        {
+                            // Check club
+                            if((getCostumeClub($_GET['costume']) == $costume && (${$club_value['dbLimit']} - eventClubCount($_GET['troopid'], $costume)) <= 0) && $status != 4)
+                            {
+                                // Troop is full, set to stand by
+                                $status = 1;
+
+                                // Set troop full
+                                $troopFull = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            // Handler check
+            if(($limitHandlers - handlerEventCount($_GET['troopid'])) <= 0 && $status != 4)
+            {
+                // Troop is full, set to stand by
+                $status = 1;
+
+                // Set troop full
+                $troopFull = true;
+            }
+        }
+
+        // End of check to see if this event is full
+
+        // Check if this is add friend
+        if(isset($_GET['addedby']) && $_GET['addedby'] > 0)
+        {
+            // Check if can add friend based on friend count
+            if($numFriends >= $friendLimit)
+            {
+                $success = "friend_fail";
+                $success_message = "You cannot add anymore friends!";
+            }
+            else if(!checkLinkedEvents($_GET['addedby'], $_GET['troopid']))
+            {
+                $success = "check_linked_fail";
+                $success_message = "This friend has exceeded their sign ups for these linked events.";
+            }
+            else
+            {
+                // Query the database
+                $statement = $conn->prepare("INSERT INTO event_sign_up (trooperid, troopid, costume, status, costume_backup, addedby) VALUES (?, ?, ?, ?,?, ?)");
+                $statement->bind_param("iiiiii", $_GET['addedby'], $_GET['troopid'], $_GET['costume'], $status, $_GET['backupcostume'], $_GET['trooperid']);
+                $statement->execute();
+                
+                // Send to database to send out notifictions later
+                $statement = $conn->prepare("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES (?, ?, '1')");
+                $statement->bind_param("ii", $_GET['troopid'], $_GET['addedby']);
+                $statement->execute();
+            }
+        }
+        else
+        {
+            if(!checkLinkedEvents($_GET['trooperid'], $_GET['troopid'])) {
+                $success = "check_linked_fail";
+                $success_message = "You have exceeded your sign ups for these linked events.";
+            } else {
+                // Query the database
+                $statement = $conn->prepare("INSERT INTO event_sign_up (trooperid, troopid, costume, status, costume_backup) VALUES (?, ?, ?, ?, ?)");
+                $statement->bind_param("iiiii", $_SESSION['id'], $_GET['troopid'], $_GET['costume'], $status, $_GET['backupcostume']);
+                $statement->execute();
+                
+                // Send to database to send out notifictions later
+                $statement = $conn->prepare("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES (?, ?, '1')");
+                $statement->bind_param("ii", $_GET['troopid'], $_GET['trooperid']);
+                $statement->execute();
+            }
+        }
+
+        $tempObject = new stdClass();
+
+        $tempObject->sucess = $success;
+        $tempObject->success_message = $success_message;
+        $tempObject->numFriends = ($friendLimit - $numFriends);
+
+        $data->troops[] = $tempObject;
     // Save FCM
     } else if(isset($_POST['userid'], $_POST['fcm'], $_POST['action']) && $_POST['action'] === 'saveFCM') {
         // Get values
