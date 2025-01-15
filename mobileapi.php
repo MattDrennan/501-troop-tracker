@@ -181,7 +181,17 @@ try {
         $sql = "
         SELECT 
             e.*, 
-            COUNT(es.trooperid) AS trooper_count
+            COUNT(CASE WHEN es.status = '0' OR es.status = '2' THEN es.trooperid END) AS trooper_count,
+            (
+                SELECT 
+                    COUNT(*) 
+                FROM 
+                    event_sign_up es2
+                WHERE 
+                    (es2.status = '0' OR es2.status = '2') 
+                    AND es2.troopid = e.id 
+                    AND (SELECT costume FROM costumes WHERE id = es2.costume) LIKE '%handler%'
+            ) AS num_of_handlers
         FROM 
             events e
         LEFT JOIN 
@@ -217,9 +227,49 @@ try {
             $tempObject->thread_id = $db->thread_id;
             $tempObject->post_id = $db->post_id;
             $tempObject->squad = $db->squad;
+            $tempObject->notice = '';
 
             // Event Sign Up
             $tempObject->trooper_count = $db->trooper_count;
+            $tempObject->num_of_handlers = $db->num_of_handlers;
+
+            // Return special notifications on event
+            // Set total
+            $limitTotal = $db->limit501st;
+
+            // Loop through clubs
+            foreach($clubArray as $club => $club_value)
+            {
+                // Add
+                $limitTotal += $db->{$club_value['dbLimit']};
+            }
+
+            // Check for total limit set, if it is, replace limit with it
+            if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+            {
+                $limitTotal = $db->limitTotalTroopers;
+            }
+
+            // Troop set to full
+            if($db->closed == 4) {
+                $tempObject->notice = 'THIS TROOP IS FULL!';      
+            } else if($db->trooper_count <= 1) {   // If not enough troopers
+                $tempObject->notice = 'NOT ENOUGH TROOPERS FOR THIS EVENT!';  
+            } else if(($db->trooper_count - handlerEventCount($db->id)) >= $limitTotal && ($db->limitHandlers > 500 || $db->limitHandlers < 500) && (handlerEventCount($db->id) >= $db->limitHandlers)) {    // If full (w/ handlers)
+                $tempObject->notice = 'THIS TROOP IS FULL!';
+            } else if(($db->trooper_count - handlerEventCount($db->id)) >= $limitTotal && $db->limitHandlers == 500) {   // If full
+                // Check handler count
+                if($db->limitHandlers == 500) {
+                    $tempObject->notice = 'THIS TROOP IS FULL!';
+                } else {
+                    // Check if handlers full
+                    if($db->num_of_handlers >= $db->limitHandlers) {
+                        $tempObject->notice = 'THIS TROOP IS FULL!';
+                    } else {
+                        $tempObject->notice = '';
+                    }
+                }
+            }
 
             $data->troops[] = $tempObject;
         }
