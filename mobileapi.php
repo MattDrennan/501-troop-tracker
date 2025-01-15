@@ -289,6 +289,41 @@ try {
         foreach ($clubArray as $club) {
             $data->clubNames[] = $club['name'];
         }
+    // Get costumes
+} else if (isset($_GET['trooperid'], $_GET['action']) && $_GET['action'] === 'get_costumes_for_trooper') {
+    $trooperId = $_GET['trooperid'];
+    $dualCostumeList = implode(",", $dualCostume); // Ensure $dualCostume is sanitized
+    $mainCostumesQuery = $mainCostumes . mainCostumesBuild($trooperId) . getMyCostumes(getTKNumber($trooperId), getTrooperSquad($trooperId));
+
+    // Construct SQL query
+    $query = "SELECT * FROM costumes 
+              WHERE club NOT IN ($dualCostumeList) 
+              AND " . costume_restrict_query(false, 0, false) . " 
+              ORDER BY FIELD(costume, $mainCostumesQuery) DESC, costume";
+
+    // Prepare and execute
+    $statement = $conn->prepare($query);
+
+    if ($statement) {
+        $statement->execute();
+        $data = []; // Initialize $data as an array
+
+        if ($result = $statement->get_result()) {
+            while ($db = $result->fetch_object()) {
+                $tempObject = new stdClass();
+                $tempObject->id = $db->id;
+                $tempObject->club = $db->club;
+                $tempObject->abbreviation = getCostumeAbbreviation($db->club);
+                $tempObject->name = $db->costume;
+                $data[] = $tempObject; // Append the object to the array
+            }
+        }
+    } else {
+        die("Error preparing statement: " . $conn->error);
+    }
+
+    // Close resources
+    $statement->close();
     // Sign Up for troop
     } else if(isset($_GET['trooperid'], $_GET['troopid'], $_GET['addedby'], $_GET['status'], $_GET['costume'], $_GET['backupcostume'], $_GET['action']) && $_GET['action'] === 'sign_up') {
         // Set trooper ID
