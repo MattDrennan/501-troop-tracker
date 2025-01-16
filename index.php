@@ -513,9 +513,9 @@ if(isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClos
 			<br /><br />
 			Phone (Optional): <input type="text" name="phone" id="phone" />
 			<br /><br />
-			FL Garrison Forum Username: <input type="text" name="forumid" id="forumid" />
+			'.garrison.' Forum Username: <input type="text" name="forumid" id="forumid" />
 			<br /><br />
-			FL Garrison Forum Password: <input type="password" name="forumpassword" id="forumpassword" />
+			'.garrison.' Forum Password: <input type="password" name="forumpassword" id="forumpassword" />
 			<br /><br />';
 
 			// Loop through clubs
