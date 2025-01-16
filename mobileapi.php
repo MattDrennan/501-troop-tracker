@@ -82,6 +82,19 @@ try {
 
         // Close resources
         $statement->close();
+    // Get if site is closed
+    } else if (isset($_GET['action']) && $_GET['action'] === 'is_closed') {
+        $statement = $conn->prepare("SELECT * FROM settings LIMIT 1");
+        $statement->execute();
+
+        if ($result = $statement->get_result()) {
+            while ($db = mysqli_fetch_object($result)) {
+                $data->isWebsiteClosed = $db->siteclosed;
+                $data->siteMessage = $db->sitemessage;
+            }
+        }
+        // Close resources
+        $statement->close();
     // Get event
     } else if (isset($_GET['troopid'], $_GET['action']) && $_GET['action'] === 'event') {
         // Prepare SQL query
