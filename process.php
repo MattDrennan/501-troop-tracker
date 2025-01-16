@@ -2277,7 +2277,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 		if($_POST['forumid'] == "")
 		{
 			$failed = true;
-			echo '<li>Please enter your FL 501st Forum Username.</li>';
+			echo '<li>Please enter your '.garrison.' Forum Username.</li>';
 		}
 		
 		// If TKID is greather than 11 characters
@@ -2310,6 +2310,9 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 		
 		// Set squad variable
 		$squad = $_POST['squad_request'];
+
+		// Set up ID Check
+		$idcheck = 0;
 		
 		// Check if 501st
 		if($squad <= count($squadArray))
@@ -2333,7 +2336,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 		if($forumcheck > 0)
 		{
 			$failed = true;
-			echo '<li>FL Garrison Forum Name is already taken. Please contact the '.garrison.' Webmaster for further assistance.</li>';
+			echo '<li>'.garrison.' Forum Name is already taken. Please contact the '.garrison.' Webmaster for further assistance.</li>';
 		}
 		
 		// Loop through clubs
