@@ -792,7 +792,7 @@ function drawSupportGraph()
 		}
 
 		// Get JSON
-		$json = file_get_contents($cleanedURL . 'user-upgrades.php?api_key=' . xenforoAPI_superuser);
+		$json = file_get_contents($cleanedURL . 'user-upgrades.php');
 		$obj = json_decode($json, true);
 
 		// Check if the JSON was decoded properly
@@ -1642,7 +1642,7 @@ function getAlerts($userid)
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => $forumURL . "api/alerts&unread=1",
+	  CURLOPT_URL => $forumURL . "api/alerts?unread=1",
 	  CURLOPT_CUSTOMREQUEST => "GET",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",

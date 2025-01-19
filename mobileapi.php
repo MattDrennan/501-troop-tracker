@@ -303,15 +303,91 @@ try {
             $data->clubNames[] = $club['name'];
         }
     // Get costumes
-} else if (isset($_GET['trooperid'], $_GET['action']) && $_GET['action'] === 'get_costumes_for_trooper') {
+} else if (isset($_GET['trooperid'], $_GET['friendid'], $_GET['action']) && $_GET['action'] === 'get_costumes_for_trooper') {
     $trooperId = $_GET['trooperid'];
     $dualCostumeList = implode(",", $dualCostume); // Ensure $dualCostume is sanitized
     $mainCostumesQuery = $mainCostumes . mainCostumesBuild($trooperId) . getMyCostumes(getTKNumber($trooperId), getTrooperSquad($trooperId));
 
+  // Construct SQL
+    $friendID = $_GET['friendid'];
+
+    $returnQuery = "(";
+
+    // Set up query to check add a friend
+    $friendQuery = "";
+
+    // Check if friend ID
+    if($friendID != $_GET['trooperid'] && $friendID != 0)
+    {
+        $friendQuery = " OR (costumes.club >= 0) AND (costumes.club NOT IN (".implode(",", $dualCostume)."))";
+    }
+
+    // 501 member, prepare to add or statement if a dual member
+    $hit = false;
+
+    $allowDualCostume = false;
+    
+    $statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
+    $statement->bind_param("i", $_GET['trooperid']);
+    $statement->execute();
+
+    if ($result = $statement->get_result())
+    {
+        while ($db = mysqli_fetch_object($result))
+        {
+            // 501
+            if($db->p501 == 1 || $db->p501 == 2 || $db->p501 == 4)
+            {
+                $returnQuery .= "costumes.club = 0";
+
+                // 501 member
+                $hit = true;
+            }
+
+            // Set up step count
+            $i = 0;
+
+            // Loop through clubs
+            foreach($clubArray as $club => $club_value)
+            {
+                // Check club member status
+                if($db->{$club_value['db']} == 1 || $db->{$club_value['db']} == 2 || $db->{$club_value['db']} == 4)
+                {
+                    // First step and a 501 member, add the OR to prevent issues
+                    if($i == 0 && $hit)
+                    {
+                        $returnQuery .= " OR ";
+                    }
+
+                    foreach($club_value['costumes'] as $costume)
+                    {
+                        if(!$allowDualCostume && in_array($costume, $dualCostume))
+                        {
+                            continue;
+                        }
+                        
+                        // Passed first step, keep adding OR
+                        if($i > 0)
+                        {
+                            $returnQuery .= " OR ";
+                        }
+
+                        $returnQuery .= "costumes.club = ".$costume."";
+
+                        // Increment step
+                        $i++;
+                    }
+                }
+            }
+        }
+    }
+    
+    $returnQuery .= ")";
+
     // Construct SQL query
     $query = "SELECT * FROM costumes 
               WHERE club NOT IN ($dualCostumeList) 
-              AND " . costume_restrict_query(false, 0, false) . " 
+              AND " . $returnQuery . " 
               ORDER BY FIELD(costume, $mainCostumesQuery) DESC, costume";
 
     // Prepare and execute

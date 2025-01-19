@@ -9,30 +9,6 @@ $app->start();
 // Now you can query the database
 $db = \XF::db();
 
-// Get API key from the request
-$apiKey = $_GET['api_key'] ?? null;
-
-// Validate API key against the ones stored in XenForo
-if (!$apiKey) {
-    http_response_code(400);  // Bad Request
-    echo json_encode(['error' => 'API key is required']);
-    exit();
-}
-
-try {
-    $validKey = $db->fetchOne("SELECT api_key_id FROM xf_api_key WHERE api_key = ?", $apiKey);
-
-    if (!$validKey) {
-        http_response_code(403);  // Forbidden
-        echo json_encode(['error' => 'Invalid API key']);
-        exit();
-    }
-} catch (\Exception $e) {
-    http_response_code(500);  // Internal Server Error
-    echo json_encode(['error' => 'Database query failed', 'details' => $e->getMessage()]);
-    exit();
-}
-
 // Now query the required tables
 try {
     // Fetch data from xf_user_upgrade_active

@@ -918,7 +918,7 @@ if(isset($_GET['profile']) && loggedIn())
 			}
 
 			// Get JSON
-			$json = file_get_contents($cleanedURL . 'user-upgrades.php?api_key=' . xenforoAPI_superuser);
+			$json = file_get_contents($cleanedURL . 'user-upgrades.php');
 			$obj = json_decode($json, true);
 
 			// Check if the JSON was decoded properly
