@@ -34,12 +34,18 @@ if (!isset($data['data']) || !isset($data['content_type'])) {
 
 // Extract post details from 'data'
 $post = $data['data'];
-$postId = $post['post_id'] ?? 'N/A';
-$thread_id = $post['thread_id'] ?? 'N/A';
+$postId = $post['post_id'] ?? null;
+$thread_id = $post['thread_id'] ?? null;
 $userId = $post['user_id'] ?? 'N/A';
 $username = $post['username'] ?? 'N/A';
 $postMessage = $post['message'] ?? 'N/A';
 $postDate = date('Y-m-d H:i:s', $post['post_date'] ?? time());
+
+// Don't proceed if no data
+if (!is_numeric($thread_id) || !is_numeric($postId)) {
+    http_response_code(400);
+    exit('Invalid thread_id or post_id.');
+}
 
 // Prepare and execute query to get the event by thread_id
 $sql = "
