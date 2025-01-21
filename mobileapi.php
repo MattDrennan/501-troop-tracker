@@ -413,6 +413,26 @@ try {
 
     // Close resources
     $statement->close();
+    // Get events that need confirming
+    } else if(isset($_GET['trooperid'], $_GET['action']) && $_GET['action'] === 'get_confirm_events_trooper') {
+        // Load events that need confirmation
+        $statement = $conn->prepare("SELECT events.squad, events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = ? AND events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC");
+        $statement->bind_param("i", $_GET['trooperid']);
+        $statement->execute();
+
+        if ($result = $statement->get_result())
+        {
+            while ($db = mysqli_fetch_object($result))
+            {
+                $tempObject = new stdClass();
+                $tempObject->troopid = $db->eventId;
+                $tempObject->name = $db->name;
+                $tempObject->dateStart = $db->dateStart;
+                $tempObject->dateEnd = $db->dateEnd;
+
+                $data->troops[] = $tempObject;
+            }
+        }
     // Check if trooper is in event - won't show canceled
     } else if(isset($_GET['trooperid'], $_GET['troopid'], $_GET['action']) && $_GET['action'] === 'trooper_in_event') {
         // Replace Trooper ID
