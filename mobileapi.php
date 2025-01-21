@@ -304,7 +304,7 @@ try {
         }
     // Get costumes
 } else if (isset($_GET['trooperid'], $_GET['friendid'], $_GET['action']) && $_GET['action'] === 'get_costumes_for_trooper') {
-    $trooperId = $_GET['trooperid'];
+    $trooperId = getIDFromUserID($_GET['trooperid']);
     $dualCostumeList = implode(",", $dualCostume); // Ensure $dualCostume is sanitized
     $mainCostumesQuery = $mainCostumes . mainCostumesBuild($trooperId) . getMyCostumes(getTKNumber($trooperId), getTrooperSquad($trooperId));
 
@@ -328,7 +328,7 @@ try {
     $allowDualCostume = false;
     
     $statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
-    $statement->bind_param("i", $_GET['trooperid']);
+    $statement->bind_param("i", $trooperId);
     $statement->execute();
 
     if ($result = $statement->get_result())
