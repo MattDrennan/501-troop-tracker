@@ -413,8 +413,29 @@ try {
 
     // Close resources
     $statement->close();
+    // Check if trooper is in event
+    } else if(isset($_GET['trooperid'], $_GET['troopid'], $_GET['action']) && $_GET['action'] === 'trooper_in_event') {
+        // Replace Trooper ID
+        $_GET['trooperid'] = getIDFromUserID($_GET['trooperid']);
+        
+        // Set up
+        $inEvent = false;
+
+        // Prevent bug of getting signed up twice
+        $eventCheck = inEvent($_GET['trooperid'], $_GET['troopid']);
+
+        // Check if already in troop
+        if($eventCheck['inTroop'] == 1)
+        {
+            $inEvent = true;
+        }
+
+        $data->inEvent = $inEvent;
     // Sign Up for troop
     } else if(isset($_GET['trooperid'], $_GET['troopid'], $_GET['addedby'], $_GET['status'], $_GET['costume'], $_GET['backupcostume'], $_GET['action']) && $_GET['action'] === 'sign_up') {
+        // Replace Trooper ID
+        $_GET['trooperid'] = getIDFromUserID($_GET['trooperid']);
+
         // Set trooper ID
         $trooperID = 0;
 
@@ -643,7 +664,7 @@ try {
             } else {
                 // Query the database
                 $statement = $conn->prepare("INSERT INTO event_sign_up (trooperid, troopid, costume, status, costume_backup) VALUES (?, ?, ?, ?, ?)");
-                $statement->bind_param("iiiii", $_SESSION['id'], $_GET['troopid'], $_GET['costume'], $status, $_GET['backupcostume']);
+                $statement->bind_param("iiiii", $_GET['trooperid'], $_GET['troopid'], $_GET['costume'], $status, $_GET['backupcostume']);
                 $statement->execute();
                 
                 // Send to database to send out notifictions later
@@ -653,13 +674,9 @@ try {
             }
         }
 
-        $tempObject = new stdClass();
-
-        $tempObject->sucess = $success;
-        $tempObject->success_message = $success_message;
-        $tempObject->numFriends = ($friendLimit - $numFriends);
-
-        $data->troops[] = $tempObject;
+        $data->sucess = $success;
+        $data->success_message = $success_message;
+        $data->numFriends = ($friendLimit - $numFriends);
     // Save FCM
     } else if(isset($_POST['userid'], $_POST['fcm'], $_POST['action']) && $_POST['action'] === 'saveFCM') {
         // Get values
