@@ -415,6 +415,9 @@ try {
     $statement->close();
     // Get events that need confirming
     } else if(isset($_GET['trooperid'], $_GET['action']) && $_GET['action'] === 'get_confirm_events_trooper') {
+        // Replace Trooper ID
+        $_GET['trooperid'] = getIDFromUserID($_GET['trooperid']);
+
         // Load events that need confirmation
         $statement = $conn->prepare("SELECT events.squad, events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = ? AND events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 ORDER BY events.dateEnd DESC");
         $statement->bind_param("i", $_GET['trooperid']);
