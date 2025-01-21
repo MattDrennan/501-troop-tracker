@@ -308,7 +308,7 @@ try {
     $dualCostumeList = implode(",", $dualCostume); // Ensure $dualCostume is sanitized
     $mainCostumesQuery = $mainCostumes . mainCostumesBuild($trooperId) . getMyCostumes(getTKNumber($trooperId), getTrooperSquad($trooperId));
 
-  // Construct SQL
+    // Construct SQL
     $friendID = $_GET['friendid'];
 
     $returnQuery = "(";
@@ -326,6 +326,11 @@ try {
     $hit = false;
 
     $allowDualCostume = false;
+
+    // Check if the 'allowDualCostume' parameter exists in the $_GET request
+    if (isset($_GET['allowDualCostume']) && $_GET['allowDualCostume'] === 'true') {
+        $allowDualCostume = true;
+    }
     
     $statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
     $statement->bind_param("i", $trooperId);
@@ -413,6 +418,27 @@ try {
 
     // Close resources
     $statement->close();
+    // Set status/costume
+    } else if(isset($_GET['trooperid'], $_GET['troopid'], $_GET['status'], $_GET['action']) && $_GET['action'] === 'set_status_costume') {
+        // Replace Trooper ID
+        $_GET['trooperid'] = getIDFromUserID($_GET['trooperid']);
+
+        // Check if 'costume' is set in the GET parameters
+        if (isset($_GET['costume']) && $_GET['costume'] > 0) {
+            // Update status and costume
+            $statement = $conn->prepare("UPDATE event_sign_up SET status = ?, costume = ? WHERE trooperid = ? AND troopid = ?");
+            $statement->bind_param("iiii", $_GET['status'], $_GET['costume'], $_GET['trooperid'], $_GET['troopid']);
+        } else {
+            // Update status only
+            $statement = $conn->prepare("UPDATE event_sign_up SET status = ? WHERE trooperid = ? AND troopid = ?");
+            $statement->bind_param("iii", $_GET['status'], $_GET['trooperid'], $_GET['troopid']);
+        }
+
+        // Execute the prepared statement
+        $statement->execute();
+
+        // Return
+        $data->success = true;
     // Get events that need confirming
     } else if(isset($_GET['trooperid'], $_GET['action']) && $_GET['action'] === 'get_confirm_events_trooper') {
         // Replace Trooper ID
