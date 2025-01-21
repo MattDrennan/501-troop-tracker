@@ -11,6 +11,18 @@ include "config.php";
 // Set JSON response header
 header('Content-Type: application/json');
 
+// Get the API key from the request headers
+$headers = getallheaders(); // Retrieves all headers as an associative array
+$receivedApiKey = isset($headers['Authorization']) ? trim(str_replace('Bearer', '', $headers['Authorization'])) : null;
+
+// Check if the API key is valid
+if ($receivedApiKey !== mobileAPIKey) {
+    // Respond with an HTTP 401 Unauthorized status and exit
+    http_response_code(401);
+    echo json_encode(['error' => 'Unauthorized: Invalid API key']);
+    exit;
+}
+
 // Initialize response data
 $data = new stdClass();
 
