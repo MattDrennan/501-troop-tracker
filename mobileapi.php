@@ -417,7 +417,7 @@ try {
     } else if(isset($_GET['trooperid'], $_GET['troopid'], $_GET['action']) && $_GET['action'] === 'trooper_in_event') {
         // Replace Trooper ID
         $_GET['trooperid'] = getIDFromUserID($_GET['trooperid']);
-        
+
         // Set up
         $inEvent = false;
 
@@ -431,6 +431,22 @@ try {
         }
 
         $data->inEvent = $inEvent;
+    // Cancel event for trooper
+    } else if(isset($_GET['trooperid'], $_GET['troopid'], $_GET['action']) && $_GET['action'] === 'cancel_troop') {
+        // Replace Trooper ID
+        $_GET['trooperid'] = getIDFromUserID($_GET['trooperid']);
+
+        // Update SQL
+        $statement = $conn->prepare("UPDATE event_sign_up SET status = 4 WHERE trooperid = ? AND troopid = ?");
+        $statement->bind_param("ii", $_GET['trooperid'], $_GET['troopid']);
+        $statement->execute();
+
+        // Send to database to send out notifictions later
+        $statement = $conn->prepare("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES (?, ?, '2')");
+        $statement->bind_param("ii", $_GET['troopid'], $_GET['trooperid']);
+        $statement->execute();
+
+        $data->success = true;
     // Sign Up for troop
     } else if(isset($_GET['trooperid'], $_GET['troopid'], $_GET['addedby'], $_GET['status'], $_GET['costume'], $_GET['backupcostume'], $_GET['action']) && $_GET['action'] === 'sign_up') {
         // Replace Trooper ID
