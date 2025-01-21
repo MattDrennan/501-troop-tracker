@@ -413,7 +413,7 @@ try {
 
     // Close resources
     $statement->close();
-    // Check if trooper is in event
+    // Check if trooper is in event - won't show canceled
     } else if(isset($_GET['trooperid'], $_GET['troopid'], $_GET['action']) && $_GET['action'] === 'trooper_in_event') {
         // Replace Trooper ID
         $_GET['trooperid'] = getIDFromUserID($_GET['trooperid']);
@@ -425,7 +425,7 @@ try {
         $eventCheck = inEvent($_GET['trooperid'], $_GET['troopid']);
 
         // Check if already in troop
-        if($eventCheck['inTroop'] == 1)
+        if($eventCheck['inTroop'] == 1 && $eventCheck['status'] != 4)
         {
             $inEvent = true;
         }
@@ -484,10 +484,31 @@ try {
             $trooperID = $_GET['trooperid'];
         }
 
-        // Check if already in troop and exclude placeholder account
+        // Check if already in troop and exclude placeholder account // For mobile, we use this to update records
         if($eventCheck['inTroop'] == 1 && $trooperID != placeholder)
         {
-            die("ALREADY IN THIS TROOP!");
+            $statement = $conn->prepare("
+                UPDATE event_sign_up 
+                SET costume = ?, 
+                    status = ?, 
+                    costume_backup = ?, 
+                    addedby = ?
+                WHERE trooperid = ? AND troopid = ?
+            ");
+
+            $statement->bind_param("iiiiii", $_GET['costume'], $_GET['status'], $_GET['backupcostume'], $_GET['addedby'], $_GET['trooperid'], $_GET['troopid']);
+            $statement->execute();
+            $statement->close();
+
+            // Send to database to send out notifictions later
+            $statement = $conn->prepare("INSERT INTO notification_check (troopid, trooperid, trooperstatus) VALUES (?, ?, '1')");
+            $statement->bind_param("ii", $_GET['troopid'], $_GET['trooperid']);
+            $statement->execute();
+
+            $data->sucess = $success;
+            $data->success_message = $success_message;
+            echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            exit();
         }
 
         // End prevent bug of getting signed up twice
