@@ -10,10 +10,6 @@
 // Set time zone
 date_default_timezone_set("America/New_York");
 
-// Unlimited time to execute
-ini_set('max_execution_time', '0');
-set_time_limit(0);
-
 // PHP Mail namespace
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
