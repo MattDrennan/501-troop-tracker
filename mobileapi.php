@@ -8,20 +8,52 @@
 // Include config
 include "config.php";
 
+// Mobile API
+function generateApiKey($trooperId) {
+    global $conn;
+
+    // Ensure trooperId is provided
+    if (empty($trooperId)) {
+        throw new InvalidArgumentException("Trooper ID cannot be empty.");
+    }
+
+    // Function to generate a random 64-character API key
+    function generateRandomApiKey() {
+        return bin2hex(random_bytes(32)); // 64 characters in length
+    }
+
+    // Generate a unique API key
+    $apiKey = generateRandomApiKey();
+
+    // Check uniqueness and regenerate if necessary
+    do {
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM trooper_api_codes WHERE api_code = ?");
+        $stmt->bind_param("s", $apiKey);
+        $stmt->execute();
+        $stmt->bind_result($count);
+        $stmt->fetch();
+        $stmt->close();
+
+        if ($count > 0) {
+            $apiKey = generateRandomApiKey(); // Generate a new one
+        }
+    } while ($count > 0);
+
+    // Insert the API key into the database
+    $stmt = $conn->prepare("INSERT INTO trooper_api_codes (trooperid, api_code) VALUES (?, ?)");
+    $stmt->bind_param("is", $trooperId, $apiKey);
+    $success = $stmt->execute();
+    $stmt->close();
+
+    if (!$success) {
+        throw new RuntimeException("Failed to insert API key into the database.");
+    }
+
+    return $apiKey; // Return the generated API key
+}
+
 // Set JSON response header
 header('Content-Type: application/json');
-
-// Get the API key from the request headers
-$headers = getallheaders(); // Retrieves all headers as an associative array
-$receivedApiKey = isset($headers['Authorization']) ? trim(str_replace('Bearer', '', $headers['Authorization'])) : null;
-
-// Check if the API key is valid
-if ($receivedApiKey !== mobileAPIKey) {
-    // Respond with an HTTP 401 Unauthorized status and exit
-    http_response_code(401);
-    echo json_encode(['error' => 'Unauthorized: Invalid API key']);
-    exit;
-}
 
 // Initialize response data
 $data = new stdClass();
@@ -94,8 +126,23 @@ try {
 
         // Close resources
         $statement->close();
-    // Get if site is closed
-    } else if (isset($_GET['action']) && $_GET['action'] === 'is_closed') {
+    } else if (isset($_GET['action'], $_POST['login'], $_POST['password']) && $_GET['action'] === 'login_with_forum') { // Login to forum
+        $forumLogin = loginWithForum($_POST['login'], $_POST['password']);
+
+        // Check credentials
+        if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
+        {
+            $trooperId = getIDFromUserID($forumLogin['user']['user_id']);
+            
+            $apiKey = generateApiKey($trooperId);
+
+            $data = [
+                'success' => true,
+                'user' => $forumLogin['user'],
+                'apiKey' => $apiKey,
+            ];
+        }
+    } else if (isset($_GET['action']) && $_GET['action'] === 'is_closed') { // Get if site is closed
         $statement = $conn->prepare("SELECT * FROM settings LIMIT 1");
         $statement->execute();
 
@@ -828,32 +875,72 @@ try {
 
         // Close resources
         $statement->close();
-    // Logout (FCM)
-    } else if(isset($_POST['fcm'], $_POST['action']) && $_POST['action'] === 'logoutFCM') {
+    } else if(isset($_POST['fcm'], $_POST['apiKey'], $_POST['action']) && $_POST['action'] === 'logoutFCM') { // Logout (FCM)
+        // Logout (FCM)
+
         // Get values
         $fcmToken = $_POST['fcm'];
+        $apiKey = $_POST['apiKey'];
 
-        // Prepare SQL query
-        $sql = "
-            DELETE 
-            FROM 
-                mobile_app 
-            WHERE 
-                fcm = ?";
+        // Begin transaction
+        $conn->begin_transaction();
 
-        // Prepare statement
-        $statement = $conn->prepare($sql);
-        if (!$statement) {
-            throw new Exception('Database error: ' . $conn->error);
+        try {
+            // Delete from mobile_app table
+            $sqlMobileApp = "
+                DELETE 
+                FROM 
+                    mobile_app 
+                WHERE 
+                    fcm = ?";
+            
+            $stmtMobileApp = $conn->prepare($sqlMobileApp);
+            if (!$stmtMobileApp) {
+                throw new Exception('Database error: ' . $conn->error);
+            }
+            $stmtMobileApp->bind_param("s", $fcmToken);
+            $stmtMobileApp->execute();
+            $stmtMobileApp->close();
+
+            // Delete from trooper_api_codes table
+            $sqlApiKey = "
+                DELETE 
+                FROM 
+                    trooper_api_codes 
+                WHERE 
+                    api_code = ?";
+            
+            $stmtApiKey = $conn->prepare($sqlApiKey);
+            if (!$stmtApiKey) {
+                throw new Exception('Database error: ' . $conn->error);
+            }
+            $stmtApiKey->bind_param("s", $apiKey);
+            $stmtApiKey->execute();
+            $stmtApiKey->close();
+
+            // Commit transaction
+            $conn->commit();
+
+            // Return success response
+            http_response_code(200);
+            echo json_encode(['success' => 'Records deleted!']);
+        } catch (Exception $e) {
+            // Rollback transaction on error
+            $conn->rollback();
+            
+            // Return error response
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to delete records: ' . $e->getMessage()]);
+        } finally {
+            // Ensure resources are closed
+            if (isset($stmtMobileApp)) {
+                $stmtMobileApp->close();
+            }
+            if (isset($stmtApiKey)) {
+                $stmtApiKey->close();
+            }
         }
 
-        // Bind parameters
-        $statement->bind_param("s", $fcmToken);
-        $statement->execute();
-        http_response_code(200); // Success
-        echo json_encode(['success' => 'Record deleted!']);
-        // Close resources
-        $statement->close();
         exit();
     } else {
         http_response_code(400); // Bad Request

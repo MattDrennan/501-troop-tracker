@@ -125,12 +125,6 @@ define('garrison', 'Florida Garrison');
 define('garrisonImage', 'garrison_emblem.png');
 
 /**
- * mobileAPI Key: This variable is used to validate mobile API requests (create your own random string, used for mobile app)
-*/
-
-define('mobileAPIKey', '#######');
-
-/**
  * virtualTroop: This variable is used to determine which forum to post virtual troops
 */
 

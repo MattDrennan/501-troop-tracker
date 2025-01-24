@@ -2,7 +2,8 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Generation Time: Dec 24, 2024 at 04:03 AM
+-- Host: ls-80d2a4b30f3cf5d6b28d9190f86603b96784cb8f.c7bgdu4hw8kg.us-east-1.rds.amazonaws.com:3306
+-- Generation Time: Jan 24, 2025 at 12:28 AM
 -- Server version: 8.0.35
 -- PHP Version: 7.4.7
 
@@ -457,6 +458,19 @@ CREATE TABLE `troopers` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `trooper_api_codes`
+--
+
+CREATE TABLE `trooper_api_codes` (
+  `id` int NOT NULL,
+  `trooperid` int NOT NULL,
+  `api_code` varchar(64) NOT NULL,
+  `date_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `uploads`
 --
 
@@ -589,6 +603,13 @@ ALTER TABLE `troopers`
   ADD UNIQUE KEY `id` (`id`);
 
 --
+-- Indexes for table `trooper_api_codes`
+--
+ALTER TABLE `trooper_api_codes`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `api_code` (`api_code`);
+
+--
 -- Indexes for table `uploads`
 --
 ALTER TABLE `uploads`
@@ -676,6 +697,12 @@ ALTER TABLE `title_troopers`
 --
 ALTER TABLE `troopers`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `trooper_api_codes`
+--
+ALTER TABLE `trooper_api_codes`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `uploads`
