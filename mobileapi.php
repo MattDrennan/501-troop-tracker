@@ -52,6 +52,64 @@ function generateApiKey($trooperId) {
     return $apiKey; // Return the generated API key
 }
 
+function validateApiKey($headers) {
+    global $conn;
+
+    // Check if the API-Key is present in the headers
+    if (!isset($headers['API-Key']) || empty($headers['API-Key'])) {
+        // If API key is missing or empty, allow the function to proceed
+        return null; // Return null or a default value for cases with no API key
+    }
+
+    $apiKey = $headers['API-Key'];
+
+    // Prepare SQL query to verify the API key
+    $sql = "SELECT trooperid FROM trooper_api_codes WHERE api_code = ? LIMIT 1";
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        // Gracefully handle database errors
+        return null;
+    }
+
+    // Bind the API key parameter and execute
+    $stmt->bind_param("s", $apiKey);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows === 0) {
+        // If the API key is invalid, allow the function to proceed
+        return null;
+    }
+
+    // Fetch the associated trooper ID
+    $row = $result->fetch_assoc();
+    $trooperId = $row['trooperid'];
+
+    // Close statement and return trooper ID
+    $stmt->close();
+    return $trooperId;
+}
+
+function ensureTrooperIdMatch($headers, $trooperId) {
+    // Validate the API key and retrieve the associated trooper ID
+    $associatedTrooperId = validateApiKey($headers);
+
+    // Allow the function to proceed if trooperId is 0
+    if ($trooperId === 0) {
+        return; // Skip the validation logic
+    }
+
+    // Check if the trooperId matches the associatedTrooperId (if API key is valid)
+    if ($associatedTrooperId !== null && (int)$associatedTrooperId !== (int)$trooperId) {
+        http_response_code(403); // Forbidden
+        echo json_encode(['error' => 'You are not authorized to modify this trooper ID.']);
+        exit();
+    }
+
+    // If validation passes or associatedTrooperId is null, proceed
+    return;
+}
+
 // Set JSON response header
 header('Content-Type: application/json');
 
@@ -59,6 +117,15 @@ header('Content-Type: application/json');
 $data = new stdClass();
 
 try {
+    // Get headers
+    $headers = getallheaders();
+
+    // Assume trooper ID is sent as a parameter
+    $trooperId = $_GET['trooperid'] ?? 0;
+
+    // Ensure the API key is valid and the trooper ID matches
+    ensureTrooperIdMatch($headers, $trooperId);
+
     // Get troops for trooper
     if (isset($_GET['user_id'], $_GET['action']) && $_GET['action'] === 'troops') {
         // Prepare SQL query
