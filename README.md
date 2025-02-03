@@ -245,7 +245,7 @@ $squadArray = array(
 	array(
 		"name" => "Everglades Squad",
 		"logo" => "everglades_emblem.png",
-		"costumes" => array(0, 5, 7, 9, 11),
+		"costumes" => array(0, 5, 7, 9, 11, 12),
 		"db" => "p501",
 		"db2" => "",
 		"eventForum" => 9,
@@ -254,7 +254,7 @@ $squadArray = array(
 	array(
 		"name" => "Makaze Squad",
 		"logo" => "makaze_emblem.png",
-		"costumes" => array(0, 5, 7, 9, 11),
+		"costumes" => array(0, 5, 7, 9, 11, 12),
 		"db" => "p501",
 		"db2" => "",
 		"eventForum" => 8,
@@ -263,7 +263,7 @@ $squadArray = array(
 	array(
 		"name" => "Parjai Squad",
 		"logo" => "parjai_emblem.png",
-		"costumes" => array(0, 5, 7, 9, 11),
+		"costumes" => array(0, 5, 7, 9, 11, 12),
 		"db" => "p501",
 		"db2" => "",
 		"eventForum" => 186,
@@ -272,7 +272,7 @@ $squadArray = array(
 	array(
 		"name" => "Squad 7",
 		"logo" => "squad7_emblem.png",
-		"costumes" => array(0, 5, 7, 9, 11),
+		"costumes" => array(0, 5, 7, 9, 11, 12),
 		"db" => "p501",
 		"db2" => "",
 		"eventForum" => 7,
@@ -281,7 +281,7 @@ $squadArray = array(
 	array(
 		"name" => "Tampa Bay Squad",
 		"logo" => "tampabay_emblem.png",
-		"costumes" => array(0, 5, 7, 9, 11),
+		"costumes" => array(0, 5, 7, 9, 11, 12),
 		"db" => "p501",
 		"db2" => "",
 		"eventForum" => 73,
@@ -309,7 +309,7 @@ $clubArray = array(
 	array(
 		"name" => "Rebel Legion",
 		"logo" => "test",
-		"costumes" => array(1, 5, 8, 10, 11),
+		"costumes" => array(1, 5, 8, 10, 11, 12),
 		"db" => "pRebel",
 		"db2" => "",
 		"db3" => "rebelforum",
@@ -334,7 +334,7 @@ $clubArray = array(
 	array(
 		"name" => "Mando Mercs",
 		"logo" => "test",
-		"costumes" => array(2, 7, 8),
+		"costumes" => array(2, 7, 8, 12),
 		"db" => "pMando",
 		"db2" => "",
 		"db3" => "mandoid",

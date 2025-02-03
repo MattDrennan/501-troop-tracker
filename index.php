@@ -3739,6 +3739,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<option value="9">Dual-Saber (501st + SG)</option>
 						<option value="10">Dual-Saber (RL + SG)</option>
 						<option value="11">Triple-Dual (501st + RL + SG)</option>
+						<option value="12">Triple-Dual (501st + RL + Mando)</option>
 					</select>
 				</p>
 				
@@ -3820,6 +3821,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<option value="9">Dual-Saber (501st + SG)</option>
 						<option value="10">Dual-Saber (RL + SG)</option>
 						<option value="11">Triple-Dual (501st + RL + SG)</option>
+						<option value="12">Triple-Dual (501st + RL + Mando)</option>
 					</select>
 				</p>
 
