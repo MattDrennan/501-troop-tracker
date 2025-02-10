@@ -1288,7 +1288,7 @@ function getThreadsFromForum($userID = xenforoAPI_userID)
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => $forumURL . "api/forums/" . $forumAnnounceID . "/threads&order=post_date&direction=desc&unread=1",
+	  CURLOPT_URL => $forumURL . "api/forums/" . $forumAnnounceID . "/threads?order=post_date&direction=desc&unread=1",
 	  CURLOPT_CUSTOMREQUEST => "GET",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
@@ -1535,7 +1535,7 @@ function getUserForum($username)
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => $forumURL . "api/users/find-name&username=" . urlencode($username),
+	  CURLOPT_URL => $forumURL . "api/users/find-name?username=" . urlencode($username),
 	  CURLOPT_CUSTOMREQUEST => "GET",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
@@ -1606,7 +1606,7 @@ function getThreadPosts($threadid, $page)
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => $forumURL . "api/threads/".$threadid."&with_posts=true&page=".$page."",
+	  CURLOPT_URL => $forumURL . "api/threads/".$threadid."?with_posts=true&page=".$page."",
 	  CURLOPT_CUSTOMREQUEST => "GET",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
