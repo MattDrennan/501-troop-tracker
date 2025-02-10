@@ -1670,7 +1670,7 @@ function getConversations($userid)
 	$curl = curl_init();
 
 	curl_setopt_array($curl, [
-	  CURLOPT_URL => $forumURL . "api/conversations&unread=1",
+	  CURLOPT_URL => $forumURL . "api/conversations?unread=1",
 	  CURLOPT_CUSTOMREQUEST => "GET",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",

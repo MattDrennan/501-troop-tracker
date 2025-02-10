@@ -56,10 +56,10 @@ $webmasterEmail = "gwm@fl501st.com";
 $trackerURL = "https://www.fl501st.com/troop-tracker";
 
 /**
- * forumURL: The forum endpoint for the API - include trailing ?
+ * forumURL: The forum endpoint for the API
 */
 
-$forumURL = "index.php?api";
+$forumURL = "https://www.fl501st.com/boards/";
 
 /**
  * forumAnnounceID: ID of the forum where announcements are made
