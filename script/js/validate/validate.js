@@ -53,7 +53,7 @@ $(function()
             label:
             {
                 required: true,
-                range: [0, 10]
+                range: [0, 11]
             },
             limitedEvent:
             {
@@ -267,7 +267,7 @@ $(function()
             label:
             {
                 required: true,
-                range: [0, 10]
+                range: [0, 11]
             },
             limitedEvent:
             {
