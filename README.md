@@ -379,11 +379,12 @@ $clubArray = array(
 ```
 
 <li>Change ownership for 'images/uploads' to the web server user</li>
-<li>Set file permissions to 'images/uploads' to 750</li>
-<li>Manually modify getSquad() function in 'config.php' to fit your needs</li>
+<li>Set file permissions to 'images/uploads' to 777</li>
+<li>Move the file 'other/custom.php' to the root directory of Troop Tracker</li>
+<li>Manually modify getSquad() function in 'custom.php' to fit your needs</li>
 <li>Set up a Google Cloud API for Google Sheets, then create a service account under "Credentials"</li>
-<li>Download the JSON file from the service account, rename it to "sheets_api_secret.json", and upload it the root directory"</li>
-<li>On a live server, set up cron jobs located in other/cron.txt</li>
+<li>Download the JSON file from the service account, rename it to 'sheets_api_secret.json', and upload it the root directory</li>
+<li>On a live server, set up cron jobs located in 'other/cron.txt'</li>
 <li>Upload 'other/xenforo_extra/groups.php' and 'other/xenforo_extra/user-upgrades.php' to your Xenforo main directory</li>
 </ol>
 
