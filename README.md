@@ -62,6 +62,12 @@ $trackerURL = "https://www.fl501st.com/troop-tracker";
 $forumURL = "https://www.fl501st.com/boards/";
 
 /**
+ * 501st API Garrison ID (Find it here: https://www.501st.com/memberAPI/v3/garrisons)
+*/
+
+$garrisonIdAPI = 9;
+
+/**
  * forumAnnounceID: ID of the forum where announcements are made
 */
 

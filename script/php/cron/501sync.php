@@ -1,106 +1,118 @@
 <?php
 
 /**
- * This file is used for scraping 501st data.
- * 
- * This should be run weekly by a cronjob.
+ * Optimized 501st Data Scraper
  *
- * @author  Matthew Drennan
+ * This script updates trooper and costume data for the 501st Legion.
+ * It is designed to be executed weekly via a cron job.
  *
+ * @author Matthew Drennan
  */
 
 // Include config
 include(dirname(__DIR__) . '/../../config.php');
 
-// Check date time for sync
+// Check last sync date to prevent unnecessary updates
 $query = "SELECT syncdate FROM settings";
-if ($result = mysqli_query($conn, $query))
-{
-	while ($db = mysqli_fetch_object($result))
-	{
-		// Compare dates
-		if(strtotime($db->syncdate) >= strtotime("-7 day"))
-		{
-			// Prevent script from continuing
-			die("Already updated recently.");
-		}
-	}
+$result = $conn->query($query);
+
+if ($result && $db = $result->fetch_object()) {
+    if (strtotime($db->syncdate) >= strtotime("-7 days")) {
+        die("Already updated recently.");
+    }
 }
+
+// Set unlimited execution time (0 means no limit)
+set_time_limit(0);
 
 // Reset databases
-$conn->query("DELETE FROM 501st_troopers");
-$conn->query("DELETE FROM 501st_costumes");
+$conn->query("TRUNCATE TABLE 501st_troopers");
+$conn->query("TRUNCATE TABLE 501st_costumes");
 
-// Get contents of file
-$json = file_get_contents("https://www.501st.com/memberAPI/v3/garrisons/9/members");
-$obj = json_decode($json);
+// Fetch trooper data
+$json = file_get_contents("https://www.501st.com/memberAPI/v3/garrisons/$garrisonIdAPI/members");
+$trooperData = json_decode($json, true);
 
-// Loop through all members
-foreach($obj->unit->members as $value)
-{
-	try {
-		// Get specific data on member
-		$json2 = file_get_contents("https://www.501st.com/memberAPI/v3/legionId/" . $value->legionId);
-		$obj2 = json_decode($json2);
-
-		$conn->query("INSERT INTO 501st_troopers (legionid, name, thumbnail, link, squad, approved, status, standing, joindate) VALUES ('".$value->legionId."', '".$value->fullName."', '".$value->thumbnail."', '".$value->link."', '".convertSquadId($value->squadId)."', '".convertMemberApproved($obj2->memberApproved)."', '".convertMemberStatus($obj2->memberStatus)."', '".convertMemberStanding($obj2->memberStanding)."', '".$obj2->joinDate."')");
-	} catch (Exception $ex) {
-		die("Failed!");
-	}
+if (!$trooperData || empty($trooperData['unit']['members'])) {
+    die("Failed to retrieve trooper data.");
 }
 
-// Wait
-sleep(10);
+// Prepare database insertion queries
+$trooperStmt = $conn->prepare("INSERT INTO 501st_troopers (legionid, name, thumbnail, link, squad, approved, status, standing, joindate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+$costumeStmt = $conn->prepare("INSERT INTO 501st_costumes (legionid, costumeid, prefix, costumename, photo, thumbnail, bucketoff) VALUES (?, ?, ?, ?, ?, ?, ?)");
 
-// Loop through all members
-foreach($obj->unit->members as $value)
-{
-	try {
-		// Get specific data on member - costumes
-		$json2 = file_get_contents("https://www.501st.com/memberAPI/v3/legionId/" . $value->legionId . "/costumes");
-		$obj2 = json_decode($json2);
-		
-		// Loop through all costumes
-		foreach($obj2->costumes as $costume)
-		{
-			// Insert into database
-			$conn->query("INSERT INTO 501st_costumes (legionid, costumeid, prefix, costumename, photo, thumbnail, bucketoff) VALUES ('".$value->legionId."', '".$costume->costumeId."', '".$costume->prefix."', '".$costume->costumeName."', '".$costume->photoURL."', '".$costume->thumbnail."', '".$costume->bucketOffPhoto."')");
-		}
-		
-		// Wait
-		sleep(5);
-	} catch (Exception $ex) {
-		die("Failed!");
-	}
+// Process members
+foreach ($trooperData['unit']['members'] as $trooper) {
+    $legionId = $trooper['legionId'];
+
+    // Fetch detailed member data
+    $json2 = file_get_contents("https://www.501st.com/memberAPI/v3/legionId/$legionId");
+    $memberData = json_decode($json2, true);
+	
+	print_r($memberData);
+	
+	print_r('<br /><br /><hr /><br /><br />');
+
+    if (!$memberData) continue;
+
+    $trooperStmt->bind_param(
+        "ssssiiiss",
+        $legionId,
+        $trooper['fullName'],
+        $trooper['thumbnail'],
+        $trooper['link'],
+        convertSquadId($trooper['squadId']),
+        convertMemberApproved($memberData['memberApproved']),
+        convertMemberStatus($memberData['memberStatus']),
+        convertMemberStanding($memberData['memberStanding']),
+        $memberData['joinDate']
+    );
+    $trooperStmt->execute();
+
+    // Fetch and insert costume data
+    $json3 = file_get_contents("https://www.501st.com/memberAPI/v3/legionId/$legionId/costumes");
+    $costumeData = json_decode($json3, true);
+
+    if ($costumeData && !empty($costumeData['costumes'])) {
+        foreach ($costumeData['costumes'] as $costume) {
+            $costumeStmt->bind_param(
+                "sssssss",
+                $legionId,
+                $costume['costumeId'],
+                $costume['prefix'],
+                $costume['costumeName'],
+                $costume['photoURL'],
+                $costume['thumbnail'],
+                $costume['bucketOffPhoto']
+            );
+            $costumeStmt->execute();
+        }
+    }
 }
 
-$getNumOfTroopers = $conn->query("SELECT legionid FROM 501st_troopers");
-$getNumOfTroopersFL = $conn->query("SELECT legionid FROM 501st_troopers WHERE squad = '0'");
-$getNumOfTroopersEverglades = $conn->query("SELECT legionid FROM 501st_troopers WHERE squad = '1'");
-$getNumOfTroopersMakaze = $conn->query("SELECT legionid FROM 501st_troopers WHERE squad = '2'");
-$getNumOfTroopersParjai = $conn->query("SELECT legionid FROM 501st_troopers WHERE squad = '3'");
-$getNumOfTroopersSquad7 = $conn->query("SELECT legionid FROM 501st_troopers WHERE squad = '4'");
-$getNumOfTroopersTampa = $conn->query("SELECT legionid FROM 501st_troopers WHERE squad = '5'");
+// Close statements
+$trooperStmt->close();
+$costumeStmt->close();
 
+// Generate statistics
+$trooperCounts = [
+    "Total Members" => $conn->query("SELECT COUNT(*) AS count FROM 501st_troopers")->fetch_object()->count,
+    "No Squad" => $conn->query("SELECT COUNT(*) AS count FROM 501st_troopers WHERE squad = '0'")->fetch_object()->count,
+    "Everglades" => $conn->query("SELECT COUNT(*) AS count FROM 501st_troopers WHERE squad = '1'")->fetch_object()->count,
+    "Makaze" => $conn->query("SELECT COUNT(*) AS count FROM 501st_troopers WHERE squad = '2'")->fetch_object()->count,
+    "Parjai" => $conn->query("SELECT COUNT(*) AS count FROM 501st_troopers WHERE squad = '3'")->fetch_object()->count,
+    "Squad 7" => $conn->query("SELECT COUNT(*) AS count FROM 501st_troopers WHERE squad = '4'")->fetch_object()->count,
+    "Tampa" => $conn->query("SELECT COUNT(*) AS count FROM 501st_troopers WHERE squad = '5'")->fetch_object()->count,
+];
 
-echo '
-Total Members: ' . $getNumOfTroopers->num_rows . '
-<br />
-Total Members (No Squad): ' . $getNumOfTroopersFL->num_rows . '
-<br />
-Total Members (Everglades): ' . $getNumOfTroopersEverglades->num_rows . '
-<br />
-Total Members (Makaze): ' . $getNumOfTroopersMakaze->num_rows . '
-<br />
-Total Members (Parjai): ' . $getNumOfTroopersParjai->num_rows . '
-<br />
-Total Members (Squad 7): ' . $getNumOfTroopersSquad7->num_rows . '
-<br />
-Total Members (Tampa): ' . $getNumOfTroopersTampa->num_rows . '
-<br />
-COMPLETE!';
+// Display statistics
+foreach ($trooperCounts as $label => $count) {
+    echo "$label: $count <br />";
+}
 
-// Update date time for last sync
+echo "COMPLETE!";
+
+// Update sync date
 $conn->query("UPDATE settings SET syncdate = NOW()");
 
 /**
@@ -109,17 +121,8 @@ $conn->query("UPDATE settings SET syncdate = NOW()");
  * @param string $value The string value to be formatted
  * @return int Returns 1 for yes and 0 for all else
  */
-function convertMemberApproved($value)
-{
-	$returnValue = 0;
-	
-	// Check member status
-	if($value == "YES")
-	{
-		$returnValue = 1;
-	}
-
-	return $returnValue;
+function convertMemberApproved($value) {
+    return ($value === "YES") ? 1 : 0;
 }
 
 /**
@@ -128,21 +131,8 @@ function convertMemberApproved($value)
  * @param string $value The string value to be formatted
  * @return int Returns 1 for active, 2 for reserve, and 0 for all else
  */
-function convertMemberStatus($value)
-{
-	$returnValue = 0;
-	
-	// Check member status
-	if($value == "Active")
-	{
-		$returnValue = 1;
-	}
-	else if($value == "Reserve")
-	{
-		$returnValue = 2;
-	}
-
-	return $returnValue;
+function convertMemberStatus($value) {
+    return ($value === "Active") ? 1 : (($value === "Reserve") ? 2 : 0);
 }
 
 /**
@@ -151,17 +141,8 @@ function convertMemberStatus($value)
  * @param string $value The string value to be formatted
  * @return int Returns 1 for good, and 0 for all else
  */
-function convertMemberStanding($value)
-{
-	$returnValue = 0;
-	
-	// Check member standing
-	if($value == "Good")
-	{
-		$returnValue = 1;
-	}
-
-	return $returnValue;
+function convertMemberStanding($value) {
+    return ($value === "Good") ? 1 : 0;
 }
 
 /**
@@ -170,37 +151,15 @@ function convertMemberStanding($value)
  * @param int $value The string value to be formatted
  * @return int Returns squad ID based on value
  */
-function convertSquadId($value)
-{
-	$returnValue = 0;
-
-	// Tampa Bay Squad
-	if($value == 110)
-	{
-		$returnValue = 5;
-	}
-	// Squad 7 Squad
-	else if($value == 136)
-	{
-		$returnValue = 4;
-	}
-	// Parjai Squad
-	else if($value == 126)
-	{
-		$returnValue = 3;
-	}
-	// Makaze Squad
-	else if($value == 124)
-	{
-		$returnValue = 2;
-	}
-	// Everglades Squad
-	else if($value == 113)
-	{
-		$returnValue = 1;
-	}
-
-	return $returnValue;
+function convertSquadId($value) {
+    $squads = [
+        110 => 5,  // Tampa Bay Squad
+        136 => 4,  // Squad 7
+        126 => 3,  // Parjai Squad
+        124 => 2,  // Makaze Squad
+        113 => 1   // Everglades Squad
+    ];
+    return $squads[$value] ?? 0;
 }
 
 ?>

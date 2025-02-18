@@ -1,11 +1,10 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.2
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: ls-80d2a4b30f3cf5d6b28d9190f86603b96784cb8f.c7bgdu4hw8kg.us-east-1.rds.amazonaws.com:3306
--- Generation Time: Jan 24, 2025 at 12:28 AM
+-- Generation Time: Feb 18, 2025 at 08:35 PM
 -- Server version: 8.0.35
--- PHP Version: 7.4.7
+-- PHP Version: 8.3.16
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -52,7 +51,7 @@ CREATE TABLE `501st_troopers` (
   `approved` int NOT NULL DEFAULT '0',
   `status` int NOT NULL DEFAULT '0',
   `standing` int NOT NULL DEFAULT '0',
-  `joindate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `joindate` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
