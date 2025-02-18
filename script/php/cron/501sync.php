@@ -48,10 +48,6 @@ foreach ($trooperData['unit']['members'] as $trooper) {
     // Fetch detailed member data
     $json2 = file_get_contents("https://www.501st.com/memberAPI/v3/legionId/$legionId");
     $memberData = json_decode($json2, true);
-	
-	print_r($memberData);
-	
-	print_r('<br /><br /><hr /><br /><br />');
 
     if (!$memberData) continue;
 
