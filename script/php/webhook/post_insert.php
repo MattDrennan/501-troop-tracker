@@ -20,6 +20,12 @@ $input = file_get_contents('php://input');
 // Attempt to decode JSON
 $data = json_decode($input, true);
 
+// Ignore if the action is an update (post edit)
+if ($data['action'] === 'update') {
+    http_response_code(200); // Respond OK, but don't process
+    exit('Ignoring post edit.');
+}
+
 // Log any JSON decoding errors
 if (json_last_error() !== JSON_ERROR_NONE) {
     http_response_code(400); // Bad Request
