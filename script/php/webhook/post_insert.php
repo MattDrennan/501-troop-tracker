@@ -21,20 +21,20 @@ $input = file_get_contents('php://input');
 $data = json_decode($input, true);
 
 // Ignore if the action is an update (post edit)
-if ($data['action'] === 'update') {
+if ($data['event'] !== 'insert') {
     http_response_code(200); // Respond OK, but don't process
-    exit('Ignoring post edit.');
+    exit('Ignoring post.');
 }
 
 // Log any JSON decoding errors
 if (json_last_error() !== JSON_ERROR_NONE) {
-    http_response_code(400); // Bad Request
+    http_response_code(200); // Bad Request
     exit('Invalid JSON.');
 }
 
 // Validate data structure
 if (!isset($data['data']) || !isset($data['content_type'])) {
-    http_response_code(400); // Bad Request
+    http_response_code(200); // Bad Request
     exit('Invalid data format.');
 }
 
@@ -49,7 +49,7 @@ $postDate = date('Y-m-d H:i:s', $post['post_date'] ?? time());
 
 // Don't proceed if no data
 if (!is_numeric($thread_id) || !is_numeric($postId)) {
-    http_response_code(400);
+    http_response_code(200);
     exit('Invalid thread_id or post_id.');
 }
 
