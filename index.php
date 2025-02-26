@@ -5992,7 +5992,7 @@ if(isset($_GET['event']) && loggedIn())
 				$link2 = isLink2($db->id);
 
 				// Show linked events
-				if($link2 == 0 && $link2 > 0) {
+				if($link == 0 && $link2 > 0) {
 					echo '
 					<h2 class="tm-section-header">Related Troops</h2>';
 
