@@ -6021,7 +6021,7 @@ if(isset($_GET['event']) && loggedIn())
 					<div style="text-align: center;">
 						<b>This event is connected to other related events; therefore, sign-up limits may apply.</b>
 					</div>';
-				} else {
+				} else if($link > 0 && $link2 > 0) {
 					// Only show the disclaimer text, if the event is already a shift.
 					echo '
 					<div style="text-align: center;">

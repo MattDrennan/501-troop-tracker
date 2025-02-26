@@ -4174,7 +4174,7 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 
 		[b]To view all related event forum posts on one page, view the event page on the Troop Tracker. This forum page will only show this events forum posts.[/b]
 		';
-	} else {
+	} else if($link > 0 && $link2 > 0) {
 		$returnString .= '
 		[b]This event is connected to other related events; therefore, sign-up limits may apply.[/b]';
 	}
