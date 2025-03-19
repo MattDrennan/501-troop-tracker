@@ -145,6 +145,41 @@ if(isset($_GET['do']) && isset($_GET['event']) && $_GET['do'] == "load-add-frien
 	</form>';
 }
 
+/******************** LOAD TAGGED TROOPERS *******************************/
+
+if(isset($_GET['do']) && isset($_GET['photoid']) && $_GET['do'] == "load-tagged-troopers" && loggedIn())
+{
+	// Fetch tagged troopers in one query
+	$taggedTroopers = [];
+	$statement2 = $conn->prepare("SELECT trooperid FROM tagged WHERE photoid = ?");
+	$statement2->bind_param("i", $_GET['photoid']);
+	$statement2->execute();
+	$result2 = $statement2->get_result();
+
+	while ($tagged = $result2->fetch_assoc()) {
+		$taggedTroopers[$tagged['trooperid']] = true;
+	}
+
+	echo '
+	<select multiple="multiple" id="tagTroopersSelect" name="tagTroopersSelect">';
+
+	$statement3 = $conn->prepare("SELECT id, name, forum_id, tkid, squad FROM troopers");
+	$statement3->execute();
+	$result3 = $statement3->get_result();
+
+	while ($db3 = $result3->fetch_object())
+	{
+		$isTagged = isset($taggedTroopers[$db3->id]) ? 'SELECTED' : '';
+		echo '
+		<option value="'.$db3->id.'" photoid="'.htmlspecialchars($photoid).'" '.$isTagged.'>
+			'.$db3->name.' - '.$db3->forum_id.' - '.readTKNumber($db3->tkid, $db3->squad, $db3->id).'
+		</option>';
+	}
+
+	echo '
+	</select>';
+}
+
 /******************** LOAD SUBSCRIBE UPDATES *******************************/
 
 if(isset($_GET['do']) && isset($_GET['event']) && isset($_GET['thread_id']) && $_GET['do'] == "load-subscribe-updates" && loggedIn())

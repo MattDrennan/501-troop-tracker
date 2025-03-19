@@ -324,6 +324,13 @@ $(document).ready(function()
 		});
 	}
 
+	// Load tagged troopers
+	if($('#tagged-troopers').length) {
+		$("#tagged-troopers").load('process.php?do=load-tagged-troopers&photoid=' +$(this).attr("photoid"), function() {
+			selectAdd();
+		});
+	}
+
 	// Load subscribe updates
 	if($('#subscribe-area').length) {
 		$("#subscribe-area").load('process.php?do=load-subscribe-updates&event=' + $("#troopid").val() + '&thread_id=' + $("#thread_id").val());

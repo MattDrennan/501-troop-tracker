@@ -5379,77 +5379,51 @@ if(isset($_GET['action']) && $_GET['action'] == "faq")
 
 if(isset($_GET['action']) && $_GET['action'] == "editphoto" && loggedIn())
 {
-	// Get data
+	$photoid = $_GET['id'];
+	
+	// Fetch photo details in one query
 	$statement = $conn->prepare("SELECT * FROM uploads WHERE id = ?");
-	$statement->bind_param("i", $_GET['id']);
+	$statement->bind_param("i", $photoid);
 	$statement->execute();
+	$result = $statement->get_result();
 
-	$i = 0;
-	if ($result = $statement->get_result())
+	if ($db = $result->fetch_object())
 	{
-		while ($db = mysqli_fetch_object($result))
-		{
-			echo '
-			<h3>Edit Photo: '.$db->filename.'</h3>
-			
-			<p>
-				<img src="images/uploads/'.$db->filename.'" width="200px" height="200px" />
-			</p>
-
-			<p>
-				<b>Uploaded by:</b> <a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.getTKNumber($db->trooperid, true).'</a>
-			</p>
-
-			<p>
-				<b>Tagged troopers:</b>
-
-				<select multiple="multiple" id="tagTroopersSelect" name="tagTroopersSelect">';
-				
-				$statement3 = $conn->prepare("SELECT * FROM troopers");
-				$statement3->execute();
-
-				if ($result3 = $statement3->get_result())
-				{
-					while ($db3 = mysqli_fetch_object($result3))
-					{
-						$isTagged = (isInPhoto($_GET['id'], $db3->id)) ? 'SELECTED' : '';
-
-						echo '
-						<option value="'.$db3->id.'" photoid="'.cleanInput($_GET['id']).'" '.$isTagged.'>'.$db3->name.' - '.$db3->forum_id.' - '.readTKNumber($db3->tkid, $db3->squad, $db3->id).'</option>';
-					}
-				}
+		echo '
+		<h3>Edit Photo: '.$db->filename.'</h3>
 		
+		<p>
+			<img src="images/uploads/'.$db->filename.'" width="200px" height="200px" />
+		</p>
+
+		<p>
+			<b>Uploaded by:</b> <a href="index.php?profile='.$db->trooperid.'">'.getName($db->trooperid).' - '.getTKNumber($db->trooperid, true).'</a>
+		</p>';
+
+		// Fetch all troopers in one query
+		echo '
+		<p>
+			<b>Tagged troopers:</b>
+
+			<div id="tagged-troopers" photoid="'.$photoid.'">
+				<div style="text-align: center;">
+					<img src="images/loading.gif" />
+				</div>
+			</div>
+		</p>
+		<hr />
+		<p style="text-align: center">';
+
+		// If admin or uploader
+		if(isAdmin() || $db->trooperid == $_SESSION['id'])
+		{
+			$buttonText = $db->admin == 0 ? "Make Troop Instruction Photo" : "Make Regular Photo";
 			echo '
-				</select>
-			</p>
-
-			<hr />
-
-			<p style="text-align: center">';
-
-			// If admin or trooper that uploaded it
-			if(isAdmin() || $db->trooperid == $_SESSION['id'])
-			{
-				// Check if admin photo
-				if($db->admin == 0)
-				{
-					echo '
-					<a href="#/" photoid="'.$db->id.'" class="button" name="adminphoto">Make Troop Instruction Photo</a>';
-				}
-				else
-				{
-					echo '
-					<a href="#/" photoid="'.$db->id.'" class="button" name="adminphoto">Make Regular Photo</a>';
-				}
-				
-				echo '
-					<a href="#/" photoid="'.$db->id.'" troopid="'.$db->troopid.'" class="button" name="deletephoto">Delete Photo</a>';
-			}
-
-			echo '
-				<a href="index.php?event='.$db->troopid.'" class="button">View Event</a>
-			</p>';
+			<a href="#/" photoid="'.$db->id.'" class="button" name="adminphoto">'.$buttonText.'</a>
+			<a href="#/" photoid="'.$db->id.'" troopid="'.$db->troopid.'" class="button" name="deletephoto">Delete Photo</a>';
 		}
+
+		echo '<a href="index.php?event='.$db->troopid.'" class="button">View Event</a></p>';
 	}
 }
 
@@ -7471,7 +7445,7 @@ echo '
 
 echo '
 <!-- External JS File -->
-<script type="text/javascript" src="script/js/main.js?v=5"></script>
+<script type="text/javascript" src="script/js/main.js?v=7"></script>
 </body>
 </html>';
 
