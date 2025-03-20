@@ -232,6 +232,14 @@ $userGroupRIP = 1496;
 
 $userGroupSupporter = 1507;
 
+/**
+ * specialLinks: A custom button for special events, displays near the squad buttons, shows select events (optional)
+*/
+
+$specialLinks = array(
+	'TrooperFest' => '<a href="index.php?special=TrooperFest"><img src="images/TrooperFest.png" alt="TrooperFest" '.isSquadActive('TrooperFest').' /></a>',
+);
+
 // Please note: Do not change the order of squads and clubs after your set up your troop tracker, otherwise you will mess up the squad IDs
 // Make sure you run queries on your database if you need to change the order after installation.
 

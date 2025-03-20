@@ -782,16 +782,8 @@ function drawSupportGraph()
 		$statement->fetch();
 		$statement->close();
 
-		// Find the position of the last slash
-		$lastSlashPos = strrpos($forumURL, '/');
-
-		// If a slash was found, truncate the URL after it
-		if ($lastSlashPos !== false) {
-		    $cleanedURL = substr($forumURL, 0, $lastSlashPos + 1);
-		}
-
 		// Get JSON
-		$json = file_get_contents($cleanedURL . 'user-upgrades.php');
+		$json = file_get_contents($forumURL . 'user-upgrades.php');
 		$obj = json_decode($json, true);
 
 		// Check if the JSON was decoded properly
@@ -3585,6 +3577,14 @@ function isSquadActive($squad)
 	if(isset($_GET['squad']))
 	{
 		if($squad == $_GET['squad'] && $_GET['squad'] != "mytroops")
+		{
+			// Squad
+			return 'class="squadlink"';
+		}
+	}
+	else if(isset($_GET['special']))
+	{
+		if($squad == $_GET['special'])
 		{
 			// Squad
 			return 'class="squadlink"';
