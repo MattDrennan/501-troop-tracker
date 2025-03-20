@@ -326,7 +326,9 @@ $(document).ready(function()
 
 	// Load tagged troopers
 	if($('#tagged-troopers').length) {
-		$("#tagged-troopers").load('process.php?do=load-tagged-troopers&photoid=' +$(this).attr("photoid"), function() {
+		var photoid = $("#tagged-troopers").attr("photoid");
+		
+		$("#tagged-troopers").load('process.php?do=load-tagged-troopers&photoid=' + photoid, function() {
 			selectAdd();
 		});
 	}
