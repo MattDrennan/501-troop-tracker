@@ -114,7 +114,7 @@ if(isset($_GET['do']) && isset($_GET['event']) && $_GET['do'] == "load-add-frien
 	<select name="backupcostume" id="backupcostume">';
 
 	// Display costumes
-	$statement = $conn->prepare("SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND " . costume_restrict_query(false, 0, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id']).") DESC, costume");
+	$statement = $conn->prepare("SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND " . costume_restrict_query(0, false, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id']).") DESC, costume");
 	$statement->execute();
 
 	// Amount of costumes

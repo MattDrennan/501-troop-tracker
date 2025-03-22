@@ -576,99 +576,109 @@ function pendingTroopsDisplay($trooperid)
 }
 
 /**
- * Restricts the trooper's costume based on there membership to certain clubs
- * 
- * @param boolean $addWhere Optional. This is used to add a "where" to the MySQL query.
- * @param int $friendID Optional. This is used to determine which costumes to display. If this interval does not match the session interval, then all costumes will display.
- * @param boolean $allowDualCostume Optional. This is used to disable/enable allowing dual costumes to show.
- * @return string Returns a query to restrict costumes of clubs a trooper is not a member of
-*/
-function costume_restrict_query($addWhere = false, $friendID = 0, $allowDualCostume = true)
+ * Restricts the trooper's costume based on their membership to certain clubs.
+ *
+ * If $trooperId is 0, all costumes will be shown, filtered by the dual costume setting.
+ *
+ * @param int $trooperId The trooper ID to check membership for, or 0 to show all costumes.
+ * @param bool $addWhere Optional. Adds a "WHERE" clause at the start of the returned SQL query if true.
+ * @param bool $allowDualCostume Optional. Enables or disables allowing dual costumes to appear in the query.
+ * @return string Returns a SQL snippet that limits costume visibility based on club membership.
+ */
+function costume_restrict_query($trooperId, $addWhere = false, $allowDualCostume = true)
 {
-	global $conn, $clubArray, $dualCostume;
-	
-	// Set up query
-	$returnQuery = " ";
-	
-	// Should add where?
-	if($addWhere)
-	{
-		$returnQuery .= "WHERE ";
+	global $dualCostume;
+
+	$query = $addWhere ? "WHERE (" : "(";
+
+	if ($trooperId === 0) {
+		// Show all costumes, filter duals if needed
+		if ($allowDualCostume) {
+			$query .= "costumes.club >= 0";
+		} else {
+			$query .= "costumes.club NOT IN (" . implode(",", $dualCostume) . ")";
+		}
+	} else {
+		// Filter based on the trooper's allowed costumes
+		$allowedCostumes = isDualMember($trooperId);
+
+		if (!$allowDualCostume) {
+			$allowedCostumes = array_filter($allowedCostumes, function($costumeId) use ($dualCostume) {
+				return !in_array($costumeId, $dualCostume);
+			});
+		}
+
+		$allowedCostumes = array_values($allowedCostumes);
+
+		if (!empty($allowedCostumes)) {
+			$query .= "costumes.club IN (" . implode(",", $allowedCostumes) . ")";
+		} else {
+			$query .= "1 = 0"; // No access to any costumes
+		}
 	}
-	
-	$returnQuery .= "(";
 
-	// Set up query to check add a friend
-	$friendQuery = "";
+	$query .= ")";
 
-	// Check if friend ID
-	if($friendID != $_SESSION['id'] && $friendID != 0)
-	{
-		$friendQuery = " OR (costumes.club >= 0) AND (costumes.club NOT IN (".implode(",", $dualCostume)."))";
-	}
+	return $query;
+}
 
-	// 501 member, prepare to add or statement if a dual member
-	$hit = false;
-	
+/**
+ * Retrieves the list of costume IDs that a trooper is authorized to wear based on club membership.
+ *
+ * This function checks if the trooper is a member of the 501st or any other club and returns
+ * only the costume IDs associated with those memberships. Costumes from clubs the trooper is
+ * not a member of are excluded. It also ensures dual costumes are only included if the trooper
+ * belongs to at least one club that lists that costume.
+ *
+ * @param int $trooperId The database ID of the trooper to evaluate.
+ * @return array Returns an indexed array of costume IDs the trooper is authorized to wear.
+ */
+function isDualMember($trooperId) {
+	global $conn, $clubArray, $squadArray;
+
+	$dualMemberList = array();
+	$dualMemberListRecheck = array();
+
 	$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
-	$statement->bind_param("i", $_SESSION['id']);
+	$statement->bind_param("i", $trooperId);
 	$statement->execute();
 
-	if ($result = $statement->get_result())
-	{
-		while ($db = mysqli_fetch_object($result))
-		{
+	if ($result = $statement->get_result()) {
+		while ($db = mysqli_fetch_object($result)) {
 			// 501
-			if($db->p501 == 1 || $db->p501 == 2 || $db->p501 == 4)
-			{
-				$returnQuery .= "costumes.club = 0";
-
-				// 501 member
-				$hit = true;
+			if ($db->p501 == 1 || $db->p501 == 2 || $db->p501 == 4) {
+				$dualMemberList[] = 0;
+				
+				foreach ($squadArray[0]['costumes'] as $costume) {
+						$dualMemberList[] = $costume;
+				}
+			} else {
+				foreach ($squadArray[0]['costumes'] as $costume) {
+						$dualMemberList = array_diff($dualMemberList, array($costume));
+						$dualMemberListRecheck[] = $costume;
+				}
 			}
+			
+			foreach ($clubArray as $club_value) {
+				$isMember = ($db->{$club_value['db']} == 1 || $db->{$club_value['db']} == 2 || $db->{$club_value['db']} == 4);
 
-			// Set up step count
-			$i = 0;
-
-			// Loop through clubs
-			foreach($clubArray as $club => $club_value)
-			{
-				// Check club member status
-				if($db->{$club_value['db']} == 1 || $db->{$club_value['db']} == 2 || $db->{$club_value['db']} == 4)
-				{
-					// First step and a 501 member, add the OR to prevent issues
-					if($i == 0 && $hit)
-					{
-						$returnQuery .= " OR ";
-					}
-
-					foreach($club_value['costumes'] as $costume)
-					{
-						if(!$allowDualCostume && in_array($costume, $dualCostume))
-						{
-							continue;
-						}
-						
-						// Passed first step, keep adding OR
-						if($i > 0)
-						{
-							$returnQuery .= " OR ";
-						}
-
-						$returnQuery .= "costumes.club = ".$costume."";
-
-						// Increment step
-						$i++;
+				foreach ($club_value['costumes'] as $costume) {
+					if ($isMember) {
+						$dualMemberList[] = $costume;
+					} else {
+						$dualMemberList = array_diff($dualMemberList, array($costume));
 					}
 				}
 			}
+			
+			$dualMemberList = array_diff($dualMemberList, $dualMemberListRecheck);
 		}
 	}
-	
-	$returnQuery .= ")";
-	
-	return $returnQuery . $friendQuery;
+
+	// Remove duplicates and reindex
+	return array_values(array_unique($dualMemberList));
 }
+
 
 /**
  * This is used to display all the smiley's in HTML from smiley.php
@@ -4560,7 +4570,7 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 							<select name="modifysignupFormCostume" trooperid="'.$db2->trooperId.'" signid="'.$db2->signId.'">';
 
 							// Display costumes
-							$statement3 = $conn->prepare("SELECT * FROM costumes WHERE " . costume_restrict_query(false, $db2->trooperId, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume");
+							$statement3 = $conn->prepare("SELECT * FROM costumes WHERE " . costume_restrict_query($db2->trooperId, false, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume");
 							$statement3->execute();
 							
 							if ($result3 = $statement3->get_result())
@@ -4593,7 +4603,7 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 							$c = 0;
 
 							// Display costumes
-							$statement3 = $conn->prepare("SELECT * FROM costumes WHERE " . costume_restrict_query(false, $db2->trooperId, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume");
+							$statement3 = $conn->prepare("SELECT * FROM costumes WHERE " . costume_restrict_query($db2->trooperId, false, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($db2->trooperId)."".getMyCostumes(getTKNumber($db2->trooperId), getTrooperSquad($db2->trooperId)).") DESC, costume");
 							$statement3->execute();
 							
 							// Amount of costumes
