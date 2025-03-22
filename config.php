@@ -874,33 +874,55 @@ function drawSupportGraph()
 			
 			$return .= '
 			<style>
-				.bargraph
-				{
-					background-color: rgb(192, 192, 192);
-					width: 80%;
-					border-radius: 15px;
-					margin: auto;
-				}
-			  
-				.progress
-				{
-					background-color: rgb(116, 194, 92);
-					color: white;
-					padding: 1%;
-					text-align: right;
-					font-size: 20px;
-					border-radius: 15px;
-					width: '.$percent.'%;
-				}
+			.donation-goal-container {
+				background-color: var(--main-content-color);
+				padding: 25px;
+				border-radius: 10px;
+				text-align: center;
+				margin: 10px auto;
+				max-width: 500px;
+				box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+			}
+
+			.donation-goal-container h2 {
+				font-size: 1.5rem;
+				color: var(--main-theme-color);
+				margin-bottom: 10px;
+			}
+
+			.donation-goal-container h2 span {
+				color: white;
+			}
+
+			.donation-progress-bar {
+				background-color: #d1d1d1;
+				border-radius: 50px;
+				overflow: hidden;
+				height: 30px;
+				margin-top: 15px;
+				width: 100%;
+				max-width: 400px;
+				box-shadow: inset 0 0 5px #00000050;
+				margin-left: auto;
+				margin-right: auto;
+			}
+
+			.donation-fill {
+				background-color: #4CAF50;
+				height: 100%;
+				line-height: 30px;
+				color: white;
+				font-weight: bold;
+				transition: width 1s ease-in-out;
+				text-align: center;
+			}
 			</style>
-			
-			<h2 class="tm-section-header">'.date("F").' - Donation Goal - '.$goal.' </h2>
-			
-			<p style="text-align: center;">
-				<div class="bargraph">
-					<div class="progress">'.$percent.'%</div>
-				</div>
-			</p>';
+
+			<div class="donation-goal-container">
+				<h2>🎯 '.date("F").' Donation Goal – <span>'.$goal.'</span></h2>
+				<div class="donation-progress-bar">
+					<div class="donation-fill" style="width: '.$percent.'%;">'.$percent.'%</div>
+				</div>';
 			
 			// Don't show link on donation page
 			if(isset($_GET['action']) && $_GET['action'] == "donation")
@@ -909,25 +931,13 @@ function drawSupportGraph()
 			}
 			else
 			{
-				// Don't show link if they are a supporter
-				if(isSupporter($_SESSION['id']))
-				{
-					$return .= '
-					<p style="text-align: center;">
-						<a href="'.$forumURL.'account/upgrades">The '.garrison.' needs your support! Click here to learn more.</a>
+				$return .= '
+					<p class="donation-message">
+						<a href="'.$forumURL.'account/upgrades">'.(isSupporter($_SESSION['id']) ? 'Thank you for your contribution! Manage your donations here.' : 'The '.garrison.' needs your support! Click here to learn more.').'</a>
 					</p>';
-				}
-				else
-				{
-					// Did support
-					$return .= '
-					<p style="text-align: center;">
-						<a href="'.$forumURL.'account/upgrades">Thank you for your contribution! Manage your donations here.</a>
-					</p>';
-				}
 			}
 			
-			$return .= '<hr />';
+			$return .= '</div>';
 			
 			// Don't show anything if hit goal
 			if($percent >= 100) { $return = ''; }

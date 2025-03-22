@@ -263,7 +263,9 @@ else
 // Icon for mobile phones
 echo '
 <a href="javascript:void(0);" class="icon" onclick="myFunction()"><i class="fa fa-bars"></i></a>
-</div>';
+</div>
+
+<div class="dashboard-row">';
 
 // Show support graph
 echo drawSupportGraph();
@@ -279,7 +281,7 @@ if(loggedIn())
 	if(@$_GET['action'] != "logout") {
 		// Forum notifications
 		echo '
-		<p style="text-align: center; border: 1px; border-style: dotted;">
+		<div class="user-welcome-box">
 			<a href="index.php?profile='.$_SESSION['id'].'" style="color: yellow;">Welcome '.getName($_SESSION['id']).'!</a>
 			<br />
 			<a href="index.php?profile='.$_SESSION['id'].'">'.(getForumAvatar($_SESSION['id']) != "" ? '<img src="' . getForumAvatar($_SESSION['id']) . '" />' : '').'</a>
@@ -287,7 +289,7 @@ if(loggedIn())
 			<a href="'.$forumURL.'account/alerts" '. ((@count($alerts) > 0 || @count($conversations) > 0) ? 'class="fading-text"' : '') .'>You have '.@count($alerts).' notifications and '.@count($conversations).' unread messages on the boards.</a>
 
 			'.dailyTip().'
-		</p>';
+		</div>';
 	}
 	
 	$threads = getThreadsFromForum($userID);
@@ -327,6 +329,8 @@ if(loggedIn())
 		echo '</div>';
 	}
 }
+
+echo '</div>';
 
 // Show the account page
 if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
@@ -6895,7 +6899,7 @@ else
 						$getNumOfLinks = $statement2->num_rows;
 
 						echo '
-						<div style="border: 1px solid gray; margin-bottom: 10px;">
+						<div class="troop-card">
 
 						'.(!isset($_GET['squad']) || (isset($_GET['squad']) && $_GET['squad'] == "mytroops") || (isset($_GET['squad']) && $_GET['squad'] == "canceledtroops") ? '<span style="margin-top: 5px; display: block;">' . getSquadLogo($db->squad) . '</span>' : '').'
 
@@ -7306,47 +7310,39 @@ if(!isWebsiteClosed())
 {
 	if(loggedIn())
 	{
-		// User's online
 		echo '
-		<hr />
-		<section class="tm-section tm-section-small">
-		<h2 class="tm-section-header">Users Online</h2>
-		<p style="text-align: center;">';
+		<section class="users-online-box">
+		  <h2 class="box-section-header">👥 Users Online</h2>
+		  <p class="users-inline-list">';
 
-		// Load users online
 		$statement = $conn->prepare("SELECT * FROM troopers WHERE last_active >= NOW() - INTERVAL 5 MINUTE ORDER BY tkid");
 		$statement->execute();
 
-		if ($result = $statement->get_result())
-		{
+		if ($result = $statement->get_result()) {
 			$i = 0;
-			while ($db = mysqli_fetch_object($result))
-			{
-				if($i != 0)
-				{
+			while ($db = mysqli_fetch_object($result)) {
+				if ($i > 0) {
 					echo ', ';
 				}
 
-				echo '<a href="index.php?profile='.$db->id.'">'  . $db->forum_id . ' (' . readTKNumber($db->tkid, $db->squad, $db->id) . ')</a>';
+				$tk = readTKNumber($db->tkid, $db->squad, $db->id);
+				$profile = 'index.php?profile=' . $db->id;
+				$username = htmlspecialchars($db->forum_id);
 
+				echo '<a href="'.$profile.'">'.$username.' ('.$tk.')</a>';
 				$i++;
 			}
 		}
 
-		if($i == 0)
-		{
+		if ($i == 0) {
 			echo 'No users online!';
 		}
 
-		echo '
-		</p>
-		</section>';
+		echo '</p></section>';
 	}
 }
 
 echo '
-<hr />
-
 <section class="tm-section tm-section-small">
 <p class="tm-mb-0">
 Website created by <a href="https://mattdrennan.com">Matthew Drennan (TK52233)</a>. If you encounter any technical issues with this site, please refer to the <a href="index.php?action=faq">FAQ page</a> for guidance.
