@@ -865,10 +865,14 @@ blockquote {
   margin-top: 10px;
 }
 
-.dashboard-row > div {
-  flex: 1;
-  min-width: 300px;
+.dashboard-row.single-item {
+  justify-content: center;
+}
+
+.dashboard-row.single-item > div {
+  flex: 1 1 300px;
   max-width: 500px;
+  box-sizing: border-box;
 }
 
 .users-online-box {
