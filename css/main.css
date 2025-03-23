@@ -753,18 +753,18 @@ table[name*="comment_"] textarea {
 
 .canceled-troop,
 .canceled-troop a {
-	color: red;
-	text-decoration: line-through;
+	color: red !important;
+	text-decoration: line-through !important;
 }
 
 .tentative-troop,
 .tentative-troop a {
-	color: orange;
+	color: orange !important;
 }
 
 .standby-troop,
 .standby-troop a {
-	color: purple;
+	color: purple !important;
 }
 
 /* Trooper count list */
