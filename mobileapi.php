@@ -2,6 +2,7 @@
 
 /**
  * API for mobile app troop data
+ * 
  * @author Matthew Drennan
  */
 

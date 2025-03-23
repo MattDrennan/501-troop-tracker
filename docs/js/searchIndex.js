@@ -48,8 +48,13 @@ Search.appendIndex(
         },                {
             "fqsen": "\\costume_restrict_query\u0028\u0029",
             "name": "costume_restrict_query",
-            "summary": "Restricts\u0020the\u0020trooper\u0027s\u0020costume\u0020based\u0020on\u0020there\u0020membership\u0020to\u0020certain\u0020clubs",
+            "summary": "Restricts\u0020the\u0020trooper\u0027s\u0020costume\u0020based\u0020on\u0020their\u0020membership\u0020to\u0020certain\u0020clubs.",
             "url": "namespaces/default.html#function_costume_restrict_query"
+        },                {
+            "fqsen": "\\isDualMember\u0028\u0029",
+            "name": "isDualMember",
+            "summary": "Retrieves\u0020the\u0020list\u0020of\u0020costume\u0020IDs\u0020that\u0020a\u0020trooper\u0020is\u0020authorized\u0020to\u0020wear\u0020based\u0020on\u0020club\u0020membership.",
+            "url": "namespaces/default.html#function_isDualMember"
         },                {
             "fqsen": "\\smileyEditor\u0028\u0029",
             "name": "smileyEditor",
@@ -285,11 +290,6 @@ Search.appendIndex(
             "name": "getLatLong",
             "summary": "Gets\u0020the\u0020latitude\u0020and\u0020longitude\u0020of\u0020an\u0020address",
             "url": "namespaces/default.html#function_getLatLong"
-        },                {
-            "fqsen": "\\getSquad\u0028\u0029",
-            "name": "getSquad",
-            "summary": "Gets\u0020squad\u0020by\u0020location\u0020using\u0020the\u0020Google\u0020API",
-            "url": "namespaces/default.html#function_getSquad"
         },                {
             "fqsen": "\\getCostumeAbbreviation\u0028\u0029",
             "name": "getCostumeAbbreviation",
