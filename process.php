@@ -315,13 +315,11 @@ if(isset($_GET['do']) && isset($_GET['event']) && isset($_GET['thread_id']) && $
 		if(count($thread['posts']) == 0)
 		{
 			echo '
-			<br />
-			<b>No discussion to display.</b>';
+			<div class="alert-box">No discussion to display.</div>';
 		}
 	} else {
 			echo '
-			<br />
-			<b>Thread for this event, not found.</b>';
+			<div class="alert-box">Thread for this event, not found.</div>';
 	}
 }
 

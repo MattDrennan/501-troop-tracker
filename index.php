@@ -342,7 +342,7 @@ if(isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
 		$statement->bind_param("ii", $_POST['themeselect'], $_SESSION['id']);
 		$statement->execute();
 		
-		echo '<p>Your theme has been changed. Please <a href="index.php?action=account">refresh</a> the page to see the changes.</p>';
+		echo '<div class="alert-box">Your theme has been changed. Please <a href="index.php?action=account">refresh</a> the page to see the changes.</div>';
 	}
 	
 	// Account Page

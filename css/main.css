@@ -11,8 +11,8 @@
 	--table-header-color: #333;
 	--table-odd-color: #e5e8ed;
 	--nav-background-color: #333;
-	--nav-link-color: #f2f2f2;
-	--nav-active-link-color: #4CAF50;
+	--nav-link-color: #4CAF50;
+	--nav-active-link-color: #fff;
 }
 
 .makaze {
@@ -29,7 +29,7 @@
 	--table-odd-color: #e5e8ed;
 	--nav-background-color: #333;
 	--nav-link-color: #f2f2f2;
-	--nav-active-link-color: #be3429;
+	--nav-active-link-color: #fff;
 }
 
 .florida {
@@ -46,7 +46,7 @@
 	--table-odd-color: #e5e8ed;
 	--nav-background-color: #333;
 	--nav-link-color: #f2f2f2;
-	--nav-active-link-color: #2869a5;
+	--nav-active-link-color: #fff;
 }
 
 .floridadark {
@@ -292,7 +292,7 @@ a {
 
 a {
 	text-decoration: none;
-	color: var(--main-theme-color);
+	color: var(--main-theme-color) !important;
 }
 
 a.button,
@@ -304,7 +304,7 @@ a.button {
 	background-color: var(--main-theme-bg-color);
 	border: 1px solid var(--button-border-color);
 	border-radius: 5px;
-	color: var(--button-text-color);
+	color: var(--button-text-color) !important;
 	margin: 5px;
 	padding: 10px 10px 10px 10px;
 	-webkit-appearance: none;
@@ -672,7 +672,7 @@ table[name*="comment_"] textarea {
 
 /* Add an active class to highlight the current page */
 .topnav a.active {
-	background-color: var(--nav-active-link-color);
+	background-color: var(--nav-active-link-color) !important;
 	color: white;
 }
 
@@ -1064,7 +1064,7 @@ blockquote {
 
 .alert-box a {
 	text-decoration: none;
-	color: inherit;
+	color: var(--nav-background-color) !important;
 }
 
 .event-limit-alert {
