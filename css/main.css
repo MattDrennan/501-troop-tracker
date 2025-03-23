@@ -13,6 +13,7 @@
 	--nav-background-color: #333;
 	--nav-link-color: #4CAF50;
 	--nav-active-link-color: #fff;
+	--nav-active-link-color-top-nav: #4CAF50;
 }
 
 .makaze {
@@ -30,6 +31,7 @@
 	--nav-background-color: #333;
 	--nav-link-color: #f2f2f2;
 	--nav-active-link-color: #fff;
+	--nav-active-link-color-top-nav: #be3429;
 }
 
 .florida {
@@ -45,8 +47,9 @@
 	--table-header-color: #333;
 	--table-odd-color: #e5e8ed;
 	--nav-background-color: #333;
-	--nav-link-color: #f2f2f2;
+	--nav-link-color: #2869a5;
 	--nav-active-link-color: #fff;
+	--nav-active-link-color-top-nav: #2869a5;
 }
 
 .floridadark {
@@ -64,6 +67,7 @@
 	--nav-background-color: #000000;
 	--nav-link-color: #f2f2f2;
 	--nav-active-link-color: #1c262f;
+	--nav-active-link-color-top-nav: #fff;
 }
 
 html,
@@ -292,7 +296,7 @@ a {
 
 a {
 	text-decoration: none;
-	color: var(--main-theme-color) !important;
+	color: var(--main-theme-color);
 }
 
 a.button,
@@ -529,8 +533,8 @@ textarea {
 }
 
 .floridadark span[class*="select2"] {
-	background-color: var(--main-content-color) !important;
-	color: #fff !important;
+	background-color: var(--main-content-color);
+	color: #fff;
 }
 
 .floridadark th {
@@ -672,7 +676,7 @@ table[name*="comment_"] textarea {
 
 /* Add an active class to highlight the current page */
 .topnav a.active {
-	background-color: var(--nav-active-link-color) !important;
+	background-color: var(--nav-active-link-color-top-nav);
 	color: white;
 }
 
@@ -1052,7 +1056,7 @@ blockquote {
 	background-color: #ffefc1;
 	border-left: 6px solid #ffc107;
 	padding: 12px 16px;
-	margin: 0 auto 20px auto;
+	margin: 10px auto 20px auto;
 	width: 80%;
 	max-width: 700px;
 	border-radius: 6px;
@@ -1064,7 +1068,7 @@ blockquote {
 
 .alert-box a {
 	text-decoration: none;
-	color: var(--nav-background-color) !important;
+	color: var(--nav-background-color);
 }
 
 .event-limit-alert {
