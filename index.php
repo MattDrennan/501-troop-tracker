@@ -6051,7 +6051,8 @@ if(isset($_GET['event']) && loggedIn())
 							if($j == 0)
 							{
 								echo '
-								<hr />';
+								<div class="section-card">
+								<h2 class="tm-section-header">Instructional Photos</h2>';
 							}
 							
 							echo '
@@ -6068,6 +6069,7 @@ if(isset($_GET['event']) && loggedIn())
 
 								echo '
 								</p>
+							</div>
 							</div>';
 							
 							// Increment photo count
