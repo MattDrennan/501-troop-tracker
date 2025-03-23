@@ -972,8 +972,36 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	
 	$rosterUpdate = getRoster($_POST['troopid'], $limitTotal, $totalTrooperEvent, true);
 
+	// If is admin
+	$message2 = '';
+
+	if(isAdmin())
+	{
+		// Load trooper counts
+		$message2 .= '
+		<h2 class="tm-section-header">Admin Trooper Counts</h2>
+		
+		<ul style="display:inline-table;">
+			<li>501st: '.eventClubCount($_POST['troopid'], 0).' </li>';
+			
+			// Set up club count
+			$clubID = count($squadArray) + 1;
+			
+			// Loop through clubs
+			foreach($clubArray as $club => $club_value)
+			{
+				$message2 .= '<li>' . $club_value['name'] . ': ' . eventClubCount($_POST['troopid'], $clubID) . '</li>';
+				
+				// Increment
+				$clubID++;
+			}
+			
+		$message2 .= '
+		</ul>';
+	}
+
 	// Send JSON
-	$array = array('success' => 'true', 'status' => $status, 'troopFull' => $troopFull, 'limit501st' => $limit501st, 'limit501stTotal' => $limit501stTotal, 'rosterData' => $rosterUpdate[0], 'troopersRemaining' => $rosterUpdate[1]);
+	$array = array('success' => 'true', 'status' => $status, 'troopFull' => $troopFull, 'limit501st' => $limit501st, 'limit501stTotal' => $limit501stTotal, 'rosterData' => $rosterUpdate[0], 'troopersRemaining' => $rosterUpdate[1], 'troopersRemainingAdmin' => $message2);
 
 	echo json_encode($array);
 }
@@ -2625,7 +2653,7 @@ if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin(
 			{
 				// Load trooper counts
 				$message2 .= '
-				<h3>Admin Trooper Counts</h3>
+				<h2 class="tm-section-header">Admin Trooper Counts</h2>
 				
 				<ul style="display:inline-table;">
 					<li>501st: '.eventClubCount($_POST['eventid'], 0).' </li>';
@@ -3992,9 +4020,37 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 		}
 
 		$rosterUpdate = getRoster($_POST['event'], $limitTotal, $totalTrooperEvent, isset($_POST['addfriend']));
+
+		// If is admin
+		$message2 = '';
+
+		if(isAdmin())
+		{
+			// Load trooper counts
+			$message2 .= '
+			<h2 class="tm-section-header">Admin Trooper Counts</h2>
+			
+			<ul style="display:inline-table;">
+				<li>501st: '.eventClubCount($_POST['event'], 0).' </li>';
+				
+				// Set up club count
+				$clubID = count($squadArray) + 1;
+				
+				// Loop through clubs
+				foreach($clubArray as $club => $club_value)
+				{
+					$message2 .= '<li>' . $club_value['name'] . ': ' . eventClubCount($_POST['event'], $clubID) . '</li>';
+					
+					// Increment
+					$clubID++;
+				}
+				
+			$message2 .= '
+			</ul>';
+		}
 		
 		// Send back data
-		$array = array('success' => $success, 'success_message' => $success_message, 'numFriends' => ($friendLimit - $numFriends), 'data' => $rosterUpdate[0], 'id' => $_SESSION['id'], 'troopersRemaining' => $rosterUpdate[1]);
+		$array = array('success' => $success, 'success_message' => $success_message, 'numFriends' => ($friendLimit - $numFriends), 'data' => $rosterUpdate[0], 'id' => $_SESSION['id'], 'troopersRemaining' => $rosterUpdate[1], 'troopersRemainingAdmin' => $message2);
 		echo json_encode($array);
 	}
 }

@@ -60,7 +60,7 @@ echo '
 	
 	echo '
 	<!-- Style Sheets -->
-	<link href="css/main.css?v=1" rel="stylesheet" />
+	<link href="css/main.css?v=2" rel="stylesheet" />
 	<link rel="stylesheet" href="script/lib/jquery-ui.min.css">
 	<link rel="stylesheet" href="script/lib/jquery-ui-timepicker-addon.css">
 	<link href="css/dropzone.min.css" type="text/css" rel="stylesheet" />
@@ -190,7 +190,7 @@ echo '
 	<script src="script/lib/jquery-ui-timepicker-addon.js"></script>
 	<script src="script/js/validate/jquery.validate.min.js"></script>
 	<script src="script/js/validate/additional-methods.min.js"></script>
-	<script src="script/js/validate/validate.js?v=3"></script>
+	<script src="script/js/validate/validate.js?v=4"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
 	
@@ -5796,12 +5796,14 @@ if(isset($_GET['event']) && loggedIn())
 			if(isAdmin())
 			{
 				echo '
-				<h2 class="tm-section-header">Admin Controls</h2>
-				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=editevent&eid='.$db->id.'" class="button">Edit/View Event in Command Staff Area</a></p>
-				<p style="text-align: center;"><a href="index.php?action=commandstaff&do=createevent&eid='.$db->id.'" class="button">Copy Event in Command Staff Area</a></p>
-				'.(($db->latitude == 0 || $db->longitude == 0) ? '<span style="display: flex; justify-content: center; align-items: center; height: 100%; color: red; font-weight: bold;" aria-label="To resolve this issue, verify that the location address is accurate; otherwise, the system will not function properly." data-balloon-pos="down" data-balloon-length="fit">[LOCATION ERROR]</span>' : '').'
-				<br />
-				<hr />';
+				<div class="section-card">
+					<h2 class="tm-section-header">Admin Controls</h2>
+					<p style="text-align: center;">
+						<a href="index.php?action=commandstaff&do=editevent&eid='.$db->id.'" class="button">Edit/View Event in Command Staff Area</a>
+						<a href="index.php?action=commandstaff&do=createevent&eid='.$db->id.'" class="button">Copy Event in Command Staff Area</a>
+					</p>
+					'.(($db->latitude == 0 || $db->longitude == 0) ? '<span style="display: flex; justify-content: center; align-items: center; height: 100%; color: red; font-weight: bold;" aria-label="To resolve this issue, verify that the location address is accurate; otherwise, the system will not function properly." data-balloon-pos="down" data-balloon-length="fit">[LOCATION ERROR]</span>' : '').'
+				</div>';
 			}
 			
 			// Format dates
@@ -5814,9 +5816,15 @@ if(isset($_GET['event']) && loggedIn())
 			if($db->venue == NULL && $db->numberOfAttend == NULL && $db->requestedCharacter == NULL && $db->secureChanging == NULL && $db->lightsabers == NULL && $db->parking == NULL && $db->mobility == NULL && $db->amenities == NULL && $db->referred == NULL)
 			{	
 				echo '
-				<h2 class="tm-section-header">'.$db->name.'</h2>
-				<p><b>Event Date:</b> '.$date1.' ('.date('l', strtotime($db->dateStart)).')</p>
-				<p><b>Comments:</b> '.ifEmpty($db->comments, "N/A").'</p>';
+				<div class="section-card">
+					<h2 class="tm-section-header">'.$db->name.'</h2>
+					<p><b>Event Date:</b> '.$date1.' ('.date('l', strtotime($db->dateStart)).')</p>
+				</div>
+
+				<div class="section-card">
+					<h2 class="tm-section-header">Description</h2>
+					<p>'.ifEmpty($db->comments, "N/A").'</p>
+				</div>';
 				
 				// Set is merged
 				$isMerged = true;
@@ -5828,6 +5836,9 @@ if(isset($_GET['event']) && loggedIn())
 				{					
 					// Subscribe button
 					echo '
+					<div class="section-card">
+					<h2 class="tm-section-header">Event Tools</h2>
+
 					<div id="subscribe-area">
 						<div style="text-align: center;">
 							<img src="images/loading.gif" />
@@ -5836,13 +5847,15 @@ if(isset($_GET['event']) && loggedIn())
 					
 					// Add to calendar links
 					echo showCalendarLinks($db->name, $db->location, "Troop Tracker Event", $db->dateStart, $db->dateEnd);
+
+					echo '</div>';
 				}
 
 				// If canceled, show trooper
 				if($db->closed == 2)
 				{
 					echo '
-					<div style="text-align:center; color: red; margin-top: 25px;">
+					<div class="alert-box">
 						<b>This event was CANCELED by Command Staff.</b>
 					</div>';
 				}
@@ -5850,7 +5863,7 @@ if(isset($_GET['event']) && loggedIn())
 				else if($db->closed == 3)
 				{
 					echo '
-					<div style="text-align:center; color: red; margin-top: 25px;">
+					<div class="alert-box">
 						<b>This event was LOCKED by Command Staff.</b>
 						<br />
 						<i>You will be unable to sign up at this time.</i>
@@ -5860,7 +5873,7 @@ if(isset($_GET['event']) && loggedIn())
 				else if($db->closed == 4)
 				{
 					echo '
-					<div style="text-align:center; color: red; margin-top: 25px;">
+					<div class="alert-box">
 						<b>This event was marked FULL by Command Staff.</b>
 						<br />
 						<i>You will be unable to sign up at this time.</i>
@@ -5877,6 +5890,7 @@ if(isset($_GET['event']) && loggedIn())
 			
 				// Display event info
 				echo '
+				<div class="section-card">
 				<h2 class="tm-section-header">'.$add.''.$db->name.'</h2>';
 				
 				// If event closed
@@ -5915,7 +5929,6 @@ if(isset($_GET['event']) && loggedIn())
 					<p><b>Is venue accessible to those with limited mobility:</b> '.yesNo($db->mobility).'</p>
 				</div>
 				<p><b>Amenities available at venue:</b> '.ifEmpty($db->amenities, "No amenities for this event.").'</p>
-				<p><b>Comments:</b><br />'.ifEmpty(nl2br(showBBcodes($db->comments) ?? ''), "No comments for this event.").'</p>
 				<p><b>Referred by:</b> '.ifEmpty($db->referred, "Not available").'</p>
 				'.(isAdmin() ? '<p><b>Point of Contact:</b> '.ifEmpty($db->poc, "Not available").'</p>' : '').'';
 
@@ -5925,6 +5938,13 @@ if(isset($_GET['event']) && loggedIn())
 					echo '
 					<p><b>View post on forum:</b> <a href="'.$forumURL.'threads/'.$db->thread_id.'" target="_blank">'.$forumURL.'threads/'.$db->thread_id.'</a></p>';
 				}
+
+				echo '</div>
+				
+				<div class="section-card">
+					<h2 class="tm-section-header">Description</h2>
+					<p>'.ifEmpty(nl2br(showBBcodes($db->comments) ?? ''), "No comments for this event.").'</p>
+				</div>';
 			
 				// Get linked event
 				$link = isLink($db->id);
@@ -5933,6 +5953,7 @@ if(isset($_GET['event']) && loggedIn())
 				if($link > 0)
 				{						
 					echo '
+					<div class="section-card">
 					<h2 class="tm-section-header" id="shifts-link">Shifts</h2>';
 					
 					// Query database for shifts
@@ -5964,6 +5985,7 @@ if(isset($_GET['event']) && loggedIn())
 							}
 						}
 					}
+					echo '</div>';
 				}
 
 				// Get link2
@@ -5972,6 +5994,7 @@ if(isset($_GET['event']) && loggedIn())
 				// Show linked events
 				if($link == 0 && $link2 > 0) {
 					echo '
+					<div class="section-card">
 					<h2 class="tm-section-header">Related Troops</h2>';
 
 					// Query database for linked events
@@ -5996,13 +6019,15 @@ if(isset($_GET['event']) && loggedIn())
 					}
 
 					echo '
-					<div style="text-align: center;">
+					</div>
+
+					<div class="alert-box">
 						<b>This event is connected to other related events; therefore, sign-up limits may apply.</b>
 					</div>';
 				} else if($link > 0 && $link2 > 0) {
 					// Only show the disclaimer text, if the event is already a shift.
 					echo '
-					<div style="text-align: center;">
+					<div class="alert-box">
 						<b>This event is connected to other related events; therefore, sign-up limits may apply.</b>
 					</div>';
 				}
@@ -6080,12 +6105,8 @@ if(isset($_GET['event']) && loggedIn())
 				if($db->limit501st < 500 || $isLimited)
 				{
 					echo '
-					<br />
-					<hr />
-					<br />
-					
-					<div style="color: red;" name="troopersRemainingDisplay">
-						<ul>
+					<div class="event-limit-alert" name="troopersRemainingDisplay">
+						<ul class="event-limit-list">
 							<li>This event is limited to '.$limitTotal.' troopers. ';
 
 							// Check for total limit set, if it is, add remaining troopers
@@ -6130,12 +6151,9 @@ if(isset($_GET['event']) && loggedIn())
 				{
 					// All other events show counts of sign ups
 					echo '
-					<br />
-					<hr />
-					<br />
-					
-					<div name="troopersRemainingDisplay">
-						<h3>Admin Trooper Counts</h3>
+					<div class="section-card">
+					<div name="troopersRemainingDisplayAdmin">
+						<h2 class="tm-section-header">Admin Trooper Counts</h2>
 
 						<ul style="display:inline-table;">
 							<li>501st: '.eventClubCount($db->id, 0).' </li>';
@@ -6154,40 +6172,31 @@ if(isset($_GET['event']) && loggedIn())
 							
 						echo '
 						</ul>
+					</div>
 					</div>';
 				}
 				
 				if($db->limitedEvent == 1)
 				{
 					echo '
-					<p>
+					<div class="alert-box">
 						<b>Reminder:</b> This event has been set as a <i>manual selection</i> event. When a trooper needs to make a change to their attending status or costume, troopers must comment below what changes need to be made, and command staff will make the changes. Please note, this only applies to manual selection events.
-					</p>';
+					</div>';
 				}
 			}
 			
 			echo '
-			<div id="hr1" name="hr1">
-				<br />
-				<hr />
-				<br />
-			</div>
-
+			<div class="section-card">
+			<h2 class="tm-section-header">Roster</h2>
 			<div style="overflow-x: auto;" id="signuparea1" name="signuparea1">
 				<div style="text-align: center;">
 					<img src="images/loading.gif" />
 				</div>
 			</div>
-
 			<p>
 				<a href="script/php/gencsv.php?troopid='.cleanInput($_GET['event']).'" class="button">Generate CSV</a>
-			</p>';
-
-			// HR Fix for formatting
-			if(!$isMerged)
-			{
-				echo '<hr />';
-			}
+			</p>
+			</div>';
 
 			// For rosterTableNoData - If no data, this is for the AJAX of a submitted sign up form
 			if($i == 0)
@@ -6204,9 +6213,9 @@ if(isset($_GET['event']) && loggedIn())
 				if(strtotime($db->dateEnd) < strtotime("NOW"))
 				{
 					echo '
-					<p style="text-align: center;">
+					<div class="alert-box">
 						<b>This event is closed for editing.</b>
-					</p>';
+					</div>';
 				}
 				else
 				{
@@ -6217,9 +6226,9 @@ if(isset($_GET['event']) && loggedIn())
 						{	
 							echo '
 							<div name="signeduparea" id="signeduparea">
-								<p>
+								<div class="alert-box">
 									<b>You have canceled this troop.</b>
-								</p>
+								</div>
 							</div>';
 						}
 						else
@@ -6229,16 +6238,16 @@ if(isset($_GET['event']) && loggedIn())
 							{
 								echo '
 								<div name="signeduparea" id="signeduparea">
-									<p>
+									<div class="alert-box">
 										<b>You are signed up for this troop!</b>
-									</p>
+									</div>
 								</div>';
 							}
 							else
 							{
 								// Closed for editing
 								echo '
-								<p>This event is closed for editing.</p>';
+								<div class="alert-box">This event is closed for editing.</div>';
 							}
 						}
 					}
@@ -6247,6 +6256,7 @@ if(isset($_GET['event']) && loggedIn())
 						// Sign up area - NOT IN TROOP
 						echo '
 						<div name="signuparea" id="signuparea">
+							<div class="section-card">
 							<h2 class="tm-section-header">Sign Up</h2>';
 						
 						// If event is not closed...
@@ -6257,7 +6267,7 @@ if(isset($_GET['event']) && loggedIn())
 								// Is this a hand picked event?
 								if($db->limitedEvent == 1)
 								{
-									echo '<b>This is a locked event. When you sign up, you will be placed in a pending status until command staff approves you. Please check for updates.</b>';
+									echo '<div class="alert-box"><b>This is a locked event. When you sign up, you will be placed in a pending status until command staff approves you. Please check for updates.</b></div>';
 								}
 
 								// Get troop count
@@ -6375,11 +6385,12 @@ if(isset($_GET['event']) && loggedIn())
 								echo '
 								You do not have permission to sign up for events. Please refer to the boards for assistance.';
 							}
+							echo '</div>';	// Section card
 						}
 						else
 						{
 							echo '
-							<p>This event is closed for editing.</p>';
+							<div class="alert-box">This event is closed for editing.</div>';
 						}
 					}
 				}
@@ -6390,9 +6401,9 @@ if(isset($_GET['event']) && loggedIn())
 		if(!$eventExist)
 		{
 			echo '
-			<p style="text-align: center;">
+			<div class="alert-box">
 				<b>This event does not exist.</b>
-			</p>';
+			</div>';
 		}
 		else
 		{
@@ -6409,12 +6420,6 @@ if(isset($_GET['event']) && loggedIn())
 				$statement->bind_result($rowPage);
 				$statement->fetch();
 				$statement->close();
-				
-				// HR Fix for formatting
-				if(loggedIn() || $rowPage > 0)
-				{
-					echo '<hr />';
-				}
 				
 				// Set total pages
 				$total_pages = ceil($rowPage / $results);
@@ -6453,6 +6458,7 @@ if(isset($_GET['event']) && loggedIn())
 						if($i == 0)
 						{
 							echo '
+							<div class="section-card">
 							<h2 class="tm-section-header" id="photo_section">Photos</h2>';
 						}
 						
@@ -6510,9 +6516,15 @@ if(isset($_GET['event']) && loggedIn())
 					echo '</p>';
 				}
 				
+				// If photos exist
+				if($i > 0) {
+					echo '</div>';	// Section card
+				}
+				
 				// If trooper logged in show uploader
 				echo '
-				<p>
+				<div class="section-card">
+					<h2 class="tm-section-header">Photo Upload</h2>
 					<a href="#/" class="button" id="changeUpload" aria-label="Regular Upload: Share photos from troops / Instructional Image: Help troopers with troop information" data-balloon-pos="down" data-balloon-length="fit">Change To: Troop Instructional Image Upload</a>
 
 					<form action="script/php/upload.php" class="dropzone" id="photoupload">
@@ -6569,13 +6581,7 @@ if(isset($_GET['event']) && loggedIn())
 					    });
 					      
 					</script>
-				</p>';
-			}
-
-			// HR Fix for formatting
-			if(!$isMerged)
-			{
-				echo '<hr />';
+				</div>';
 			}
 
 			if(!$isMerged)
@@ -6602,19 +6608,19 @@ if(isset($_GET['event']) && loggedIn())
 						if(inEvent($_SESSION['id'], $_GET['event'])["inTroop"] == 1 && $numFriends < $friendLimit)
 						{
 							echo '
-							<div id="addfriend" name="addfriend">';
+							<div class="section-card" id="addfriend" name="addfriend">';
 						}
 						else
 						{
 							echo '
-							<div id="addfriend" name="addfriend" style="display: none;">';
+							<div class="section-card" id="addfriend" name="addfriend" style="display: none;">';
 						}
 
 						// If event is full
 						if($getNumOfTroopers >= $limitTotal)
 						{
 							echo '
-							<b>This event is full. Your friend will be placed on the stand by list.</b>';
+							<div class="alert-box"><b>This event is full. Your friend will be placed on the stand by list.</b></div>';
 						}
 						
 						echo '
@@ -6622,14 +6628,12 @@ if(isset($_GET['event']) && loggedIn())
 
 						<div id="add-friend-form">
 						</div>
-
-						<hr />
 						</div>';
 					}
 					else
 					{
 						echo '
-						You do not have permission to sign up for events. Please refer to the boards for assistance.';
+						<div class="alert-box">You do not have permission to sign up for events. Please refer to the boards for assistance.</div>';
 					}
 				}
 				else
@@ -6641,6 +6645,7 @@ if(isset($_GET['event']) && loggedIn())
 				if($thread_id > 0)
 				{
 					echo '
+					<div class="section-card">
 					<form aciton="process.php?do=postcomment" name="commentForm" id="commentForm" method="POST">
 						<input type="hidden" name="thread_id" id="thread_id" value="'.$thread_id.'" />
 						<input type="hidden" name="eventId" id="eventId" value="'.cleanInput($_GET['event']).'" />
@@ -6681,6 +6686,7 @@ if(isset($_GET['event']) && loggedIn())
 							<img src="images/loading.gif" />
 						</div>
 
+					</div>
 					</div>';
 				}
 				else
@@ -6771,13 +6777,9 @@ else
 				if($numberOfConfirmTroops > 0)
 				{
 					echo '
-					<span id="confirmTroopNotification">
-						<p>
-							<a href="#confirmtroops">You have '.$numberOfConfirmTroops.' troops to confirm. Click to confirm.</a>
-						</p>
-						<br />
-						<hr />
-					</span>';
+					<div class="alert-box" id="confirmTroopNotification">
+  						<a href="#confirmtroops">⚠️ You have '.$numberOfConfirmTroops.' troops to confirm. Click to confirm.</a>
+					</div>';
 				}
 
 				// Set up add to query
@@ -7063,7 +7065,7 @@ else
 					echo '
 					<h2 class="tm-section-header">Recently Finished</h2>
 					
-					<ul>';
+					<ul class="event-grid">';
 					
 					// If on my troops
 					if(isset($_GET['squad']) && $_GET['squad'] == "mytroops")
@@ -7104,7 +7106,7 @@ else
 						while ($db = mysqli_fetch_object($result))
 						{
 							echo '
-							<li style="margin-top: 15px;">'.(!isset($_GET['squad']) || (isset($_GET['squad']) && $_GET['squad'] == "mytroops") || (isset($_GET['squad']) && $_GET['squad'] == "canceledtroops") ? getSquadLogo($db->squad) : '').' <a href="index.php?event='.$db->id.'" '. (isset($db->status) && $db->status == 2 ? 'class = "tenative-troop"' : '') . (isset($db->status) && $db->status == 4 ? 'class = "canceled-troop"' : '') .'>'. (isLink($db->id) > 0 ? '[<b>' . date("l", strtotime($db->dateStart)) . '</b> : <i>' . date("m/d - h:i A", strtotime($db->dateStart)) . ' - ' . date("h:i A", strtotime($db->dateEnd)) . '</i>] ' : '') .''.$db->name.'</a></li>';
+							<li class="event-item">'.(!isset($_GET['squad']) || (isset($_GET['squad']) && $_GET['squad'] == "mytroops") || (isset($_GET['squad']) && $_GET['squad'] == "canceledtroops") ? getSquadLogo($db->squad) : '').' <a href="index.php?event='.$db->id.'" '. (isset($db->status) && $db->status == 2 ? 'class = "tenative-troop"' : '') . (isset($db->status) && $db->status == 4 ? 'class = "canceled-troop"' : '') .'>'. (isLink($db->id) > 0 ? '[<b>' . date("l", strtotime($db->dateStart)) . '</b> : <i>' . date("m/d - h:i A", strtotime($db->dateStart)) . ' - ' . date("h:i A", strtotime($db->dateEnd)) . '</i>] ' : '') .''.$db->name.'</a></li>';
 						}
 					}
 					
@@ -7455,7 +7457,7 @@ echo '
 
 echo '
 <!-- External JS File -->
-<script type="text/javascript" src="script/js/main.js?v=7"></script>
+<script type="text/javascript" src="script/js/main.js?v=8"></script>
 </body>
 </html>';
 

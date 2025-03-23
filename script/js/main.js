@@ -815,7 +815,7 @@ $(document).ready(function()
 				$("div[name=changestatusarea][trooperid=" + trooperid + "][signid=" + signid + "]").html(json.message);
 
 				// Change counts for admin
-				$("div[name=troopersRemainingDisplay]").html(json.message2);
+				$("div[name=troopersRemainingDisplayAdmin]").html(json.message2);
 			}
 		});
 	})
@@ -2525,6 +2525,7 @@ $(document).ready(function()
 					
 					// Update troopers remaining on the page
 					$("div[name=troopersRemainingDisplay]").html(json.troopersRemaining);
+					$("div[name=troopersRemainingDisplayAdmin]").html(json.troopersRemainingAdmin);
 
 					// Update select2
 					selectAdd();

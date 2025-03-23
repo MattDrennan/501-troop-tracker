@@ -560,19 +560,18 @@ $(function()
                         else
                         {
                             // Put data in html
-                            $("#signuparea").html(json.data);
+                            $("#signuparea1").html(json.data);
                             selectAdd();
 
                             // Do the rest...
-                            $("#signeduparea").show();
                             $("#addfriend").show();
                             selectAdd();
-                            $("#signuparea1").hide();
-                            $("#hr1").hide();
+                            $("#signuparea").hide();
                             $("#rosterTableNoData").hide();
 
                             // Update troopers remaining on the page
                             $("div[name=troopersRemainingDisplay]").html(json.troopersRemaining);
+                            $("div[name=troopersRemainingDisplayAdmin]").html(json.troopersRemainingAdmin);
                         }
                     }
                 });
@@ -641,6 +640,7 @@ $(function()
 
                             // Update troopers remaining on the page
                             $("div[name=troopersRemainingDisplay]").html(json.troopersRemaining);
+                            $("div[name=troopersRemainingDisplayAdmin]").html(json.troopersRemainingAdmin);
                         }
     					else
     					{
