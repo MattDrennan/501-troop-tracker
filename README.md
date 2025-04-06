@@ -191,6 +191,20 @@ $dualCostume = array(5, 7, 8, 9, 10, 11);
 $dualNA = 721;
 
 /**
+ * dualCostumeLabels: This array maps dual costume IDs to their readable names.
+ */
+
+$dualCostumeLabels = array(
+    5  => 'Dual (501st + Rebel)',
+    7  => 'Dual-Mando (501st + Mando)',
+    8  => 'Dual-Mando (RL + Mando)',
+    9  => 'Dual-Saber (501st + SG)',
+    10 => 'Dual-Saber (RL + SG)',
+    11 => 'Triple-Dual (501st + RL + SG)',
+    12 => 'Triple-Dual (501st + RL + Mando)',
+);
+
+/**
  * userGroupGarrison: The Xenforo user group ID for the garrison
 */
 
@@ -240,11 +254,10 @@ $specialLinks = array(
 	'TrooperFest' => '<a href="index.php?special=TrooperFest"><img src="images/TrooperFest.png" alt="TrooperFest" '.isSquadActive('TrooperFest').' /></a>',
 );
 
-// Please note: Do not change the order of squads and clubs after your set up your troop tracker, otherwise you will mess up the squad IDs
-// Make sure you run queries on your database if you need to change the order after installation.
-
 /**
  * squadArray
+ * squadID: Database ID for squad
+ * costumeID: Main database ID for costume
  * name: Name of the squad
  * logo: Image of the squad logo located in images folder
  * costumes: An array of costumes that this squad accepts as troop credit
@@ -257,6 +270,8 @@ $specialLinks = array(
 // Squads
 $squadArray = array(
 	array(
+		"squadID" => 1,
+		"costumeID" => 0,
 		"name" => "Everglades Squad",
 		"logo" => "everglades_emblem.png",
 		"costumes" => array(0, 5, 7, 9, 11, 12),
@@ -266,6 +281,8 @@ $squadArray = array(
 		"eventForumArchive" => 107,
 		"userGroup" => 44),
 	array(
+		"squadID" => 2,
+		"costumeID" => 0,
 		"name" => "Makaze Squad",
 		"logo" => "makaze_emblem.png",
 		"costumes" => array(0, 5, 7, 9, 11, 12),
@@ -275,6 +292,8 @@ $squadArray = array(
 		"eventForumArchive" => 109,
 		"userGroup" => 45),
 	array(
+		"squadID" => 3,
+		"costumeID" => 0,
 		"name" => "Parjai Squad",
 		"logo" => "parjai_emblem.png",
 		"costumes" => array(0, 5, 7, 9, 11, 12),
@@ -284,6 +303,8 @@ $squadArray = array(
 		"eventForumArchive" => 111,
 		"userGroup" => 250),
 	array(
+		"squadID" => 4,
+		"costumeID" => 0,
 		"name" => "Squad 7",
 		"logo" => "squad7_emblem.png",
 		"costumes" => array(0, 5, 7, 9, 11, 12),
@@ -293,6 +314,8 @@ $squadArray = array(
 		"eventForumArchive" => 113,
 		"userGroup" => 683),
 	array(
+		"squadID" => 5,
+		"costumeID" => 0,
 		"name" => "Tampa Bay Squad",
 		"logo" => "tampabay_emblem.png",
 		"costumes" => array(0, 5, 7, 9, 11, 12),
@@ -305,6 +328,8 @@ $squadArray = array(
 
 /**
  * clubArray
+ * squadID: Database ID for club
+ * costumeID: Main database ID for costume
  * name: Name of the club
  * logo: Image of the squad logo located in images folder
  * costumes: An array of costumes that this club accepts as troop credit
@@ -321,6 +346,8 @@ $squadArray = array(
 // Clubs
 $clubArray = array(
 	array(
+		"squadID" => 6,
+		"costumeID" => 1,
 		"name" => "Rebel Legion",
 		"logo" => "test",
 		"costumes" => array(1, 5, 8, 10, 11, 12),
@@ -334,6 +361,8 @@ $clubArray = array(
 		"naCostume" => 720,
 		"userGroup" => 1486),
 	array(
+		"squadID" => 7,
+		"costumeID" => 3,
 		"name" => "Droid Builders",
 		"logo" => "test", "costumes" => array(3),
 		"db" => "pDroid",
@@ -346,6 +375,8 @@ $clubArray = array(
 		"naCostume" => 716,
 		"userGroup" => 1487),
 	array(
+		"squadID" => 8,
+		"costumeID" => 2,
 		"name" => "Mando Mercs",
 		"logo" => "test",
 		"costumes" => array(2, 7, 8, 12),
@@ -360,6 +391,8 @@ $clubArray = array(
 		"naCostume" => 715,
 		"userGroup" => 1488),
 	array(
+		"squadID" => 9,
+		"costumeID" => 4,
 		"name" => "Other",
 		"logo" => "test",
 		"costumes" => array(4),
@@ -374,6 +407,8 @@ $clubArray = array(
 		"naCostume" => 717,
 		"userGroup" => 1415),
 	array(
+		"squadID" => 10,
+		"costumeID" => 6,
 		"name" => "Saber Guild",
 		"logo" => "test",
 		"costumes" => array(6, 9, 10, 11),
@@ -385,6 +420,22 @@ $clubArray = array(
 		"db3Require" => "0,digits,0",
 		"db3Link" => "",
 		"dbLimit" => "limitSG",
+		"naCostume" => 724,
+		"userGroup" => 1491),
+	array(
+		"squadID" => 13,
+		"costumeID" => 13,
+		"name" => "Dark Empire",
+		"logo" => "test",
+		"costumes" => array(13),
+		"db" => "pDE",
+		"db2" => "",
+		"db3" => "de_id",
+		"db3Name" => "Dark Empire #",
+		"db3Short" => "DE #",
+		"db3Require" => "0,digits,0",
+		"db3Link" => "",
+		"dbLimit" => "limitDE",
 		"naCostume" => 724,
 		"userGroup" => 1491)
 );

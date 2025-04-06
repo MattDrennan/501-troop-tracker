@@ -29,6 +29,9 @@ $calendar = new Calendar();
 // Include credential file
 require 'cred.php';
 
+// Extract valid squadIDs from the array
+$validSquadIDs = array_merge([0], array_column($squadArray, 'squadID'));
+
 // Include smileys
 require 'script/php/smiley.php';
 
@@ -243,15 +246,12 @@ function getTroopCounts($id)
 	// Add to string
 	$troopCountString .= '
 	<p><b>501st Troops:</b> '.number_format($count).'</p>';
-
-	// Set up Squad ID
-	$clubID = count($squadArray) + 1;
 	
 	// Loop through clubs
 	foreach($clubArray as $club => $club_value)
 	{
 		// Count query
-		$statement = $conn->prepare("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = ? AND ".getCostumeQueryValues($clubID)." GROUP BY events.id, event_sign_up.id");
+		$statement = $conn->prepare("SELECT event_sign_up.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND event_sign_up.status = '3' AND event_sign_up.trooperid = ? AND ".getCostumeQueryValues($club_value['squadID'])." GROUP BY events.id, event_sign_up.id");
 		$statement->bind_param("i", $id);
 		$statement->execute();
 		$statement->store_result();
@@ -260,9 +260,6 @@ function getTroopCounts($id)
 		// Add to string
 		$troopCountString .= '
 		<p><b>'.$club_value['name'].' Troops:</b> '.number_format($count).'</p>';
-
-		// Increment club ID
-		$clubID++;
 	}
 
 	// Get total count
@@ -399,9 +396,6 @@ function showSquadButtons()
 	// Return var
 	$returnVar = '';
 	
-	// Set count
-	$squadID = 1;
-	
 	// Set up garrison link
 	$returnVar .= '<a href="index.php"><img src="images/'.garrisonImage.'" alt="'.garrison.' Troops" '.isSquadActive(0).' /></a>';
 	
@@ -410,10 +404,7 @@ function showSquadButtons()
 	{
 		// Add to return var
 		$returnVar .= '
-		<a href="index.php?squad='.$squadID.'"><img src="images/'.$squad_value['logo'].'" alt="'.$squad_value['name'].' Troops" '.isSquadActive($squadID).' /></a>';
-		
-		// Increment
-		$squadID++;
+		<a href="index.php?squad='.$squad_value['squadID'].'"><img src="images/'.$squad_value['logo'].'" alt="'.$squad_value['name'].' Troops" '.isSquadActive($squad_value['squadID']).' /></a>';
 	}
 	
 	return $returnVar;
@@ -433,9 +424,6 @@ function squadSelectList($clubs = true, $insideElement = "", $eid = 0, $squadP =
 {
 	global $squadArray, $clubArray;
 	
-	// Set count
-	$squadID = 1;
-	
 	// Return var
 	$returnVar = '';
 	
@@ -447,25 +435,22 @@ function squadSelectList($clubs = true, $insideElement = "", $eid = 0, $squadP =
 		{
 			// Add to return var
 			$returnVar .= '
-			<option value="'.$squadID.'">'.$squad_value['name'].'</option>';
+			<option value="'.$squad_value['squadID'].'">'.$squad_value['name'].'</option>';
 		}
 		// If insideElement is copy
 		else if($insideElement == "copy")
 		{
 			// Add to return var
 			$returnVar .= '
-			<option value="'.$squadID.'" '.copyEventSelect($eid, $squadP, $squadID).'>'.$squad_value['name'].'</option>';
+			<option value="'.$squad_value['squadID'].'" '.copyEventSelect($eid, $squadP, $squad_value['squadID']).'>'.$squad_value['name'].'</option>';
 		}
 		// If insideElement is select
 		else if($insideElement == "select")
 		{
 			// Add to return var
 			$returnVar .= '
-			<option value="'.$squadID.'" '.echoSelect($squadID, cleanInput($_POST['squad'])).'>'.$squad_value['name'].'</option>';
+			<option value="'.$squad_value['squadID'].'" '.echoSelect($squad_value['squadID'], cleanInput($_POST['squad'])).'>'.$squad_value['name'].'</option>';
 		}
-		
-		// Increment
-		$squadID++;
 	}
 	
 	// If clubs set to true, show clubs
@@ -479,21 +464,21 @@ function squadSelectList($clubs = true, $insideElement = "", $eid = 0, $squadP =
 			{
 				// Add to return var
 				$returnVar .= '
-				<option value="'.$squadID.'">'.$squad_value['name'].'</option>';
+				<option value="'.$squad_value['squadID'].'">'.$squad_value['name'].'</option>';
 			}
 			// If insideElement is copy
 			else if($insideElement == "copy")
 			{
 				// Add to return var
 				$returnVar .= '
-				<option value="'.$squadID.'" '.copyEventSelect($eid, $squadP, $squadID).'>'.$squad_value['name'].'</option>';
+				<option value="'.$squad_value['squadID'].'" '.copyEventSelect($eid, $squadP, $squad_value['squadID']).'>'.$squad_value['name'].'</option>';
 			}
 			// If insideElement is select
 			else if($insideElement == "select")
 			{
 				// Add to return var
 				$returnVar .= '
-				<option value="'.$squadID.'" '.echoSelect($squadID, cleanInput($_POST['squad'])).'>'.$squad_value['name'].'</option>';
+				<option value="'.$squad_value['squadID'].'" '.echoSelect($squad_value['squadID'], cleanInput($_POST['squad'])).'>'.$squad_value['name'].'</option>';
 			}
 
 			// Stop at Rebels
@@ -501,9 +486,6 @@ function squadSelectList($clubs = true, $insideElement = "", $eid = 0, $squadP =
 			{
 				break;
 			}
-			
-			// Increment
-			$squadID++;
 		}
 	}
 	
@@ -2116,7 +2098,7 @@ function getSGINfo($sgid)
 */
 function ifIn501Roster($id, $squad)
 {
-	global $conn, $squadArray;
+	global $conn, $squadArray, $validSquadIDs;
 
 	$found = false;
 	
@@ -2134,7 +2116,7 @@ function ifIn501Roster($id, $squad)
 		}
 	} else {
 		// Check if 501st member
-		if($squad <= count($squadArray)) {
+		if (in_array($squad, $validSquadIDs)) {
 			// Get data
 			$statement = $conn->prepare("SELECT * FROM 501st_troopers WHERE legionid = ? AND squad = ?");
 			$statement->bind_param("ii", $id, $squad);
@@ -2162,15 +2144,14 @@ function ifIn501Roster($id, $squad)
 */
 function get501Info($id, $squad)
 {
-	global $conn, $squadArray;
+	global $conn, $squadArray, $validSquadIDs;
 	
 	// Setup array
 	$array = [];
 	$array['link'] = '';
 	
 	// Check if 501st member
-	if($squad <= count($squadArray))
-	{
+	if (in_array($squad, $validSquadIDs)) {
 		// Get data
 		$statement = $conn->prepare("SELECT * FROM 501st_troopers WHERE legionid = ?");
 		$statement->bind_param("i", $id);
@@ -2230,14 +2211,13 @@ function getMyRebelCostumes($id)
 */
 function getMyCostumes($id, $squad)
 {
-	global $conn, $squadArray;
+	global $conn, $squadArray, $validSquadIDs;
 	
 	// Setup string
 	$costume = "";
 	
 	// Check if 501st member
-	if($squad <= count($squadArray))
-	{
+	if (in_array($squad, $validSquadIDs)) {
 		// Get data
 		$statement = $conn->prepare("SELECT costumename FROM 501st_costumes WHERE legionid = ?");
 		$statement->bind_param("i", $id);
@@ -2453,7 +2433,7 @@ function showDroids($forum)
 */
 function showCostumes($id, $squad)
 {
-	global $conn, $squadArray;
+	global $conn, $squadArray, $validSquadIDs;
 	
 	// Get data
 	$statement = $conn->prepare("SELECT * FROM 501st_costumes WHERE legionid = ?");
@@ -2464,8 +2444,7 @@ function showCostumes($id, $squad)
 	$i = 0;
 	
 	// Check if 501st member
-	if($squad <= count($squadArray))
-	{
+	if (in_array($squad, $validSquadIDs)) {
 		// Run query...
 		if ($result = $statement->get_result())
 		{
@@ -2717,35 +2696,26 @@ function getSquadName($value)
 	// Set return value
 	$returnValue = garrison;
 	
-	// Set squad ID
-	$squadID = 1;
-	
 	// Loop through squads
 	foreach($squadArray as $squad => $squad_value)
 	{
 		// Check if squad ID matches value
-		if($squadID == $value)
+		if($squad_value['squadID'] == $value)
 		{
 			// Set
 			$returnValue = $squad_value['name'];
 		}
-		
-		// Increment
-		$squadID++;
 	}
 	
 	// Loop through clubs
 	foreach($clubArray as $club => $club_value)
 	{
 		// Check if squad ID matches value
-		if($squadID == $value)
+		if($club_value['squadID'] == $value)
 		{
 			// Set
 			$returnValue = $club_value['name'];
 		}
-		
-		// Increment
-		$squadID++;
 	}
 
 	return $returnValue;
@@ -2764,21 +2734,15 @@ function getSquadLogo($value)
 	// Set return value
 	$returnValue = '<img src="images/'.garrisonImage.'" alt="'.garrison.'" style="width: 32px; height: 32px;" />';
 	
-	// Set squad ID
-	$squadID = 1;
-	
 	// Loop through squads
 	foreach($squadArray as $squad => $squad_value)
 	{
 		// Check if squad ID matches value
-		if($squadID == $value)
+		if($squad_value['squadID'] == $value)
 		{
 			// Set
 			$returnValue = '<img src="images/'.$squad_value['logo'].'" alt="'.$squad_value['name'].'" style="width: 32px; height: 32px;" />';
 		}
-		
-		// Increment
-		$squadID++;
 	}
 
 	return $returnValue;
@@ -2794,9 +2758,6 @@ function getCostumeQueryValues($clubid)
 {
 	global $squadArray, $clubArray;
 	
-	// Set up count
-	$clubCount = count($squadArray) + 1;
-	
 	// Query set up
 	$query = "";
 	
@@ -2804,7 +2765,7 @@ function getCostumeQueryValues($clubid)
 	foreach($clubArray as $club => $club_value)
 	{
 		// Check if club matches
-		if($clubid == $clubCount)
+		if($clubid == $club_value['squadID'])
 		{
 			// Get costume count
 			$costumeCount = count($club_value['costumes']);
@@ -2835,9 +2796,6 @@ function getCostumeQueryValues($clubid)
 			// Close query
 			$query .= ")";
 		}
-		
-		// Increment
-		$clubCount++;
 	}
 	
 	// Return
@@ -2854,9 +2812,6 @@ function getCostumeQueryValuesSquad($squadid)
 {
 	global $squadArray, $clubArray;
 	
-	// Set up count
-	$squadCount = 0;
-	
 	// Query set up
 	$query = "";
 	
@@ -2864,7 +2819,7 @@ function getCostumeQueryValuesSquad($squadid)
 	foreach($squadArray as $squad => $squad_value)
 	{
 		// Check if club matches
-		if($squadid == $squadCount)
+		if($squadid == $squad_value['squadID'])
 		{
 			// Get costume count
 			$costumeCount = count($squad_value['costumes']);
@@ -2895,9 +2850,6 @@ function getCostumeQueryValuesSquad($squadid)
 			// Close query
 			$query .= ")";
 		}
-		
-		// Increment
-		$squadCount++;
 	}
 	
 	// Return
@@ -2945,7 +2897,7 @@ function loggedIn()
 */
 function isHandler($trooperid)
 {
-	global $conn, $squadArray, $clubArray;
+	global $conn, $squadArray, $clubArray, $validSquadIDs;
 
 	// Get data
 	$statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
@@ -2962,7 +2914,7 @@ function isHandler($trooperid)
 			$db_data1 = $squadArray[intval($db->squad - 1)]['db'];
 			$db_data2 = $clubArray[intval($db->squad - 1)]['db'];
 
-			if($db->squad <= count($squadArray)) {
+			if (in_array($db->squad, $validSquadIDs)) {
 				if($db->$db_data1 == 4) {
 					$isHandler = true;
 				}
@@ -3194,14 +3146,11 @@ function troopCheck($id)
 	// 501st
 	checkTroopCounts($count, "501ST: " . getName($id) . " now has [COUNT] troop(s)", $id, "501ST");
 	
-	// Set club ID
-	$clubID = count($squadArray) + 1;
-	
 	// Loop through clubs
 	foreach($clubArray as $club => $club_value)
 	{
 		// Notify how many troops did a trooper attend of club
-		$statement = $conn->prepare("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = ? AND status = '3' AND ".getCostumeQueryValues($clubID)."");
+		$statement = $conn->prepare("SELECT COUNT(*) FROM event_sign_up WHERE trooperid = ? AND status = '3' AND ".getCostumeQueryValues($club_value['squadID'])."");
 		$statement->bind_param("i", $id);
 		$statement->execute();
 		$statement->bind_result($count);
@@ -3210,9 +3159,6 @@ function troopCheck($id)
 		
 		// Check troop count of club
 		checkTroopCounts($count, strtoupper($club_value['name']) . ": " . getName($id) . " now has [COUNT] troop(s)", $id, strtoupper($club_value['name']));
-		
-		// Increment club count
-		$clubID++;
 	}
 }
 
@@ -3513,54 +3459,58 @@ function removeLetters($string)
  * @param int $tkid The TKID of the trooper
  * @param int $squad The squad or club ID of the trooper
  * @param int $trooperid The ID of the trooper
- * @return int Returns the TKID of the trooper based on squad or club
-*/
+ * @return string Returns the TKID of the trooper based on squad or club
+ */
 function readTKNumber($tkid, $squad, $trooperid)
 {
-	global $conn, $clubArray, $squadArray;
+	global $conn, $clubArray, $squadArray, $validSquadIDs;
 
-	if($tkid == 0 && $squad <= count($squadArray)) {
-		$tkid = "Not Assigned";
-	} else {
-		// If in a club other than 501st
-		if($squad > count($squadArray)) {
-			if($clubArray[intval($squad) - (count($squadArray) + 1)]['db3'] != "") {
-				// Get TK prefix from database
-				$statement = $conn->prepare("SELECT " . $clubArray[intval($squad) - (count($squadArray) + 1)]['db3'] . " FROM troopers WHERE id = ?");
-				$statement->bind_param("i", $trooperid);
-				$statement->execute();
-				$statement->bind_result($tkid);
-				$statement->fetch();
-				$statement->close();
-
-				$tkid = $clubArray[intval($squad) - (count($squadArray) + 1)]['db3Short'] . ': ' . $tkid;
-			} else {
-				// In a club without a special ID
-				$tkid = "Not Assigned";
-			}
-		} else {
-			// If in 501st
-			$prefix = "TK";
-			
-			// Get TK prefix from database
-			$statement = $conn->prepare("SELECT prefix FROM 501st_costumes WHERE legionid = ? LIMIT 1");
-			$statement->bind_param("i", $tkid);
-			$statement->execute();
-			$statement->bind_result($getPrefix_value);
-			$statement->fetch();
-			$statement->close();
-			
-			// Make sure TK prefix was found
-			if(isset($getPrefix_value) && $getPrefix_value != "") {
-				$prefix = $getPrefix_value;
-			}
-			
-			$tkid = $prefix . $tkid;
-		}
+	if ($tkid == 0 && in_array($squad, $validSquadIDs)) {
+		return "Not Assigned";
 	}
 
-	return $tkid;
+	if (!in_array($squad, $validSquadIDs)) {
+		// Find the matching club by squadID
+		$club = null;
+		foreach ($clubArray as $c) {
+			if ((int)$c['squadID'] === (int)$squad) {
+				$club = $c;
+				break;
+			}
+		}
+
+		if ($club && !empty($club['db3'])) {
+			// Get club-specific ID from database
+			$statement = $conn->prepare("SELECT {$club['db3']} FROM troopers WHERE id = ?");
+			$statement->bind_param("i", $trooperid);
+			$statement->execute();
+			$statement->bind_result($clubID);
+			$statement->fetch();
+			$statement->close();
+
+			return $club['db3Short'] . ': ' . $clubID;
+		} else {
+			return "Not Assigned";
+		}
+	} else {
+		// 501st member
+		$prefix = "TK";
+
+		$statement = $conn->prepare("SELECT prefix FROM 501st_costumes WHERE legionid = ? LIMIT 1");
+		$statement->bind_param("i", $tkid);
+		$statement->execute();
+		$statement->bind_result($getPrefix_value);
+		$statement->fetch();
+		$statement->close();
+
+		if (!empty($getPrefix_value)) {
+			$prefix = $getPrefix_value;
+		}
+
+		return $prefix . $tkid;
+	}
 }
+
 
 /**
  * Returns if page is active
@@ -3660,12 +3610,23 @@ function getTKNumber($id, $read = false)
 */
 function getIDFromTKNumber($tkid)
 {
-	global $conn, $squadArray;
+	global $conn, $squadArray, $validSquadIDs;
 
 	$value = 0;
 
-	$statement = $conn->prepare("SELECT id FROM troopers WHERE tkid = ? AND squad <= ".count($squadArray)."");
-	$statement->bind_param("i", $tkid);
+	// Build the placeholders and SQL
+	$placeholders = implode(',', array_fill(0, count($validSquadIDs), '?'));
+	$sql = "SELECT id FROM troopers WHERE tkid = ? AND squad IN ($placeholders) LIMIT 1";
+	$statement = $conn->prepare($sql);
+
+	// Build bind types and params
+	$types = str_repeat('i', count($validSquadIDs) + 1); // tkid + squad IDs
+	$params = array_merge([$tkid], $validSquadIDs);
+
+	// Bind using splat operator
+	$statement->bind_param($types, ...$params);
+
+	// Execute and bind result
 	$statement->execute();
 	$statement->bind_result($value);
 	$statement->fetch();
@@ -3802,8 +3763,7 @@ function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 	</p>';
 	
 	// Only show 501st thumbnail, if a 501st member
-	if(getTrooperSquad($tkid) <= count($squadArray))
-	{
+	if (in_array(getTrooperSquad($tkid), $validSquadIDs)) {
 		// Get 501st thumbnail Info
 		$statement = $conn->prepare("SELECT thumbnail FROM 501st_troopers WHERE legionid = ?");
 		$statement->bind_param("i", $tkid);
@@ -4861,17 +4821,11 @@ function getRoster($eventID, $limitTotal = 0, $totalTrooperEvent = 0, $signedUp 
 					$data2 .= '
 					<li>This event is limited to '.$db->limit501st.' 501st troopers. '.troopersRemaining($db->limit501st, eventClubCount($db->id, 0)).' </li>';
 
-					// Set up club count
-					$clubCount = 1;
-
 					// Loop through clubs
 					foreach($clubArray as $club => $club_value)
 					{
 						$data2 .= '
-						<li>This event is limited to '.$db->{$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining($db->{$club_value['dbLimit']}, eventClubCount($db->id, $clubCount)).'</li>';
-
-						// Increment club count
-						$clubCount++;
+						<li>This event is limited to '.$db->{$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining($db->{$club_value['dbLimit']}, eventClubCount($db->id, $club_value['squadID'])).'</li>';
 					}
 				}
 				
@@ -5435,22 +5389,27 @@ function validPhone($phone) {
 */
 function doesTKExist($tk, $squad = 0)
 {
-	global $conn, $squadArray;
+	global $conn, $squadArray, $validSquadIDs;
 	
 	// Set up variables
 	$exist = false;
 	
-	// If a 501st squad
-	if($squad <= count($squadArray))
-	{
-		$statement = $conn->prepare("SELECT * FROM troopers WHERE tkid = ? AND squad <= ".count($squadArray)."");
-		$statement->bind_param("i", $tk);
+	// If a valid 501st squad
+	if (in_array($squad, $validSquadIDs)) {
+		// Prepare IN clause for all valid squad IDs
+		$placeholders = implode(',', array_fill(0, count($validSquadIDs), '?'));
+		$sql = "SELECT * FROM troopers WHERE tkid = ? AND squad IN ($placeholders)";
+		$statement = $conn->prepare($sql);
+
+		// Combine tkid and squad IDs into bind parameters
+		$types = str_repeat('i', count($validSquadIDs) + 1);
+		$params = array_merge([$tk], $validSquadIDs);
+		$statement->bind_param($types, ...$params);
+
 		$statement->execute();
 
-		if ($result = $statement->get_result())
-		{
-			while ($db = mysqli_fetch_object($result))
-			{
+		if ($result = $statement->get_result()) {
+			while ($db = mysqli_fetch_object($result)) {
 				$exist = true;
 			}
 		}
@@ -5483,24 +5442,30 @@ function doesTKExist($tk, $squad = 0)
 */
 function isTKRegistered($tk, $squad = 0)
 {
-	global $conn, $squadArray;
+	global $conn, $squadArray, $validSquadIDs;
 	
 	// Set up variables
 	$registered = false;
 
 	// If a 501st squad
-	if($squad <= count($squadArray))
-	{
-		$statement = $conn->prepare("SELECT * FROM troopers WHERE tkid = ? AND squad <= ".count($squadArray)."");
-		$statement->bind_param("i", $tk);
+	if (in_array($squad, $validSquadIDs)) {
+		// Build placeholders for the squad ID filter
+		$placeholders = implode(',', array_fill(0, count($validSquadIDs), '?'));
+
+		// Prepare SQL query using IN (...)
+		$sql = "SELECT * FROM troopers WHERE tkid = ? AND squad IN ($placeholders)";
+		$statement = $conn->prepare($sql);
+
+		// Bind parameters: one "tkid" + multiple "squadID" ints
+		$types = str_repeat('i', count($validSquadIDs) + 1);
+		$params = array_merge([$tk], $validSquadIDs);
+		$statement->bind_param($types, ...$params);
+
 		$statement->execute();
 
-		if ($result = $statement->get_result())
-		{
-			while ($db = mysqli_fetch_object($result))
-			{
-				if($db->password != '')
-				{
+		if ($result = $statement->get_result()) {
+			while ($db = mysqli_fetch_object($result)) {
+				if ($db->password != '') {
 					$registered = true;
 				}
 			}
@@ -5814,7 +5779,7 @@ function eventClubCount($eventID, $clubID)
 	foreach($clubArray as $club => $club_value)
 	{
 		// Set return val if Club ID set to club
-		if(($clubID == (count($squadArray) + 1) + $club) && $clubID >= count($squadArray) + 1)
+		if($clubID == $club_value['squadID'])
 		{
 			$returnVal = ${"c" . $club_value['dbLimit']};
 		}
@@ -5892,9 +5857,6 @@ function isEventFull($eventID, $costumeID)
 	// Set up limit totals
 	$limit501stTotal = eventClubCount($eventID, 0);
 
-	// Set up club count
-	$clubCount = 1;
-
 	// Loop through clubs
 	foreach($clubArray as $club => $club_value)
 	{
@@ -5902,10 +5864,7 @@ function isEventFull($eventID, $costumeID)
 		${$club_value['dbLimit']} = "";
 
 		// Set up limit totals
-		${$club_value['dbLimit'] . "Total"} = eventClubCount($eventID, $clubCount);
-
-		// Increment club count
-		$clubCount++;
+		${$club_value['dbLimit'] . "Total"} = eventClubCount($eventID, $club_value['squadID']);
 	}
 
 	// Query - get limiuts // output
@@ -5978,6 +5937,26 @@ function getPermissionName($value)
 	{
 		return 'Unknown';
 	}
+}
+
+/**
+ * Retrieves a club from the global $clubArray based on the provided squad ID.
+ *
+ * This function loops through the club array and returns the club that matches
+ * the given squadID. If no matching club is found, it returns null.
+ *
+ * @param int $squadID The squad ID to look for in the club array.
+ * @return array|null The matched club array if found, or null if not found.
+ */
+function getClubBySquadID($squadID) {
+	global $clubArray;
+
+	foreach ($clubArray as $club) {
+		if ((int) $club['squadID'] === (int) $squadID) {
+			return $club;
+		}
+	}
+	return null;
 }
 
 /**

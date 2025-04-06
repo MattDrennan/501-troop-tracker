@@ -676,6 +676,11 @@ Search.appendIndex(
             "summary": "Converts\u0020value\u0020to\u0020title\u0020string\u0020of\u0020permission",
             "url": "namespaces/default.html#function_getPermissionName"
         },                {
+            "fqsen": "\\getClubBySquadID\u0028\u0029",
+            "name": "getClubBySquadID",
+            "summary": "Retrieves\u0020a\u0020club\u0020from\u0020the\u0020global\u0020\u0024clubArray\u0020based\u0020on\u0020the\u0020provided\u0020squad\u0020ID.",
+            "url": "namespaces/default.html#function_getClubBySquadID"
+        },                {
             "fqsen": "\\getClubPermissionName\u0028\u0029",
             "name": "getClubPermissionName",
             "summary": "Converts\u0020value\u0020to\u0020title\u0020string\u0020of\u0020permission",

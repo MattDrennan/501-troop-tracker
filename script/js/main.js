@@ -450,7 +450,7 @@ $(document).ready(function()
 
 	// Request Account - Account Type
 	$("body").on("click", "[name=accountType]", function(e) {
-		if($("[name=squad_request]").val() > squadCount) {
+		if(!squadIDList.includes(parseInt($("[name=squad_request]").val()))) {
 			return;
 		}
 
@@ -471,7 +471,7 @@ $(document).ready(function()
 			return;
 		}
 
-		if($(this).val() > squadCount) {
+		if (!squadIDList.includes(parseInt($(this).val()))) {
 			$("#tkid").val(0);
 			$("#tkid").prop("readonly", true);
 			$("#tkid_box").hide();
@@ -619,7 +619,29 @@ $(document).ready(function()
 					$("#userID option:selected").remove();
 					
 					// Add to table
-					$("#masterRosterTable").append('<tr name="row_' + trooperid + '"><td><a href="index.php?profile=' + trooperid + '" target="_blank">' + troopername + '</a></td><td>' + forum_id + '</td>' + ((db3 != undefined) ? '<td><input type="text" name="changedb3" db3="' + db3 + '" trooperid="' + trooperid + '" value="' + idvalue + '" /></td>' : '') + ((squadCount >= squad) ? '<td><input type="number" name="changetkid" tkid="' + tkidBasic + '" trooperid="' + trooperid + '" value="' + tkidBasic + '" /></td>' : '') + '<td><select name="changepermission" trooperid="' + trooperid + '"><option value="0">Not A Member</option><option value="1" SELECTED>Regular Member</option><option value="2">Reserve Member</option><option value="3">Retired Member</option><option value="4">Handler</option></select></td></tr>');
+					$("#masterRosterTable").append(
+						'<tr name="row_' + trooperid + '">' +
+							'<td><a href="index.php?profile=' + trooperid + '" target="_blank">' + troopername + '</a></td>' +
+							'<td>' + forum_id + '</td>' +
+							(db3 !== undefined
+								? '<td><input type="text" name="changedb3" db3="' + db3 + '" trooperid="' + trooperid + '" value="' + idvalue + '" /></td>'
+								: ''
+							) +
+							(squadIDList.includes(parseInt(squad))
+								? '<td><input type="number" name="changetkid" tkid="' + tkidBasic + '" trooperid="' + trooperid + '" value="' + tkidBasic + '" /></td>'
+								: ''
+							) +
+							'<td><select name="changepermission" trooperid="' + trooperid + '">' +
+								'<option value="0">Not A Member</option>' +
+								'<option value="1" SELECTED>Regular Member</option>' +
+								'<option value="2">Reserve Member</option>' +
+								'<option value="3">Retired Member</option>' +
+								'<option value="4">Handler</option>' +
+							'</select></td>' +
+						'</tr>'
+					);		
+					
+					$("#nothing_text").hide();	// GUI purposes
 					
 					// Alert user
 					alert(json.data);

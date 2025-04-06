@@ -423,7 +423,7 @@ $(function()
 				required: function()
 				{
 					// Handler account - check if TKID is required
-					if($("[name=accountType]:checked").val() == 1 && $("[name=squad]").val() <= squadCount) {
+					if($("[name=accountType]:checked").val() == 1 && squadIDList.includes(parseInt($("[name=squad]").val()))) {
 						return true;
 					} else {
 						return false;
@@ -433,7 +433,7 @@ $(function()
                 maxlength: 11,
 				min: function() {
 					// Handler account - prevent TKID 0 for regular accounts
-					if($("[name=accountType]:checked").val() == 1 && $("[name=squad]").val() <= squadCount) {
+					if($("[name=accountType]:checked").val() == 1 && squadIDList.includes(parseInt($("[name=squad]").val()))) {
 						return 1;
 					} else {
 						return 0;

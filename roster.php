@@ -71,7 +71,7 @@ if ($result = $statement->get_result())
 		echo '
 		<div>';
 			// Show 501 thumbnail
-			if(getTrooperSquad($db->tkid) <= count($squadArray))
+			if(in_array(getTrooperSquad($db->tkid), $validSquadIDs))
 			{
 				// Get 501st thumbnail Info
 				$thumbnail_get = $conn->query("SELECT thumbnail FROM 501st_troopers WHERE legionid = '".$db->tkid."'");

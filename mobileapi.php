@@ -631,9 +631,6 @@ try {
         // Set up limit total
         $limit501stTotal = eventClubCount($_GET['troopid'], 0);
 
-        // Set up club count
-        $clubCount = 1;
-
         // Loop through clubs
         foreach($clubArray as $club => $club_value)
         {
@@ -641,10 +638,7 @@ try {
             ${$club_value['dbLimit']} = "";
 
             // Set up limit totals
-            ${$club_value['dbLimit'] . "Total"} = eventClubCount($_GET['troopid'], $clubCount);
-
-            // Increment club count
-            $clubCount++;
+            ${$club_value['dbLimit'] . "Total"} = eventClubCount($_GET['troopid'], $club_value['squadID']);
         }
 
         // Set limit total

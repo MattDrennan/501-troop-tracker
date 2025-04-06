@@ -445,14 +445,14 @@ if(isset($_GET['do']) && $_GET['do'] == "smileyeditor")
 if(isset($_GET['do']) && isset($_POST['userID']) && isset($_POST['squad']) && $_GET['do'] == "addmasterroster" && isAdmin())
 {	
 	// Which club to get
-	if($_POST['squad'] <= count($squadArray))
+	if(in_array($_POST['squad'], $validSquadIDs))
 	{
 		$statement = $conn->prepare("UPDATE troopers SET p501 = 1, squad = ? WHERE id = ?");
 		$statement->bind_param("ii", $_POST['squad'], $_POST['userID']);
 		$statement->execute();
 	} else {
 		// Grab DB value
-		$dbValue = $clubArray[($_POST['squad'] - (count($squadArray) + 1))]['db'];
+		$dbValue = getClubBySquadID($_POST['squad'])['db'];
 
 		// Query
 		$statement = $conn->prepare("UPDATE troopers SET ".$dbValue." = 1 WHERE id = ?");
@@ -470,7 +470,7 @@ if(isset($_GET['do']) && isset($_POST['userID']) && isset($_POST['squad']) && $_
 if(isset($_GET['do']) && isset($_POST['trooperid']) && isset($_POST['permission']) && $_GET['do'] == "changepermission" && isAdmin())
 {
 	// Which club to get
-	if($_POST['club'] <= count($squadArray) || $_POST['club'] == "all")
+	if(in_array($_POST['club'], $validSquadIDs) || $_POST['club'] == "all")
 	{
 		$statement = $conn->prepare("UPDATE troopers SET p501 = ? WHERE id = ?");
 		$statement->bind_param("ii", $_POST['permission'], $_POST['trooperid']);
@@ -485,7 +485,7 @@ if(isset($_GET['do']) && isset($_POST['trooperid']) && isset($_POST['permission'
 		}
 	} else {
 		// Grab DB value
-		$dbValue = $clubArray[(intval($_POST['club']) - (count($squadArray) + 1))]['db'];
+		$dbValue = getClubBySquadID($_POST['club'])['db'];	
 
 		// Query
 		$statement = $conn->prepare("UPDATE troopers SET ".$dbValue." = ? WHERE id = ?");
@@ -508,7 +508,7 @@ if(isset($_GET['do']) && $_GET['do'] == "troopercheckreserve" && loggedIn() && i
 	else
 	{
 		// Which club to get
-		if($_POST['club'] <= count($squadArray))
+		if(in_array($_POST['club'], $validSquadIDs))
 		{
 			foreach($_POST['trooper'] as $trooper)
 			{
@@ -518,7 +518,7 @@ if(isset($_GET['do']) && $_GET['do'] == "troopercheckreserve" && loggedIn() && i
 			}
 		} else {
 			// Grab DB value
-			$dbValue = $clubArray[($_POST['club'] - (count($squadArray) + 1))]['db'];
+			$dbValue = getClubBySquadID($_POST['club'])['db'];	
 
 			// Query
 			foreach($_POST['trooper'] as $trooper)
@@ -547,7 +547,7 @@ if(isset($_GET['do']) && $_GET['do'] == "troopercheckretired" && loggedIn() && i
 	else
 	{
 		// Which club to get
-		if($_POST['club'] <= count($squadArray))
+		if(in_array($_POST['club'], $validSquadIDs))
 		{
 			foreach($_POST['trooper'] as $trooper)
 			{
@@ -557,7 +557,7 @@ if(isset($_GET['do']) && $_GET['do'] == "troopercheckretired" && loggedIn() && i
 			}
 		} else {
 			// Grab DB value
-			$dbValue = $clubArray[($_POST['club'] - (count($squadArray) + 1))]['db'];
+			$dbValue = getClubBySquadID($_POST['club'])['db'];	
 
 			// Query
 			foreach($_POST['trooper'] as $trooper)
@@ -771,9 +771,6 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 	// Set up limit totals
 	$limit501stTotal = eventClubCount($_POST['troopid'], 0);
 
-	// Set up club count
-	$clubCount = 1;
-
 	// Loop through clubs to create variables to use later
 	foreach($clubArray as $club => $club_value)
 	{
@@ -781,10 +778,7 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 		${$club_value['dbLimit']} = "";
 
 		// Set up limit totals
-		${$club_value['dbLimit'] . "Total"} = eventClubCount($_POST['troopid'], $clubCount);
-
-		// Increment club count
-		$clubCount++;
+		${$club_value['dbLimit'] . "Total"} = eventClubCount($_POST['troopid'], $club_value['squadID']);
 	}
 
 	/******* SET UP VARIABLES *******/
@@ -982,16 +976,10 @@ if(isset($_GET['do']) && $_GET['do'] == "modifysignup" && loggedIn())
 		<ul style="display:inline-table;">
 			<li>501st: '.eventClubCount($_POST['troopid'], 0).' </li>';
 			
-			// Set up club count
-			$clubID = count($squadArray) + 1;
-			
 			// Loop through clubs
 			foreach($clubArray as $club => $club_value)
 			{
-				$message2 .= '<li>' . $club_value['name'] . ': ' . eventClubCount($_POST['troopid'], $clubID) . '</li>';
-				
-				// Increment
-				$clubID++;
+				$message2 .= '<li>' . $club_value['name'] . ': ' . eventClubCount($_POST['troopid'], $club_value['squadID']) . '</li>';
 			}
 			
 		$message2 .= '
@@ -1250,20 +1238,30 @@ if(isset($_GET['do']) && $_GET['do'] == "managecostumes" && loggedIn() && isAdmi
 
 			<div id="editCostumeList" name="editCostumeList" style="display: none;">
 
-			<b>Costume Name:</b></br />
-			<input type="text" name="costumeNameEdit" id="costumeNameEdit" />
+			<p>
+				<b>Costume Name:</b></br />
+				<input type="text" name="costumeNameEdit" id="costumeNameEdit" />
+			</p>
 
-			<br /><br />
-			
-			<b>Costume Club:</b></br />
-			<select name="costumeClubEdit" id="costumeClubEdit">
-				<option value="0" SELECTED>501st Legion</option>
-				<option value="1">Rebel Legion</option>
-				<option value="2">Mando Mercs</option>
-				<option value="3">Droid Builders</option>
-				<option value="4">Other</option>
-				<option value="5">Dual (501st + Rebel)</option>
-			</select>
+			<p>
+				<b>Costume Club:</b></br />
+				<select name="costumeClubEdit" id="costumeClubEdit">
+					<option value="0" SELECTED>501st Legion</option>';
+
+					// Loop through clubs
+					foreach($clubArray as $club => $club_value)
+					{
+						$returnMessage .= '
+						<option value="'.$club_value['costumes'][0].'">'.$club_value['name'].'</option>';
+					}
+
+					// Loop through dual costume labels for dual club options
+					foreach ($dualCostumeLabels as $id => $label) {
+						$returnMessage .= '<option value="'.htmlspecialchars($id).'">'.htmlspecialchars($label).'</option>';
+					}
+				$returnMessage .= '
+				</select>
+			</p>
 
 			<input type="submit" name="submitEditCostume" id="submitEditCostume" value="Edit Costume" />
 
@@ -1965,7 +1963,7 @@ if(isset($_GET['do']) && $_GET['do'] == "getuser" && loggedIn())
 				{
 					$link = get501Info($db->tkid, $db->squad)['link'];
 				}
-				else if($db->squad <= count($squadArray))
+				else if(in_array($db->squad, $validSquadIDs))
 				{
 					$link = 'https://www.501st.com/memberAPI/v3/legionId/' . $db->tkid;
 				}
@@ -2342,28 +2340,28 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 		}
 		
 		// If TKID is greather than 11 characters
-		if(strlen($tkid) > 11 && $_POST['squad_request'] <= count($squadArray))
+		if(strlen($tkid) > 11 && in_array($_POST['squad_request'], $validSquadIDs))
 		{
 			$failed = true;
 			echo '<li>TKID must be less than eleven (11) characters.</li>';
 		}
 
 		// If TKID is not numeric
-		if(!is_numeric($tkid) && $_POST['squad_request'] <= count($squadArray))
+		if(!is_numeric($tkid) && in_array($_POST['squad_request'], $validSquadIDs))
 		{
 			$failed = true;
 			echo '<li>TKID must be an integer.</li>';
 		}
 		
 		// Check if TKID can be 0
-		if($_POST['accountType'] == 1 && $tkid == 0 && $_POST['squad_request'] <= count($squadArray))
+		if($_POST['accountType'] == 1 && $tkid == 0 && in_array($_POST['squad_request'], $validSquadIDs))
 		{
 			$failed = true;
 			echo '<li>TKID cannot be zero.</li>';
 		}
 		
 		// Check if TKID cannot be 0
-		if($_POST['accountType'] == 4 && $tkid > 0 && $_POST['squad_request'] <= count($squadArray))
+		if($_POST['accountType'] == 4 && $tkid > 0 && in_array($_POST['squad_request'], $validSquadIDs))
 		{
 			$failed = true;
 			echo '<li>TKID must be zero for a handler account.</li>';
@@ -2376,11 +2374,23 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 		$idcheck = 0;
 		
 		// Check if 501st
-		if($squad <= count($squadArray))
+		if(in_array($_POST['squad'], $validSquadIDs))
 		{
-			// Query ID database
-			$statement = $conn->prepare("SELECT id FROM troopers WHERE tkid = ? AND squad <= ".count($squadArray)."");
-			$statement->bind_param("i", $tkid);
+			// Build the SQL placeholders
+			$placeholders = implode(',', array_fill(0, count($validSquadIDs), '?'));
+			$sql = "SELECT id FROM troopers WHERE tkid = ? AND squad IN ($placeholders)";
+
+			// Prepare the statement
+			$statement = $conn->prepare($sql);
+
+			// Create types string (tkid + all squad IDs are integers)
+			$types = str_repeat('i', count($validSquadIDs) + 1);
+
+			// Combine tkid with squad IDs
+			$params = array_merge([$tkid], $validSquadIDs);
+
+			// Bind parameters
+			$statement->bind_param($types, ...$params);
 			$statement->execute();
 			$statement->store_result();
 			$idcheck = $statement->num_rows;
@@ -2478,7 +2488,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			
 			// Set permissions
 			// 501
-			if($_POST['squad_request'] <= count($squadArray))
+			if(in_array($_POST['squad_request'], $validSquadIDs))
 			{
 				$p501 = $_POST['accountType'];
 			}
@@ -2495,9 +2505,6 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 			
 			// Last ID
 			$last_id = $conn->insert_id;
-
-			// Set up Squad ID
-			$clubID = count($squadArray) + 1;
 
 			// Loop through clubs
 			foreach($clubArray as $club => $club_value)
@@ -2519,7 +2526,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 				}
 
 				// Make member of club
-				if($clubID == $_POST['squad_request'])
+				if($club_value['squadID'] == $_POST['squad_request'])
 				{
 					// Change value
 					${$club_value['db']} = $_POST['accountType'];
@@ -2540,8 +2547,6 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 					$statement->bind_param("si", $_POST[$club_value['db3']], $last_id);
 					$statement->execute();
 				}
-
-				$clubID++;
 			}
 			
 			echo '<li>Request submitted! You will receive an e-mail when your request is approved or denied.</li>';
@@ -2656,16 +2661,10 @@ if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin(
 				<ul style="display:inline-table;">
 					<li>501st: '.eventClubCount($_POST['eventid'], 0).' </li>';
 					
-					// Set up club count
-					$clubID = count($squadArray) + 1;
-					
 					// Loop through clubs
 					foreach($clubArray as $club => $club_value)
 					{
-						$message2 .= '<li>' . $club_value['name'] . ': ' . eventClubCount($_POST['eventid'], $clubID) . '</li>';
-						
-						// Increment
-						$clubID++;
+						$message2 .= '<li>' . $club_value['name'] . ': ' . eventClubCount($_POST['eventid'], $club_value['squadID']) . '</li>';
 					}
 					
 				$message2 .= '
@@ -3830,9 +3829,6 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 		// Set up limit total
 		$limit501stTotal = eventClubCount($_POST['event'], 0);
 
-		// Set up club count
-		$clubCount = 1;
-
 		// Loop through clubs
 		foreach($clubArray as $club => $club_value)
 		{
@@ -3840,10 +3836,7 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 			${$club_value['dbLimit']} = "";
 
 			// Set up limit totals
-			${$club_value['dbLimit'] . "Total"} = eventClubCount($_POST['event'], $clubCount);
-
-			// Increment club count
-			$clubCount++;
+			${$club_value['dbLimit'] . "Total"} = eventClubCount($_POST['event'], $club_value['squadID']);
 		}
 
 		// Set limit total
@@ -4031,16 +4024,10 @@ if(isset($_GET['do']) && $_GET['do'] == "signup")
 			<ul style="display:inline-table;">
 				<li>501st: '.eventClubCount($_POST['event'], 0).' </li>';
 				
-				// Set up club count
-				$clubID = count($squadArray) + 1;
-				
 				// Loop through clubs
 				foreach($clubArray as $club => $club_value)
 				{
-					$message2 .= '<li>' . $club_value['name'] . ': ' . eventClubCount($_POST['event'], $clubID) . '</li>';
-					
-					// Increment
-					$clubID++;
+					$message2 .= '<li>' . $club_value['name'] . ': ' . eventClubCount($_POST['event'], $club_value['squadID']) . '</li>';
 				}
 				
 			$message2 .= '

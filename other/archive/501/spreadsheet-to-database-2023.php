@@ -22,21 +22,34 @@ foreach($values as $value)
     // If not first
     if($i != 0)
     {
-        // Query
-        if($value[1] == "Reserve")
-        {
-            $conn->query("UPDATE troopers SET p501 = 2 WHERE tkid = '".get_numerics(cleanInput($value[6]))."' AND squad <= ".count($squadArray)."") or die($conn->error);
-            echo get_numerics(cleanInput($value[6])) . ' - Retired<br /><br />';
+        // Build valid 501st squad ID list
+        $validSquadIDs = array_merge([0], array_column($squadArray, 'squadID'));
+
+        // Create IN clause safely
+        $inClause = implode(',', array_map('intval', $validSquadIDs)); // static, no user input
+
+        // Clean TKID once
+        $tkid = get_numerics(cleanInput($value[6]));
+
+        // Set default values
+        $p501 = null;
+        $statusText = 'Unknown';
+
+        if ($value[1] == "Active") {
+            $p501 = 1;
+            $statusText = "Active";
+        } elseif ($value[1] == "Reserve") {
+            $p501 = 2;
+            $statusText = "Reserve";
+        } elseif ($value[1] == "Retired") {
+            $p501 = 3;
+            $statusText = "Retired";
         }
-        else if($value[1] == "Retired")
-        {
-            $conn->query("UPDATE troopers SET p501 = 3 WHERE tkid = '".get_numerics(cleanInput($value[6]))."' AND squad <= ".count($squadArray)."") or die($conn->error);
-            echo get_numerics(cleanInput($value[6])) . ' - Retired<br /><br />';
-        }
-        else if($value[1] == "Active")
-        {
-            $conn->query("UPDATE troopers SET p501 = 1 WHERE tkid = '".get_numerics(cleanInput($value[6]))."' AND squad <= ".count($squadArray)."") or die($conn->error);
-            echo get_numerics(cleanInput($value[6])) . ' - Reserve<br /><br />';
+
+        if ($p501 !== null) {
+            $query = "UPDATE troopers SET p501 = $p501 WHERE tkid = '$tkid' AND squad IN ($inClause)";
+            $conn->query($query) or die($conn->error);
+            echo $tkid . ' - ' . $statusText . '<br /><br />';
         }
     }
     

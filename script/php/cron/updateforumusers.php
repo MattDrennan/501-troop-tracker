@@ -68,7 +68,7 @@ if ($result = mysqli_query($conn, $query))
 			array_push($groupArray2, $troopTrackerUserGroup);
 
 			// Check if 501st member with squad
-			if($db->p501 > 0 && $db->p501 < 3 && $db->squad > 0 && $db->squad <= count($squadArray))
+			if($db->p501 > 0 && $db->p501 < 3 && $db->squad > 0 && in_array($db->squad, $validSquadIDs))
 			{
 				if (!in_array($squadArray[($db->squad - 1)]['userGroup'], $groupArray))
 				{

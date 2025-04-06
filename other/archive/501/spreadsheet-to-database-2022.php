@@ -22,16 +22,30 @@ foreach($values as $value)
     // If not first
     if($i != 0)
     {
-        // Query
-        if($value[1] == "Reserve")
-        {
-            $conn->query("UPDATE troopers SET p501 = 3 WHERE tkid = '".get_numerics(cleanInput($value[5]))."' AND squad <= ".count($squadArray)."") or die($conn->error);
-            echo get_numerics(cleanInput($value[5])) . ' - Retired<br /><br />';
+        // Build valid 501st squad ID list
+        $validSquadIDs = array_merge([0], array_column($squadArray, 'squadID'));
+
+        // Create placeholders for squad IN clause
+        $placeholders = implode(',', array_map('intval', $validSquadIDs)); // safe since no user input
+
+        $tkid = get_numerics(cleanInput($value[5]));
+
+        // Determine permission level
+        if ($value[1] == "Reserve") {
+            $p501 = 3; // Retired
+            $statusText = "Retired";
+        } elseif ($value[1] == "Active") {
+            $p501 = 2; // Reserve
+            $statusText = "Reserve";
+        } else {
+            $p501 = null;
+            $statusText = "Unknown Status";
         }
-        else if($value[1] == "Active")
-        {
-            $conn->query("UPDATE troopers SET p501 = 2 WHERE tkid = '".get_numerics(cleanInput($value[5]))."' AND squad <= ".count($squadArray)."") or die($conn->error);
-            echo get_numerics(cleanInput($value[5])) . ' - Reserve<br /><br />';
+
+        // Only run the query if a valid status was matched
+        if ($p501 !== null) {
+            $conn->query("UPDATE troopers SET p501 = $p501 WHERE tkid = '$tkid' AND squad IN ($placeholders)") or die($conn->error);
+            echo $tkid . ' - ' . $statusText . '<br /><br />';
         }
     }
     

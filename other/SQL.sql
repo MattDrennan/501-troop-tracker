@@ -2,7 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Generation Time: Feb 18, 2025 at 08:35 PM
+-- Host: ls-80d2a4b30f3cf5d6b28d9190f86603b96784cb8f.c7bgdu4hw8kg.us-east-1.rds.amazonaws.com:3306
+-- Generation Time: Apr 06, 2025 at 05:00 PM
 -- Server version: 8.0.35
 -- PHP Version: 8.3.16
 
@@ -172,6 +173,7 @@ CREATE TABLE `events` (
   `limitDroid` int NOT NULL DEFAULT '500',
   `limitOther` int NOT NULL DEFAULT '500',
   `limitSG` int NOT NULL DEFAULT '500',
+  `limitDE` int NOT NULL DEFAULT '500',
   `limitTotalTroopers` int NOT NULL DEFAULT '500',
   `limitHandlers` int NOT NULL DEFAULT '500',
   `friendLimit` int NOT NULL DEFAULT '4',
@@ -425,11 +427,13 @@ CREATE TABLE `troopers` (
   `pMando` int NOT NULL DEFAULT '0',
   `pOther` int NOT NULL DEFAULT '0',
   `pSG` int DEFAULT '0',
+  `pDE` int DEFAULT '0',
   `tkid` varchar(20) NOT NULL,
   `forum_id` varchar(255) NOT NULL,
   `rebelforum` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `mandoid` int DEFAULT NULL,
   `sgid` varchar(10) NOT NULL DEFAULT '0',
+  `de_id` int NOT NULL DEFAULT '0',
   `password` varchar(255) DEFAULT NULL,
   `last_active` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `approved` int NOT NULL DEFAULT '0',

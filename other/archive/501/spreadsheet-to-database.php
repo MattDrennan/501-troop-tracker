@@ -22,21 +22,28 @@ foreach($values as $value)
     // If not first
     if($i != 0)
     {
-        // Query
-        if($value[1] == "Retired")
-        {
-            $conn->query("UPDATE troopers SET p501 = 3 WHERE tkid = '".get_numerics(cleanInput($value[6]))."' AND squad <= ".count($squadArray)."") or die($conn->error);
-            echo get_numerics(cleanInput($value[6])) . ' - Retired<br /><br />';
-        }
-        else if($value[1] == "Reserve")
-        {
-            $conn->query("UPDATE troopers SET p501 = 2 WHERE tkid = '".get_numerics(cleanInput($value[6]))."' AND squad <= ".count($squadArray)."") or die($conn->error);
-            echo get_numerics(cleanInput($value[6])) . ' - Reserve<br /><br />';
-        }
-        else if($value[1] == "Active")
-        {
-            $conn->query("UPDATE troopers SET p501 = 1 WHERE tkid = '".get_numerics(cleanInput($value[6]))."' AND squad <= ".count($squadArray)."") or die($conn->error);
-            echo get_numerics(cleanInput($value[6])) . ' - Active<br /><br />';
+        // Build valid 501st squad ID list
+        $validSquadIDs = array_merge([0], array_column($squadArray, 'squadID'));
+        $inClause = implode(',', array_map('intval', $validSquadIDs)); // Safe, static values
+
+        // Clean TKID once
+        $tkid = get_numerics(cleanInput($value[6]));
+
+        // Determine p501 status based on member type
+        $statusMap = [
+            "Active"  => 1,
+            "Reserve" => 2,
+            "Retired" => 3
+        ];
+
+        if (isset($statusMap[$value[1]])) {
+            $p501 = $statusMap[$value[1]];
+            $statusText = $value[1];
+
+            $query = "UPDATE troopers SET p501 = $p501 WHERE tkid = '$tkid' AND squad IN ($inClause)";
+            $conn->query($query) or die($conn->error);
+
+            echo $tkid . ' - ' . $statusText . '<br /><br />';
         }
     }
     
