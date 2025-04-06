@@ -3737,7 +3737,7 @@ function getFileName($file)
 */
 function profileTop($id, $tkid, $name, $squad, $forum, $phone)
 {
-	global $conn, $squadArray, $clubArray, $userGroupRankImages, $forumURL;
+	global $conn, $squadArray, $clubArray, $userGroupRankImages, $forumURL, $validSquadIDs;
 	
 	// Command Staff Edit Link
 	if(isAdmin())

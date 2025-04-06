@@ -2374,7 +2374,7 @@ if(isset($_GET['do']) && $_GET['do'] == "requestaccess")
 		$idcheck = 0;
 		
 		// Check if 501st
-		if(in_array($_POST['squad'], $validSquadIDs))
+		if(in_array($squad, $validSquadIDs))
 		{
 			// Build the SQL placeholders
 			$placeholders = implode(',', array_fill(0, count($validSquadIDs), '?'));
