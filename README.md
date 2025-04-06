@@ -436,8 +436,8 @@ $clubArray = array(
 		"db3Require" => "0,digits,0",
 		"db3Link" => "",
 		"dbLimit" => "limitDE",
-		"naCostume" => 724,
-		"userGroup" => 1491)
+		"naCostume" => 872,
+		"userGroup" => 1511)
 );
 
 ?>
