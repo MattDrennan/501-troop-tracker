@@ -3279,7 +3279,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				// Which club to get
 				if(in_array($_GET['squad'], $validSquadIDs))
 				{
-					$statement = $conn->prepare("SELECT * FROM troopers WHERE troopers.squad = ? AND (p501 = 1 OR p501 = 2) AND approved = '1' AND troopers.permissions = 0 AND troopers.id NOT IN (SELECT event_sign_up.trooperid FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.dateEnd > NOW() - INTERVAL 1 YEAR) ORDER BY troopers.name");
+					$statement = $conn->prepare("SELECT * FROM troopers WHERE troopers.squad = ? AND (p501 = 1 OR p501 = 2) AND approved = '1' AND troopers.permissions = 0 AND troopers.id NOT EXISTS (SELECT event_sign_up.trooperid FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.dateEnd > NOW() - INTERVAL 1 YEAR) ORDER BY troopers.name");
 					$statement->bind_param("i", $_GET['squad']);
 
 					// Check if a member of club
@@ -3291,7 +3291,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					// Club
 					$dbValue = getClubBySquadID($_GET['squad'])['db'];	
 
-					$statement = $conn->prepare("SELECT * FROM troopers WHERE (troopers." . $dbValue . " = 1 OR troopers." .  $dbValue . " = 2) AND approved = '1' AND troopers.permissions = 0 AND troopers.id NOT IN (SELECT event_sign_up.trooperid FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.dateEnd > NOW() - INTERVAL 1 YEAR) ORDER BY troopers.name");
+					$statement = $conn->prepare("SELECT * FROM troopers WHERE (troopers." . $dbValue . " = 1 OR troopers." .  $dbValue . " = 2) AND approved = '1' AND troopers.permissions = 0 AND troopers.id NOT EXISTS (SELECT event_sign_up.trooperid FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.dateEnd > NOW() - INTERVAL 1 YEAR) ORDER BY troopers.name");
 
 					// Check if a member of club
 					if(isClubMember($dbValue) == 0 && hasPermission(2))
@@ -3300,7 +3300,7 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 					}
 				}
 			} else {
-				$statement = $conn->prepare("SELECT * FROM troopers WHERE approved = '1' AND troopers.permissions = 0 AND troopers.id NOT IN (SELECT event_sign_up.trooperid FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.dateEnd > NOW() - INTERVAL 1 YEAR) ORDER BY troopers.name");
+				$statement = $conn->prepare("SELECT * FROM troopers WHERE approved = '1' AND troopers.permissions = 0 AND troopers.id NOT EXISTS (SELECT event_sign_up.trooperid FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.dateEnd > NOW() - INTERVAL 1 YEAR) ORDER BY troopers.name");
 			}
 			
 			// Query count
@@ -6239,7 +6239,7 @@ if(isset($_GET['event']) && loggedIn())
 										<select name="costume" id="costume">
 											<option value="null" SELECTED>Please choose an option...</option>';
 
-										$statement = $conn->prepare("SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND " . costume_restrict_query($_SESSION['id'], false, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume");
+										$statement = $conn->prepare("SELECT * FROM costumes WHERE club NOT EXISTS (".implode(",", $dualCostume).") AND " . costume_restrict_query($_SESSION['id'], false, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume");
 										$statement->execute();
 																				
 										if ($result3 = $statement->get_result())
@@ -6287,7 +6287,7 @@ if(isset($_GET['event']) && loggedIn())
 										<select name="backupcostume" id="backupcostume">';
 
 										// Display costumes
-										$statement = $conn->prepare("SELECT * FROM costumes WHERE club NOT IN (".implode(",", $dualCostume).") AND " . costume_restrict_query($_SESSION['id'], false, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume");
+										$statement = $conn->prepare("SELECT * FROM costumes WHERE club NOT EXISTS (".implode(",", $dualCostume).") AND " . costume_restrict_query($_SESSION['id'], false, false) . " ORDER BY FIELD(costume, ".$mainCostumes."".mainCostumesBuild($_SESSION['id'])."".getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])).") DESC, costume");
 										$statement->execute();
 
 										// Amount of costumes

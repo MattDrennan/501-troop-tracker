@@ -578,7 +578,7 @@ function costume_restrict_query($trooperId, $addWhere = false, $allowDualCostume
 		if ($allowDualCostume) {
 			$query .= "costumes.club >= 0";
 		} else {
-			$query .= "costumes.club NOT IN (" . implode(",", $dualCostume) . ")";
+			$query .= "costumes.club NOT EXISTS (" . implode(",", $dualCostume) . ")";
 		}
 	} else {
 		// Filter based on the trooper's allowed costumes
