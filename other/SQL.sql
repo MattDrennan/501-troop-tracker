@@ -2,8 +2,7 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: ls-80d2a4b30f3cf5d6b28d9190f86603b96784cb8f.c7bgdu4hw8kg.us-east-1.rds.amazonaws.com:3306
--- Generation Time: Apr 06, 2025 at 05:00 PM
+-- Generation Time: Apr 15, 2025 at 03:36 PM
 -- Server version: 8.0.35
 -- PHP Version: 8.3.16
 
@@ -451,6 +450,7 @@ CREATE TABLE `troopers` (
   `esquad8` int NOT NULL DEFAULT '1',
   `esquad9` int NOT NULL DEFAULT '1',
   `esquad10` int NOT NULL DEFAULT '1',
+  `esquad13` int NOT NULL DEFAULT '1',
   `efast` tinyint(1) DEFAULT '0',
   `ecommandnotify` tinyint(1) DEFAULT '1',
   `econfirm` tinyint(1) DEFAULT '1',
