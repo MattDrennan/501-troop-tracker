@@ -6017,12 +6017,15 @@ if(isset($_GET['event']) && loggedIn())
 
 								echo '
 								</p>
-							</div>
 							</div>';
 							
 							// Increment photo count
 							$j++;
 						}
+					}
+
+					if($j > 0) {
+						echo '</div>';
 					}
 				}
 
