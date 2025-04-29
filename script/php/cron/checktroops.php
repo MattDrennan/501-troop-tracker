@@ -36,43 +36,28 @@ if ($result = mysqli_query($conn, $query))
 // Garrison
 $sM0 = "";
 
-// Set up squad count - milestones
-$y = 1;
-
 // Loop through squads - milestones
 foreach($squadArray as $squad => $squad_value)
 {
 	// Set up troops for e-mail
-	${"sM" . $y} = "";
-
-	// Increment
-	$y++;
+	${"sM" . $squad_value['squadID']} = "";
 }
 
 // Loop through clubs - milestones
 foreach($clubArray as $club => $club_value)
 {
 	// Set up troops for e-mail
-	${"sM" . $y} = "";
-
-	// Increment
-	$y++;
+	${"sM" . $club_value['squadID']} = "";
 }
 
 // Garrison
 $sC0 = "";
 
-// Set up squad count - comments
-$l = 1;
-
 // Loop through squads - comments
 foreach($squadArray as $squad => $squad_value)
 {
 	// Set up troops for e-mail
-	${"sC" . $l} = "";
-
-	// Increment
-	$l++;
+	${"sC" . $squad_value['squadID']} = "";
 }
 
 // Loop through all notifications
@@ -119,9 +104,6 @@ if ($result = mysqli_query($conn, $query))
 // Reset comments
 $conn->query("DELETE FROM comments");
 
-// Set up squad count
-$i = 1;
-
 // Set up add to query
 $addToQuery = ", troopers.esquad0";
 
@@ -129,20 +111,14 @@ $addToQuery = ", troopers.esquad0";
 foreach($squadArray as $squad => $squad_value)
 {
 	// Build query
-	$addToQuery .= ", troopers.esquad" . $i;
-
-	// Increment squad count
-	$i++;
+	$addToQuery .= ", troopers.esquad" . $squad_value['squadID'];
 }
 
 // Loop through squads
 foreach($clubArray as $club => $club_value)
 {
 	// Build query
-	$addToQuery .= ", troopers.esquad" . $i;
-
-	// Increment squad count
-	$i++;
+	$addToQuery .= ", troopers.esquad" . $club_value['squadID'];
 }
 
 // Loop through all members with admin
@@ -180,49 +156,40 @@ if ($result = mysqli_query($conn, $query))
 			}
 		}
 		
-		// Set up squad count
-		$i = 1;
-		
 		// Loop through squads
 		foreach($squadArray as $squad => $squad_value)
 		{
 			// Check allow e-mails for squad
-			if($db->{"esquad" . $i} == 1)
+			if($db->{"esquad" . $squad_value['squadID']} == 1)
 			{
 				// Add squad information to e-mail
-				$message .= ${"sM" . $i};
+				$message .= ${"sM" . $squad_value['squadID']};
 
 				// Check if message has contents
-				if(${"sM" . $i} != "")
+				if(${"sM" . $squad_value['squadID']} != "")
 				{
 					// Increment milestone count
 					$mC++;
 				}
 			}
-
-			// Increment squad count
-			$i++;
 		}
 		
 		// Loop through clubs
 		foreach($clubArray as $club => $club_value)
 		{
 			// Check allow e-mails for club
-			if($db->{"esquad" . $i} == 1)
+			if($db->{"esquad" . $club_value['squadID']} == 1)
 			{
 				// Add club information to e-mail
-				$message .= ${"sM" . $i};
+				$message .= ${"sM" . $club_value['squadID']};
 
 				// Check if message has contents
-				if(${"sM" . $i} != "")
+				if(${"sM" . $club_value['squadID']} != "")
 				{
 					// Increment milestone count
 					$mC++;
 				}
 			}
-
-			// Increment club count
-			$i++;
 		}
 		
 		// If no milestones
@@ -248,28 +215,22 @@ if ($result = mysqli_query($conn, $query))
 			}
 		}
 		
-		// Set up squad count
-		$i = 1;
-		
 		// Loop through squads
 		foreach($squadArray as $squad => $squad_value)
 		{
 			// Check allow e-mails for squad
-			if($db->{"esquad" . $i} == 1)
+			if($db->{"esquad" . $squad_value['squadID']} == 1)
 			{
 				// Add squad information to e-mail
-				$message .= ${"sC" . $i};
+				$message .= ${"sC" . $squad_value['squadID']};
 
 				// Check if message has contents
-				if(${"sC" . $i} != "")
+				if(${"sC" . $squad_value['squadID']} != "")
 				{
 					// Increment milestone count
 					$cC++;
 				}
 			}
-
-			// Increment squad count
-			$i++;
 		}
 		
 		// If no comments
@@ -292,17 +253,11 @@ if ($result = mysqli_query($conn, $query))
 // Garrison
 $s0 = "";
 
-// Set up squad count
-$i = 1;
-
 // Loop through squads
 foreach($squadArray as $squad => $squad_value)
 {
 	// Set up troops for e-mail
-	${"s" . $i} = "";
-
-	// Increment
-	$i++;
+	${"s" . $squad_value['squadID']} = "";
 }
 
 // Set up last event
@@ -347,9 +302,6 @@ if($i > 0)
 			// If retired or not allowed to access site, skip to next trooper
 			if(!canAccess($db->id)) { continue; }
 
-			// Set up squad count
-			$l = 1;
-
 			// Check something to send
 			$k = 0;
 
@@ -374,21 +326,18 @@ if($i > 0)
 			foreach($squadArray as $squad => $squad_value)
 			{
 				// Check allow e-mails for squad
-				if($db->{"esquad" . $l} == 1)
+				if($db->{"esquad" . $squad_value['squadID']} == 1)
 				{
 					// Add squad information to e-mail
-					$emailBody .= ${"s" . $l};
+					$emailBody .= ${"s" . $squad_value['squadID']};
 
 					// Make sure not empty
-					if(${"s" . $l} != "")
+					if(${"s" . $squad_value['squadID']} != "")
 					{
 						// Increment something to send
 						$k++;
 					}
 				}
-
-				// Increment squad count
-				$l++;
 			}
 
 			// Add footer of e-mail
