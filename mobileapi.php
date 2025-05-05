@@ -606,7 +606,12 @@ try {
     // Sign Up for troop
     } else if(isset($_GET['trooperid'], $_GET['troopid'], $_GET['addedby'], $_GET['status'], $_GET['costume'], $_GET['backupcostume'], $_GET['action']) && $_GET['action'] === 'sign_up') {
         // Replace Trooper ID
-        $_GET['trooperid'] = getIDFromUserID($_GET['trooperid']);
+        if(isset($_GET['addedby']) && $_GET['addedby'] == 0) {
+            $_GET['trooperid'] = getIDFromUserID($_GET['trooperid']);
+        }
+        else {
+            $_GET['addedby'] = getIDFromUserID($_GET['addedby']);
+        }
 
         // Set trooper ID
         $trooperID = 0;
@@ -617,28 +622,15 @@ try {
 
         // Get number of troopers that trooper signed up for event
         $statement = $conn->prepare("SELECT id FROM event_sign_up WHERE addedby = ? AND troopid = ?");
-        $statement->bind_param("ii", $_GET['trooperid'], $_GET['troopid']);
+        $statement->bind_param("ii", $_GET['addedby'], $_GET['troopid']);
         $statement->execute();
         $statement->store_result();
         $numFriends = $statement->num_rows;
 
-        // Check if this is add friend
-        if(isset($_GET['addedby']) && $_GET['addedby'] > 0)
-        {
-            // Prevent bug of getting signed up twice
-            $eventCheck = inEvent($_GET['addedby'], $_GET['troopid']);
-
-            // Set
-            $trooperID = $_GET['addedby'];
-        }
-        else
-        {
-            // Prevent bug of getting signed up twice
-            $eventCheck = inEvent($_GET['trooperid'], $_GET['troopid']);
-
-            // Set
-            $trooperID = $_GET['trooperid'];
-        }
+        // Prevent bug of getting signed up twice
+        $eventCheck = inEvent($_GET['trooperid'], $_GET['troopid']);
+        // Set
+        $trooperID = $_GET['trooperid'];
 
         // Check if already in troop and exclude placeholder account // For mobile, we use this to update records
         if($eventCheck['inTroop'] == 1 && $trooperID != placeholder)
@@ -834,7 +826,7 @@ try {
             {
                 // Query the database
                 $statement = $conn->prepare("INSERT INTO event_sign_up (trooperid, troopid, costume, status, costume_backup, addedby) VALUES (?, ?, ?, ?,?, ?)");
-                $statement->bind_param("iiiiii", $_GET['addedby'], $_GET['troopid'], $_GET['costume'], $status, $_GET['backupcostume'], $_GET['trooperid']);
+                $statement->bind_param("iiiiii", $_GET['trooperid'], $_GET['troopid'], $_GET['costume'], $status, $_GET['backupcostume'], $_GET['addedby']);
                 $statement->execute();
                 
                 // Send to database to send out notifictions later
