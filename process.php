@@ -3467,7 +3467,7 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 					}
 					
 					// Add costume
-					echo '<option value="'.$costumesID[$a].'">'.$key.'</option>';
+					echo '<option value="'.$costumesID[$a].'">'.getCostumeAbbreviation($costumesClub[$a]).' '.$key.'</option>';
 					
 					$a++;
 					$c++;
