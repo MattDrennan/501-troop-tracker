@@ -162,7 +162,7 @@ try {
             WHERE 
                 troopers.user_id = ? 
                 AND events.dateEnd > NOW() - INTERVAL 1 DAY 
-                AND (event_sign_up.status < 3 OR event_sign_up.status = 2) 
+                AND (event_sign_up.status < 3 OR event_sign_up.status = 5) 
                 AND (events.closed = 0 OR events.closed = 3 OR events.closed = 4) 
             ORDER BY 
                 events.dateStart";
