@@ -317,6 +317,55 @@ try {
 
         // Close resources
         $statement->close();
+} else if (isset($_GET['troopid'], $_GET['action']) && $_GET['action'] === 'get_available_troopers_for_event') {
+    // Prepare SQL query to get troopers NOT already in event_sign_up for this troopid
+    $sql = "
+        SELECT 
+            t.*
+        FROM 
+            troopers t
+        WHERE 
+            t.id NOT IN (
+                SELECT esu.trooperid 
+                FROM event_sign_up esu 
+                WHERE esu.troopid = ?
+            )
+        ORDER BY 
+            t.name ASC
+    ";
+
+    // Prepare statement
+    $statement = $conn->prepare($sql);
+    if (!$statement) {
+        throw new Exception('Database error: ' . $conn->error);
+    }
+
+    // Bind parameters
+    $statement->bind_param("i", $_GET['troopid']);
+    $statement->execute();
+
+    // Process query results
+    $result = $statement->get_result();
+
+    // Initialize an array to store all results
+    $data = [];
+
+    while ($db = $result->fetch_object()) {
+        $tempObject = new stdClass();
+
+        // Dynamically assign all columns to $tempObject
+        foreach ($db as $key => $value) {
+            $tempObject->$key = $value;
+        }
+
+        // Get formatted TK Number
+        $tempObject->tkid_formatted = readTKNumber($tempObject->tkid, $tempObject->squad, $tempObject->id);
+
+        $data[] = $tempObject; // Add the object to the results array
+    }
+
+    // Close resources
+    $statement->close();
     } else if (isset($_GET['squad'], $_GET['action']) && $_GET['action'] === 'get_troops_by_squad') {
         // Prepare SQL query
         $sql = "
