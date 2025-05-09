@@ -10,4 +10,4 @@ vendor/
 vendor/*
 docs/cache/
 test.php
-custom.php
+/custom.php
