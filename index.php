@@ -2092,7 +2092,7 @@ if(isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn())
 				{
 					// Add to return var
 					echo
-					' | ' . '<a href="index.php?action=trooptracker&squad='.$squadID.'" '.(@$_GET['squad'] == $squad_value['squadID'] ? 'style="font-weight: bold; color: yellow;"' : '').'>'.$squad_value['name'].'</a>';
+					' | ' . '<a href="index.php?action=trooptracker&squad='.$squad_value['squadID'].'" '.(@$_GET['squad'] == $squad_value['squadID'] ? 'style="font-weight: bold; color: yellow;"' : '').'>'.$squad_value['name'].'</a>';
 				}
 
 				echo '
