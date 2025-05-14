@@ -2576,13 +2576,10 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			// Build the SQL placeholders and types
 			$placeholders = implode(',', array_fill(0, count($squadIDs), '?'));
 			$types = str_repeat('i', count($squadIDs));
-			
-			// Count number of users with set up accounts - 501
-			$statement = $conn->prepare("SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad <= ?");
+
+			$sql = "SELECT id FROM troopers WHERE password != '' AND approved = '1' AND squad IN ($placeholders)";
+			$statement = $conn->prepare($sql);
 			$statement->bind_param($types, ...$squadIDs);
-			$statement->execute();
-			$statement->store_result();
-			$totalAccountsSetUp501 = $statement->num_rows;
 			
 			// Count number of users with set up accounts (TOTAL)
 			$statement = $conn->prepare("SELECT id FROM troopers WHERE password != '' AND approved = '1'");
@@ -2718,9 +2715,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 			<hr />
 			<br />
 			
-			<h3>Troop Tracker Usage</h3>
+			<h3>Troop Tracker Usage</h3>';
 
-			<p><b>501st Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUp501).'</p>';
+			$totalAccountsSetUp501 = 0;
 			
 			// Loop through squads
 			foreach($squadArray as $squad => $squad_value)
@@ -2737,9 +2734,12 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				$statement->execute();
 				$statement->store_result();
 				${"totalAccountsSetUp" . $squadName} = $statement->num_rows;
+				$totalAccountsSetUp501 += $statement->num_rows;
 			}
 			
 			echo '
+			<p><b>501st Total Accounts (Set Up):</b> '.number_format($totalAccountsSetUp501).'</p>
+
 			<br />
 			<hr />
 			<br />';
