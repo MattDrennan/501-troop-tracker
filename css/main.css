@@ -316,6 +316,12 @@ a.button {
 	text-align: center;
 }
 
+a.button:hover {
+	background-color: var(--main-theme-bg-color-hover);
+	color: var(--button-text-hover-color);
+	box-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
+
 /* Background for chosen squad */
 .squadlink {
 	background-color: var(--squad-link-color);
