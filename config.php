@@ -4039,6 +4039,10 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 {
 	global $conn;
 	global $trackerURL;
+
+	// Get links
+	$link = isLink($eventId);
+	$link2 = isLink2($eventId);
 	
 	$returnString = '';
 
@@ -4080,8 +4084,21 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 	'.$roster.'';
 	
 	// Loop through all admin photos
-	$statement = $conn->prepare("SELECT * FROM uploads WHERE troopid = ? AND admin = '1' ORDER BY date ASC");
-	$statement->bind_param("i", $eventId);
+	$statement = $conn->prepare("
+	    SELECT * FROM uploads 
+	    WHERE admin = '1' 
+	      AND troopid IN (
+	          SELECT id FROM events 
+	          WHERE id = ? 
+	            OR (link = ? AND link != 0) 
+	            OR (link2 = ? AND link2 != 0)
+	            OR id = ?
+	            OR id = ?
+	      )
+	    ORDER BY date ASC
+	");
+
+	$statement->bind_param("iiiii", $eventId, $link, $link2, $link, $link2);
 	$statement->execute();
 
 	if ($result = $statement->get_result())
@@ -4098,8 +4115,6 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 	[b][u]Sign Up / Event Roster:[/u][/b]
 
 	[url]'.$trackerURL.'/index.php?event=' . $eventId . '[/url]';
-
-	$link = isLink($eventId);
 
 	if($link > 0) {
 		$returnString .= '
@@ -4125,9 +4140,6 @@ function threadTemplate($eventName, $eventVenue, $location, $date1, $date2, $web
 		[b]To view all shift event forum posts on one page, view the event page on the Troop Tracker. This forum page will only show this shifts forum posts.[/b]
 		';
 	}
-
-	// Get link2
-	$link2 = isLink2($eventId);
 
 	// Show linked events
 	if($link == 0 && $link2 > 0) {

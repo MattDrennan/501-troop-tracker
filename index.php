@@ -5987,8 +5987,21 @@ if(isset($_GET['event']) && loggedIn())
 					$j = 0;
 
 					// Query for photos
-					$statement = $conn->prepare("SELECT * FROM uploads WHERE admin = '1' AND (troopid = ? " . ($link > 0 ? 'OR troopid = '.$link.'' : '') . ") ORDER BY date DESC");
-					$statement->bind_param("i", $_GET['event']);
+					$statement = $conn->prepare("
+					    SELECT * FROM uploads 
+					    WHERE admin = '1' 
+					      AND troopid IN (
+					          SELECT id FROM events 
+					          WHERE id = ? 
+					            OR (link = ? AND link != 0) 
+					            OR (link2 = ? AND link2 != 0)
+					            OR id = ?
+					            OR id = ?
+					      ) 
+					    ORDER BY date DESC
+					");
+
+					$statement->bind_param("iiiii", $_GET['event'], $link, $link2, $link, $link2);
 					$statement->execute();
 					
 					if ($result2 = $statement->get_result())
@@ -6355,8 +6368,21 @@ if(isset($_GET['event']) && loggedIn())
 				$results = 5;
 				
 				// Get total results - query
-				$statement = $conn->prepare("SELECT COUNT(id) AS total FROM uploads WHERE admin = 0 AND (troopid = ? " . (isLink($_GET['event']) > 0 ? 'OR troopid = '.isLink($_GET['event']).'' : '') . ")");
-				$statement->bind_param("i", $_GET['event']);
+				$statement = $conn->prepare("
+				    SELECT COUNT(id) AS total 
+				    FROM uploads 
+				    WHERE admin = 0 
+				      AND troopid IN (
+				          SELECT id FROM events 
+				          WHERE id = ? 
+				            OR (link = ? AND link != 0)
+				            OR (link2 = ? AND link2 != 0)
+				            OR id = ?
+				            OR id = ?
+				      )
+				");
+
+				$statement->bind_param("iiiii", $_GET['event'], $link, $link2, $link, $link2);
 				$statement->execute();
 				$statement->bind_result($rowPage);
 				$statement->fetch();
@@ -6384,8 +6410,22 @@ if(isset($_GET['event']) && loggedIn())
 				}
 				
 				// Query database for photos
-				$statement = $conn->prepare("SELECT * FROM uploads WHERE admin = '0' AND (troopid = ? " . (isLink($_GET['event']) > 0 ? 'OR troopid = '.isLink($_GET['event']).'' : '') . ") ORDER BY date DESC LIMIT ?, ?");
-				$statement->bind_param("iii", $_GET['event'], $startFrom, $results);
+				$statement = $conn->prepare("
+				    SELECT * FROM uploads 
+				    WHERE admin = '0' 
+				      AND troopid IN (
+				          SELECT id FROM events 
+				          WHERE id = ? 
+				            OR (link = ? AND link != 0)
+				            OR (link2 = ? AND link2 != 0)
+				            OR id = ?
+				            OR id = ?
+				      )
+				    ORDER BY date DESC 
+				    LIMIT ?, ?
+				");
+
+				$statement->bind_param("iiiiiii", $_GET['event'], $link, $link2, $link, $link2, $startFrom, $results);
 				$statement->execute();
 				
 				// Count photos
