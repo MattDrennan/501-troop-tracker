@@ -719,23 +719,6 @@ $(document).ready(function()
 		}
 	})
 
-	// Image Upload - Change Upload Type
-	$("body").on("click", "#changeUpload", function(e)
-	{
-		if($("input[name=admin]").val() == 0)
-		{
-			$("#changeUpload").text("Change To: Regular Upload");
-			$("input[name=admin]").val(1);
-			$(".dropzone .dz-default.dz-message").html("Drop INSTRUCTIONAL images here");
-		}
-		else
-		{
-			$("#changeUpload").text("Change To: Troop Instructional Image Upload");
-			$("input[name=admin]").val(0);
-			$(".dropzone .dz-default.dz-message").html("Drop NON-INSTRUCTIONAL images here");
-		}
-	})
-
 	// Home Page - Search
 	$("body").on("input", "#controlf", function(e)
 	{

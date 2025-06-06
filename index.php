@@ -6463,13 +6463,15 @@ if(isset($_GET['event']) && loggedIn())
 				}
 				
 				// If trooper logged in show uploader
+				$dateCheck = DateTime::createFromFormat("m/d/Y - h:i A", $date1);
+				$now = new DateTime();
+
 				echo '
 				<div class="section-card">
 					<h2 class="tm-section-header">Photo Upload</h2>
-					<a href="#/" class="button" id="changeUpload" aria-label="Regular Upload: Share photos from troops / Instructional Image: Help troopers with troop information" data-balloon-pos="down" data-balloon-length="fit">Change To: Troop Instructional Image Upload</a>
 
 					<form action="script/php/upload.php" class="dropzone" id="photoupload">
-						<input type="hidden" name="admin" value="0" />
+						<input type="hidden" name="admin" value="' . (($dateCheck && $now < $dateCheck) ? 1 : 0) . '" />
 						<input type="hidden" name="troopid" value="'.cleanInput($_GET['event']).'" />
 						<input type="hidden" name="trooperid" value="'.cleanInput($_SESSION['id']).'" />
 					</form>
@@ -6482,7 +6484,7 @@ if(isset($_GET['event']) && loggedIn())
 					    var myDropzone = new Dropzone(".dropzone", { 
 							maxFilesize: 10,
 							acceptedFiles: ".jpeg,.jpg,.png,.gif",
-							dictDefaultMessage: "Drop NON-INSTRUCTIONAL images here<br />(use button above to change upload type)",
+							dictDefaultMessage: "Drop images here",
 							// Error Handling Events
 							init: function() {
 							    // Handle errors on client-side (e.g., invalid file type or size)
