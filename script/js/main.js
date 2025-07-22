@@ -286,7 +286,6 @@ function selectAdd()
 	$("#awardIDAssign").select2();
 	$("#awardIDEdit").select2();
 	$("#awardID").select2();
-	$("").select2();
     $("select[name^=eventId]").select2({
         templateResult: formatOption,
         templateSelection: formatSelection
@@ -310,10 +309,11 @@ function selectAdd()
 	$("#eventLinkID").select2();
 	$("#favoriteCostumeSelect").select2();
 	$("#tagTroopersSelect").select2();
+	$("#signupForm3 select#costume").select2();
+	$("#signupForm3 select#backupcostume").select2();
 }
 
-$(document).ready(function()
-{
+$(document).ready(function() {
 	// Add select2 to DOM
 	selectAdd();
 
