@@ -631,6 +631,41 @@ try {
 			echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 			return;
 		}
+		
+		// Check event closed status
+		if(getEventColumn('closed', $_GET['troopid']) == 2) {
+			$success = "fail";
+			$success_message = "This event was CANCELED by Command Staff.";
+			
+			$data = new stdClass();
+			$data->success = $success;
+			$data->success_message = $success_message;
+			echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+			return;
+		}
+		
+		if(getEventColumn('closed', $_GET['troopid']) == 3) {
+			$success = "fail";
+			$success_message = "This event was LOCKED by Command Staff.";
+			
+			$data = new stdClass();
+			$data->success = $success;
+			$data->success_message = $success_message;
+			echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+			return;
+		}
+		
+		if(getEventColumn('closed', $_GET['troopid']) == 4) {
+			$success = "fail";
+			$success_message = "This event was marked FULL by Command Staff.";
+			
+			$data = new stdClass();
+			$data->success = $success;
+			$data->success_message = $success_message;
+			echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+			return;
+		}
+		// End check event closed status
 
         // Set trooper ID
         $trooperID = 0;
