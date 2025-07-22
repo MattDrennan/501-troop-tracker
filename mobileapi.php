@@ -367,6 +367,13 @@ try {
     // Close resources
     $statement->close();
     } else if (isset($_GET['squad'], $_GET['action']) && $_GET['action'] === 'get_troops_by_squad') {
+		// Check if website is closed
+		if (isWebsiteClosed()) {
+			$data->troops = []; // Return an empty array
+			echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+			exit(); // Stop execution
+		}
+	
         // Prepare SQL query
         $sql = "
         SELECT 
@@ -612,6 +619,18 @@ try {
         else {
             $_GET['addedby'] = getIDFromUserID($_GET['addedby']);
         }
+		
+		// Prevent sign up if website is closed
+		if(isWebsiteClosed()) {
+			$success = "fail";
+			$success_message = "Sign ups are currently closed!";
+			
+			$data = new stdClass();
+			$data->success = $success;
+			$data->success_message = $success_message;
+			echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+			return;
+		}
 
         // Set trooper ID
         $trooperID = 0;
