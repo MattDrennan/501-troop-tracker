@@ -910,6 +910,36 @@ try {
         $data->sucess = $success;
         $data->success_message = $success_message;
         $data->numFriends = ($friendLimit - $numFriends);
+    } else if (isset($_GET['troopid'], $_GET['action']) && $_GET['action'] === 'get_photos_by_event') {
+        $eventId = intval($_GET['troopid']);
+
+        // Prepare the SQL query to get ALL photos for the event, sorted by admin first, then date
+        $statement = $conn->prepare("
+            SELECT uploads.filename, uploads.trooperid, uploads.id, uploads.admin 
+            FROM uploads 
+            WHERE uploads.troopid = ? 
+            ORDER BY uploads.admin DESC, uploads.date DESC
+        ");
+
+        $statement->bind_param("i", $eventId);
+        $statement->execute();
+
+        $result = $statement->get_result();
+        $data->photos = [];
+
+        while ($db = $result->fetch_object()) {
+            $photo = new stdClass();
+            $photo->id = $db->id;
+            $photo->filename = $db->filename;
+            $photo->admin = (int)$db->admin;
+            $photo->thumbnail_url = "https://www.fl501st.com/troop-tracker/images/uploads/resize/" . getFileName($db->filename) . ".jpg";
+            $photo->full_url = "https://www.fl501st.com/troop-tracker/images/uploads/" . $db->filename;
+            $photo->uploaded_by = getName($db->trooperid);
+
+            $data->photos[] = $photo;
+        }
+
+        $statement->close();
     // Save FCM
     } else if(isset($_POST['userid'], $_POST['fcm'], $_POST['action']) && $_POST['action'] === 'saveFCM') {
         // Get values

@@ -105,7 +105,7 @@ if (!empty($_FILES))
 
 	    // Bind the parameters
 	    $troopid = (int) $_POST['troopid'];
-	    $trooperid = (int) $_POST['trooperid'];
+	    $trooperid = isset($_POST['trooperid']) ? ((isset($_GET['client']) && $_GET['client'] === 'mobile') ? getIDFromUserID($_POST['trooperid']) : (int) $_POST['trooperid']) : 0;
 
 	    $stmt->bind_param("iis", $troopid, $trooperid, $fileName);
 
