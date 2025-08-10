@@ -1208,12 +1208,19 @@ blockquote {
 	/* Fully visible again */
 }
 
-input:disabled,
-select:disabled,
-textarea:disabled {
-    background-color: #f0f0f0;   /* light gray */
-    color: #888;                 /* muted text */
-    border: 1px solid #ccc;      /* softer border */
-    cursor: not-allowed;         /* "no" cursor */
-    opacity: 0.7;                 /* slightly transparent */
+/* General style for anything read-only */
+input[readonly],
+textarea[readonly] {
+  background-color: #f0f0f0;
+  color: #888;
+  border: 1px solid #ccc;
+  cursor: not-allowed;
+}
+
+/* Optional: same look when you toggle a class instead */
+.fake-disabled {
+  background-color: #f0f0f0;
+  color: #888;
+  border: 1px solid #ccc;
+  cursor: not-allowed;
 }

@@ -535,29 +535,29 @@ $(document).ready(function() {
 	$("body").on("input", "#limitedEvent", function(e) {
 		if($("#limitedEvent").val() == 1) {
 			$("#limit501st").val(500);
-			$("#limit501st").prop("disabled", true);
+			$("#limit501st").prop("readonly", true).addClass("fake-disabled");
 
 			// Loop through clubs
 			for(var i = 0; i <= (clubArray.length - 1); i++)
 			{
 				$("#" + clubDBLimitArray[i]).val(500);
-				$("#" + clubDBLimitArray[i]).prop("disabled", true);
+				$("#" + clubDBLimitArray[i]).prop("readonly", true).addClass("fake-disabled");
 			}
 
 			$("#limitTotalTroopers").val(500);
-			$("#limitTotalTroopers").prop("disabled", true);
+			$("#limitTotalTroopers").prop("readonly", true).addClass("fake-disabled");
 		} else {
 			$("#limit501st").val(500);
-			$("#limit501st").prop("disabled", false);
+			$("#limit501st").prop("readonly", false).removeClass("fake-disabled");
 
 			// Loop through clubs
 			for(var i = 0; i <= (clubArray.length - 1); i++) {
 				$("#" + clubDBLimitArray[i]).val(500);
-				$("#" + clubDBLimitArray[i]).prop("disabled", false);
+				$("#" + clubDBLimitArray[i]).prop("readonly", false).removeClass("fake-disabled");
 			}
 
 			$("#limitTotalTroopers").val(500);
-			$("#limitTotalTroopers").prop("disabled", false);
+			$("#limitTotalTroopers").prop("readonly", false).removeClass("fake-disabled");
 		}
 	})
 
@@ -811,15 +811,12 @@ $(document).ready(function() {
 		$("#friendLimit").val(4);
 		$("#allowTentative").val(1);
 
-		// Re-enable props
-		$("#limit501st").prop("disabled", false);
+		// Build a single jQuery set for the fields you previously disabled
+		const $lockables = $("#limit501st, #limitTotalTroopers")
+			.add(clubDBLimitArray.map(id => "#" + id).join(", "));
 
-		// Loop through clubs
-		for(var i = 0; i <= (clubArray.length - 1); i++) {
-			$("#" + clubDBLimitArray[i]).prop("disabled", false);
-		}
-
-		$("#limitTotalTroopers").prop("disabled", false);
+		// Re-enable for editing (but since we're using readonly now, we clear that)
+		$lockables.prop("readonly", false).removeClass("fake-disabled");
 
 		// On index.php, clear all fields
 		clearLimit();
