@@ -2651,6 +2651,9 @@ if(isset($_GET['do']) && $_GET['do'] == "changestatus" && loggedIn() && isAdmin(
 			// Notify trooper
 			createAlert(getUserID($_POST['trooperid']), getEventTitle($_POST['eventid']) . ': Your status has been changed to ' . getStatus($status) . '.', ''.$trackerURL.'/index.php?event=' . $_POST['eventid']);
 
+			// Create notification
+			sendNotification(getName($_SESSION['id']) . ' has changed ' . getName($db->trooperid) . ' [' . $db->trooperid . '] to ' . getStatus($status) . ' on ' . getEventTitle($_POST['eventid']) . '[' . cleanInput($_POST['eventid']) . ']', $_SESSION['id']);
+
 			// If is admin
 			if(isAdmin())
 			{
