@@ -531,6 +531,36 @@ $(document).ready(function() {
 		});
 	})
 
+	// Prevent admin from making a manual selection and limited event - causes confusion for admins
+	$("body").on("input", "#limitedEvent", function(e) {
+		if($("#limitedEvent").val() == 1) {
+			$("#limit501st").val(500);
+			$("#limit501st").prop("disabled", true);
+
+			// Loop through clubs
+			for(var i = 0; i <= (clubArray.length - 1); i++)
+			{
+				$("#" + clubDBLimitArray[i]).val(500);
+				$("#" + clubDBLimitArray[i]).prop("disabled", true);
+			}
+
+			$("#limitTotalTroopers").val(500);
+			$("#limitTotalTroopers").prop("disabled", true);
+		} else {
+			$("#limit501st").val(500);
+			$("#limit501st").prop("disabled", false);
+
+			// Loop through clubs
+			for(var i = 0; i <= (clubArray.length - 1); i++) {
+				$("#" + clubDBLimitArray[i]).val(500);
+				$("#" + clubDBLimitArray[i]).prop("disabled", false);
+			}
+
+			$("#limitTotalTroopers").val(500);
+			$("#limitTotalTroopers").prop("disabled", false);
+		}
+	})
+
 	// Limit Change - Total Troopers (Prevent admin from adding a total limit for a club and a total limit)
 	$("body").on("input", "#limitTotalTroopers", function(e)
 	{
@@ -780,6 +810,16 @@ $(document).ready(function() {
 		$("#limitTotalTroopers").val(500);
 		$("#friendLimit").val(4);
 		$("#allowTentative").val(1);
+
+		// Re-enable props
+		$("#limit501st").prop("disabled", false);
+
+		// Loop through clubs
+		for(var i = 0; i <= (clubArray.length - 1); i++) {
+			$("#" + clubDBLimitArray[i]).prop("disabled", false);
+		}
+
+		$("#limitTotalTroopers").prop("disabled", false);
 
 		// On index.php, clear all fields
 		clearLimit();

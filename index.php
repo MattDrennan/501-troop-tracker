@@ -4222,9 +4222,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						
 						<input type="submit" name="addshift" id="addshift" value="Add Shift" />
 						
-						<p>
-							<i>Please note: This is to add additional shifts. To edit a shift, go to the shift event page, and edit it there.</i>
-						</p>
+						<div class="alert-box">
+							<i>This is to add additional shifts. To edit a shift, go to the shift event page, and edit it there.</i>
+						</div>
 
 						<div id="options">
 							<p>Website:</p>
@@ -4319,14 +4319,23 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						</select>
 
 						<p>Is this a manual selection event?</p>
+
 						<select name="limitedEvent" id="limitedEvent">
 							<option value="0">No</option>
 							<option value="1">Yes</option>
 						</select>
 
+						<div class="alert-box">
+							<i>Each trooper will need to be manually approved by command staff to attend the event. Troop Tracker will not manage the event.</i>
+						</div>
+
 						<p>
 							<hr />
 						</p>
+
+						<div class="alert-box">
+							<i>Setting a limit will have Troop Tracker manage the event. Troop Tracker will automatically set going and stand by status.</i>
+						</div>	
 
 						<p>Limit of 501st Troopers:</p>
 						<input type="number" name="limit501st" value="500" id="limit501st" class="limitClass" />';
@@ -4340,9 +4349,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						}
 
 						echo '
-						<p>
+						<div class="alert-box">
 							<i>Use the above limit club feature to limit the amount of troopers on a per club basis. When all values are 500, there is no limit. Changing one club limit, will limit all to the set value.</i>
-						</p>
+						</div>
 
 						<p>
 							<hr />
@@ -4351,9 +4360,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<p>Limit of Total Handlers:</p>
 						<input type="number" name="limitHandlers" value="500" id="limitHandlers" class="limitClass" />
 
-						<p>
+						<div class="alert-box">
 							<i>If you limit handlers, the handlers will not count towards the total trooper count or club count. Handlers will be handled as a seperate count. When value is 500, handlers will be counted in the trooper total or club total.</i>
-						</p>
+						</div>
 
 						<p>
 							<hr />
@@ -4362,9 +4371,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 						<p>Limit of Total Troopers:</p>
 						<input type="number" name="limitTotalTroopers" value="500" id="limitTotalTroopers" class="limitClass" />
 
-						<p>
+						<div class="alert-box">
 							<i>This will limit the total amount of troopers and/or handlers to an event. This value should NOT be changed if you are using the limit clubs feature. When value is 500, there is no total trooper limit.</i>
-						</p>
+						</div>
 
 						<p>
 							<a href="#/" class="button" id="resetDefaultCount">Reset Default</a>
@@ -4931,7 +4940,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<input type="submit" name="submit" name="easyFillButton" id="easyFillButton" value="Fill!" />
 			</form>
 
-			<p><i>Copy and paste event requests in the textbox above. Please ensure all information is accurate.</i></p>
+			<div class="alert-box">
+				<i>Copy and paste event requests in the textbox above. Please ensure all information is accurate.</i>
+			</div>
 			</div>';
 
 			// Set up show options
@@ -4975,9 +4986,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				
 				<input type="submit" name="addshift" id="addshift" value="Add Shift" />
 				
-				<p>
-					<i>Please note: The first date and time is considered a shift. If you add another shift with the same date and time, it will be a duplicate.</i>
-				</p>
+				<div class="alert-box">
+					<i>The first date and time is considered a shift. If you add another shift with the same date and time, it will be a duplicate.</i>
+				</div>
 
 				<div id="options" '.$style.'>
 					<p>Website:</p>
@@ -5084,14 +5095,23 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				</select>
 
 				<p>Is this a manual selection event?</p>
+
 				<select name="limitedEvent" id="limitedEvent">
 					<option value="0" '.copyEventSelect($eid, $limitedEvent, 0).'>No</option>
 					<option value="1" '.copyEventSelect($eid, $limitedEvent, 1).'>Yes</option>
 				</select>
 
+				<div class="alert-box">
+					<i>Each trooper will need to be manually approved by command staff to attend the event. Troop Tracker will not manage the event.</i>
+				</div>
+
 				<p>
 					<hr />
 				</p>
+
+				<div class="alert-box">
+					<i>Setting a limit will have Troop Tracker manage the event. Troop Tracker will automatically set going and stand by status.</i>
+				</div>				
 				
 				<p>Limit of 501st Troopers:</p>
 				<input type="number" name="limit501st" value="'.copyEvent($eid, $limit501st, 500).'" id="limit501st" class="limitClass" />';
@@ -5105,9 +5125,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				}
 
 				echo '
-				<p>
+				<div class="alert-box">
 					<i>Use the above limit club feature to limit the amount of troopers on a per club basis. When all values are 500, there is no limit. Changing one club limit, will limit all to the set value.</i>
-				</p>
+				</div>
 
 				<p>
 					<hr />
@@ -5116,9 +5136,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<p>Limit of Total Handlers:</p>
 				<input type="number" name="limitHandlers" id="limitHandlers" class="limitClass" value="'.copyEvent($eid, $limitHandlers, 500).'" />
 
-				<p>
+				<div class="alert-box">
 					<i>If you limit handlers, the handlers will not count towards the total trooper count or club count. Handlers will be handled as a seperate count. When value is 500, handlers will be counted in the trooper total or club total.</i>
-				</p>
+				</div>
 
 				<p>
 					<hr />
@@ -5127,9 +5147,9 @@ if(isset($_GET['action']) && $_GET['action'] == "commandstaff")
 				<p>Limit of Total Troopers:</p>
 				<input type="number" name="limitTotalTroopers" id="limitTotalTroopers" class="limitClass" value="'.copyEvent($eid, $limitTotalTroopers, 500).'" />
 
-				<p>
+				<div class="alert-box">
 					<i>This will limit the total amount of troopers and/or handlers to an event. This value should NOT be changed if you are using the limit clubs feature. When value is 500, there is no total trooper limit.</i>
-				</p>
+				</div>
 
 				<p>
 					<a href="#/" class="button" id="resetDefaultCount">Reset Default</a>

@@ -74,7 +74,7 @@ html,
 body {
 	max-width: 100%;
 	overflow-x: hidden;
-	position: relative; // This fixes scrollbar still showing on overflow-x
+	position: relative;
 }
 
 body {
@@ -556,7 +556,6 @@ textarea {
 }
 
 span.select2-selection.select2-selection--single {
-	// These are base materializecss input styles
 	padding-left: 0 !important;
 	position: relative;
 	cursor: pointer;
@@ -1207,4 +1206,14 @@ blockquote {
 	}
 
 	/* Fully visible again */
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+    background-color: #f0f0f0;   /* light gray */
+    color: #888;                 /* muted text */
+    border: 1px solid #ccc;      /* softer border */
+    cursor: not-allowed;         /* "no" cursor */
+    opacity: 0.7;                 /* slightly transparent */
 }
