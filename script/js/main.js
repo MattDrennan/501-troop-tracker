@@ -276,41 +276,43 @@ function formatSelection(option) {
 }
 
 // selectAdd: Selects we want to search
-function selectAdd()
-{
-	// Search select boxes
-	$("#costumeIDEdit").select2();
-	$("#costumeChoice").select2();
-	$("#costumeID").select2();
-	$("#userIDAward").select2();
-	$("#awardIDAssign").select2();
-	$("#awardIDEdit").select2();
-	$("#awardID").select2();
+function selectAdd() {
+    const selectors = [
+        "#costumeIDEdit", "#costumeChoice", "#costumeID", "#userIDAward", "#awardIDAssign",
+        "#awardIDEdit", "#awardID", "#costume", "#backupcostume", "#costumebackup",
+        "#eventLinkIDEdit", "#multiple_event_select", "#multiple_event_selectEdit",
+        "#eventLinkID", "#favoriteCostumeSelect", "#tagTroopersSelect"
+    ];
+
+    selectors.forEach(sel => {
+        if ($(sel).length) {
+            $(sel).select2();
+        }
+    });
+
     $("select[name^=eventId]").select2({
         templateResult: formatOption,
         templateSelection: formatSelection
     });
-	$("select[name^=userID]").select2();
-	$("select[name^=modifysignupFormCostume]").select2();
-	$("select[name^=modiftybackupcostumeForm]").select2();
-	$("#costume").select2();
-	$("#backupcostume").select2();
-	$("#costumebackup").select2();
-	$("select[name^=trooperSelect]").select2();
-	$("select[name^=costumeChoice]").select2();
-	$("select[name^=trooperSelect]").select2();
-	$("select[name^=modifysignupFormCostume2]").select2();
-	$("select[name^=modiftybackupcostumeForm2]").select2();
-	$("select[name^=costumeValSelect]").select2();
-	$("select[name^=costumeVal]").select2();
-	$("#eventLinkIDEdit").select2();
-	$("#multiple_event_select").select2();
-	$("#multiple_event_selectEdit").select2();
-	$("#eventLinkID").select2();
-	$("#favoriteCostumeSelect").select2();
-	$("#tagTroopersSelect").select2();
-	$("#signupForm3 select#costume").select2();
-	$("#signupForm3 select#backupcostume").select2();
+
+    $("select[name^=userID]").select2();
+    $("select[name^=modifysignupFormCostume]").select2();
+    $("select[name^=modiftybackupcostumeForm]").select2();
+    $("select[name^=trooperSelect]").select2();
+    $("select[name^=costumeChoice]").select2();
+    $("select[name^=modifysignupFormCostume2]").select2();
+    $("select[name^=modiftybackupcostumeForm2]").select2();
+    $("select[name^=costumeValSelect]").select2();
+    $("select[name^=costumeVal]").select2();
+
+	if ($("#signupForm3").is(":visible")) {
+		if ($("#signupForm3 select#costume").length) {
+			$("#signupForm3 select#costume").select2();
+		}
+		if ($("#signupForm3 select#backupcostume").length) {
+			$("#signupForm3 select#backupcostume").select2();
+		}
+	}
 }
 
 $(document).ready(function() {

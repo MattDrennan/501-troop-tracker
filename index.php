@@ -7460,7 +7460,7 @@ echo '
 
 echo '
 <!-- External JS File -->
-<script type="text/javascript" src="script/js/main.js?v=8"></script>
+<script type="text/javascript" src="script/js/main.js?v=9"></script>
 </body>
 </html>';
 
