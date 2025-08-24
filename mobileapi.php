@@ -223,8 +223,32 @@ try {
         }
         // Close resources
         $statement->close();
-    // Get event
-    } else if (isset($_GET['troopid'], $_GET['action']) && $_GET['action'] === 'event') {
+    } else if (isset($_GET['action']) && $_GET['action'] === 'user_status') { // Get status of user
+        $user = getUserForumID($_GET['trooperid']);
+        $trooperId = getIDFromUserID($_GET['trooperid']);
+
+        $statement = $conn->prepare("SELECT * FROM troopers WHERE id = ?");
+        $statement->bind_param("i", $trooperId);
+        $statement->execute();
+
+        $result = $statement->get_result();
+
+        if ($result) {
+            while ($db = $result->fetch_object()) {
+                $data->forum_id = $db->forum_id;
+                $data->canAccess = canAccess($db->id);
+                $data->isBanned = $user['user']['is_banned'];
+            }
+        }
+
+        // Set active
+        $statement = $conn->prepare("UPDATE troopers SET last_active = NOW() WHERE id = ?");
+        $statement->bind_param("i", $trooperId);
+        $statement->execute();
+
+        // Close resources
+        $statement->close();
+    } else if (isset($_GET['troopid'], $_GET['action']) && $_GET['action'] === 'event') {   // Get event
         // Prepare SQL query
         $sql = "
             SELECT 
