@@ -277,6 +277,79 @@ try {
             foreach ($db as $key => $value) {
                 $data->$key = $value; // Equivalent to $data->name = $db->name;
             }
+
+            // Is Limited Event Options
+            // Get limit total
+            $limitTotal = $db->limit501st;
+
+            // Loop through clubs
+            foreach($clubArray as $club => $club_value)
+            {
+                // Add
+                $limitTotal += $db->{$club_value['dbLimit']};
+            }
+
+            // Check for total limit set, if it is, replace limit with it
+            if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+            {
+                $limitTotal = $db->limitTotalTroopers;
+            }
+
+            // Set up is limited event?
+            $isLimited = false;
+
+            // Loop through clubs
+            foreach($clubArray as $club => $club_value)
+            {
+                // Check if limited
+                if($db->{$club_value['dbLimit']} < 500)
+                {
+                    $isLimited = true;
+                }
+            }
+
+            // Check for total limit set, if it is, set event as limited
+            if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+            {
+                $isLimited = true;
+            }
+
+            // Check for total limit set, if it is, set event as limited
+            if($db->limitHandlers > 500 || $db->limitHandlers < 500)
+            {
+                $isLimited = true;
+            }
+
+            $data->limitClubs = '';
+                        
+            // If this event is limited in troopers
+            if($db->limit501st < 500 || $isLimited)
+            {
+                // Check for total limit set, if it is, add remaining troopers
+                if($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+                {
+                    $data->limitAll = strip_tags(troopersRemaining($limitTotal, eventClubCount($db->id, "all")));
+                }
+                else
+                {
+                    $data->limitClubs .= strip_tags('This event is limited to '.$db->limit501st.' 501st troopers. '.troopersRemaining($db->limit501st, eventClubCount($db->id, 0)) . '\n');
+
+                    // Loop through clubs
+                    foreach($clubArray as $club => $club_value)
+                    {
+                        $data->limitClubs .= strip_tags('This event is limited to '.$db->{$club_value['dbLimit']}.' '. $club_value['name'] .' troopers. '.troopersRemaining($db->{$club_value['dbLimit']}, eventClubCount($db->id, $club_value['squadID'])).'\n');
+                    }
+                }
+                        
+                // Check for total limit set, if it is, set event as limited
+                if($db->limitHandlers > 500 || $db->limitHandlers < 500)
+                {
+                    $data->limitClubs .= strip_tags('This event is limited to '.$db->limitHandlers.' handlers. <b>'.($db->limitHandlers - handlerEventCount($db->id)).' handlers remaining.\n');
+                }
+            }
+                
+            $data->isLimited = $isLimited;
+            $data->limitTotal = $limitTotal;
         }
 
         // Close resources
