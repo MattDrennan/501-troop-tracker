@@ -198,11 +198,11 @@ try {
     } else if (isset($_GET['action'], $_POST['login'], $_POST['password']) && $_GET['action'] === 'login_with_forum') { // Login to forum
         $forumLogin = loginWithForum($_POST['login'], $_POST['password']);
 
+        $trooperId = getIDFromUserID($forumLogin['user']['user_id']);
+
         // Check credentials
-        if(isset($forumLogin['success']) && $forumLogin['success'] == 1)
-        {
-            $trooperId = getIDFromUserID($forumLogin['user']['user_id']);
-            
+        if(isset($forumLogin['success']) && $forumLogin['success'] == 1 && canAccess($trooperId) && $forumLogin['user']['is_banned'] != 1)
+        {   
             $apiKey = generateApiKey($trooperId);
 
             $data = [
@@ -1049,15 +1049,7 @@ try {
             // Return error response
             http_response_code(500);
             echo json_encode(['error' => 'Failed to delete records: ' . $e->getMessage()]);
-        } finally {
-            // Ensure resources are closed
-            if (isset($stmtMobileApp)) {
-                $stmtMobileApp->close();
-            }
-            if (isset($stmtApiKey)) {
-                $stmtApiKey->close();
-            }
-        }
+        } finally { }
 
         exit();
     } else {
