@@ -1,13 +1,25 @@
+# PHPUnit specific files
+.phpunit.result.cache
+/phpunit.xml
+
+# Composer dependencies
+vendor/
+
+# IDE specific files
+.idea/
+.vscode/
+
+# ORIGINAL
 back/
 newback/
 .DS_Store
 **/.DS_Store
 src/cred.php
+src/settings.php
 images/uploads/
 other/newcron.txt
 sheets_api_secret.json
-vendor/
-vendor/*
 docs/cache/
 test.php
 /src/custom.php
+/seeding
