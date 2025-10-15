@@ -1,58 +1,61 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Actions\FaqAction;
 use App\Actions\LoginAction;
-use App\Utilities\Container;
-use App\Utilities\Router;
 use App\Utilities\Configuration;
-use App\Requests\HttpRequest;
-use Twig\Environment;
+use Psr\Container\ContainerInterface;
+use Slim\Factory\AppFactory;
+use Slim\Views\Twig;
+use Slim\Views\TwigMiddleware;
 use Twig\Loader\FilesystemLoader;
-
-// Basic autoloader
-spl_autoload_register(function ($class_name) {
-    $file = str_replace('\\', DIRECTORY_SEPARATOR, $class_name) . '.php';
-    if (file_exists($file)) {
-        require_once $file;
-    }
-});
+use DI\Container;
 
 // Composer Autoload
-require 'vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 
 // Start session if not already started
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// --- Dependency Injection Container Setup ---
+// -------------------------------------------------------------------------
+// 1. SETUP THE DEPENDENCY INJECTION CONTAINER (DI)
+// -------------------------------------------------------------------------
+
 $container = new Container();
 
-// 1. Register services that cannot be autowired.
-// The container can't guess that the Configuration class needs the settings.php file.
-$container->set(Configuration::class, function () {
+// --- Container Definitions ---
+$container->set(Configuration::class, function (ContainerInterface $c) {
     return new Configuration(require __DIR__ . '/settings.php');
 });
 
-// The Request object should be a singleton created from globals for each request.
-$container->set(HttpRequest::class, function () {
-    return HttpRequest::createFromGlobals();
-});
-
-// Configure the Twig templating engine
-$container->set(Environment::class, function () {
+// Configure Twig
+$container->set(Twig::class, function (ContainerInterface $c) {
     $path = __DIR__ . '/templates';
     $loader = new FilesystemLoader($path);
     // In a production environment, you would enable caching.
-    return new Environment($loader, ['cache' => false]);
+    return new Twig($loader, ['cache' => false]);
 });
 
-// --- Routing and Action ---
-$router = $container->get(Router::class);
+// -------------------------------------------------------------------------
+// 2. BOOTSTRAP THE SLIM APPLICATION
+// -------------------------------------------------------------------------
 
-// Define your application's routes.
-// The router will match the request path against these definitions.
-$router->addRoute('/faq', FaqAction::class);
-$router->addRoute('/login', LoginAction::class);
+AppFactory::setContainer($container);
 
-$router->execute($container);
+$app = AppFactory::create();
+
+// --- Middleware ---
+// $app->add('csrf');
+$app->add(TwigMiddleware::createFromContainer($app, Twig::class));
+$app->addRoutingMiddleware();
+$app->addErrorMiddleware(true, true, true);
+
+// --- Routes ---
+$app->get('/faq', FaqAction::class);
+$app->get('/login', LoginAction::class);
+$app->post('/login', LoginAction::class);
+
+$app->run();

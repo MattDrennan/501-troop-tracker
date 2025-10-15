@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Utilities;
 
-use App\Requests\HttpRequest;
+use App\Payloads\HttpRequest;
 
 final class Router
 {

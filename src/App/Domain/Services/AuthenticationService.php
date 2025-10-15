@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Services;
 
 use App\Utilities\DatabaseConnection;
-use App\Requests\LoginRequest;
-use App\Domain\Responses\LoginResponse;
+use App\Payloads\LoginPayload;
+use App\Domain\Results\LoginResult;
 
 class AuthenticationService
 {
@@ -15,7 +15,7 @@ class AuthenticationService
     ) {
     }
 
-    public function login(LoginRequest $request): LoginResponse
+    public function login(LoginPayload $payload): LoginResult
     {
         // global $forumURL;
 
@@ -77,6 +77,6 @@ class AuthenticationService
         //     $this->redirectResponder->redirectWithMessage('adr.php?action=login', 'Incorrect username or password.');
         // }
 
-        return new LoginResponse(false, 'Incorrect username or password.');
+        return new LoginResult(false, 'Incorrect username or password.');
     }
 }

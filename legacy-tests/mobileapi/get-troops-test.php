@@ -2,20 +2,18 @@
 
 require_once(dirname(__FILE__) . '/../assertions.php');
 
-//  don't show warnings
-error_reporting(E_ERROR);
-
 ob_start();
 
 $project_root = dirname(__FILE__, 3);
 
-$_GET['slideshow'] = '1';
+$_GET['user_id'] = '12';
+$_GET['action'] = 'troops';
 
-include $project_root . '/src/api.php';
+include $project_root . '/src/mobileapi.php';
 
 $actual_output = trim(ob_get_clean());
 
-$expected_output = getExpectedContents(__FILE__);
+$expected_output = getExpectedContents(__FILE__, 'json');
 
 assertEquals($expected_output, $actual_output);
 
