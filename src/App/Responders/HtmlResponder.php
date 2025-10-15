@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Responders;
 
+use App\Results\HtmlResult;
 use Twig\Environment;
 
 /**
- * An abstract base responder for sending HTML responses using Twig.
+ * An HTML responder for sending HTML responses using Twig.
  */
-class HtmlResponder
+class HtmlResponder extends BaseResponder
 {
     public function __construct(private readonly Environment $twig)
     {
@@ -20,18 +21,10 @@ class HtmlResponder
      *
      * @param array<string, mixed> $data
      */
-    public function render(string $template_name, array $data = []): void
+    public function render(string $template_name, array $data = []): HtmlResult
     {
-        $this->sendHeaders();
-        echo $this->twig->render($template_name, $data);
-        exit();
-    }
+        $html = $this->twig->render($template_name, $data);
 
-    /**
-     * Sends the common HTTP headers for an HTML response.
-     */
-    protected function sendHeaders(): void
-    {
-        header('Content-Type: text/html; charset=UTF-8');
+        return new HtmlResult($html);
     }
 }

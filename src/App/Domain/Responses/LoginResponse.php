@@ -24,4 +24,12 @@ class LoginResponse
     {
         return $this->errorMessage;
     }
+
+    public function getData(): array
+    {
+        return [
+            'success' => $this->isSuccess(),
+            'error_message' => $this->getErrorMessage(),
+        ];
+    }
 }

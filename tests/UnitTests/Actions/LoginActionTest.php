@@ -8,7 +8,7 @@ use App\Actions\LoginAction;
 use App\Domain\Services\AuthenticationService;
 use App\Domain\Responses\LoginResponse;
 use App\Requests\LoginRequest;
-use App\Responders\LoginResponder;
+use App\Responders\HtmlResponder;
 use App\Responders\RedirectResponder;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -16,16 +16,14 @@ use PHPUnit\Framework\MockObject\MockObject;
 class LoginActionTest extends TestCase
 {
     private MockObject|AuthenticationService $authentication_service;
-    private MockObject|LoginResponder $responder;
-    private MockObject|RedirectResponder $redirect_responder;
+    private MockObject|HtmlResponder $responder;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->authentication_service = $this->createMock(AuthenticationService::class);
-        $this->responder = $this->createMock(LoginResponder::class);
-        $this->redirect_responder = $this->createMock(RedirectResponder::class);
+        $this->responder = $this->createMock(HtmlResponder::class);
     }
 
     public function testItRedirectsOnSuccessfulPostRequest(): void
@@ -41,11 +39,12 @@ class LoginActionTest extends TestCase
             ->with($request)
             ->willReturn(new LoginResponse(true));
 
-        $this->redirect_responder->expects($this->once())
+        $this->responder->expects($this->once())
             ->method('redirect')
             ->with('index.php');
 
-        $this->responder->expects($this->once())->method('send');
+        $this->responder->expects($this->once())
+            ->method('render');
 
         //  act
         $action->execute();
@@ -65,11 +64,8 @@ class LoginActionTest extends TestCase
             ->with($request)
             ->willReturn($response);
 
-        $this->redirect_responder->expects($this->never())->method('redirect');
-
         $this->responder->expects($this->once())
-            ->method('send')
-            ->with($response);
+            ->method('render');
 
         //  act 
         $action->execute();
