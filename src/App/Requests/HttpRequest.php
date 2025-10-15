@@ -48,7 +48,7 @@ class HttpRequest
      */
     public static function createFromGlobals(): self
     {
-        return new self($_GET, $_POST, $_SESSION, $_SERVER);
+        return new self($_GET ?? [], $_POST ?? [], $_SESSION ?? [], $_SERVER ?? []);
     }
 
     public function isGet(): bool

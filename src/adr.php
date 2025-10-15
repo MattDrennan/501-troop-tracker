@@ -1,13 +1,11 @@
 <?php
 
+use App\Actions\FaqAction;
 use App\Actions\LoginAction;
-use App\Domain\Services\AuthenticationService;
 use App\Utilities\Container;
+use App\Utilities\Router;
 use App\Utilities\Configuration;
-use App\Utilities\DatabaseConnection;
-use App\Utilities\Request;
-use App\Responders\LoginResponder;
-use App\Responders\RedirectResponder;
+use App\Requests\HttpRequest;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
@@ -18,6 +16,9 @@ spl_autoload_register(function ($class_name) {
         require_once $file;
     }
 });
+
+// Composer Autoload
+require 'vendor/autoload.php';
 
 // Start session if not already started
 if (session_status() == PHP_SESSION_NONE) {
@@ -34,28 +35,24 @@ $container->set(Configuration::class, function () {
 });
 
 // The Request object should be a singleton created from globals for each request.
-$container->set(Request::class, function () {
-    return Request::createFromGlobals();
+$container->set(HttpRequest::class, function () {
+    return HttpRequest::createFromGlobals();
 });
 
 // Configure the Twig templating engine
 $container->set(Environment::class, function () {
-    $loader = new FilesystemLoader(__DIR__ . '/../templates');
+    $path = __DIR__ . '/templates';
+    $loader = new FilesystemLoader($path);
     // In a production environment, you would enable caching.
     return new Environment($loader, ['cache' => false]);
 });
 
-// 2. Any legacy functions needed by the new classes should be included here.
-// As you refactor more, this list will shrink.
-require_once 'config.php';
-
 // --- Routing and Action ---
-$action = $_GET['action'] ?? 'home';
+$router = $container->get(Router::class);
 
-if ($action === 'login') {
-    // The container will now automatically resolve LoginAction and all of its
-    // dependencies (AuthenticationService, LoginResponder, etc.) recursively.
-    $loginAction = $container->get(LoginAction::class);
-    ($loginAction)();
-}
-// Future actions like 'logout', 'register', etc., can be added here.
+// Define your application's routes.
+// The router will match the request path against these definitions.
+$router->addRoute('/faq', FaqAction::class);
+$router->addRoute('/login', LoginAction::class);
+
+$router->execute($container);

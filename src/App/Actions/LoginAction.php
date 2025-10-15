@@ -12,8 +12,8 @@ use App\Domain\Responses\LoginResponse;
 class LoginAction
 {
     public function __construct(
-        private readonly LoginRequest $loginRequest,
-        private readonly LoginResponder $loginResponder,
+        private readonly LoginRequest $request,
+        private readonly LoginResponder $responder,
         private readonly AuthenticationService $authenticationService,
     ) {
     }
@@ -22,18 +22,18 @@ class LoginAction
     public function execute(): void
     {
         // Handle the GET request case first
-        if (!$this->loginRequest->isPost()) {
-            $this->loginResponder->send(new LoginResponse(false));
+        if (!$this->request->isPost()) {
+            $this->responder->send(new LoginResponse(false));
             return;
         }
 
         // Handle the POST request case
-        $response = $this->authenticationService->login($this->loginRequest);
+        $response = $this->authenticationService->login($this->request);
         if ($response->isSuccess()) {
-            $this->redirectResponder->redirect('index.php');
+            $this->responder->redirect('index.php');
             return;
         }
-        $this->loginResponder->send($response);
+        $this->responder->send($response);
     }
 }
 

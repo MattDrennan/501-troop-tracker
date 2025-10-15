@@ -9,9 +9,9 @@ use Twig\Environment;
 /**
  * An abstract base responder for sending HTML responses using Twig.
  */
-abstract class HtmlResponder
+class HtmlResponder
 {
-    public function __construct(protected readonly Environment $twig)
+    public function __construct(private readonly Environment $twig)
     {
     }
 

@@ -16,7 +16,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 class LoginActionTest extends TestCase
 {
     private MockObject|AuthenticationService $authentication_service;
-    private MockObject|LoginResponder $login_responder;
+    private MockObject|LoginResponder $responder;
     private MockObject|RedirectResponder $redirect_responder;
 
     protected function setUp(): void
@@ -24,74 +24,74 @@ class LoginActionTest extends TestCase
         parent::setUp();
 
         $this->authentication_service = $this->createMock(AuthenticationService::class);
-        $this->login_responder = $this->createMock(LoginResponder::class);
+        $this->responder = $this->createMock(LoginResponder::class);
         $this->redirect_responder = $this->createMock(RedirectResponder::class);
     }
 
     public function testItRedirectsOnSuccessfulPostRequest(): void
     {
         //  arrange
-        $login_request = $this->createMock(LoginRequest::class);
-        $login_request->method('isPost')->willReturn(true);
+        $request = $this->createMock(LoginRequest::class);
+        $request->method('isPost')->willReturn(true);
 
-        $login_action = $this->createLoginAction($login_request);
+        $action = $this->createLoginAction($request);
 
         $this->authentication_service->expects($this->once())
             ->method('login')
-            ->with($login_request)
+            ->with($request)
             ->willReturn(new LoginResponse(true));
 
         $this->redirect_responder->expects($this->once())
             ->method('redirect')
             ->with('index.php');
 
-        $this->login_responder->expects($this->once())->method('send');
+        $this->responder->expects($this->once())->method('send');
 
         //  act
-        $login_action->execute();
+        $action->execute();
     }
 
     public function testItShowsFormAgainOnFailedPostRequest(): void
     {
         //  arrange
-        $login_request = $this->createMock(LoginRequest::class);
-        $login_request->method('isPost')->willReturn(true);
-        $login_response = new LoginResponse(false, 'Bad credentials');
+        $request = $this->createMock(LoginRequest::class);
+        $request->method('isPost')->willReturn(true);
+        $response = new LoginResponse(false, 'Bad credentials');
 
-        $login_action = $this->createLoginAction($login_request);
+        $action = $this->createLoginAction($request);
 
         $this->authentication_service->expects($this->once())
             ->method('login')
-            ->with($login_request)
-            ->willReturn($login_response);
+            ->with($request)
+            ->willReturn($response);
 
         $this->redirect_responder->expects($this->never())->method('redirect');
 
-        $this->login_responder->expects($this->once())
+        $this->responder->expects($this->once())
             ->method('send')
-            ->with($login_response);
+            ->with($response);
 
         //  act 
-        $login_action->execute();
+        $action->execute();
     }
 
     public function testItShowsFormOnGetRequest(): void
     {
         //  arrange
-        $login_request = $this->createMock(LoginRequest::class);
-        $login_request->method('isPost')->willReturn(false);
+        $request = $this->createMock(LoginRequest::class);
+        $request->method('isPost')->willReturn(false);
 
-        $login_action = $this->createLoginAction($login_request);
+        $action = $this->createLoginAction($request);
 
-        $this->login_responder->expects($this->once())
+        $this->responder->expects($this->once())
             ->method('send');
 
         //  act
-        $login_action->execute();
+        $action->execute();
     }
 
-    private function createLoginAction(LoginRequest $login_request): LoginAction
+    private function createLoginAction(LoginRequest $request): LoginAction
     {
-        return new LoginAction($login_request, $this->login_responder, $this->authentication_service);
+        return new LoginAction($request, $this->responder, $this->authentication_service);
     }
 }

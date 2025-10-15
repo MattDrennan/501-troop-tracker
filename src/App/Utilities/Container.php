@@ -18,24 +18,28 @@ class Container implements ContainerInterface
 {
     private array $factories = [];
 
-    /**
-     * @throws Exception
-     */
-    public function get(string $id)
+    public function __construct()
     {
-        if (!isset($this->factories[$id])) {
-            return $this->resolve($id);
-        }
-
-        // Call the factory function to create and return the service instance.
-        $factory = $this->factories[$id];
-        return $factory($this);
     }
 
     /**
      * @throws Exception
      */
-    private function resolve(string $id)
+    public function get(string $id)
+    {
+        if (isset($this->factories[$id])) {
+            // Call the factory function to create and return the service instance.
+            $factory = $this->factories[$id];
+            return $factory($this);
+        }
+
+        return $this->resolve($id);
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function resolve(string $id): object|null
     {
         // 1. Inspect the class we are trying to build
         try {
