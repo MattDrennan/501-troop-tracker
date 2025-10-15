@@ -37,6 +37,8 @@ final class Router
 
         $action = $container->get($action_class);
 
-        $action->execute();
+        $result = $action->execute();
+
+        $result->send();
     }
 }
