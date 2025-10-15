@@ -10,6 +10,8 @@ use App\Domain\Responses\LoginResponse;
 use App\Requests\LoginRequest;
 use App\Responders\HtmlResponder;
 use App\Responders\RedirectResponder;
+use App\Results\HtmlResult;
+use App\Results\RedirectResult;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -39,15 +41,11 @@ class LoginActionTest extends TestCase
             ->with($request)
             ->willReturn(new LoginResponse(true));
 
-        $this->responder->expects($this->once())
-            ->method('redirect')
-            ->with('index.php');
-
-        $this->responder->expects($this->once())
-            ->method('render');
-
         //  act
-        $action->execute();
+        $result = $action->execute();
+
+        //  assert
+        $this->assertInstanceOf(RedirectResult::class, $result);
     }
 
     public function testItShowsFormAgainOnFailedPostRequest(): void
@@ -64,11 +62,11 @@ class LoginActionTest extends TestCase
             ->with($request)
             ->willReturn($response);
 
-        $this->responder->expects($this->once())
-            ->method('render');
-
         //  act 
-        $action->execute();
+        $result = $action->execute();
+
+        //  assert
+        $this->assertInstanceOf(HtmlResult::class, $result);
     }
 
     public function testItShowsFormOnGetRequest(): void
@@ -79,11 +77,11 @@ class LoginActionTest extends TestCase
 
         $action = $this->createLoginAction($request);
 
-        $this->responder->expects($this->once())
-            ->method('send');
-
         //  act
-        $action->execute();
+        $result = $action->execute();
+
+        //  assert
+        $this->assertInstanceOf(HtmlResult::class, $result);
     }
 
     private function createLoginAction(LoginRequest $request): LoginAction

@@ -15,5 +15,10 @@ class RedirectResult implements ActionResult
         header('Location: ' . $this->url);
         exit();
     }
+
+    public function getUrl(): string
+    {
+        return $this->url;
+    }
 }
 

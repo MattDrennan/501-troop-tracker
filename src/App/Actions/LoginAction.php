@@ -9,6 +9,8 @@ use App\Requests\LoginRequest;
 use App\Responders\HtmlResponder;
 use App\Domain\Responses\LoginResponse;
 use App\Results\ActionResult;
+use App\Results\HtmlResult;
+use App\Results\RedirectResult;
 
 class LoginAction implements ActionInterface
 {
@@ -20,7 +22,7 @@ class LoginAction implements ActionInterface
     }
 
 
-    public function execute(): ActionResult
+    public function execute(): HtmlResult|RedirectResult|ActionResult
     {
         $response = new LoginResponse(false);
 

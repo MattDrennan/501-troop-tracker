@@ -10,6 +10,7 @@ use App\Domain\Responses\LoginResponse;
 use App\Requests\LoginRequest;
 use App\Responders\HtmlResponder;
 use App\Responders\RedirectResponder;
+use App\Results\HtmlResult;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -31,11 +32,11 @@ class FaqActionTest extends TestCase
         //  arrange
         $action = $this->createFaqAction();
 
-        $this->responder->expects($this->once())
-            ->method('render');
-
         //  act
-        $action->execute();
+        $result = $action->execute();
+
+        //  assert
+        $this->assertInstanceOf(HtmlResult::class, $result);
     }
 
     private function createFaqAction(): FaqAction

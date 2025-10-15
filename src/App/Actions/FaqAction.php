@@ -6,6 +6,7 @@ namespace App\Actions;
 
 use App\Responders\HtmlResponder;
 use App\Results\ActionResult;
+use App\Results\HtmlResult;
 
 class FaqAction implements ActionInterface
 {
@@ -13,7 +14,7 @@ class FaqAction implements ActionInterface
     {
     }
 
-    public function execute(): ActionResult
+    public function execute(): HtmlResult|ActionResult
     {
         return $this->responder->render('pages/faq.html');
     }

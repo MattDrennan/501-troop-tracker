@@ -16,4 +16,9 @@ class HtmlResult implements ActionResult
         echo $this->html;
         exit();
     }
+
+    public function getHtml(): string
+    {
+        return $this->html;
+    }
 }
