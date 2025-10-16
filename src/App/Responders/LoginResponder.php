@@ -25,7 +25,7 @@ class LoginResponder
     {
         $is_api = $this->expectsJson($request);
 
-        $payload = array_merge($result->getDataPayload('password'), $result->getDataPayload());
+        $payload = array_merge($result->getDataPayload());
 
         if ($result->isSuccess()) {
             if ($is_api) {
@@ -45,6 +45,6 @@ class LoginResponder
         }
 
         // The Twig service handles writing the HTML body and returns the response
-        return $this->view->render($response, 'login/login.twig', $payload);
+        return $this->view->render($response, 'pages/login.html', $payload);
     }
 }
