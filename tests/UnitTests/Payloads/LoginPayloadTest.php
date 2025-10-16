@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\UnitTests\Requests;
+namespace Tests\UnitTests\Payloads;
 
 use App\Payloads\LoginPayload;
 use PHPUnit\Framework\TestCase;

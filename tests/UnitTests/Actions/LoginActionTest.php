@@ -6,112 +6,158 @@ namespace Tests\UnitTests\Actions;
 
 use App\Payloads\LoginPayload;
 use App\Domain\Results\LoginResult;
-use App\Responders\LoginResponder;
+use App\Responders\HtmlResponder;
+use App\Responders\RedirectResponder;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\RequestInterface as Request;
+use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Actions\LoginAction;
 use App\Domain\Services\AuthenticationService;
 
 class LoginActionTest extends TestCase
 {
-    // private MockObject|LoginResponder $responder;
-    // private MockObject|AuthenticationService $service;
-    // private MockObject|LoginPayload $payload;
-    // private MockObject|Request $request;
-    // private MockObject|Response $response;
-    // private LoginAction $action;
+    private MockObject|HtmlResponder $html_responder;
+    private MockObject|RedirectResponder $redirect_responder;
+    private MockObject|AuthenticationService $service;
+    private LoginAction $subject;
 
-    // protected function setUp(): void
-    // {
-    //     parent::setUp();
-    //     $this->responder = $this->createMock(LoginResponder::class);
-    //     $this->service = $this->createMock(AuthenticationService::class);
-    //     $this->payload = $this->createMock(LoginPayload::class);
-    //     $this->request = $this->createMock(Request::class);
-    //     $this->response = $this->createMock(Response::class);
+    protected function setUp(): void
+    {
+        parent::setUp();
 
-    //     $this->action = new LoginAction($this->payload, $this->responder, $this->service);
-    // }
+        $this->redirect_responder = $this->createMock(RedirectResponder::class);
+        $this->html_responder = $this->createMock(HtmlResponder::class);
+        $this->service = $this->createMock(AuthenticationService::class);
 
-    // public function testInvokeHandlesNonPostRequest(): void
-    // {
-    //     // Arrange
-    //     $this->payload->method('isPost')->willReturn(false);
+        $this->subject = new LoginAction($this->html_responder, $this->redirect_responder, $this->service);
+    }
 
-    //     $this->service->expects($this->never())->method('login');
+    public function testInvokeHandlesGetRequest(): void
+    {
+        // Arrange
+        $request = $this->createMock(Request::class);
+        $response = $this->createMock(Response::class);
 
-    //     $this->responder->expects($this->once())
-    //         ->method('respond')
-    //         ->with(
-    //             $this->identicalTo($this->payload),
-    //             $this->callback(function (LoginResult $result) {
-    //                 return !$result->isSuccess();
-    //             }),
-    //             $this->identicalTo($this->response)
-    //         )
-    //         ->willReturn($this->response);
+        $this->service->expects($this->never())->method('login');
 
-    //     // Act
-    //     $actual_response = ($this->action)($this->request, $this->response);
+        $callback = $this->callback(function ($arg) {
+            return is_array($arg);
+        });
 
-    //     // Assert
-    //     $this->assertSame($this->response, $actual_response);
-    // }
+        $this->html_responder->expects($this->once())
+            ->method('respond')
+            ->with($response, 'pages/login.html', $callback)
+            ->willReturn($response);
 
-    // public function testInvokeHandlesInvalidPostRequest(): void
-    // {
-    //     // Arrange
-    //     $this->payload->method('isPost')->willReturn(true);
-    //     $this->payload->method('isValid')->willReturn(false);
+        // Act
+        $actual_response = ($this->subject)($request, $response);
 
-    //     $this->service->expects($this->never())->method('login');
+        // Assert
+        $this->assertSame($response, $actual_response);
+    }
 
-    //     $this->responder->expects($this->once())
-    //         ->method('respond')
-    //         ->with(
-    //             $this->identicalTo($this->payload),
-    //             $this->callback(function (LoginResult $result) {
-    //                 return !$result->isSuccess();
-    //             }),
-    //             $this->identicalTo($this->response)
-    //         )
-    //         ->willReturn($this->response);
+    public function testInvokeHandlesInvalidPostRequest(): void
+    {
+        // Arrange
+        $request = $this->createMock(Request::class);
+        $response = $this->createMock(Response::class);
 
-    //     // Act
-    //     $actual_response = ($this->action)($this->request, $this->response);
+        $request->expects($this->atLeastOnce())
+            ->method('getMethod')
+            ->willReturn('POST');
 
-    //     // Assert
-    //     $this->assertSame($this->response, $actual_response);
-    // }
+        $request->expects($this->atLeastOnce())
+            ->method('getParsedBody')
+            ->willReturn(['tkid' => 'TK-123']);
 
-    // public function testInvokeHandlesValidPostRequest(): void
-    // {
-    //     // Arrange
-    //     $this->payload->method('isPost')->willReturn(true);
-    //     $this->payload->method('isValid')->willReturn(true);
+        $responder_callback = $this->callback(function ($arg) {
+            return is_array($arg);
+        });
 
-    //     $expected_result = new LoginResult(true);
+        $this->html_responder->expects($this->once())
+            ->method('respond')
+            ->with($response, 'pages/login.html', $responder_callback)
+            ->willReturn($response);
 
-    //     $this->service->expects($this->once())
-    //         ->method('login')
-    //         ->with($this->identicalTo($this->payload))
-    //         ->willReturn($expected_result);
+        // Act
+        $actual_response = ($this->subject)($request, $response);
 
-    //     $this->responder->expects($this->once())
-    //         ->method('respond')
-    //         ->with(
-    //             $this->identicalTo($this->payload),
-    //             $this->identicalTo($expected_result),
-    //             $this->identicalTo($this->response)
-    //         )
-    //         ->willReturn($this->response);
+        // Assert
+        $this->assertSame($response, $actual_response);
+    }
 
-    //     // Act
-    //     $actual_response = ($this->action)($this->request, $this->response);
+    public function testInvokeHandlesInvalidCredentialPostRequest(): void
+    {
+        // Arrange
+        $request = $this->createMock(Request::class);
+        $response = $this->createMock(Response::class);
 
-    //     // Assert
-    //     $this->assertSame($this->response, $actual_response);
-    // }
+        $request->expects($this->atLeastOnce())
+            ->method('getMethod')
+            ->willReturn('POST');
+
+        $request->expects($this->atLeastOnce())
+            ->method('getParsedBody')
+            ->willReturn(['tkid' => 'TK-123', 'password' => 'dontlook']);
+
+        $service_callback = $this->callback(function ($arg) {
+            return $arg instanceof LoginPayload;
+        });
+
+        $this->service->expects($this->once())
+            ->method('login')
+            ->with($service_callback)
+            ->willReturn(new LoginResult(false));
+
+        $responder_callback = $this->callback(function ($arg) {
+            return is_array($arg);
+        });
+
+        $this->html_responder->expects($this->once())
+            ->method('respond')
+            ->with($response, 'pages/login.html', $responder_callback)
+            ->willReturn($response);
+
+        // Act
+        $actual_response = ($this->subject)($request, $response);
+
+        // Assert
+        $this->assertSame($response, $actual_response);
+    }
+
+    public function testInvokeHandlesValidPostRequest(): void
+    {
+        // Arrange
+        $request = $this->createMock(Request::class);
+        $response = $this->createMock(Response::class);
+
+        $request->expects($this->atLeastOnce())
+            ->method('getMethod')
+            ->willReturn('POST');
+
+        $request->expects($this->atLeastOnce())
+            ->method('getParsedBody')
+            ->willReturn(['tkid' => 'TK-123', 'password' => 'dontlook']);
+
+        $service_callback = $this->callback(function ($arg) {
+            return $arg instanceof LoginPayload;
+        });
+
+        $this->service->expects($this->once())
+            ->method('login')
+            ->with($service_callback)
+            ->willReturn(new LoginResult(true));
+
+        $this->redirect_responder->expects($this->once())
+            ->method('respond')
+            ->with($response, '/index.php')
+            ->willReturn($response);
+
+        // Act
+        $actual_response = ($this->subject)($request, $response);
+
+        // Assert
+        $this->assertSame($response, $actual_response);
+    }
 }

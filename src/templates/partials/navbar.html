@@ -1,0 +1,18 @@
+<div class="topnav"
+     id="myTopnav">
+    <a href="index.php"
+       class="{{ currentPage == 'home' ? 'active' : '' }}">Home</a>
+    <a href="{{ config.get('forum.url') }}"
+       class="{{ currentPage == 'forums' ? 'active' : '' }}">Forums</a>
+    <a href="index.php?action=requestaccess"
+       class="{{ currentPage == 'request' ? 'active' : '' }}">Request Access</a>
+    <a href="index.php?action=setup"
+       class="{{ currentPage == 'setup' ? 'active' : '' }}">Account Setup</a>
+    <a href="{{ url_for('faq') }}"
+       class="{{ currentPage == 'faq' ? 'active' : '' }}">FAQ</a>
+    <a href="index.php?action=login"
+       class="{{ currentPage == 'login' ? 'active' : '' }}">Login</a>
+    <a href="javascript:void(0);"
+       class="icon"
+       onclick="myFunction()"><i class="fa fa-bars"></i></a>
+</div>

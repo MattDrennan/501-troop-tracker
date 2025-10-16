@@ -18,6 +18,8 @@ Before submitting code, you must first create a corresponding Issue:
 
 * **Bugs:** Open an issue labeled **`bug`**. Include steps to reproduce, screenshots, and relevant environment details.
 * **Enhancements/Features:** Open an issue labeled **`enhancement`** or **`feature`**. Explain the feature's operational benefit and discuss major changes first.
+* **Refactor:** Open an issue labeled **`refactor`**. Explain the change in core functionality.
+
 
 ### 2. Submitting Code Changes (Pull Requests)
 

@@ -5,7 +5,7 @@
     # Set the base for all rewrite rules.
     # If your application is in a subdirectory, you may need to adjust this.
     # For example, if your URL is http://localhost/my-app/src/, set this to /my-app/src/
-    RewriteBase /
+    RewriteBase /troop-tracker/
 
     # --- Rules for ADR Front Controller ---
 

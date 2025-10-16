@@ -95,7 +95,7 @@
 <a href="https://www.fl501st.com/boards/">Forums</a>
 			<a href="index.php?action=requestaccess" >Request Access</a>
 			<a href="index.php?action=setup" class="active">Account Setup</a>
-			<a href="index.php?action=faq" >FAQ</a>
+			<a href="faq" >FAQ</a>
 	<a href="index.php?action=login" >Login</a>
 <a href="javascript:void(0);" class="icon" onclick="myFunction()"><i class="fa fa-bars"></i></a>
 </div>
@@ -133,7 +133,7 @@
 </section>
 <section class="tm-section tm-section-small">
 <p class="tm-mb-0">
-Website created by <a href="https://mattdrennan.com">Matthew Drennan (TK52233)</a>. If you encounter any technical issues with this site, please refer to the <a href="index.php?action=faq">FAQ page</a> for guidance.
+Website created by <a href="https://mattdrennan.com">Matthew Drennan (TK52233)</a>. If you encounter any technical issues with this site, please refer to the <a href="faq">FAQ page</a> for guidance.
 </p>
 
 <p class="tm-mb-0">

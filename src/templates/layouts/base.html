@@ -52,102 +52,14 @@
         </div>
         <div class="tm-main-content">
             <section class="tm-section">
-
-                <div class="topnav"
-                     id="myTopnav">
-                    <a href="index.php"
-                       class="active">Home</a>
-                    <a href="https://www.fl501st.com/boards/">Forums</a>
-                    <a href="index.php?action=requestaccess">Request Access</a>
-                    <a href="index.php?action=setup">Account Setup</a>
-                    <a href="index.php?action=faq">FAQ</a>
-                    <a href="index.php?action=login">Login</a>
-                    <a href="javascript:void(0);"
-                       class="icon"
-                       onclick="myFunction()"><i class="fa fa-bars"></i></a>
-                </div>
+                {% include 'partials/navbar.html' with { currentPage: currentPage } %}
 
                 <div class="dashboard-row"></div>
-                <h2 class="tm-section-header">Welcome to the Florida Garrison Troop Tracker!</h2>
-                <p style="text-align: center; border: dashed white;">
-                    <a href="index.php?action=requestaccess">Are you new to the Florida Garrison and/or 501st? Or are
-                        you solely a member of another club? Click here.</a>
-                </p>
+                {% block content %}{% endblock %}
 
-                <p style="text-align: center; border: dashed white;">
-                    <a href="index.php?action=setup">Have you used the old troop tracker and need to set up your
-                        account? Click here.</a>
-                </p>
-                <h2 class="tm-section-header">Recent Photos</h2>
-                <a href="images/uploads/2025-10-13-14-51-09-IMG_2460.jpeg"
-                   data-lightbox="photo"
-                   data-title="Uploaded by  on <a href='index.php?event=11253'>10/11 & 10/12/2025 - Boo at the Zoo - MELBOURNE</a>."><img
-                         src="images/uploads/resize/2025-10-13-14-51-09-IMG_2460.jpg"
-                         width="200px"
-                         height="200px" /></a>
-                <a href="images/uploads/2025-10-13-14-51-06-IMG_2457.jpeg"
-                   data-lightbox="photo"
-                   data-title="Uploaded by  on <a href='index.php?event=11253'>10/11 & 10/12/2025 - Boo at the Zoo - MELBOURNE</a>."><img
-                         src="images/uploads/resize/2025-10-13-14-51-06-IMG_2457.jpg"
-                         width="200px"
-                         height="200px" /></a>
-                <a href="images/uploads/2025-10-13-14-51-05-IMG_2458.jpeg"
-                   data-lightbox="photo"
-                   data-title="Uploaded by  on <a href='index.php?event=11253'>10/11 & 10/12/2025 - Boo at the Zoo - MELBOURNE</a>."><img
-                         src="images/uploads/resize/2025-10-13-14-51-05-IMG_2458.jpg"
-                         width="200px"
-                         height="200px" /></a>
-                <a href="images/uploads/2025-10-13-14-51-02-IMG_2476.jpeg"
-                   data-lightbox="photo"
-                   data-title="Uploaded by  on <a href='index.php?event=11253'>10/11 & 10/12/2025 - Boo at the Zoo - MELBOURNE</a>."><img
-                         src="images/uploads/resize/2025-10-13-14-51-02-IMG_2476.jpg"
-                         width="200px"
-                         height="200px" /></a>
-                <a href="images/uploads/2025-10-13-14-51-01-IMG_2463.jpeg"
-                   data-lightbox="photo"
-                   data-title="Uploaded by  on <a href='index.php?event=11253'>10/11 & 10/12/2025 - Boo at the Zoo - MELBOURNE</a>."><img
-                         src="images/uploads/resize/2025-10-13-14-51-01-IMG_2463.jpg"
-                         width="200px"
-                         height="200px" /></a>
-                <a href="images/uploads/2025-10-12-06-46-54-IMG_2422.jpeg"
-                   data-lightbox="photo"
-                   data-title="Uploaded by  on <a href='index.php?event=11252'>10/11 & 10/12/2025 - Boo at the Zoo - MELBOURNE</a>."><img
-                         src="images/uploads/resize/2025-10-12-06-46-54-IMG_2422.jpg"
-                         width="200px"
-                         height="200px" /></a>
-                <a href="images/uploads/2025-10-12-06-46-54-IMG_2380.jpeg"
-                   data-lightbox="photo"
-                   data-title="Uploaded by  on <a href='index.php?event=11252'>10/11 & 10/12/2025 - Boo at the Zoo - MELBOURNE</a>."><img
-                         src="images/uploads/resize/2025-10-12-06-46-54-IMG_2380.jpg"
-                         width="200px"
-                         height="200px" /></a>
-                <a href="images/uploads/2025-10-12-06-45-26-IMG_2374.jpeg"
-                   data-lightbox="photo"
-                   data-title="Uploaded by  on <a href='index.php?event=11251'>10/11 & 10/12/2025 - Boo at the Zoo - MELBOURNE</a>."><img
-                         src="images/uploads/resize/2025-10-12-06-45-26-IMG_2374.jpg"
-                         width="200px"
-                         height="200px" /></a>
-                <a href="images/uploads/2025-10-12-06-45-22-IMG_2420.jpeg"
-                   data-lightbox="photo"
-                   data-title="Uploaded by  on <a href='index.php?event=11251'>10/11 & 10/12/2025 - Boo at the Zoo - MELBOURNE</a>."><img
-                         src="images/uploads/resize/2025-10-12-06-45-22-IMG_2420.jpg"
-                         width="200px"
-                         height="200px" /></a>
-                <a href="images/uploads/2025-10-12-06-45-19-IMG_2387.jpeg"
-                   data-lightbox="photo"
-                   data-title="Uploaded by  on <a href='index.php?event=11251'>10/11 & 10/12/2025 - Boo at the Zoo - MELBOURNE</a>."><img
-                         src="images/uploads/resize/2025-10-12-06-45-19-IMG_2387.jpg"
-                         width="200px"
-                         height="200px" /></a>
-                <p style="text-align: center;">
-                    <i>Press photos for full resolution version.</i>
-                    <br />
-                    <a href="index.php?action=photos"
-                       class="button">Recent events with photos</a>
-                </p>
             </section>
 
-            {% include 'partials/footer.html.twig' %}
+            {% include 'partials/footer.html' %}
 
             <script>
                 $(document).ready(function () {

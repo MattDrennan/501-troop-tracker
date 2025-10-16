@@ -5,46 +5,41 @@ declare(strict_types=1);
 namespace Tests\UnitTests\Actions;
 
 use App\Actions\FaqAction;
-use App\Responders\FaqResponder;
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\RequestInterface as Request;
-use PHPUnit\Framework\TestCase;
+use App\Responders\HtmlResponder;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use function PHPUnit\Framework\identicalTo;
 
 class FaqActionTest extends TestCase
 {
-    private MockObject|FaqResponder $responder;
-    private MockObject|Request $request;
-    private MockObject|Response $response;
+    private MockObject|HtmlResponder $responder;
+    private FaqAction $subject;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->responder = $this->createMock(FaqResponder::class);
-        $this->request = $this->createMock(Request::class);
-        $this->response = $this->createMock(Response::class);
+        $this->responder = $this->createMock(HtmlResponder::class);
+        $this->subject = new FaqAction($this->responder);
     }
 
     public function testInvokeCallsResponderAndReturnsResponse(): void
     {
-        //  arrange
-        $action = $this->createFaqAction();
+        //  Arrange
+        $request = $this->createMock(Request::class);
+        $response = $this->createMock(Response::class);
 
         $this->responder->expects($this->once())
             ->method('respond')
-            ->with($this->request, $this->response)
-            ->willReturn($this->response);
+            ->with($response, 'pages/faq.html')
+            ->willReturn($response);
 
-        //  act
-        $actual_response = $action($this->request, $this->response);
+        //  Act
+        $actual_response = ($this->subject)($request, $response);
 
-        //  assert
-        $this->assertSame($this->response, $actual_response);
-    }
-
-    private function createFaqAction(): FaqAction
-    {
-        return new FaqAction($this->responder);
+        //  Assert
+        $this->assertSame($response, $actual_response);
     }
 }
