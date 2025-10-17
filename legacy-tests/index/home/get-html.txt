@@ -1,0 +1,193 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Meta Data -->
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+	<!-- Title -->
+	<title>501st Florida Garrison - Troop Tracker</title>
+	
+	<!-- Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600&display=swap" rel="stylesheet" />
+	
+	<!-- Main Style Sheets -->
+	<link href="fontawesome/css/all.min.css" rel="stylesheet" />
+	<!-- Style Sheets -->
+	<link href="css/main.css?v=2" rel="stylesheet" />
+	<link rel="stylesheet" href="script/lib/jquery-ui.min.css">
+	<link rel="stylesheet" href="script/lib/jquery-ui-timepicker-addon.css">
+	<link href="css/dropzone.min.css" type="text/css" rel="stylesheet" />
+	<link href="css/lightbox.min.css" rel="stylesheet" />
+	<link href="css/calendar.css" rel="stylesheet" />
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+	<link rel="stylesheet" href="https://unpkg.com/balloon-css/balloon.min.css">
+	
+	<!-- Icon -->
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+	
+	<!-- Setup Variable -->
+	<script>
+	var forumURL = "https://www.fl501st.com/boards/";
+	var placeholder = 1196;
+	var squadIDList = [0,1,2,3,4,5];
+	var clubArray = ["pRebel","pDroid","pMando","pOther","pSG","pDE"];
+	var clubDBLimitArray = ["limitRebels","limitDroid","limitMando","limitOther","limitSG","limitDE"];
+	var clubDB3Array = ["rebelforum","mandoid","sgid","de_id"];
+	// Clear limits
+	function clearLimit()
+	{
+		$("#limitRebels").val(500);
+		$("#limitDroid").val(500);
+		$("#limitMando").val(500);
+		$("#limitOther").val(500);
+		$("#limitSG").val(500);
+		$("#limitDE").val(500);
+	}
+	</script>
+
+	<!-- JQUERY -->
+	<script src="script/lib/jquery-3.4.1.min.js"></script>
+
+	<!-- JQUERY UI -->
+	<script src="script/lib/jquery-ui.min.js"></script>
+
+	<!-- JQUERY SELECT -->
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+	<!-- Addons -->
+	<script src="script/lib/jquery-ui-timepicker-addon.js"></script>
+	<script src="script/js/validate/jquery.validate.min.js"></script>
+	<script src="script/js/validate/additional-methods.min.js"></script>
+	<script src="script/js/validate/validate.js?v=4"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
+	
+	<!-- Drop Zone -->
+	<script src="script/lib/dropzone.min.js"></script>
+	
+	<!-- LightBox -->
+	<script src="script/lib/lightbox.min.js"></script>
+
+	<script>
+ 	$(function() {
+		$("#datepicker").datetimepicker();
+		$("#datepicker2").datetimepicker();
+		$("#datepicker3").datetimepicker();
+		$("#datepicker4").datetimepicker();
+	});
+	</script>
+</head>
+
+<body class="floridadark">
+
+<div class="tm-container">
+<div class="tm-text-white tm-page-header-container">
+	<img src="images/logo.png" />
+</div>
+<div class="tm-main-content">
+<section class="tm-section">
+
+<div class="topnav" id="myTopnav">
+<a href="index.php" class="active">Home</a>
+<a href="https://www.fl501st.com/boards/">Forums</a>
+			<a href="index.php?action=requestaccess" >Request Access</a>
+			<a href="index.php?action=setup" >Account Setup</a>
+			<a href="faq" >FAQ</a>
+	<a href="index.php?action=login" >Login</a>
+<a href="javascript:void(0);" class="icon" onclick="myFunction()"><i class="fa fa-bars"></i></a>
+</div>
+
+<div class="dashboard-row"></div>
+				<h2 class="tm-section-header">Welcome to the Florida Garrison Troop Tracker!</h2>
+					<p style="text-align: center; border: dashed white;">
+						<a href="index.php?action=requestaccess">Are you new to the Florida Garrison and/or 501st? Or are you solely a member of another club? Click here.</a>
+					</p>
+
+					<p style="text-align: center; border: dashed white;">
+						<a href="index.php?action=setup">Have you used the old troop tracker and need to set up your account? Click here.</a>
+					</p>
+			<h2 class="tm-section-header">Recent Photos</h2>
+					<a href="images/uploads/2025-10-13-14-51-09-IMG_2460.jpeg" data-lightbox="photo" data-title="Uploaded by  on <a href='index.php?event=11253'>10/11 & 10/12/2025 - Boo at the Zoo - MELBOURNE</a>."><img src="images/uploads/resize/2025-10-13-14-51-09-IMG_2460.jpg" width="200px" height="200px" /></a>
+					<a href="images/uploads/2025-10-13-14-51-06-IMG_2457.jpeg" data-lightbox="photo" data-title="Uploaded by  on <a href='index.php?event=11253'>10/11 & 10/12/2025 - Boo at the Zoo - MELBOURNE</a>."><img src="images/uploads/resize/2025-10-13-14-51-06-IMG_2457.jpg" width="200px" height="200px" /></a>
+					<a href="images/uploads/2025-10-13-14-51-05-IMG_2458.jpeg" data-lightbox="photo" data-title="Uploaded by  on <a href='index.php?event=11253'>10/11 & 10/12/2025 - Boo at the Zoo - MELBOURNE</a>."><img src="images/uploads/resize/2025-10-13-14-51-05-IMG_2458.jpg" width="200px" height="200px" /></a>
+					<a href="images/uploads/2025-10-13-14-51-02-IMG_2476.jpeg" data-lightbox="photo" data-title="Uploaded by  on <a href='index.php?event=11253'>10/11 & 10/12/2025 - Boo at the Zoo - MELBOURNE</a>."><img src="images/uploads/resize/2025-10-13-14-51-02-IMG_2476.jpg" width="200px" height="200px" /></a>
+					<a href="images/uploads/2025-10-13-14-51-01-IMG_2463.jpeg" data-lightbox="photo" data-title="Uploaded by  on <a href='index.php?event=11253'>10/11 & 10/12/2025 - Boo at the Zoo - MELBOURNE</a>."><img src="images/uploads/resize/2025-10-13-14-51-01-IMG_2463.jpg" width="200px" height="200px" /></a>
+					<a href="images/uploads/2025-10-12-06-46-54-IMG_2422.jpeg" data-lightbox="photo" data-title="Uploaded by  on <a href='index.php?event=11252'>10/11 & 10/12/2025 - Boo at the Zoo - MELBOURNE</a>."><img src="images/uploads/resize/2025-10-12-06-46-54-IMG_2422.jpg" width="200px" height="200px" /></a>
+					<a href="images/uploads/2025-10-12-06-46-54-IMG_2380.jpeg" data-lightbox="photo" data-title="Uploaded by  on <a href='index.php?event=11252'>10/11 & 10/12/2025 - Boo at the Zoo - MELBOURNE</a>."><img src="images/uploads/resize/2025-10-12-06-46-54-IMG_2380.jpg" width="200px" height="200px" /></a>
+					<a href="images/uploads/2025-10-12-06-45-26-IMG_2374.jpeg" data-lightbox="photo" data-title="Uploaded by  on <a href='index.php?event=11251'>10/11 & 10/12/2025 - Boo at the Zoo - MELBOURNE</a>."><img src="images/uploads/resize/2025-10-12-06-45-26-IMG_2374.jpg" width="200px" height="200px" /></a>
+					<a href="images/uploads/2025-10-12-06-45-22-IMG_2420.jpeg" data-lightbox="photo" data-title="Uploaded by  on <a href='index.php?event=11251'>10/11 & 10/12/2025 - Boo at the Zoo - MELBOURNE</a>."><img src="images/uploads/resize/2025-10-12-06-45-22-IMG_2420.jpg" width="200px" height="200px" /></a>
+					<a href="images/uploads/2025-10-12-06-45-19-IMG_2387.jpeg" data-lightbox="photo" data-title="Uploaded by  on <a href='index.php?event=11251'>10/11 & 10/12/2025 - Boo at the Zoo - MELBOURNE</a>."><img src="images/uploads/resize/2025-10-12-06-45-19-IMG_2387.jpg" width="200px" height="200px" /></a>
+				<p style="text-align: center;">
+					<i>Press photos for full resolution version.</i>
+					<br />
+					<a href="index.php?action=photos" class="button">Recent events with photos</a>
+				</p>
+</section>
+<section class="tm-section tm-section-small">
+<p class="tm-mb-0">
+Website created by <a href="https://mattdrennan.com">Matthew Drennan (TK52233)</a>. If you encounter any technical issues with this site, please refer to the <a href="faq">FAQ page</a> for guidance.
+</p>
+
+<p class="tm-mb-0">
+If you are missing troops or notice incorrect data, please refer to your squad leader.
+</p>
+
+<p class="footer-icons">
+	<a href="https://github.com/MattDrennan/501-troop-tracker" target="_blank"><img src="images/github.png" alt="GitHub" title="Help contribute to the Troop Tracker project!" /></a> 
+</p>
+</section>
+
+<script>
+$(document).ready(function()
+{
+	    // Add rules to clubs - IDs
+	    $('#rebelforum').each(function()
+	    {
+	        $(this).rules('add',
+	        {
+					digits: false,
+					required: function()
+					{
+						return $('#squad').val() == 6;
+					}
+	        })
+	    });
+	    // Add rules to clubs - IDs
+	    $('#mandoid').each(function()
+	    {
+	        $(this).rules('add',
+	        {
+					digits: true,
+					required: function()
+					{
+						return $('#squad').val() == 8;
+					}
+	        })
+	    });
+		    // Add rules to clubs - IDs
+		    $('#sgid').each(function()
+		    {
+		        $(this).rules('add',
+		        {
+						digits: true,
+					required: false
+		        })
+		    });
+		    // Add rules to clubs - IDs
+		    $('#de_id').each(function()
+		    {
+		        $(this).rules('add',
+		        {
+						digits: true,
+					required: false
+		        })
+		    });
+});
+</script>
+<!-- External JS File -->
+<script type="text/javascript" src="script/js/main.js?v=9"></script>
+</body>
+</html>

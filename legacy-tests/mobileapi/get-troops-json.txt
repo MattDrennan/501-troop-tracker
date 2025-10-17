@@ -1,0 +1,14 @@
+{
+    "troops": [
+        {
+            "troopid": 11313,
+            "name": "Food Truck or Treat - St. Petersburg",
+            "dateStart": "2025-10-29 17:00:00",
+            "dateEnd": "2025-10-29 20:00:00",
+            "location": "4400 Shore Acres Blvd NE St. Petersburg, Florida 33703 USA",
+            "thread_id": 45883,
+            "post_id": 658427,
+            "squad": 5
+        }
+    ]
+}

@@ -1,9 +1,0 @@
-{
-    "require": {
-        "spatie/calendar-links": "^1.6",
-        "phpmailer/phpmailer": "^6.5",
-        "benhall14/php-calendar": "^1.2",
-        "google/apiclient": "2.12.1",
-        "kreait/firebase-php": "^6.0"
-    }
-}

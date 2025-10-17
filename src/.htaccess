@@ -1,0 +1,18 @@
+<IfModule mod_rewrite.c>
+    # Enable the rewrite engine
+    RewriteEngine On
+
+    # Set the base for all rewrite rules.
+    # If your application is in a subdirectory, you may need to adjust this.
+    # For example, if your URL is http://localhost/my-app/src/, set this to /my-app/src/
+    RewriteBase /troop-tracker/
+
+    # --- Rules for ADR Front Controller ---
+
+    # If the requested filename is not a file...
+    RewriteCond %{REQUEST_FILENAME} !-f
+    # ...and it is not a directory...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    # ...then rewrite the request to adr.php.
+    RewriteRule ^(.*)$ adr.php?a=$1 [QSA,L]
+</IfModule>
