@@ -3594,7 +3594,10 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 
 						// Update thread
 						editPost($db->post_id, $thread_body);
-						moveThread($db->thread_id, $squadArray[intval($_POST['squadm'] - 1)]['eventForum']);
+						// Temp fix: This will need to be made so that a garrison that has no squads can post events to a board
+						if($_POST['squadm'] != 0) {
+							moveThread($db->thread_id, $squadArray[intval($_POST['squadm'] - 1)]['eventForum']);
+						}
 					}
 				}
 			}
@@ -3635,7 +3638,10 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 
 						// Update thread
 						editPost($db->post_id, $thread_body);
-						moveThread($db->thread_id, $squadArray[intval($_POST['squadm'] - 1)]['eventForum']);
+						// Temp fix: This will need to be made so that a garrison that has no squads can post events to a board
+						if($_POST['squadm'] != 0) {
+							moveThread($db->thread_id, $squadArray[intval($_POST['squadm'] - 1)]['eventForum']);
+						}
 					}
 				}
 			}
@@ -3646,7 +3652,10 @@ if(isset($_GET['do']) && $_GET['do'] == "editevent" && loggedIn() && isAdmin())
 
 				// Update thread
 				editPost(getEventPostID($_POST['eventIdE']), $thread_body);
-				moveThread(getEventThreadID($_POST['eventIdE']), $squadArray[intval($_POST['squadm'] - 1)]['eventForum']);
+				// Temp fix: This will need to be made so that a garrison that has no squads can post events to a board
+				if($_POST['squadm'] != 0) {
+					moveThread(getEventThreadID($_POST['eventIdE']), $squadArray[intval($_POST['squadm'] - 1)]['eventForum']);
+				}
 
 				// Loop through clubs
 				foreach($clubArray as $club => $club_value)
