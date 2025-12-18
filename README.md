@@ -1,3 +1,12 @@
+
+> ⚠️ **Repository Status: Discontinued**
+>
+> This repository is no longer being actively maintained.
+> Development has moved to **Troop Tracker 2.0**, available here:  
+> https://github.com/obsidianslicers/trooper-tracker
+>
+> A **stable, production-ready version** of this legacy Troop Tracker is still available under the **Releases** section for those who wish to continue using it. No new features or fixes will be added to this repository.
+
 # 501st Legion Troop Tracker
 A troop tracker for the 501st Legion developed for the Florida Garrison. Xenforo (https://xenforo.com/) is required to use Troop Tracker.
 
