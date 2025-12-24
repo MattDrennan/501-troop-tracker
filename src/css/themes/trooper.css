@@ -1,0 +1,22 @@
+/* === STORMTROOPER Bootstrap Overrides === */
+
+@import 'vars';
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+
+:root {
+    --bs-font-sans-serif: 'Anton', 'Share Tech Mono', sans-serif;
+    --bs-body-bg: #fdfdfd;
+    --bs-body-color: #1a1a1a;
+
+    --main-bg-color: #f4f4f4;
+    --main-border-color: #000000;
+
+    --vf-primary: #c62828;
+    --vf-secondary: #dcdcdc;
+    --vf-accent: #000000;
+    --vf-bg-dark: #000;
+    --vf-bg-light: #ffffff;
+    --vf-text-light: #ffffff;
+    --vf-text-dark: #000;
+}

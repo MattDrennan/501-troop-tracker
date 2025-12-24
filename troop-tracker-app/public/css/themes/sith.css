@@ -1,0 +1,23 @@
+/* === SITH Bootstrap Overrides === */
+
+@import 'vars';
+
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap');
+
+:root {
+    --bs-font-sans-serif: 'Black Ops One', 'Share Tech Mono', sans-serif;
+    --bs-body-bg: #0a0a0a;
+    --bs-body-color: #e0e0e0;
+
+    --main-bg-color: #1a0e12;
+    --main-border-color: #ff1f1f;
+
+    --vf-primary: #ff1f1f;
+    --vf-secondary: #1f3c88;
+    --vf-accent: #2e2e2e;
+    --vf-bg-dark: #000;
+    --vf-bg-light: #f8f9fa;
+    --vf-text-light: #f8f9fa;
+    --vf-text-dark: #000;
+}

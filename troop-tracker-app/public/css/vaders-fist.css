@@ -1,0 +1,103 @@
+/* === Vader's Fist Bootstrap Overrides === */
+
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+/* Tactical terminal */
+@import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap');
+/* Military bold */
+
+:root {
+    --bs-font-sans-serif: 'Black Ops One', 'Share Tech Mono', sans-serif;
+    --bs-body-font-family: var(--bs-font-sans-serif);
+    --bs-body-bg: #0a0a0a;
+    --bs-body-color: #e0e0e0;
+
+    /* 501st color palette */
+    --vf-legion-blue: #1f3c88;
+    --vf-helmet-white: #f8f9fa;
+    --vf-blaster-red: #ff1f1f;
+    --vf-armor-gray: #2e2e2e;
+    --vf-shadow-black: #000;
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--vf-armor-gray) !important;
+    border-top: 2px solid var(--vf-blaster-red);
+    border-bottom: 2px solid var(--vf-blaster-red);
+    font-family: var(--bs-font-sans-serif);
+}
+
+/* Nav links */
+.nav-link {
+    color: var(--vf-helmet-white) !important;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.nav-link:hover {
+    color: var(--vf-blaster-red) !important;
+    text-shadow: 0 0 5px var(--vf-blaster-red);
+}
+
+.nav-link.active {
+    background-color: var(--vf-legion-blue);
+    color: var(--vf-helmet-white) !important;
+    font-weight: bold;
+    box-shadow: inset 0 -2px 0 var(--vf-blaster-red), inset 0 2px 0 var(--vf-blaster-red);
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--vf-legion-blue);
+    border-color: var(--vf-legion-blue);
+    color: var(--vf-helmet-white);
+}
+
+.btn-primary:hover {
+    background-color: var(--vf-blaster-red);
+    border-color: var(--vf-blaster-red);
+    color: var(--vf-helmet-white);
+}
+
+/* Headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Black Ops One', sans-serif;
+    color: var(--vf-blaster-red);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Cards */
+.card {
+    background-color: var(--vf-armor-gray);
+    border: 1px solid var(--vf-legion-blue);
+    color: var(--vf-helmet-white);
+}
+
+/* Utilities */
+.bg-legion {
+    background-color: var(--vf-legion-blue) !important;
+}
+
+.bg-blaster {
+    background-color: var(--vf-blaster-red) !important;
+}
+
+.text-legion {
+    color: var(--vf-legion-blue) !important;
+}
+
+.text-blaster {
+    color: var(--vf-blaster-red) !important;
+}
+
+.text-helmet {
+    color: var(--vf-helmet-white) !important;
+}

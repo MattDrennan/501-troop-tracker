@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap');
+
+:root {
+    --main-bg-color: #252f39;
+    --main-text-color: white;
+    --main-border-color: black;
+}
+
+h1.site-title {
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 3rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.main-content {
+    background-color: var(--main-bg-color);
+    border-color: black;
+}
+
+.navbar {
+    border: var(--main-border-color) 1px solid;
+}
+
+.navbar .nav-link.active {
+    background-color: var(--main-bg-color);
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+/* Custom input styling for dark theme using Slate 3 */
+.form-control,
+.form-select,
+.form-check-input,
+.form-control:focus,
+.form-select:focus {
+    background-color: #3a4753;
+    color: #ffffff;
+    border-color: #5a6b7c;
+}
+
+.form-control::placeholder {
+    color: #cbd3db;
+}
+
+.form-check-label {
+    color: #ffffff;
+}
+
+.form-control:focus,
+.form-select:focus {
+    box-shadow: 0 0 0 0.2rem rgba(58, 71, 83, 0.5);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+    background-color: gray;
+    color: #000;
+}
+
+/* Headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.dashboard-cards .card {
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.dashboard-cards .card:hover {
+    box-shadow: 4px 4px 4px 4px #1a1b1b;
+    transform: scale(1.05);
+}
+
+.dashboard-cards .card-header {
+    font-weight: bold;
+}
+
+.twitter-typeahead {
+    display: block !important;
+    width: 100% !important;
+}
+
+.twitter-typeahead .tt-input {
+    width: 100% !important;
+}
+
+.twitter-typeahead .tt-menu {
+    width: 100% !important;
+}
+
+.tt-menu {
+    background-color: #000;
+    border: 1px solid #444;
+    border-radius: 0.375rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    width: 100% !important;
+    padding: 0.25rem 0;
+}
+
+.tt-suggestion.tt-selectable:hover,
+.tt-suggestion.tt-selectable:focus {
+    background-color: #252f39;
+}

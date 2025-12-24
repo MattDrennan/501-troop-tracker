@@ -1,0 +1,1 @@
+<div class="form-text text-muted p-2">{{ $slot }}</div>

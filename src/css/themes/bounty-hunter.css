@@ -1,0 +1,22 @@
+/* === BOUNTY HUNTER Bootstrap Overrides === */
+
+@import 'vars';
+@import url('https://fonts.googleapis.com/css2?family=Quantico:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+:root {
+    --bs-font-sans-serif: 'Quantico', 'Share Tech Mono', sans-serif;
+    --bs-body-bg: #121212;
+    --bs-body-color: #d0d0d0;
+
+    --main-bg-color: #1e1f1c;
+    --main-border-color: #8d6e63;
+
+    --vf-primary: #4caf50;
+    --vf-secondary: #607d8b;
+    --vf-accent: #8d6e63;
+    --vf-bg-dark: #000;
+    --vf-bg-light: #ffffff;
+    --vf-text-light: #ffffff;
+    --vf-text-dark: #000;
+}

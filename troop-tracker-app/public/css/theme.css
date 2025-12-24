@@ -1,0 +1,43 @@
+/* Shared styles using semantic tokens */
+
+.main-content {
+    background-color: var(--main-bg-color);
+    border-color: var(--main-border-color);
+}
+
+.navbar {
+    background-color: var(--vf-secondary) !important;
+    border-top: 2px solid var(--vf-accent);
+    border-bottom: 2px solid var(--vf-accent);
+    font-family: var(--bs-font-sans-serif);
+}
+
+.nav-link {
+    color: var(--vf-text-light) !important;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.nav-link:hover {
+    color: var(--vf-primary) !important;
+    text-shadow: 0 0 5px var(--vf-primary);
+}
+
+.nav-link.active {
+    background-color: var(--vf-secondary);
+    color: var(--vf-text-light) !important;
+    font-weight: bold;
+    box-shadow: inset 0 -2px 0 var(--vf-primary), inset 0 2px 0 var(--vf-primary);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--bs-font-sans-serif);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}

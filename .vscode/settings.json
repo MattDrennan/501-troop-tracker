@@ -1,0 +1,22 @@
+{
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+    "geminicodeassist.rules": "For all generated PHP code, adhere to the following casing conventions:\n* Classes must be PascalCase\n* All function names (standalone and class methods) should be camelCase.\n* All function parameters (standalone and classes methods) must be snake_case.\n* All function local variables (standalone and classes methods) must be snake_case.\n* All class level variables (standalone and classes methods) must be snake_case.\n* All function (standalone and classes methods) must use explicit, type-hinted function signatures.\n\nCode should not be longer than 150 characters if possible, and all functions should be limited to 30 lines if possible.\n\nFor mocking - use the following format:\n        $request->expects($this->once())\n            ->method('getHeaderLine')\n            ->with('Accept')\n            ->willReturn('html');\n\nFor Unit Tests, the subject under test's variable name should be $subject. All test methods should be snaked_cased and start with test_",
+    "php.format.codeStyle": "Allman",
+    "html.format.wrapAttributes": "force-aligned",
+    "html.format.wrapLineLength": 150,
+    "editor.detectIndentation": false,
+    "files.associations": {
+        "*.blade.php": "html",
+        "*.php": "php"
+    },
+    "[html]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+    },
+    "namespaceResolver.sortOnSave": true,
+    "namespaceResolver.leadingSeparator": false,
+    "namespaceResolver.sortAlphabetically": true
+}

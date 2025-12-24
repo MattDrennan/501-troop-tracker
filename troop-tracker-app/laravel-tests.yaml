@@ -1,0 +1,32 @@
+name: Laravel Tests
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, pdo_sqlite, pdo_mysql, dom, fileinfo, gd, imagick
+        ini-values: post_max_size=25M, upload_max_filesize=25M
+
+    - name: Install Composer dependencies
+      run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+    - name: Prepare Laravel Application
+      run: |
+        cp .env.test .env
+        php artisan key:generate
+
+    - name: Run Laravel tests
+      run: php artisan test --parallel --stop-on-failure

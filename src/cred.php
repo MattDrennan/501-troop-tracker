@@ -1,0 +1,443 @@
+<?php
+
+/**
+ * 
+ * This is the main MySQL database information.
+ * 
+ * dbServer: The MySQL server address
+ * dbUser: The user for MySQL server
+ * dbPassword: The password for MySQL server
+ * dbName: The database for MySQL server
+ */
+
+define('dbServer', 'localhost');
+define('dbUser', 'root');
+define('dbPassword', 'sapass');
+define('dbName', 'trooptracker');
+
+/**
+ * 
+ * This is used for merging old troop tracker data with the new tracker. This is not needed to run Troop Tracker.
+ * See auto.php in the archive folder for more information.
+ *
+ * dbServer2: The MySQL server address
+ * dbUser2: The user for MySQL server
+ * dbPassword2: The password for MySQL server
+ * dbName2: The database for MySQL server
+ */
+
+define('dbServer2', 'MY_SERVER_HERE');
+define('dbUser2', 'DB_USER_HERE');
+define('dbPassword2', 'DB_PASSWORD_HERE');
+define('dbName2', 'DB_NAME_HERE');
+
+/**
+ * Webmaster E-mail: The e-mail for the webmaster
+ */
+
+$webmasterEmail = "gwm@fl501st.com";
+
+/**
+ * trackerURL: The base URL for the tracker
+ */
+
+$trackerURL = "https://www.fl501st.com/troop-tracker";
+
+/**
+ * forumURL: The forum endpoint for the API
+ */
+
+$forumURL = "https://www.fl501st.com/boards/";
+
+/**
+ * 501st API Garrison ID (Find it here: https://www.501st.com/memberAPI/v3/garrisons)
+ */
+
+$garrisonIdAPI = 9;
+
+/**
+ * forumAnnounceID: ID of the forum where announcements are made
+ */
+
+$forumAnnounceID = 18;
+
+/**
+ * placeholder: This variable is used for assigning a user account to be a placeholder account. A placeholder account can be signed up multiple times for the same event, and is used to sign up non-members.
+ */
+
+define('placeholder', 1196);
+
+/**
+ * xenforoAPI_superuser: This variable is the API key for Xenforo. Ensure it is a super key.
+ * xenforoAPI_userID: This variable is the user ID of a super user. This is the account that will publish information to the forum.
+ * https://xenforo.com/docs/dev/rest-api/
+ */
+
+define('xenforoAPI_superuser', 'R3PTGQKOypU16bY3aaUlfhmNwK43d7zD');
+define('xenforoAPI_userID', '1');
+
+/**
+ * emailFrom: This is the e-mail address that users will see when they receive e-mail from Troop Tracker
+ * emailUser: This is the username to access the e-mail server
+ * emailPassword: This is the password to access the e-mail server
+ * emailServer: This is the address of the e-mail server
+ * emailPort: This is the port of the e-mail server
+ */
+
+define('emailFrom', 'EMAIL_ADDRESS');
+define('emailUser', 'SMTP_USER');
+define('emailPassword', 'SMTP_PASSWORD');
+define('emailServer', 'SMTP_SERVER');
+define('emailPort', 25);
+
+/**
+ * googleKey: This is a Google API key which is used to access Google services. This is used for automatically detecting where an event is located, and it will automatically assign a squad based on the location.
+ * https://developers.google.com/maps/documentation/javascript/get-api-key
+ */
+
+define('googleKey', 'GOOGLE_MAP_API_KEY_HERE');
+
+/**
+ * discordWeb1: This variable is the webhook URL from the Discord server.
+ * https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks
+ */
+
+define('discordWeb1', 'WEBHOOK_HERE');
+
+/**
+ * discordInviteLink: This variable is the URL invite for the Discord server
+ */
+
+define('discordInviteLink', 'https://discord.gg/C6bCB33gp3');
+
+/**
+ * garrison: This variable is used to display the garrison name, and to make it easier to replace all mentions of the garrison
+ * garrisonImage: This variable is used to display the garrison logo. The logom should be located in the images folder.
+ */
+
+define('garrison', 'Florida Garrison');
+define('garrisonImage', 'garrison_emblem.png');
+
+/**
+ * virtualTroop: This variable is used to determine which forum to post virtual troops
+ */
+
+$virtualTroop = 445;
+
+/**
+ * virtualTroopArchive: This variable is used to determine which forum to archive virtual troops
+ */
+
+$virtualTroopArchive = 513;
+
+/**
+ * conventionTroop: This variable is used to determine which forum to post convention troops
+ */
+
+$conventionTroop = 213;
+
+/**
+ * conventionTroopArchive: This variable is used to determine which forum to archive convention troops
+ */
+
+$conventionTroopArchive = 514;
+
+/**
+ * lflTroop: This variable is used to determine which forum to post LFL troops
+ */
+
+$lflTroop = 212;
+
+/**
+ * lflTroopArchive: This variable is used to determine which forum to archive LFL troops
+ */
+
+$lflTroopArchive = 224;
+
+/**
+ * disneyTroop: This variable is used to determine which forum to post Disney troops
+ */
+
+$disneyTroop = 211;
+
+/**
+ * disneyTroopArchive: This variable is used to determine which forum to archive Disney troops
+ */
+
+$disneyTroopArchive = 225;
+
+/**
+ * dualCostume: This array is used to determine which costume club ID should be counted as a dual costume.
+ */
+
+$dualCostume = array(5, 7, 8, 9, 10, 11);
+
+/**
+ * dualNA: This variable is used to determine which costume ID is the dual N/A
+ */
+
+$dualNA = 721;
+
+/**
+ * dualCostumeLabels: This array maps dual costume IDs to their readable names.
+ */
+
+$dualCostumeLabels = array(
+    5 => 'Dual (501st + Rebel)',
+    7 => 'Dual-Mando (501st + Mando)',
+    8 => 'Dual-Mando (RL + Mando)',
+    9 => 'Dual-Saber (501st + SG)',
+    10 => 'Dual-Saber (RL + SG)',
+    11 => 'Triple-Dual (501st + RL + SG)',
+    12 => 'Triple-Dual (501st + RL + Mando)',
+);
+
+/**
+ * userGroupGarrison: The Xenforo user group ID for the garrison
+ */
+
+$userGroupGarrison = 18;
+
+/**
+ * userGroup501st: The Xenforo user group ID for the 501st or other group
+ */
+
+$userGroup501st = 1415;
+
+/**
+ * userGroupRetired: The Xenforo user group ID for retired members
+ */
+
+$userGroupRetired = 1429;
+
+/**
+ * troopTrackerUserGroup: The Xenforo user group ID for Troop Tracker connected troopers
+ */
+
+$troopTrackerUserGroup = 1489;
+
+/**
+ * handlerUserGroup: The Xenforo user group ID for Troop Tracker handler
+ */
+
+$handlerUserGroup = 1490;
+
+/**
+ * userGroupRIP: The Xenforo user group ID for RIP members
+ */
+
+$userGroupRIP = 1496;
+
+/**
+ * userGroupSupporter: The Xenforo user group ID for supporter members
+ */
+
+$userGroupSupporter = 1507;
+
+/**
+ * specialLinks: A custom button for special events, displays near the squad buttons, shows select events (optional)
+ */
+
+$specialLinks = array(
+    'TrooperFest' => '<a href="index.php?special=TrooperFest"><img src="images/TrooperFest.png" alt="TrooperFest" ' . isSquadActive('TrooperFest') . ' /></a>',
+);
+
+/**
+ * squadArray
+ * squadID: Database ID for squad
+ * costumeID: Main database ID for costume
+ * name: Name of the squad
+ * logo: Image of the squad logo located in images folder
+ * costumes: An array of costumes that this squad accepts as troop credit
+ * db: The field in the troopers table that determines if a trooper is a member of the club
+ * db2: A blank variable with no use as of now
+ * eventForum: The forum ID in Xenforo that corresponds to the event forum for this squad
+ * userGroup: The Xenforo user group ID assigned to this squad
+ */
+
+// Squads
+$squadArray = array(
+    array(
+        "squadID" => 1,
+        "costumeID" => 0,
+        "name" => "Everglades Squad",
+        "logo" => "everglades_emblem.png",
+        "costumes" => array(0, 5, 7, 9, 11, 12),
+        "db" => "p501",
+        "db2" => "",
+        "eventForum" => 9,
+        "eventForumArchive" => 107,
+        "userGroup" => 44
+    ),
+    array(
+        "squadID" => 2,
+        "costumeID" => 0,
+        "name" => "Makaze Squad",
+        "logo" => "makaze_emblem.png",
+        "costumes" => array(0, 5, 7, 9, 11, 12),
+        "db" => "p501",
+        "db2" => "",
+        "eventForum" => 8,
+        "eventForumArchive" => 109,
+        "userGroup" => 45
+    ),
+    array(
+        "squadID" => 3,
+        "costumeID" => 0,
+        "name" => "Parjai Squad",
+        "logo" => "parjai_emblem.png",
+        "costumes" => array(0, 5, 7, 9, 11, 12),
+        "db" => "p501",
+        "db2" => "",
+        "eventForum" => 186,
+        "eventForumArchive" => 111,
+        "userGroup" => 250
+    ),
+    array(
+        "squadID" => 4,
+        "costumeID" => 0,
+        "name" => "Squad 7",
+        "logo" => "squad7_emblem.png",
+        "costumes" => array(0, 5, 7, 9, 11, 12),
+        "db" => "p501",
+        "db2" => "",
+        "eventForum" => 7,
+        "eventForumArchive" => 113,
+        "userGroup" => 683
+    ),
+    array(
+        "squadID" => 5,
+        "costumeID" => 0,
+        "name" => "Tampa Bay Squad",
+        "logo" => "tampabay_emblem.png",
+        "costumes" => array(0, 5, 7, 9, 11, 12),
+        "db" => "p501",
+        "db2" => "",
+        "eventForum" => 73,
+        "eventForumArchive" => 115,
+        "userGroup" => 43
+    )
+);
+
+/**
+ * clubArray
+ * squadID: Database ID for club
+ * costumeID: Main database ID for costume
+ * name: Name of the club
+ * logo: Image of the squad logo located in images folder
+ * costumes: An array of costumes that this club accepts as troop credit
+ * db: The field in the troopers table that determines if a trooper is a member of the club
+ * db2: A blank variable with no use as of now
+ * db3: A field that stores a corresponding identifer for this club, for example a forum username or ID number
+ * db3Name: A field that stores a corresponding name for the identifer used in db3
+ * db3Require: Special code used to determine if form validation needs to ensure db3 has a value
+ * dbLimit: The field in events table that holds the amount of allowed members from this club
+ * naCostume: The ID of the costume that is the clubs other or N/A
+ * userGroup: The Xenforo user group ID assigned to this club
+ */
+
+// Clubs
+$clubArray = array(
+    array(
+        "squadID" => 6,
+        "costumeID" => 1,
+        "name" => "Rebel Legion",
+        "logo" => "test",
+        "costumes" => array(1, 5, 8, 10, 11, 12),
+        "db" => "pRebel",
+        "db2" => "",
+        "db3" => "rebelforum",
+        "db3Name" => "Rebel Legion Forum Username",
+        "db3Short" => "RL",
+        "db3Require" => "0,0,squad:6",
+        "dbLimit" => "limitRebels",
+        "naCostume" => 720,
+        "userGroup" => 1486
+    ),
+    array(
+        "squadID" => 7,
+        "costumeID" => 3,
+        "name" => "Droid Builders",
+        "logo" => "test",
+        "costumes" => array(3),
+        "db" => "pDroid",
+        "db2" => "",
+        "db3" => "",
+        "db3Name" => "",
+        "db3Short" => "",
+        "db3Require" => "0,0,0",
+        "dbLimit" => "limitDroid",
+        "naCostume" => 716,
+        "userGroup" => 1487
+    ),
+    array(
+        "squadID" => 8,
+        "costumeID" => 2,
+        "name" => "Mando Mercs",
+        "logo" => "test",
+        "costumes" => array(2, 7, 8, 12),
+        "db" => "pMando",
+        "db2" => "",
+        "db3" => "mandoid",
+        "db3Name" => "Mando Mercs CAT #",
+        "db3Short" => "CAT #",
+        "db3Require" => "0,digits,squad:8",
+        "db3Link" => "",
+        "dbLimit" => "limitMando",
+        "naCostume" => 715,
+        "userGroup" => 1488
+    ),
+    array(
+        "squadID" => 9,
+        "costumeID" => 4,
+        "name" => "Other",
+        "logo" => "test",
+        "costumes" => array(4),
+        "db" => "pOther",
+        "db2" => "",
+        "db3" => "",
+        "db3Name" => "",
+        "db3Short" => "",
+        "db3Require" => "0,digits,0",
+        "db3Link" => "",
+        "dbLimit" => "limitOther",
+        "naCostume" => 717,
+        "userGroup" => 1415
+    ),
+    array(
+        "squadID" => 10,
+        "costumeID" => 6,
+        "name" => "Saber Guild",
+        "logo" => "test",
+        "costumes" => array(6, 9, 10, 11),
+        "db" => "pSG",
+        "db2" => "",
+        "db3" => "sgid",
+        "db3Name" => "Saber Guild SG #",
+        "db3Short" => "SG #",
+        "db3Require" => "0,digits,0",
+        "db3Link" => "",
+        "dbLimit" => "limitSG",
+        "naCostume" => 724,
+        "userGroup" => 1491
+    ),
+    array(
+        "squadID" => 13,
+        "costumeID" => 13,
+        "name" => "Dark Empire",
+        "logo" => "test",
+        "costumes" => array(13),
+        "db" => "pDE",
+        "db2" => "",
+        "db3" => "de_id",
+        "db3Name" => "Dark Empire #",
+        "db3Short" => "DE #",
+        "db3Require" => "0,digits,0",
+        "db3Link" => "",
+        "dbLimit" => "limitDE",
+        "naCostume" => 872,
+        "userGroup" => 1511
+    )
+);
+
+?>

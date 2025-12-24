@@ -1,0 +1,18 @@
+/* === _theme-vars.scss === */
+/* Shared Bootstrap Theme Variables */
+
+:root {
+    --bs-font-sans-serif: 'Default Font', sans-serif;
+    --bs-body-font-family: var(--bs-font-sans-serif);
+    --bs-body-bg: #ffffff;
+    --bs-body-color: #000000;
+
+    /* Semantic tokens */
+    --vf-primary: #007bff;
+    --vf-secondary: #6c757d;
+    --vf-accent: #ff0000;
+    --vf-bg-dark: #212529;
+    --vf-bg-light: #f8f9fa;
+    --vf-text-light: #f8f9fa;
+    --vf-text-dark: #212529;
+}

@@ -1,0 +1,19 @@
+/* === CLONE Bootstrap Overrides === */
+
+@import 'vars';
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+:root {
+    --bs-font-sans-serif: 'Orbitron', 'Rajdhani', sans-serif;
+    --bs-body-bg: #f4f6f9;
+    --bs-body-color: #1c1c1c;
+
+    --vf-primary: #1a73e8;
+    --vf-secondary: #cfd8dc;
+    --vf-accent: #212121;
+    --vf-bg-dark: #212121;
+    --vf-bg-light: #ffffff;
+    --vf-text-light: #ffffff;
+    --vf-text-dark: #212121;
+}

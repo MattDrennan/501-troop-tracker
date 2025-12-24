@@ -6,6 +6,8 @@
  * This should be run weekly by a cronjob.
  *
  * @author  Matthew Drennan
+ * 
+ * SE 11/3/2025 copied to Console\Commands\AutoAcceptUnconfirmedEventSignUps.php - NOT ACTIVE yet
  *
  */
 

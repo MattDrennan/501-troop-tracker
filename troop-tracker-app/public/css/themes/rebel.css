@@ -1,0 +1,22 @@
+/* === REBEL Bootstrap Overrides === */
+
+@import 'vars';
+@import url('https://fonts.googleapis.com/css2?family=Changa:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+:root {
+    --bs-font-sans-serif: 'Changa', 'Share Tech Mono', sans-serif;
+    --bs-body-bg: #1b1f23;
+    --bs-body-color: #f0f0f0;
+
+    --main-bg-color: #2c2f36;
+    --main-border-color: #ff6f00;
+
+    --vf-primary: #ff6f00;
+    --vf-secondary: #37474f;
+    --vf-accent: #000;
+    --vf-bg-dark: #000;
+    --vf-bg-light: #eceff1;
+    --vf-text-light: #eceff1;
+    --vf-text-dark: #000;
+}

@@ -20,19 +20,23 @@ echo '
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta http-equiv="X-UA-Compatible" content="ie=edge" />';
 
-if (isset($_GET['event']) && !loggedIn()) {
+if (isset($_GET['event']) && !loggedIn())
+{
     // Query database for event info
     $statement = $conn->prepare("SELECT * FROM events WHERE id = ?");
     $statement->bind_param("i", $_GET['event']);
     $statement->execute();
 
-    if ($result = $statement->get_result()) {
-        while ($db = mysqli_fetch_object($result)) {
+    if ($result = $statement->get_result())
+    {
+        while ($db = mysqli_fetch_object($result))
+        {
             // Set up string to add to title if a linked event
             $add = "";
 
             // If this a linked event?
-            if (isLink($db->id) > 0) {
+            if (isLink($db->id) > 0)
+            {
                 $add .= "[" . date("h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "] ";
             }
 
@@ -84,11 +88,13 @@ $clubCount = count($clubArray);
 $i = 0;
 
 // Loop through clubs
-foreach ($clubArray as $club => $club_value) {
+foreach ($clubArray as $club => $club_value)
+{
     echo '"' . $club_value['db'] . '"';
 
     // Add comma
-    if ($i < ($clubCount - 1)) {
+    if ($i < ($clubCount - 1))
+    {
         echo ',';
     }
 
@@ -107,11 +113,13 @@ echo '
 	var clubDBLimitArray = [';
 
 // Loop through clubs
-foreach ($clubArray as $club => $club_value) {
+foreach ($clubArray as $club => $club_value)
+{
     echo '"' . $club_value['dbLimit'] . '"';
 
     // Add comma
-    if ($i < ($clubCount - 1)) {
+    if ($i < ($clubCount - 1))
+    {
         echo ',';
     }
 
@@ -124,8 +132,10 @@ echo '];';
 /* CLUB SPECIAL FORUM VALUE */
 
 // Club count with value
-$clubCount = array_filter($clubArray, function ($x) {
-    return !empty($x['db3Name']); });
+$clubCount = array_filter($clubArray, function ($x)
+{
+    return !empty($x['db3Name']);
+});
 
 // Club step
 $i = 0;
@@ -134,13 +144,16 @@ echo '
 	var clubDB3Array = [';
 
 // Loop through clubs
-foreach ($clubArray as $club => $club_value) {
+foreach ($clubArray as $club => $club_value)
+{
     // Don't allow empty result
-    if ($club_value['db3Name'] != "") {
+    if ($club_value['db3Name'] != "")
+    {
         echo '"' . $club_value['db3'] . '"';
 
         // Add comma
-        if ($i < count($clubCount) - 1) {
+        if ($i < count($clubCount) - 1)
+        {
             echo ',';
         }
 
@@ -157,7 +170,8 @@ echo '
 	{';
 
 // Loop through clubs
-foreach ($clubArray as $club => $club_value) {
+foreach ($clubArray as $club => $club_value)
+{
     echo '
 		$("#' . $club_value['dbLimit'] . '").val(500);';
 }
@@ -213,11 +227,14 @@ echo '
 <a href="' . $forumURL . '">Forums</a>';
 
 // If not logged in
-if (!loggedIn()) {
+if (!loggedIn())
+{
     // If website is not closed
-    if (!isWebsiteClosed()) {
+    if (!isWebsiteClosed())
+    {
         // If sign ups are not closed
-        if (!isSignUpClosed()) {
+        if (!isSignUpClosed())
+        {
             echo '
 			<a href="index.php?action=requestaccess" ' . isPageActive("requestaccess") . '>Request Access</a>
 			<a href="index.php?action=setup" ' . isPageActive("setup") . '>Account Setup</a>
@@ -226,21 +243,24 @@ if (!loggedIn()) {
     }
 
     echo '
-	<a href="index.php?action=login" ' . isPageActive("login") . '>Login</a>';
-} else {
+	<a href="login" ' . isPageActive("login") . '>Login</a>';
+}
+else
+{
     // Logged in
     echo '
 	<a href="index.php?action=trooptracker" ' . isPageActive("trooptracker") . '>Stats & Search</a>
 	<a href="index.php?action=account" ' . isPageActive("account") . '>Manage Account</a>';
 
     // If is admin
-    if (isAdmin()) {
+    if (isAdmin())
+    {
         echo '
 		<a href="index.php?action=commandstaff" ' . isPageActive("commandstaff") . '>Command Staff Portal</a>';
     }
 
     echo '
-	<a href="index.php?action=logout" ' . isPageActive("logout") . '>Logout</a>';
+	<a href="logout" ' . isPageActive("logout") . '>Logout</a>';
 }
 
 // Icon for mobile phones
@@ -253,14 +273,16 @@ echo '
 // Show support graph
 echo drawSupportGraph();
 
-if (loggedIn()) {
+if (loggedIn())
+{
     $userID = getUserID($_SESSION['id']);
 
     $alerts = @getAlerts($userID)['alerts'];
     $conversations = @getConversations($userID)['conversations'];
 
     // Don't show on logout page
-    if (@$_GET['action'] != "logout") {
+    if (@$_GET['action'] != "logout")
+    {
         // Forum notifications
         echo '
 		<div class="user-welcome-box">
@@ -269,7 +291,6 @@ if (loggedIn()) {
 			<a href="index.php?profile=' . $_SESSION['id'] . '">' . (getForumAvatar($_SESSION['id']) != "" ? '<img src="' . getForumAvatar($_SESSION['id']) . '" />' : '') . '</a>
 			<br />
 			<a href="' . $forumURL . 'account/alerts" ' . ((@count($alerts) > 0 || @count($conversations) > 0) ? 'class="fading-text"' : '') . '>You have ' . @count($alerts) . ' notifications and ' . @count($conversations) . ' unread messages on the boards.</a>
-
 			' . dailyTip() . '
 		</div>';
     }
@@ -277,9 +298,11 @@ if (loggedIn()) {
     $threads = getThreadsFromForum($userID);
 
     // Check if threads has data
-    if (!isset($threads['errors'])) {
+    if (!isset($threads['errors']))
+    {
         echo '<div class="container-announce">';
-        foreach ($threads['sticky'] as $thread => $thread_value) {
+        foreach ($threads['sticky'] as $thread => $thread_value)
+        {
             echo '
 			<div class="box">
 				<div class="user">
@@ -294,7 +317,8 @@ if (loggedIn()) {
 			</div>';
         }
 
-        foreach ($threads['threads'] as $thread => $thread_value) {
+        foreach ($threads['threads'] as $thread => $thread_value)
+        {
             echo '
 			<div class="box">
 				<div class="user">
@@ -315,9 +339,11 @@ if (loggedIn()) {
 echo '</div>';
 
 // Show the account page
-if (isset($_GET['action']) && $_GET['action'] == "account" && loggedIn()) {
+if (isset($_GET['action']) && $_GET['action'] == "account" && loggedIn())
+{
     // Theme Button Submit
-    if (isset($_POST['themeButton'])) {
+    if (isset($_POST['themeButton']))
+    {
         $statement = $conn->prepare("UPDATE troopers SET theme = ? WHERE id = ?");
         $statement->bind_param("ii", $_POST['themeselect'], $_SESSION['id']);
         $statement->execute();
@@ -346,8 +372,10 @@ if (isset($_GET['action']) && $_GET['action'] == "account" && loggedIn()) {
     $statement = $conn->prepare("SELECT costumes.id AS id, costumes.club, costumes.costume, favorite_costumes.costumeid, favorite_costumes.trooperid FROM costumes LEFT JOIN favorite_costumes ON favorite_costumes.costumeid = costumes.id ORDER BY costume");
     $statement->execute();
 
-    if ($result = $statement->get_result()) {
-        while ($db = mysqli_fetch_object($result)) {
+    if ($result = $statement->get_result())
+    {
+        while ($db = mysqli_fetch_object($result))
+        {
             $isFavorite = ($db->trooperid == $_SESSION['id']) ? echoSelect($db->id, $db->costumeid) : "";
 
             echo '
@@ -370,12 +398,17 @@ if (isset($_GET['action']) && $_GET['action'] == "account" && loggedIn()) {
     // Is the trooper subscribed to e-mail?
     $subscribe = "";
 
-    if ($result = $statement->get_result()) {
-        while ($db = mysqli_fetch_object($result)) {
-            if ($db->subscribe == 1) {
+    if ($result = $statement->get_result())
+    {
+        while ($db = mysqli_fetch_object($result))
+        {
+            if ($db->subscribe == 1)
+            {
                 echo '
 					<input type="submit" name="unsubscribeButton" id="unsubscribeButton" value="Unsubscribe All" />';
-            } else {
+            }
+            else
+            {
                 echo '
 					<input type="submit" name="unsubscribeButton" id="unsubscribeButton" value="Subscribe" />';
 
@@ -396,13 +429,15 @@ if (isset($_GET['action']) && $_GET['action'] == "account" && loggedIn()) {
 			<input type="checkbox" name="esquad0" id="esquad0" ' . emailSettingStatus("esquad0", true) . ' />501st / ' . garrison . '<br />';
 
     // Loop through squads
-    foreach ($squadArray as $squad => $squad_value) {
+    foreach ($squadArray as $squad => $squad_value)
+    {
         echo '
 				<input type="checkbox" name="esquad' . $squad_value['squadID'] . '" id="esquad' . $squad_value['squadID'] . '" ' . emailSettingStatus("esquad" . $squad_value['squadID'], true) . ' />' . $squad_value['name'] . '<br />';
     }
 
     // Loop through clubs
-    foreach ($clubArray as $club => $club_value) {
+    foreach ($clubArray as $club => $club_value)
+    {
         echo '
 				<input type="checkbox" name="esquad' . $club_value['squadID'] . '" id="esquad' . $club_value['squadID'] . '" ' . emailSettingStatus("esquad" . $club_value['squadID'], true) . ' />' . $club_value['name'] . '<br />';
     }
@@ -429,8 +464,10 @@ if (isset($_GET['action']) && $_GET['action'] == "account" && loggedIn()) {
     $statement->bind_param("i", $_SESSION['id']);
     $statement->execute();
 
-    if ($result = $statement->get_result()) {
-        while ($db = mysqli_fetch_object($result)) {
+    if ($result = $statement->get_result())
+    {
+        while ($db = mysqli_fetch_object($result))
+        {
             echo '
 					<option value="0" ' . echoSelect(0, $db->theme) . '>' . garrison . ' Theme (Dark Theme)</option>
 					<option value="1" ' . echoSelect(1, $db->theme) . '>Everglades Theme</option>
@@ -462,7 +499,8 @@ if (isset($_GET['action']) && $_GET['action'] == "account" && loggedIn()) {
 }
 
 // Show the request access page
-if (isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClosed() && !loggedIn()) {
+if (isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClosed() && !loggedIn())
+{
     echo '
 	<h2 class="tm-section-header">Request Access</h2>
 	
@@ -482,9 +520,11 @@ if (isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClo
 			<br /><br />';
 
     // Loop through clubs
-    foreach ($clubArray as $club => $club_value) {
+    foreach ($clubArray as $club => $club_value)
+    {
         // If DB3 defined
-        if ($club_value['db3Name'] != "") {
+        if ($club_value['db3Name'] != "")
+        {
             echo '
 					' . $club_value['db3Name'] . ' (if applicable): <input type="text" name="' . $club_value['db3'] . '" id="' . $club_value['db3'] . '" />
 					<br /><br />';
@@ -509,19 +549,24 @@ if (isset($_GET['action']) && $_GET['action'] == "requestaccess" && !isSignUpClo
 	</div>
 
 	<div name="requestAccessFormArea2" id="requestAccessFormArea2"></div>';
-} else {
-    if (isset($_GET['action']) && $_GET['action'] == "requestaccess") {
+}
+else
+{
+    if (isset($_GET['action']) && $_GET['action'] == "requestaccess")
+    {
         echo '<p style="text-align: center;"><b>You are already logged in.</b></p>';
     }
 }
 
 // Show the profile page
-if (isset($_GET['profile']) && loggedIn()) {
+if (isset($_GET['profile']) && loggedIn())
+{
     // Hold value
     $profile = cleanInput($_GET['profile']);
 
     // Convert TKID to profile
-    if (isset($_GET['tkid'])) {
+    if (isset($_GET['tkid']))
+    {
         $profile = getIDFromTKNumber($_GET['tkid']);
     }
 
@@ -536,9 +581,12 @@ if (isset($_GET['profile']) && loggedIn()) {
     // Check if trooped all squads
     $troopedSquads = array();
 
-    if ($result = $statement->get_result()) {
-        while ($db = mysqli_fetch_object($result)) {
-            if ($i == 0) {
+    if ($result = $statement->get_result())
+    {
+        while ($db = mysqli_fetch_object($result))
+        {
+            if ($i == 0)
+            {
                 // Show profile information
                 echo
                     profileTop($db->id, $db->tkid, $db->name, $db->squad, $db->forum_id, $db->phone);
@@ -559,7 +607,8 @@ if (isset($_GET['profile']) && loggedIn()) {
             $add = "";
 
             // If linked event
-            if (isLink($db->eventId) > 0) {
+            if (isLink($db->eventId) > 0)
+            {
                 $add = "[<b>" . date("l", strtotime($db->dateStart)) . "</b> : " . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "] ";
             }
 
@@ -586,23 +635,30 @@ if (isset($_GET['profile']) && loggedIn()) {
     }
 
     // If profile does not exist
-    if (!profileExist($profile)) {
+    if (!profileExist($profile))
+    {
         echo '
 		<p style="text-align: center;">
 			<b>This trooper does not exist.</b>
 		</p>';
     }
     // Check if placeholder
-    else if ($profile == placeholder) {
+    else if ($profile == placeholder)
+    {
         echo '
 		<p style="text-align: center;">
 			<b>This is a placeholder account. A placeholder is used to fill space when a trooper does not have Troop Tracker access.</b>
 		</p>';
-    } else {
+    }
+    else
+    {
         // Profile exists - if nothing to show
-        if ($i == 0) {
+        if ($i == 0)
+        {
             echo profileTop($profile, getTKNumber($profile), getName($profile), getTrooperSquad($profile), getTrooperForum($profile), getPhone($profile));
-        } else {
+        }
+        else
+        {
             // Get count for awards
             $statement = $conn->prepare("SELECT id FROM event_sign_up WHERE status = '3' AND trooperid = ?");
             $statement->bind_param("i", $profile);
@@ -622,7 +678,8 @@ if (isset($_GET['profile']) && loggedIn()) {
 			<h2 class="tm-section-header" id="awards-header">Awards</h2>';
 
             // Check if supporter
-            if (isSupporter($profile)) {
+            if (isSupporter($profile))
+            {
                 echo '<img src="images/flgdonate.png" />';
             }
 
@@ -636,60 +693,74 @@ if (isset($_GET['profile']) && loggedIn()) {
             $troopedSquads = array_diff($troopedSquads, array(0, -1));
 
             // If trooped in every squad, show an award
-            if (count($troopedSquads) == count($squadArray)) {
+            if (count($troopedSquads) == count($squadArray))
+            {
                 echo '<li><b>Trooped Every Squad!<b></li>';
             }
 
-            if ($count >= 1) {
+            if ($count >= 1)
+            {
                 echo '<li>First Troop Completed!</li>';
                 $j++;
             }
 
-            if ($count >= 10) {
+            if ($count >= 10)
+            {
                 echo '<li>10 Troops</li>';
             }
 
-            if ($count >= 25) {
+            if ($count >= 25)
+            {
                 echo '<li>25 Troops</li>';
             }
 
-            if ($count >= 50) {
+            if ($count >= 50)
+            {
                 echo '<li>50 Troops</li>';
             }
 
-            if ($count >= 75) {
+            if ($count >= 75)
+            {
                 echo '<li>75 Troops</li>';
             }
 
-            if ($count >= 100) {
+            if ($count >= 100)
+            {
                 echo '<li>100 Troops</li>';
             }
 
-            if ($count >= 150) {
+            if ($count >= 150)
+            {
                 echo '<li>150 Troops</li>';
             }
 
-            if ($count >= 200) {
+            if ($count >= 200)
+            {
                 echo '<li>200 Troops</li>';
             }
 
-            if ($count >= 250) {
+            if ($count >= 250)
+            {
                 echo '<li>250 Troops</li>';
             }
 
-            if ($count >= 300) {
+            if ($count >= 300)
+            {
                 echo '<li>300 Troops</li>';
             }
 
-            if ($count >= 400) {
+            if ($count >= 400)
+            {
                 echo '<li>400 Troops</li>';
             }
 
-            if ($count >= 500) {
+            if ($count >= 500)
+            {
                 echo '<li>500 Troops</li>';
             }
 
-            if ($count >= 501) {
+            if ($count >= 501)
+            {
                 echo '<li>501 Troops Award</li>';
             }
 
@@ -698,12 +769,17 @@ if (isset($_GET['profile']) && loggedIn()) {
             $statement->bind_param("i", $profile);
             $statement->execute();
 
-            if ($result2 = $statement->get_result()) {
-                while ($db2 = mysqli_fetch_object($result2)) {
+            if ($result2 = $statement->get_result())
+            {
+                while ($db2 = mysqli_fetch_object($result2))
+                {
                     // If has icon...
-                    if ($db2->icon == "") {
+                    if ($db2->icon == "")
+                    {
                         echo '<li>' . $db2->title . '</li>';
-                    } else {
+                    }
+                    else
+                    {
                         echo '<li style="list-style-image: url(\'images/icons/' . $db2->icon . '\');">' . $db2->title . '</li>';
                     }
 
@@ -711,7 +787,8 @@ if (isset($_GET['profile']) && loggedIn()) {
                 }
             }
 
-            if ($j == 0) {
+            if ($j == 0)
+            {
                 echo '<li>No awards yet!</li>';
             }
 
@@ -738,13 +815,16 @@ if (isset($_GET['profile']) && loggedIn()) {
             $total_pages = ceil($rowPage / $results);
 
             // If page set
-            if (isset($_GET['page'])) {
+            if (isset($_GET['page']))
+            {
                 // Get page
                 $page = intval($_GET['page']);
 
                 // Start from
                 $startFrom = ($page - 1) * $results;
-            } else {
+            }
+            else
+            {
                 // Default
                 $page = 1;
 
@@ -760,8 +840,10 @@ if (isset($_GET['profile']) && loggedIn()) {
             // Count photos
             $i = 0;
 
-            if ($result = $statement->get_result()) {
-                while ($db = mysqli_fetch_object($result)) {
+            if ($result = $statement->get_result())
+            {
+                while ($db = mysqli_fetch_object($result))
+                {
                     echo '
 					<div class="container-image">
 						<a href="images/uploads/' . $db->filename . '" data-lightbox="photosadmin" data-title="Uploaded by ' . getName($db->trooperid) . '" id="photo' . $db->id . '"><img src="images/uploads/resize/' . getFileName($db->filename) . '.jpg" width="200px" height="200px" class="image-c" /></a>
@@ -777,12 +859,15 @@ if (isset($_GET['profile']) && loggedIn()) {
                 }
 
                 // If photos
-                if ($i > 0) {
+                if ($i > 0)
+                {
                     echo '
 					<p class="center-content">
 						<i>Press photos for full resolution version.</i>
 					</p>';
-                } else {
+                }
+                else
+                {
                     echo '
 					<p class="center-content">
 						No tagged photos to display.
@@ -791,22 +876,28 @@ if (isset($_GET['profile']) && loggedIn()) {
             }
 
             // If photos
-            if ($total_pages > 1) {
+            if ($total_pages > 1)
+            {
                 echo '<p>Pages: ';
 
                 // Loop through pages
-                for ($j = 1; $j <= $total_pages; $j++) {
+                for ($j = 1; $j <= $total_pages; $j++)
+                {
                     // If we are on this page...
-                    if ($page == $j) {
+                    if ($page == $j)
+                    {
                         echo '
 						' . $j . '';
-                    } else {
+                    }
+                    else
+                    {
                         echo '
 						<a href="index.php?profile=' . cleanInput($_GET['profile']) . '&page=' . $j . '#photo_section">' . $j . '</a>';
                     }
 
                     // If not that last page, add a comma
-                    if ($j != $total_pages) {
+                    if ($j != $total_pages)
+                    {
                         echo ', ';
                     }
                 }
@@ -827,7 +918,8 @@ if (isset($_GET['profile']) && loggedIn()) {
             $lastSlashPos = strrpos($forumURL, '/');
 
             // If a slash was found, truncate the URL after it
-            if ($lastSlashPos !== false) {
+            if ($lastSlashPos !== false)
+            {
                 $cleanedURL = substr($forumURL, 0, $lastSlashPos + 1);
             }
 
@@ -836,7 +928,8 @@ if (isset($_GET['profile']) && loggedIn()) {
             $obj = json_decode($json, true);
 
             // Check if the JSON was decoded properly
-            if ($obj === null) {
+            if ($obj === null)
+            {
                 die('Error decoding JSON data.');
             }
 
@@ -850,15 +943,21 @@ if (isset($_GET['profile']) && loggedIn()) {
             $j = 0;
 
             // Check if the combinedResults array exists
-            if (isset($obj['combinedResults']) && is_array($obj['combinedResults'])) {
+            if (isset($obj['combinedResults']) && is_array($obj['combinedResults']))
+            {
                 // Loop through each result in combinedResults
-                foreach ($obj['combinedResults'] as $result) {
-                    foreach ($obj['userUpgrades'] as $result2) {
+                foreach ($obj['combinedResults'] as $result)
+                {
+                    foreach ($obj['userUpgrades'] as $result2)
+                    {
                         // Check if this result has the specific user_upgrade_id
-                        if (isset($result2['user_upgrade_id']) && $result2['user_upgrade_id'] == $result['user_upgrade_id'] && $result['user_id'] == $user_id) {
-                            foreach ($obj['paymentLog'] as $result3) {
+                        if (isset($result2['user_upgrade_id']) && $result2['user_upgrade_id'] == $result['user_upgrade_id'] && $result['user_id'] == $user_id)
+                        {
+                            foreach ($obj['paymentLog'] as $result3)
+                            {
                                 // Check if this result has the specific purchase_request_key
-                                if ($result['purchase_request_key'] == $result3['purchase_request_key']) {
+                                if ($result['purchase_request_key'] == $result3['purchase_request_key'])
+                                {
                                     $obj2 = json_decode($result3['log_details'], true);
                                     $timestamp = strtotime($obj2['payment_date']);
                                     $date = new DateTime();
@@ -878,8 +977,10 @@ if (isset($_GET['profile']) && loggedIn()) {
             $statement->bind_param("i", $profile);
             $statement->execute();
 
-            if ($result2 = $statement->get_result()) {
-                while ($db2 = mysqli_fetch_object($result2)) {
+            if ($result2 = $statement->get_result())
+            {
+                while ($db2 = mysqli_fetch_object($result2))
+                {
                     $formatter = new NumberFormatter('en_US', NumberFormatter::CURRENCY);
 
                     echo '<li>' . $formatter->formatCurrency($db2->amount, 'USD') . ' on ' . date("m/d/Y", strtotime($db2->datetime)) . '</li>';
@@ -887,7 +988,8 @@ if (isset($_GET['profile']) && loggedIn()) {
                 }
             }
 
-            if ($j == 0) {
+            if ($j == 0)
+            {
                 echo '<li>No donations yet!</li>';
             }
             echo '
@@ -914,14 +1016,18 @@ if (isset($_GET['profile']) && loggedIn()) {
         // Show Droid Builder costumes
         showDroids(getTrooperForum($profile));
     }
-} else {
-    if (isset($_GET['profile'])) {
+}
+else
+{
+    if (isset($_GET['profile']))
+    {
         echo '<p style="text-align: center;"><b>Please login to view this profile.</b></p>';
     }
 }
 
 // Photo Page
-if (isset($_GET['action']) && $_GET['action'] == "photos") {
+if (isset($_GET['action']) && $_GET['action'] == "photos")
+{
     // Print
     echo '
 	<h3>Recent Events With Photos</h3>';
@@ -934,10 +1040,13 @@ if (isset($_GET['action']) && $_GET['action'] == "photos") {
     $statement->execute();
 
     // Loop through query
-    if ($result = $statement->get_result()) {
-        while ($db = mysqli_fetch_object($result)) {
+    if ($result = $statement->get_result())
+    {
+        while ($db = mysqli_fetch_object($result))
+        {
             // First loop
-            if ($i == 0) {
+            if ($i == 0)
+            {
                 echo '
 				<ul>';
             }
@@ -959,17 +1068,21 @@ if (isset($_GET['action']) && $_GET['action'] == "photos") {
     }
 
     // If photos exist
-    if ($i > 0) {
+    if ($i > 0)
+    {
         echo '
 		</ul>';
-    } else {
+    }
+    else
+    {
         echo '
 		<p style="text-align: center;">No photos to display.</p>';
     }
 }
 
 // Show the costume count page
-if (isset($_GET['action']) && $_GET['action'] == "costume" && isset($_GET['costumeid']) && $_GET['costumeid'] >= 0) {
+if (isset($_GET['action']) && $_GET['action'] == "costume" && isset($_GET['costumeid']) && $_GET['costumeid'] >= 0)
+{
     // Get data
     $statement = $conn->prepare("SELECT (SELECT COUNT(event_sign_up.trooperid)) AS troopCount, troopers.name AS trooperName, troopers.tkid, troopers.squad, event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, (TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) AS charityHours FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE event_sign_up.costume = ? AND status = 3 AND events.closed = '1' AND event_sign_up.trooperid != " . placeholder . " GROUP BY event_sign_up.trooperid ORDER BY troopCount DESC");
     $statement->bind_param("i", $_GET['costumeid']);
@@ -978,9 +1091,12 @@ if (isset($_GET['action']) && $_GET['action'] == "costume" && isset($_GET['costu
     // Troop count
     $i = 0;
 
-    if ($result = $statement->get_result()) {
-        while ($db = mysqli_fetch_object($result)) {
-            if ($i == 0) {
+    if ($result = $statement->get_result())
+    {
+        while ($db = mysqli_fetch_object($result))
+        {
+            if ($i == 0)
+            {
                 echo '
 				<h2 class="tm-section-header">' . getCostume($db->costume) . '</h2>
 				<div style="overflow-x: auto;">
@@ -999,7 +1115,8 @@ if (isset($_GET['action']) && $_GET['action'] == "costume" && isset($_GET['costu
         }
     }
 
-    if ($i > 0) {
+    if ($i > 0)
+    {
         echo '
 		</table>
 		</div>';
@@ -1007,13 +1124,15 @@ if (isset($_GET['action']) && $_GET['action'] == "costume" && isset($_GET['costu
 }
 
 // Show the search page
-if (isset($_GET['action']) && $_GET['action'] == "search") {
+if (isset($_GET['action']) && $_GET['action'] == "search")
+{
     echo '
 	<h2 class="tm-section-header">Search</h2>
 	<div name="searchForm" id="searchForm">
 		<form action="index.php?action=search" method="POST">';
     // Get our search type, and show certain fields
-    if (!isset($_POST['searchType']) || $_POST['searchType'] == "regular") {
+    if (!isset($_POST['searchType']) || $_POST['searchType'] == "regular")
+    {
         echo '
 				Search Troop Name: <input type="text" name="searchName" id="searchName" value="' . (!isset($_POST['searchName']) ? '' : cleanInput($_POST['searchName'])) . '" />
 				<br /><br />
@@ -1028,7 +1147,8 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
 			<br /><br />';
 
     // Get our search type, and show certain fields
-    if (!isset($_POST['searchType']) || $_POST['searchType'] == "regular") {
+    if (!isset($_POST['searchType']) || $_POST['searchType'] == "regular")
+    {
         echo '
 				Search TKID: <input type="text" name="tkID" id="tkID" value="' . (!isset($_POST['tkID']) ? '' : cleanInput($_POST['tkID'])) . '" />
 				<br /><br />';
@@ -1039,7 +1159,8 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
 			<input type="hidden" name="searchType" value="' . (!isset($_POST['searchType']) ? 'regular' : cleanInput($_POST['searchType'])) . '" />';
 
     // If trooper search, include searchType for another search
-    if (isset($_POST['searchType']) && ($_POST['searchType'] == "trooper" || $_POST['searchType'] == "donations")) {
+    if (isset($_POST['searchType']) && ($_POST['searchType'] == "trooper" || $_POST['searchType'] == "donations"))
+    {
         echo '
 				<select name="squad" id="squad">
 					<option value="0" ' . echoSelect(0, cleanInput($_POST['squad'])) . '>All</option>
@@ -1047,12 +1168,16 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
 				</select>
 				<br /><br />';
 
-        if ($_POST['searchType'] == "trooper") {
+        if ($_POST['searchType'] == "trooper")
+        {
             // If active only set
-            if (isset($_POST['activeonly']) && $_POST['activeonly'] == 1) {
+            if (isset($_POST['activeonly']) && $_POST['activeonly'] == 1)
+            {
                 echo '
 						<input type="checkbox" name="activeonly" value="1" CHECKED /> Active Members Only?';
-            } else {
+            }
+            else
+            {
                 echo '
 						<input type="checkbox" name="activeonly" value="1" /> Active Members Only?';
             }
@@ -1061,12 +1186,16 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
 					<br /><br />';
         }
 
-        if ($_POST['searchType'] == "donations") {
+        if ($_POST['searchType'] == "donations")
+        {
             // If active only set
-            if (isset($_POST['donationCheckBox']) && $_POST['donationCheckBox'] == 1) {
+            if (isset($_POST['donationCheckBox']) && $_POST['donationCheckBox'] == 1)
+            {
                 echo '
 						<input type="checkbox" name="donationCheckBox" value="1" CHECKED /> Charity Events Only?';
-            } else {
+            }
+            else
+            {
                 echo '
 						<input type="checkbox" name="donationCheckBox" value="1" /> Charity Events Only?';
             }
@@ -1075,10 +1204,13 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
 					<br /><br />';
 
             // If with value only set
-            if (isset($_POST['donationCheckBox2']) && $_POST['donationCheckBox2'] == 1) {
+            if (isset($_POST['donationCheckBox2']) && $_POST['donationCheckBox2'] == 1)
+            {
                 echo '
 						<input type="checkbox" name="donationCheckBox2" value="1" CHECKED /> Events With Data?';
-            } else {
+            }
+            else
+            {
                 echo '
 						<input type="checkbox" name="donationCheckBox2" value="1" /> Events With Data?';
             }
@@ -1089,20 +1221,25 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
     }
 
     // If costume search, include searchType for another search
-    if (isset($_POST['searchType']) && $_POST['searchType'] == "costumecount") {
+    if (isset($_POST['searchType']) && $_POST['searchType'] == "costumecount")
+    {
         echo '
 				<select multiple style="height: 500px;" id="costumes_choice_search_box" name="costumes_choice_search_box[]">';
 
         $statement = $conn->prepare("SELECT costumes.id AS id, costumes.club, costumes.costume FROM costumes ORDER BY costume");
         $statement->execute();
 
-        if ($result = $statement->get_result()) {
-            while ($db = mysqli_fetch_object($result)) {
+        if ($result = $statement->get_result())
+        {
+            while ($db = mysqli_fetch_object($result))
+            {
                 $check = "";
 
                 // Should we check the select
-                if (isset($_POST['costumes_choice_search_box'])) {
-                    if (in_array($db->id, $_POST['costumes_choice_search_box'])) {
+                if (isset($_POST['costumes_choice_search_box']))
+                {
+                    if (in_array($db->id, $_POST['costumes_choice_search_box']))
+                    {
                         $check = "SELECTED";
                     }
                 }
@@ -1125,7 +1262,8 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
 	<br /><br />';
 
     // Format dates
-    if (isset($_POST['submitSearch'])) {
+    if (isset($_POST['submitSearch']))
+    {
         $dateStart = strtotime(($_POST['dateStart'] != "" ? $_POST['dateStart'] : '1990-01-01'));
         $dateEnd = strtotime(($_POST['dateStart'] != "" ? $_POST['dateEnd'] : '3000-01-01'));
         $dateStartQuery = date('Y-m-d H:i:s', $dateStart);
@@ -1134,16 +1272,20 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
 
     // Get our search type, and show certain fields
     // Regular search
-    if (isset($_POST['searchType']) && $_POST['searchType'] == "regular") {
+    if (isset($_POST['searchType']) && $_POST['searchType'] == "regular")
+    {
         // Get data
         $i = 0;
         $statement = $conn->prepare("SELECT events.squad AS eventSquad, event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid LEFT JOIN troopers ON troopers.id = event_sign_up.trooperid WHERE troopers.id != " . placeholder . " AND troopers.tkid LIKE CONCAT('%', ?, '%') AND events.name LIKE CONCAT('%', ?, '%') AND events.dateStart >= ? AND events.dateEnd <= ? AND troopers.name LIKE CONCAT('%', ?, '%')");
         $statement->bind_param("sssss", $_POST['tkID'], $_POST['searchName'], $dateStartQuery, $dateEndQuery, $_POST['searchTrooperName']);
         $statement->execute();
 
-        if ($result = $statement->get_result()) {
-            while ($db = mysqli_fetch_object($result)) {
-                if ($i == 0) {
+        if ($result = $statement->get_result())
+        {
+            while ($db = mysqli_fetch_object($result))
+            {
+                if ($i == 0)
+                {
                     echo '
 					<div style="overflow-x: auto;">
 					<table border="1">
@@ -1159,24 +1301,28 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
                     '<td>' . $dateFormat . '</td>' .
                     '<td>' . (isset($db->trooperid) ? getName($db->trooperid) : 'N/A') . '</td>' .
                     '<td>' . (isset($db->trooperid)
-                        ? '<a href="index.php?profile=' . $db->trooperid . '">' .
-                        readTKNumber(getTKNumber($db->trooperid), getTrooperSquad($db->trooperid), $db->trooperid) . '</a>'
-                        : 'N/A') . '</td>' .
+                    ? '<a href="index.php?profile=' . $db->trooperid . '">' .
+                    readTKNumber(getTKNumber($db->trooperid), getTrooperSquad($db->trooperid), $db->trooperid) . '</a>'
+                    : 'N/A') . '</td>' .
                     '<td>' . ifEmpty('<a href="index.php?action=costume&costumeid=' . $db->costume . '">' . getCostume($db->costume) . '</a>', "N/A") . '</td>' .
                     '<td>' . getStatus($db->status) . '</td></tr>';
 
                 $i++;
             }
         }
-    } else if (isset($_POST['searchType']) && $_POST['searchType'] == "costumecount") {
+    }
+    else if (isset($_POST['searchType']) && $_POST['searchType'] == "costumecount")
+    {
         // Don't allow empty result
-        if (!isset($_POST['costumes_choice_search_box'])) {
+        if (!isset($_POST['costumes_choice_search_box']))
+        {
             echo 'No data available.';
             exit;
         }
 
         // Loop through clubs
-        foreach ($_POST['costumes_choice_search_box'] as $costume) {
+        foreach ($_POST['costumes_choice_search_box'] as $costume)
+        {
             echo '
 			<h2 class="tm-section-header">' . getCostume($costume) . '</h2>';
 
@@ -1188,9 +1334,12 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
             // Troop count
             $i = 0;
 
-            if ($result = $statement->get_result()) {
-                while ($db = mysqli_fetch_object($result)) {
-                    if ($i == 0) {
+            if ($result = $statement->get_result())
+            {
+                while ($db = mysqli_fetch_object($result))
+                {
+                    if ($i == 0)
+                    {
                         echo '
 						<div style="overflow-x: auto;">
 						<table border="1">
@@ -1208,14 +1357,16 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
                 }
             }
 
-            if ($i == 0) {
+            if ($i == 0)
+            {
                 echo '
 				<p style="text-align: center;">
 					No troops found.
 				</p>';
             }
 
-            if ($i > 0) {
+            if ($i > 0)
+            {
                 echo '
 				</table>
 				</div>';
@@ -1223,17 +1374,20 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
         }
     }
     // Trooper search
-    else if (isset($_POST['searchType']) && $_POST['searchType'] == "trooper") {
+    else if (isset($_POST['searchType']) && $_POST['searchType'] == "trooper")
+    {
         // Set up array for CSV
         $list = array();
 
         // Get the squad search type
-        if ($_POST['squad'] == 0) {
+        if ($_POST['squad'] == 0)
+        {
             // If All
 
             // Loop through clubs // This is to get active member column values
             $checkClubsQuery = "(p501 = 1 OR p501 = 2) ";
-            foreach ($clubArray as $club => $club_value) {
+            foreach ($clubArray as $club => $club_value)
+            {
                 $checkClubsQuery .= "OR (" . $club_value['db'] . " = 1 OR " . $club_value['db'] . " = 2)";
             }
 
@@ -1261,7 +1415,9 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
             $statement1->bind_result($charity_count2);
             $statement1->fetch();
             $statement1->close();
-        } else if (($_POST['squad'] >= 1 && in_array($_POST['squad'], $validSquadIDs))) {
+        }
+        else if (($_POST['squad'] >= 1 && in_array($_POST['squad'], $validSquadIDs)))
+        {
             // If 501st
             // Add to query
             $statement = $conn->prepare("SELECT * FROM troopers WHERE squad = ? AND troopers.id != " . placeholder . " " . (isset($_POST['activeonly']) && $_POST['activeonly'] == 1 ? 'AND (p501 = \'1\' OR p501 = \'2\')' : '') . "");
@@ -1288,7 +1444,9 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
             $statement1->bind_result($charity_count2);
             $statement1->fetch();
             $statement1->close();
-        } else {
+        }
+        else
+        {
             // Any other club
             $dbValue = getClubBySquadID($_POST['squad'])['db'];
 
@@ -1325,26 +1483,32 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
         $troopArray = array();
 
         // Format numbers to prevent errors - charity
-        if (!isset($charity_count)) {
+        if (!isset($charity_count))
+        {
             $charity_count = 0;
         }
 
-        if (!isset($charity_count2[0])) {
+        if (!isset($charity_count2[0]))
+        {
             $charity_count2 = 0;
         }
 
         // Format numbers to prevent errors - troop
-        if (!isset($troop_count)) {
+        if (!isset($troop_count))
+        {
             $troop_count = 0;
         }
 
         $statement->execute();
 
         // Start going through troopers
-        if ($result = $statement->get_result()) {
-            while ($db = mysqli_fetch_object($result)) {
+        if ($result = $statement->get_result())
+        {
+            while ($db = mysqli_fetch_object($result))
+            {
                 // Show table
-                if ($i == 0) {
+                if ($i == 0)
+                {
                     echo '
 					<p>
 						Total Troops: ' . $troop_count . '
@@ -1375,7 +1539,8 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
                 $i++;
 
                 // If All
-                if ($_POST['squad'] == 0) {
+                if ($_POST['squad'] == 0)
+                {
                     // Get troop counts - All
                     $statement1 = $conn->prepare("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = ? AND events.dateStart >= ? AND events.dateEnd <= ? AND event_sign_up.status = '3' AND events.closed = '1'");
                     $statement1->bind_param("iss", $db->id, $dateStartQuery, $dateEndQuery);
@@ -1383,7 +1548,9 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
                     $statement1->bind_result($count, $eventid);
                     $statement1->fetch();
                     $statement1->close();
-                } else if (($_POST['squad'] >= 1 && in_array($_POST['squad'], $validSquadIDs))) {
+                }
+                else if (($_POST['squad'] >= 1 && in_array($_POST['squad'], $validSquadIDs)))
+                {
                     // If 501st
                     // Get troop counts - 501st
                     $statement1 = $conn->prepare("SELECT COUNT(event_sign_up.id), max(events.dateStart), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.closed = '1' AND event_sign_up.trooperid = ? AND events.dateStart >= ? AND events.dateEnd <= ? AND " . getCostumeQueryValuesSquad($_POST['squad']) . "");
@@ -1392,7 +1559,9 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
                     $statement1->bind_result($count, $date, $eventid);
                     $statement1->fetch();
                     $statement1->close();
-                } else {
+                }
+                else
+                {
                     // If club
                     $statement1 = $conn->prepare("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.closed = '1' AND event_sign_up.trooperid = ? AND events.dateStart >= ? AND events.dateEnd <= ? AND " . getCostumeQueryValues($_POST['squad']) . "");
                     $statement1->bind_param("iss", $db->id, $dateStartQuery, $dateEndQuery);
@@ -1415,7 +1584,8 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
         array_multisort($keys, SORT_DESC, $troopArray);
 
         // Loop through array
-        foreach ($troopArray as $value) {
+        foreach ($troopArray as $value)
+        {
             $value[5] = (!empty($value[5]) ? date("m/d/Y", strtotime($value[5])) : 'N/A');
 
             // Display
@@ -1428,9 +1598,11 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
         }
     }
     // Donation search
-    else if (isset($_POST['searchType']) && $_POST['searchType'] == "donations") {
+    else if (isset($_POST['searchType']) && $_POST['searchType'] == "donations")
+    {
         // If All
-        if ($_POST['squad'] == 0) {
+        if ($_POST['squad'] == 0)
+        {
             $statement = $conn->prepare("SELECT (SELECT COUNT(event_sign_up.id) FROM event_sign_up WHERE event_sign_up.troopid = events.id AND event_sign_up.status = 3) AS troopercount, events.id AS id, events.dateStart, events.dateEnd, events.name, events.charityDirectFunds, events.charityAddHours, events.charityDirectFunds, events.charityIndirectFunds, events.charityName, events.charityNote FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE dateStart >= ? AND dateEnd <= ? " . (isset($_POST['donationCheckBox']) ? 'AND events.label = 1' : '') . " " . (isset($_POST['donationCheckBox2']) ? 'AND (events.charityDirectFunds > 0 OR events.charityIndirectFunds > 0 OR events.charityNote != "")' : '') . " GROUP BY events.id");
             $statement->bind_param("ss", $dateStartQuery, $dateEndQuery);
 
@@ -1456,7 +1628,9 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
             $statement1->bind_result($charity_count2);
             $statement1->fetch();
             $statement1->close();
-        } else if (($_POST['squad'] >= 1 && in_array($_POST['squad'], $validSquadIDs))) {
+        }
+        else if (($_POST['squad'] >= 1 && in_array($_POST['squad'], $validSquadIDs)))
+        {
             // If 501st
             $statement = $conn->prepare("SELECT (SELECT COUNT(event_sign_up.id) FROM event_sign_up WHERE event_sign_up.troopid = events.id AND event_sign_up.status = 3) AS troopercount, events.id AS id, events.dateStart, events.dateEnd, events.name, events.charityDirectFunds, events.charityAddHours, events.charityDirectFunds, events.charityIndirectFunds, events.charityName, events.charityNote FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE dateStart >= ? AND dateEnd <= ? AND squad = ? " . (isset($_POST['donationCheckBox']) ? 'AND events.label = 1' : '') . " " . (isset($_POST['donationCheckBox2']) ? 'AND (events.charityDirectFunds > 0 OR events.charityIndirectFunds > 0 OR events.charityNote != "")' : '') . " GROUP BY events.id");
             $statement->bind_param("ssi", $dateStartQuery, $dateEndQuery, $_POST['squad']);
@@ -1483,7 +1657,9 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
             $statement1->bind_result($charity_count2);
             $statement1->fetch();
             $statement1->close();
-        } else {
+        }
+        else
+        {
             // Clubs
             $statement = $conn->prepare("SELECT (SELECT COUNT(event_sign_up.id) FROM event_sign_up WHERE event_sign_up.troopid = events.id AND event_sign_up.status = 3 AND " . getCostumeQueryValues($_POST['squad']) . ") AS troopercount, events.id AS id, events.dateStart, events.dateEnd, events.name, events.charityDirectFunds, events.charityAddHours, events.charityDirectFunds, events.charityIndirectFunds, events.charityName, events.charityNote FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE dateStart >= ? AND dateEnd <= ? AND " . getCostumeQueryValues($_POST['squad']) . " " . (isset($_POST['donationCheckBox']) ? 'AND events.label = 1' : '') . " " . (isset($_POST['donationCheckBox2']) ? 'AND (events.charityDirectFunds > 0 OR events.charityIndirectFunds > 0 OR events.charityNote != "")' : '') . " GROUP BY events.id");
             $statement->bind_param("ss", $dateStartQuery, $dateEndQuery);
@@ -1519,16 +1695,19 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
         $troopArray = array();
 
         // Format numbers to prevent errors - charity
-        if (!isset($charity_count)) {
+        if (!isset($charity_count))
+        {
             $charity_count = 0;
         }
 
-        if (!isset($charity_count2)) {
+        if (!isset($charity_count2))
+        {
             $charity_count2 = 0;
         }
 
         // Format numbers to prevent errors - troop
-        if (!isset($troop_count)) {
+        if (!isset($troop_count))
+        {
             $troop_count = 0;
         }
 
@@ -1537,10 +1716,13 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
 
         $list = array();
 
-        if ($result = $statement->get_result()) {
-            while ($db = mysqli_fetch_object($result)) {
+        if ($result = $statement->get_result())
+        {
+            while ($db = mysqli_fetch_object($result))
+            {
                 // Show table
-                if ($i == 0) {
+                if ($i == 0)
+                {
                     array_push($list, ['', '', $dateStartQuery . ' - ' . $dateEndQuery . ' Charity', '']);
                     array_push($list, ['Total Troops: ', $troop_count]);
                     array_push($list, ['Direct Charity: ', '$' . number_format($charity_count)]);
@@ -1572,7 +1754,8 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
                 $i++;
 
                 // If All
-                if ($_POST['squad'] == 0) {
+                if ($_POST['squad'] == 0)
+                {
                     // Get troop counts - All
                     $statement1 = $conn->prepare("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = ? AND events.dateStart >= ? AND events.dateEnd <= ?");
                     $statement1->bind_param("iss", $db->id, $dateStartQuery, $dateEndQuery);
@@ -1580,7 +1763,9 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
                     $statement1->bind_result($count, $eventid);
                     $statement1->fetch();
                     $statement1->close();
-                } else if (($_POST['squad'] >= 1 && in_array($_POST['squad'], $validSquadIDs))) {
+                }
+                else if (($_POST['squad'] >= 1 && in_array($_POST['squad'], $validSquadIDs)))
+                {
                     // Get troop counts - 501st
                     $statement1 = $conn->prepare("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = ? AND events.dateStart >= ? AND events.dateEnd <= ? AND ('0' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR '5' = (SELECT costumes.club FROM costumes WHERE id = event_sign_up.costume) OR EXISTS(SELECT events.id FROM events WHERE events.id = event_sign_up.troopid))");
                     $statement1->bind_param("iss", $db->id, $dateStartQuery, $dateEndQuery);
@@ -1588,7 +1773,9 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
                     $statement1->bind_result($count, $eventid);
                     $statement1->fetch();
                     $statement1->close();
-                } else {
+                }
+                else
+                {
                     // Get troop counts - 501st
                     $statement1 = $conn->prepare("SELECT COUNT(event_sign_up.id), events.id FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.trooperid = ? AND events.dateStart >= ? AND events.dateEnd <= ? AND " . getCostumeQueryValues($_POST['squad']) . "");
                     $statement1->bind_param("iss", $db->id, $dateStartQuery, $dateEndQuery);
@@ -1617,7 +1804,8 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
         array_multisort($keys, SORT_DESC, $troopArray);
 
         // Loop through array
-        foreach ($troopArray as $value) {
+        foreach ($troopArray as $value)
+        {
             $date = date("m/d/Y", strtotime($value[8]));
 
             // Display
@@ -1636,21 +1824,26 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
     }
 
     // Don't use for this search type
-    if (isset($_POST['searchType']) && $_POST['searchType'] != "costumecount") {
+    if (isset($_POST['searchType']) && $_POST['searchType'] != "costumecount")
+    {
         // What to do if we have more than one field
-        if ($i > 0) {
+        if ($i > 0)
+        {
             echo '
 			</table>
 			</div>';
 
-            if ($_POST['searchType'] == 'donations' || $_POST['searchType'] == 'trooper') {
+            if ($_POST['searchType'] == 'donations' || $_POST['searchType'] == 'trooper')
+            {
                 echo '
 				<form action="script/php/gencsv.php" method="POST" target="_blank">
 					<input type="hidden" name="data" value="' . htmlspecialchars(serialize($list)) . '" />
 					<input type="submit" value="Download CSV" />
 				</form>';
             }
-        } else {
+        }
+        else
+        {
             // Nothing to show
             echo '
 			<p style="text-align: center;">
@@ -1661,7 +1854,8 @@ if (isset($_GET['action']) && $_GET['action'] == "search") {
 }
 
 // Show the troop tracker page
-if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
+if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn())
+{
     echo '
 	<h2 class="tm-section-header">My Stats</h2>
 
@@ -1690,8 +1884,10 @@ if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
 
     $i = 0;
 
-    if ($result = $statement->get_result()) {
-        while ($db = mysqli_fetch_object($result)) {
+    if ($result = $statement->get_result())
+    {
+        while ($db = mysqli_fetch_object($result))
+        {
             echo '<li><a href="index.php?profile=' . $db->trooperid . '">' . getName($db->trooperid) . ' - ' . $db->total . '</a></li>';
 
             $i++;
@@ -1699,7 +1895,8 @@ if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
     }
 
     // If none to display
-    if ($i == 0) {
+    if ($i == 0)
+    {
         echo '<li>Nothing to display.</li>';
     }
 
@@ -1715,8 +1912,10 @@ if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
 
     $i = 0;
 
-    if ($result = $statement->get_result()) {
-        while ($db = mysqli_fetch_object($result)) {
+    if ($result = $statement->get_result())
+    {
+        while ($db = mysqli_fetch_object($result))
+        {
             echo '<li><a href="index.php?profile=' . $db->trooperid . '">' . getName($db->trooperid) . ' - ' . $db->total . '</a></li>';
 
             $i++;
@@ -1724,7 +1923,8 @@ if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
     }
 
     // If none to display
-    if ($i == 0) {
+    if ($i == 0)
+    {
         echo '<li>Nothing to display.</li>';
     }
 
@@ -1740,8 +1940,10 @@ if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
 
     $i = 0;
 
-    if ($result = $statement->get_result()) {
-        while ($db = mysqli_fetch_object($result)) {
+    if ($result = $statement->get_result())
+    {
+        while ($db = mysqli_fetch_object($result))
+        {
             echo '<li><a href="index.php?profile=' . $db->trooperid . '">' . getName($db->trooperid) . ' - ' . $db->total . '</a></li>';
 
             $i++;
@@ -1749,7 +1951,8 @@ if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
     }
 
     // If none to display
-    if ($i == 0) {
+    if ($i == 0)
+    {
         echo '<li>Nothing to display.</li>';
     }
 
@@ -1766,9 +1969,12 @@ if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
     // Troop count
     $i = 0;
 
-    if ($result = $statement->get_result()) {
-        while ($db = mysqli_fetch_object($result)) {
-            if ($i == 0) {
+    if ($result = $statement->get_result())
+    {
+        while ($db = mysqli_fetch_object($result))
+        {
+            if ($i == 0)
+            {
                 echo getTroopCounts($_SESSION['id']) . '
 				<div style="overflow-x: auto;">
 				<table border="1">
@@ -1781,7 +1987,8 @@ if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
             $add = "";
 
             // If linked event
-            if (isLink($db->eventId) > 0) {
+            if (isLink($db->eventId) > 0)
+            {
                 $add = "[<b>" . date("l", strtotime($db->dateStart)) . "</b> : " . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "] ";
             }
 
@@ -1801,11 +2008,14 @@ if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
         }
     }
 
-    if ($i > 0) {
+    if ($i > 0)
+    {
         echo '
 		</table>
 		</div>';
-    } else {
+    }
+    else
+    {
         // No troops attended
         echo '
 		<p><b>You have not attended any troops. Get out there and troop!</b></p>';
@@ -1819,15 +2029,19 @@ if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
 	<h2 class="tm-section-header">Troop Tracker</h2>';
 
     // If squad is not set
-    if (!isset($_GET['squad'])) {
+    if (!isset($_GET['squad']))
+    {
         // Get data
         $statement = $conn->prepare("SELECT events.squad AS eventSquad, event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, (TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) AS charityHours FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT 20");
-    } else {
+    }
+    else
+    {
         // Set results per page
         $results = 20;
 
         // Check if squad is not all
-        if ($_GET['squad'] != 0) {
+        if ($_GET['squad'] != 0)
+        {
             // Count event total
             $statement2 = $conn->prepare("SELECT COUNT(id) AS total FROM events WHERE squad = ? AND closed = 1");
             $statement2->bind_param("i", $_GET['squad']);
@@ -1835,7 +2049,9 @@ if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
             $statement2->bind_result($row);
             $statement2->fetch();
             $statement2->close();
-        } else {
+        }
+        else
+        {
             // Count event total
             $statement2 = $conn->prepare("SELECT COUNT(id) AS total FROM events");
             $statement2->execute();
@@ -1848,13 +2064,16 @@ if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
         $total_pages = ceil($row / $results);
 
         // If page set
-        if (isset($_GET['page'])) {
+        if (isset($_GET['page']))
+        {
             // Get page
             $page = $_GET['page'];
 
             // Start from
             $startFrom = ($page - 1) * $results;
-        } else {
+        }
+        else
+        {
             // Default
             $page = 1;
 
@@ -1863,11 +2082,14 @@ if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
         }
 
         // Check if squad is not all
-        if ($_GET['squad'] != 0) {
+        if ($_GET['squad'] != 0)
+        {
             // Squad is set, show only that data
             $statement = $conn->prepare("SELECT events.squad AS eventSquad, event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, (TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) AS charityHours FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' AND events.squad = ? GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT " . $startFrom . ", " . $results . "");
             $statement->bind_param("i", $_GET['squad']);
-        } else {
+        }
+        else
+        {
             // Squad is set, show only that data
             $statement = $conn->prepare("SELECT events.squad AS eventSquad, event_sign_up.trooperid, event_sign_up.troopid, event_sign_up.costume, event_sign_up.status, events.name AS eventName, events.id AS eventId, events.charityDirectFunds, events.charityIndirectFunds, events.dateStart, events.dateEnd, (TIMESTAMPDIFF(HOUR, events.dateStart, events.dateEnd) + events.charityAddHours) AS charityHours FROM events LEFT JOIN event_sign_up ON events.id = event_sign_up.troopid WHERE events.closed = '1' GROUP BY events.id ORDER BY events.dateEnd DESC LIMIT " . $startFrom . ", " . $results . "");
         }
@@ -1882,13 +2104,19 @@ if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
     $statement->execute();
 
     // Query
-    if ($result = $statement->get_result()) {
-        while ($db = mysqli_fetch_object($result)) {
-            if ($i == 0) {
+    if ($result = $statement->get_result())
+    {
+        while ($db = mysqli_fetch_object($result))
+        {
+            if ($i == 0)
+            {
                 // Get squad for squadLink function
-                if (isset($_GET['squad'])) {
+                if (isset($_GET['squad']))
+                {
                     $squadLink = $_GET['squad'];
-                } else {
+                }
+                else
+                {
                     $squadLink = -1;
                 }
 
@@ -1898,7 +2126,8 @@ if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
                 echo '<a href="index.php?action=trooptracker&squad=0" ' . (!isset($_GET['squad']) || @$_GET['squad'] == 0 ? 'style="font-weight: bold; color: yellow;"' : '') . '>All</a>';
 
                 // Loop through squads
-                foreach ($squadArray as $squad => $squad_value) {
+                foreach ($squadArray as $squad => $squad_value)
+                {
                     // Add to return var
                     echo
                         ' | ' . '<a href="index.php?action=trooptracker&squad=' . $squad_value['squadID'] . '" ' . (@$_GET['squad'] == $squad_value['squadID'] ? 'style="font-weight: bold; color: yellow;"' : '') . '>' . $squad_value['name'] . '</a>';
@@ -1937,7 +2166,8 @@ if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
         }
     }
 
-    if ($i > 0) {
+    if ($i > 0)
+    {
         // How many troops did the user attend
         $statement = $conn->prepare("SELECT costume, COUNT(*) FROM event_sign_up WHERE costume != 706 AND costume != 720 AND costume != 721 GROUP BY costume ORDER BY COUNT(costume) DESC LIMIT 1");
         $statement->execute();
@@ -1945,7 +2175,8 @@ if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
         $statement->fetch();
         $statement->close();
         // Prevent notice error
-        if ($favoriteCostume == "") {
+        if ($favoriteCostume == "")
+        {
             $favoriteCostume['costume'] = 0;
         }
 
@@ -2065,23 +2296,29 @@ if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
 		</div>';
 
         // If squad is set
-        if (isset($_GET['squad'])) {
+        if (isset($_GET['squad']))
+        {
             echo '
 			<p style="margin-left: 100px; text-align: right;">';
 
             // Loop through pages
-            for ($i = 1; $i <= $total_pages; $i++) {
+            for ($i = 1; $i <= $total_pages; $i++)
+            {
                 // If we are on this page...
-                if ($page == $i) {
+                if ($page == $i)
+                {
                     echo '
 					' . $i . '';
-                } else {
+                }
+                else
+                {
                     echo '
 					<a href="index.php?action=trooptracker&squad=' . cleanInput($_GET['squad']) . '&page=' . $i . '">' . $i . '</a>';
                 }
 
                 // If not that last page, add a comma
-                if ($i != $total_pages) {
+                if ($i != $total_pages)
+                {
                     echo ', ';
                 }
             }
@@ -2091,7 +2328,8 @@ if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
         }
 
         // If squad is not set
-        if (!isset($_GET['squad'])) {
+        if (!isset($_GET['squad']))
+        {
             echo '
 			<p><b>Favorite Costume:</b> ' . ifEmpty(getCostume($favoriteCostume), "N/A") . '</p>
 			<p><b>Volunteers at Troops:</b> ' . number_format($count1) . '</p>
@@ -2111,7 +2349,9 @@ if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
 			<p><b>Other Troops:</b> ' . number_format($count10) . '</p>
 			<p><b>Total Finished Troops:</b> ' . number_format($count11) . '</p>';
         }
-    } else {
+    }
+    else
+    {
         // No troops attended
         echo '
 		<p style="text-align: center;"><b>No troops found!</b></p>';
@@ -2170,8 +2410,10 @@ if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
     $statement = $conn->prepare("SELECT costumes.id AS id, costumes.club, costumes.costume FROM costumes ORDER BY costume");
     $statement->execute();
 
-    if ($result = $statement->get_result()) {
-        while ($db = mysqli_fetch_object($result)) {
+    if ($result = $statement->get_result())
+    {
+        while ($db = mysqli_fetch_object($result))
+        {
             echo '
 						<option value="' . $db->id . '">' . getCostumeAbbreviation($db->club) . ' ' . $db->costume . '</option>';
         }
@@ -2183,16 +2425,21 @@ if (isset($_GET['action']) && $_GET['action'] == "trooptracker" && loggedIn()) {
 			<input type="submit" name="submitSearch" id="submitSearch" value="Search!" />
 		</form>
 	</div>';
-} else {
-    if (isset($_GET['action']) && $_GET['action'] == "trooptracker") {
+}
+else
+{
+    if (isset($_GET['action']) && $_GET['action'] == "trooptracker")
+    {
         echo '<p style="text-align: center;"><b>Please login to view this page.</b></p>';
     }
 }
 
 // Show the command staff page
-if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
+if (isset($_GET['action']) && $_GET['action'] == "commandstaff")
+{
     // If the user is logged in and is an admin
-    if (loggedIn() && isAdmin()) {
+    if (loggedIn() && isAdmin())
+    {
         $statement = $conn->prepare("SELECT id FROM troopers WHERE approved = '0'");
         $statement->execute();
         $statement->store_result();
@@ -2209,7 +2456,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 			<a href="index.php?action=commandstaff&do=notifications" class="button">Notifications</a> 
 			<a href="index.php?action=commandstaff&do=approvetroopers" class="button" id="trooperRequestButton" name="trooperRequestButton">Approve Trooper Requests - (' . $getTrooperNotifications . ')</a> ';
 
-        if (hasPermission(1)) {
+        if (hasPermission(1))
+        {
             echo ' 
 				<a href="index.php?action=commandstaff&do=managecostumes" class="button">Costume Management</a> 
 				<a href="index.php?action=commandstaff&do=managetroopers" class="button">Trooper Management</a> 
@@ -2218,17 +2466,20 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
         }
 
         // If have special permission for trooper management
-        if (hasSpecialPermission("spTrooper")) {
+        if (hasSpecialPermission("spTrooper"))
+        {
             echo '<a href="index.php?action=commandstaff&do=managetroopers" class="button">Trooper Management</a> ';
         }
 
         // If have special permission for costume management
-        if (hasSpecialPermission("spCostume")) {
+        if (hasSpecialPermission("spCostume"))
+        {
             echo '<a href="index.php?action=commandstaff&do=managecostumes" class="button">Costume Management</a> ';
         }
 
         // If have special permission for award management
-        if (hasSpecialPermission("spAward")) {
+        if (hasSpecialPermission("spAward"))
+        {
             echo '<a href="index.php?action=commandstaff&do=assignawards" class="button">Award Management</a> ';
         }
 
@@ -2240,7 +2491,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 
         /**************************** Site Settings *********************************/
 
-        if (isset($_GET['do']) && $_GET['do'] == "sitesettings") {
+        if (isset($_GET['do']) && $_GET['do'] == "sitesettings")
+        {
             echo '
 			<h3>Site Settings</h3>';
 
@@ -2249,17 +2501,22 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             $statement->execute();
             $i = 0;
 
-            if ($result = $statement->get_result()) {
-                while ($db = mysqli_fetch_object($result)) {
+            if ($result = $statement->get_result())
+            {
+                while ($db = mysqli_fetch_object($result))
+                {
                     echo '
 					<form action="process.php?do=changesettings" method="POST" name="changeSettingsForm" id="changeSettingsForm">';
 
                     // If site closed, show button
-                    if ($db->siteclosed == 0) {
+                    if ($db->siteclosed == 0)
+                    {
                         // Close website button
                         echo '
 						<input type="submit" name="submitCloseSite" id="submitCloseSite" value="Close Website" />';
-                    } else {
+                    }
+                    else
+                    {
                         // Open website button
                         echo '
 						<input type="submit" name="submitCloseSite" id="submitCloseSite" value="Open Website" />';
@@ -2267,12 +2524,16 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 
                     // If sign up closed, show button
                     // If super admin only
-                    if (hasPermission(1)) {
-                        if ($db->signupclosed == 0) {
+                    if (hasPermission(1))
+                    {
+                        if ($db->signupclosed == 0)
+                        {
                             // Close sign up button
                             echo '
 							<input type="submit" name="submitCloseSignUps" id="submitCloseSignUps" value="Close Sign Ups" />';
-                        } else {
+                        }
+                        else
+                        {
                             // Open sign up button
                             echo '
 							<input type="submit" name="submitCloseSignUps" id="submitCloseSignUps" value="Open Sign Ups" />';
@@ -2281,7 +2542,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 
                     // Change donation support
                     // If super admin only
-                    if (hasPermission(1)) {
+                    if (hasPermission(1))
+                    {
                         echo '
 						<input type="submit" name="submitSupportGoal" id="submitSupportGoal" value="Change Support Goal" />
 						
@@ -2295,16 +2557,19 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
                 }
             }
 
-            if ($i == 0) {
+            if ($i == 0)
+            {
                 echo '<p>ERROR: Settings not correctly set. Check database.</p>';
             }
         }
 
         /**************************** Trooper Check *********************************/
 
-        if (isset($_GET['do']) && $_GET['do'] == "stats") {
+        if (isset($_GET['do']) && $_GET['do'] == "stats")
+        {
             // Loop through squads
-            foreach ($squadArray as $squad => $squad_value) {
+            foreach ($squadArray as $squad => $squad_value)
+            {
                 // Set up name
                 $squadName = str_replace(" ", "", $squad_value['name']);
 
@@ -2317,7 +2582,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             }
 
             // Loop through clubs
-            foreach ($clubArray as $club => $club_value) {
+            foreach ($clubArray as $club => $club_value)
+            {
                 // Set up name
                 $clubName = str_replace(" ", "", $club_value['name']);
 
@@ -2403,8 +2669,10 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             // Trooper count set up
             $i = 0;
 
-            if ($result = $statement->get_result()) {
-                while ($db = mysqli_fetch_object($result)) {
+            if ($result = $statement->get_result())
+            {
+                while ($db = mysqli_fetch_object($result))
+                {
                     echo '
 					<div class="title">
 						<a href="index.php?profile=' . $db->id . '" target="_blank">' . $db->name . '<br /><br />' . readTKNumber($db->tkid, $db->squad, $db->id) . '</a>
@@ -2417,7 +2685,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             }
 
             // No troopers
-            if ($i == 0) {
+            if ($i == 0)
+            {
                 echo '<p>No troopers to display.</p>';
             }
 
@@ -2434,8 +2703,10 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             // Trooper count set up
             $i = 0;
 
-            if ($result = $statement->get_result()) {
-                while ($db = mysqli_fetch_object($result)) {
+            if ($result = $statement->get_result())
+            {
+                while ($db = mysqli_fetch_object($result))
+                {
                     echo '
 					<div class="title">
 						<a href="index.php?profile=' . $db->id . '" target="_blank">' . $db->name . '<br /><br />' . readTKNumber($db->tkid, $db->squad, $db->id) . '</a>
@@ -2448,7 +2719,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             }
 
             // No troopers
-            if ($i == 0) {
+            if ($i == 0)
+            {
                 echo '<p>No troopers to display.</p>';
             }
 
@@ -2467,8 +2739,10 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             $statement = $conn->prepare("SELECT * FROM settings");
             $statement->execute();
 
-            if ($result = $statement->get_result()) {
-                while ($db = mysqli_fetch_object($result)) {
+            if ($result = $statement->get_result())
+            {
+                while ($db = mysqli_fetch_object($result))
+                {
                     echo '
 					<p>
 						<b>501st Sync Date:</b> ' . $db->syncdate . '
@@ -2489,7 +2763,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             $totalAccountsSetUp501 = 0;
 
             // Loop through squads
-            foreach ($squadArray as $squad => $squad_value) {
+            foreach ($squadArray as $squad => $squad_value)
+            {
                 // Set up name
                 $squadName = str_replace(" ", "", $squad_value['name']);
 
@@ -2513,7 +2788,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 			<br />';
 
             // Loop through clubs
-            foreach ($clubArray as $club => $club_value) {
+            foreach ($clubArray as $club => $club_value)
+            {
                 // Set up name
                 $clubName = str_replace(" ", "", $club_value['name']);
 
@@ -2543,7 +2819,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 			<br />';
 
             // Loop through clubs
-            foreach ($clubArray as $club => $club_value) {
+            foreach ($clubArray as $club => $club_value)
+            {
                 // Set up name
                 $clubName = str_replace(" ", "", $club_value['name']);
 
@@ -2563,7 +2840,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 
         /**************************** Roster - Trooper Confirmation *********************************/
 
-        if (isset($_GET['do']) && $_GET['do'] == "trooperconfirmation" && isAdmin()) {
+        if (isset($_GET['do']) && $_GET['do'] == "trooperconfirmation" && isAdmin())
+        {
             echo '
 			<div class="section-card">
 				<h2 class="tm-section-header">Trooper Confirmation - Squads/Clubs</h2>
@@ -2574,14 +2852,18 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 
 				<a href="index.php?action=commandstaff&do=trooperconfirmation" class="button">All</a>';
 
-            foreach ($squadArray as $squad => $squad_value) {
-                if (getSquadID($_SESSION['id']) == $squad_value['squadID'] || hasPermission(1)) {
+            foreach ($squadArray as $squad => $squad_value)
+            {
+                if (getSquadID($_SESSION['id']) == $squad_value['squadID'] || hasPermission(1))
+                {
                     echo '<a href="index.php?action=commandstaff&do=trooperconfirmation&squad=' . $squad_value['squadID'] . '" class="button">' . $squad_value['name'] . '</a> ';
                 }
             }
 
-            foreach ($clubArray as $club => $club_value) {
-                if (isClubMember($club_value['db']) > 0 || hasPermission(1)) {
+            foreach ($clubArray as $club => $club_value)
+            {
+                if (isClubMember($club_value['db']) > 0 || hasPermission(1))
+                {
                     echo '<a href="index.php?action=commandstaff&do=trooperconfirmation&squad=' . $club_value['squadID'] . '" class="button">' . $club_value['name'] . '</a> ';
                 }
             }
@@ -2604,38 +2886,50 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             // Query
 
             // Check if squad is requested
-            if (isset($_GET['squad'])) {
+            if (isset($_GET['squad']))
+            {
                 // Which club to get
-                if (in_array($_GET['squad'], $validSquadIDs)) {
+                if (in_array($_GET['squad'], $validSquadIDs))
+                {
                     $statement = $conn->prepare("SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, event_sign_up.costume, event_sign_up.note, troopers.name AS trooperName FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE troopers.squad = ? AND events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 AND troopers.id != 0 ORDER BY troopers.name");
                     $statement->bind_param("i", $_GET['squad']);
 
                     // Check if a member of club
-                    if (getSquadID($_SESSION['id']) != $_GET['squad'] && hasPermission(2)) {
+                    if (getSquadID($_SESSION['id']) != $_GET['squad'] && hasPermission(2))
+                    {
                         die("<p>Not a member of this squad / club.</p>");
                     }
-                } else {
+                }
+                else
+                {
                     $dbValue = getClubBySquadID($_GET['squad'])['db'];
 
                     $statement = $conn->prepare("SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, event_sign_up.costume, event_sign_up.note, troopers.name AS trooperName FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE (troopers." . $dbValue . " > 0) AND events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 AND troopers.id != 0 ORDER BY troopers.name");
 
                     // Check if a member of club
-                    if (isClubMember($dbValue) == 0 && hasPermission(2)) {
+                    if (isClubMember($dbValue) == 0 && hasPermission(2))
+                    {
                         die("<p>Not a member of this squad / club.</p>");
                     }
                 }
-            } else {
+            }
+            else
+            {
                 $statement = $conn->prepare("SELECT events.id AS eventId, events.name, events.dateStart, events.dateEnd, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, event_sign_up.status, event_sign_up.costume, event_sign_up.note, troopers.name AS trooperName FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id LEFT JOIN troopers ON event_sign_up.trooperid = troopers.id WHERE events.dateEnd < NOW() AND event_sign_up.status < 3 AND events.closed = 1 AND troopers.id != 0 ORDER BY troopers.name");
             }
 
             $statement->execute();
 
-            if ($result = $statement->get_result()) {
-                while ($db = mysqli_fetch_object($result)) {
+            if ($result = $statement->get_result())
+            {
+                while ($db = mysqli_fetch_object($result))
+                {
                     // Check if this is a different trooper
-                    if ($trooperName != $db->trooperName) {
+                    if ($trooperName != $db->trooperName)
+                    {
                         // If not first
-                        if ($i != 0) {
+                        if ($i != 0)
+                        {
                             echo '<hr />';
                         }
 
@@ -2661,10 +2955,13 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             }
 
             // If data exists
-            if ($i > 0) {
+            if ($i > 0)
+            {
                 echo '
 				</table>';
-            } else {
+            }
+            else
+            {
                 echo '
 				<p style="text-align: center;">Nothing to display for this squad / club.</p>';
             }
@@ -2672,7 +2969,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 
         /**************************** Roster *********************************/
 
-        if (isset($_GET['do']) && $_GET['do'] == "roster" && isAdmin()) {
+        if (isset($_GET['do']) && $_GET['do'] == "roster" && isAdmin())
+        {
             echo '
 			<div class="section-card">
 				<h2 class="tm-section-header">Roster - Squads/Clubs</h2>
@@ -2680,14 +2978,18 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 				<a href="index.php?action=commandstaff&do=roster" class="button">All</a> 
 				<a href="index.php?action=commandstaff&do=roster&squad=all" class="button">All (501st)</a> ';
 
-            foreach ($squadArray as $squad => $squad_value) {
-                if (getSquadID($_SESSION['id']) == $squad_value['squadID'] || hasPermission(1)) {
+            foreach ($squadArray as $squad => $squad_value)
+            {
+                if (getSquadID($_SESSION['id']) == $squad_value['squadID'] || hasPermission(1))
+                {
                     echo '<a href="index.php?action=commandstaff&do=roster&squad=' . $squad_value['squadID'] . '" class="button">' . $squad_value['name'] . '</a> ';
                 }
             }
 
-            foreach ($clubArray as $club => $club_value) {
-                if (isClubMember($club_value['db']) > 0 || hasPermission(1)) {
+            foreach ($clubArray as $club => $club_value)
+            {
+                if (isClubMember($club_value['db']) > 0 || hasPermission(1))
+                {
                     echo '<a href="index.php?action=commandstaff&do=roster&squad=' . $club_value['squadID'] . '" class="button">' . $club_value['name'] . '</a> ';
                 }
             }
@@ -2702,35 +3004,46 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 			</div>';
 
             // Check if on a squad
-            if (isset($_GET['squad']) && $_GET['squad'] != "all") {
+            if (isset($_GET['squad']) && $_GET['squad'] != "all")
+            {
                 echo '
 				<a href="#addtrooper" class="button">Add Trooper</a>';
             }
 
             // Check if squad is requested
-            if (isset($_GET['squad'])) {
+            if (isset($_GET['squad']))
+            {
                 // Which club to get
-                if ($_GET['squad'] == "all") {
+                if ($_GET['squad'] == "all")
+                {
                     $statement = $conn->prepare("SELECT * FROM troopers WHERE p501 > 0 AND id != " . placeholder . " AND approved = '1' ORDER BY name");
-                } else if (in_array($_GET['squad'], $validSquadIDs)) {
+                }
+                else if (in_array($_GET['squad'], $validSquadIDs))
+                {
                     $statement = $conn->prepare("SELECT * FROM troopers WHERE p501 > 0 AND squad = ? AND id != " . placeholder . " AND approved = '1' ORDER BY name");
                     $statement->bind_param("i", $_GET['squad']);
 
                     // Check if a member of club
-                    if (getSquadID($_SESSION['id']) != $_GET['squad'] && hasPermission(2)) {
+                    if (getSquadID($_SESSION['id']) != $_GET['squad'] && hasPermission(2))
+                    {
                         die("<p>Not a member of this squad / club.</p>");
                     }
-                } else {
+                }
+                else
+                {
                     $dbValue = getClubBySquadID($_GET['squad'])['db'];
 
                     $statement = $conn->prepare("SELECT * FROM troopers WHERE " . $dbValue . " > 0 AND id != " . placeholder . " AND approved = '1' ORDER BY name");
 
                     // Check if a member of club
-                    if (isClubMember($dbValue) == 0 && hasPermission(2)) {
+                    if (isClubMember($dbValue) == 0 && hasPermission(2))
+                    {
                         die("<p>Not a member of this squad / club.</p>");
                     }
                 }
-            } else {
+            }
+            else
+            {
                 $statement = $conn->prepare("SELECT * FROM troopers WHERE id != " . placeholder . " AND approved = '1' ORDER BY name");
             }
 
@@ -2738,7 +3051,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             $i = 0;
 
             // If squad set, have hidden field
-            if (isset($_GET['squad'])) {
+            if (isset($_GET['squad']))
+            {
                 echo '
 				<input type="hidden" name="club" id="club" value="' . cleanInput($_GET['squad']) . '" />';
             }
@@ -2751,30 +3065,36 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 					<th>Board Name</th>';
 
             // Only show for clubs with DB3
-            if (isset($_GET['squad']) && $_GET['squad'] !== "all") {
+            if (isset($_GET['squad']) && $_GET['squad'] !== "all")
+            {
                 $squadID = (int) $_GET['squad'];
                 $clubName = '';
 
-                foreach ($clubArray as $club) {
-                    if ((int) $club['squadID'] === $squadID && !empty($club['db3'])) {
+                foreach ($clubArray as $club)
+                {
+                    if ((int) $club['squadID'] === $squadID && !empty($club['db3']))
+                    {
                         $clubName = $club['db3Name'];
                         break;
                     }
                 }
 
-                if (!empty($clubName)) {
+                if (!empty($clubName))
+                {
                     echo '<th>' . htmlspecialchars($clubName) . '</th>';
                 }
             }
 
             // Only show TKID for 501st
-            if (isset($_GET['squad']) && in_array($_GET['squad'], $validSquadIDs)) {
+            if (isset($_GET['squad']) && in_array($_GET['squad'], $validSquadIDs))
+            {
                 echo '
 						<th>TKID</th>';
             }
 
             // Only show if squad set
-            if (isset($_GET['squad'])) {
+            if (isset($_GET['squad']))
+            {
                 echo '
 						<th><a href="#/" id="sort-roster">Status</a></th>';
             }
@@ -2784,8 +3104,10 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 
             $statement->execute();
 
-            if ($result = $statement->get_result()) {
-                while ($db = mysqli_fetch_object($result)) {
+            if ($result = $statement->get_result())
+            {
+                while ($db = mysqli_fetch_object($result))
+                {
                     echo '
 					<tr name="row_' . $db->id . '">
 						<td>
@@ -2796,10 +3118,13 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 							' . (($db->user_id > 0) ? '<a href="' . $forumURL . 'members/' . $db->forum_id . '.' . $db->user_id . '" target="_blank">' . $db->forum_id . '</a>' : $db->forum_id) . '
 						</td>';
 
-                    if (isset($_GET['squad']) && $_GET['squad'] !== "all") {
+                    if (isset($_GET['squad']) && $_GET['squad'] !== "all")
+                    {
                         $squadID = (int) $_GET['squad'];
-                        foreach ($clubArray as $club) {
-                            if ((int) $club['squadID'] === $squadID && !empty($club['db3'])) {
+                        foreach ($clubArray as $club)
+                        {
+                            if ((int) $club['squadID'] === $squadID && !empty($club['db3']))
+                            {
                                 $field = $club['db3'];
                                 $value = $db->{$field};
                                 echo '
@@ -2811,7 +3136,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
                         }
                     }
 
-                    if (isset($_GET['squad']) && in_array($_GET['squad'], $validSquadIDs)) {
+                    if (isset($_GET['squad']) && in_array($_GET['squad'], $validSquadIDs))
+                    {
                         echo '
 							<td>
 								<input type="number" name="changetkid" tkid="' . $db->tkid . '" trooperid="' . $db->id . '" value="' . $db->tkid . '" />
@@ -2819,32 +3145,39 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
                     }
 
                     // Only show if squad set
-                    if (isset($_GET['squad'])) {
+                    if (isset($_GET['squad']))
+                    {
                         // Set up permission variable
                         $permission = "";
 
                         // Which club to get
-                        if (in_array($_GET['squad'], $validSquadIDs) || $_GET['squad'] == "all") {
+                        if (in_array($_GET['squad'], $validSquadIDs) || $_GET['squad'] == "all")
+                        {
                             $permission = $db->p501;
                         }
 
                         // Loop through clubs
-                        foreach ($clubArray as $club => $club_value) {
+                        foreach ($clubArray as $club => $club_value)
+                        {
                             // Match
-                            if ($_GET['squad'] == $club_value['squadID']) {
+                            if ($_GET['squad'] == $club_value['squadID'])
+                            {
                                 // Set permission
                                 $permission = $db->{$club_value['db']};
                             }
                         }
 
                         // If a moderator
-                        if ($db->permissions == 1 || $db->permissions == 2) {
+                        if ($db->permissions == 1 || $db->permissions == 2)
+                        {
                             // Don't allow to edit
                             echo '
 								<td name="permission-box">
 									' . getPermissionName($db->permissions) . '
 								</td>';
-                        } else {
+                        }
+                        else
+                        {
                             // Not moderator - allow edit
                             echo '
 								<td name="permission-box">
@@ -2872,20 +3205,25 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 			</div>';
 
             // If no data exists
-            if ($i <= 0) {
+            if ($i <= 0)
+            {
                 echo '
 				<p style="text-align: center;" id="nothing_text">Nothing to display for this squad / club.</p>';
             }
 
-            if (isset($_GET['squad']) && $_GET['squad'] != "all") {
+            if (isset($_GET['squad']) && $_GET['squad'] != "all")
+            {
                 // Amount of users
                 $i = 0;
 
                 // Which club to get
-                if (in_array($_GET['squad'], $validSquadIDs)) {
+                if (in_array($_GET['squad'], $validSquadIDs))
+                {
                     // 501
                     $statement = $conn->prepare("SELECT * FROM troopers WHERE p501 = 0 AND id != " . placeholder . " ORDER BY name");
-                } else {
+                }
+                else
+                {
                     // Club
                     $dbValue = getClubBySquadID($_GET['squad'])['db'];
 
@@ -2894,10 +3232,13 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 
                 $statement->execute();
 
-                if ($result = $statement->get_result()) {
-                    while ($db = mysqli_fetch_object($result)) {
+                if ($result = $statement->get_result())
+                {
+                    while ($db = mysqli_fetch_object($result))
+                    {
                         // Formatting
-                        if ($i == 0) {
+                        if ($i == 0)
+                        {
                             echo '
 							<h3 id="addtrooper">Add Trooper</h3>
 							<form action="process.php?do=addmasterroster" method="POST" id="addMasterRosterForm">
@@ -2913,11 +3254,14 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 						troopername="' . $db->name . '"
 						forum_id="' . $db->forum_id . '"';
 
-                        if (isset($_GET['squad'])) {
+                        if (isset($_GET['squad']))
+                        {
                             $squadID = (int) $_GET['squad'];
 
-                            foreach ($clubArray as $club) {
-                                if ((int) $club['squadID'] === $squadID && !empty($club['db3'])) {
+                            foreach ($clubArray as $club)
+                            {
+                                if ((int) $club['squadID'] === $squadID && !empty($club['db3']))
+                                {
                                     $field = $club['db3'];
                                     $value = $db->{$field};
                                     echo '
@@ -2937,13 +3281,16 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
                 }
 
                 // If troopers exist
-                if ($i > 0) {
+                if ($i > 0)
+                {
                     echo '
 					</select>
 					
 					<input type="submit" value="Add Trooper" id="addTrooperMaster" />
 					</form>';
-                } else {
+                }
+                else
+                {
                     echo '
 					<p id="addtrooper"><i>No troopers to add. Make sure they have a Rebel Legion Forum username assigned to their account.</i></p>';
                 }
@@ -2952,7 +3299,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 
         /**************************** Trooper Check *********************************/
 
-        if (isset($_GET['do']) && $_GET['do'] == "troopercheck" && isAdmin()) {
+        if (isset($_GET['do']) && $_GET['do'] == "troopercheck" && isAdmin())
+        {
             echo '
 			<div class="section-card">
 				<h2 class="tm-section-header">Trooper Check - Squads/Clubs</h2>
@@ -2963,14 +3311,18 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 
 				<a href="index.php?action=commandstaff&do=troopercheck" class="button">All</a>';
 
-            foreach ($squadArray as $squad => $squad_value) {
-                if (getSquadID($_SESSION['id']) == $squad_value['squadID'] || hasPermission(1)) {
+            foreach ($squadArray as $squad => $squad_value)
+            {
+                if (getSquadID($_SESSION['id']) == $squad_value['squadID'] || hasPermission(1))
+                {
                     echo '<a href="index.php?action=commandstaff&do=troopercheck&squad=' . $squad_value['squadID'] . '" class="button">' . $squad_value['name'] . '</a> ';
                 }
             }
 
-            foreach ($clubArray as $club => $club_value) {
-                if (isClubMember($club_value['db']) > 0 || hasPermission(1)) {
+            foreach ($clubArray as $club => $club_value)
+            {
+                if (isClubMember($club_value['db']) > 0 || hasPermission(1))
+                {
                     echo '<a href="index.php?action=commandstaff&do=troopercheck&squad=' . $club_value['squadID'] . '" class="button">' . $club_value['name'] . '</a> ';
                 }
             }
@@ -2985,28 +3337,36 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 			</div>';
 
             // Check if squad is requested
-            if (isset($_GET['squad'])) {
+            if (isset($_GET['squad']))
+            {
                 // Which club to get
-                if (in_array($_GET['squad'], $validSquadIDs)) {
+                if (in_array($_GET['squad'], $validSquadIDs))
+                {
                     $statement = $conn->prepare("SELECT * FROM troopers WHERE troopers.squad = ? AND (p501 = 1 OR p501 = 2) AND approved = '1' AND troopers.permissions = 0 AND troopers.id NOT IN (SELECT event_sign_up.trooperid FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.dateEnd > NOW() - INTERVAL 1 YEAR) ORDER BY troopers.name");
                     $statement->bind_param("i", $_GET['squad']);
 
                     // Check if a member of club
-                    if (getSquadID($_SESSION['id']) != $_GET['squad'] && hasPermission(2)) {
+                    if (getSquadID($_SESSION['id']) != $_GET['squad'] && hasPermission(2))
+                    {
                         die("<p>Not a member of this squad / club.</p>");
                     }
-                } else {
+                }
+                else
+                {
                     // Club
                     $dbValue = getClubBySquadID($_GET['squad'])['db'];
 
                     $statement = $conn->prepare("SELECT * FROM troopers WHERE (troopers." . $dbValue . " = 1 OR troopers." . $dbValue . " = 2) AND approved = '1' AND troopers.permissions = 0 AND troopers.id NOT IN (SELECT event_sign_up.trooperid FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.dateEnd > NOW() - INTERVAL 1 YEAR) ORDER BY troopers.name");
 
                     // Check if a member of club
-                    if (isClubMember($dbValue) == 0 && hasPermission(2)) {
+                    if (isClubMember($dbValue) == 0 && hasPermission(2))
+                    {
                         die("<p>Not a member of this squad / club.</p>");
                     }
                 }
-            } else {
+            }
+            else
+            {
                 $statement = $conn->prepare("SELECT * FROM troopers WHERE approved = '1' AND troopers.permissions = 0 AND troopers.id NOT IN (SELECT event_sign_up.trooperid FROM event_sign_up LEFT JOIN events ON events.id = event_sign_up.troopid WHERE event_sign_up.status = '3' AND events.dateEnd > NOW() - INTERVAL 1 YEAR) ORDER BY troopers.name");
             }
 
@@ -3015,15 +3375,19 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 
             $statement->execute();
 
-            if ($result = $statement->get_result()) {
-                while ($db = mysqli_fetch_object($result)) {
+            if ($result = $statement->get_result())
+            {
+                while ($db = mysqli_fetch_object($result))
+                {
                     // If first data
-                    if ($i == 0) {
+                    if ($i == 0)
+                    {
                         echo '
 						<form action="process.php?do=troopercheck" method="POST" name="trooperCheckForm" id="trooperCheckForm">';
 
                         // If squad set, have hidden field
-                        if (isset($_GET['squad'])) {
+                        if (isset($_GET['squad']))
+                        {
                             echo '
 							<input type="hidden" name="club" value="' . cleanInput($_GET['squad']) . '" />';
                         }
@@ -3033,7 +3397,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 						<table>
 							<tr>';
                         // If squad set
-                        if (isset($_GET['squad'])) {
+                        if (isset($_GET['squad']))
+                        {
                             echo '
 									<th>Selection</th>';
                         }
@@ -3042,7 +3407,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 								<th>Name</th>	<th>Board Name</th>	<th>TKID</th>';
 
                         // If squad set
-                        if (isset($_GET['squad'])) {
+                        if (isset($_GET['squad']))
+                        {
                             echo '
 									<th>Tracker Status</th>';
                         }
@@ -3055,7 +3421,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 					<tr name="row_' . $db->id . '">';
 
                     // If squad set
-                    if (isset($_GET['squad'])) {
+                    if (isset($_GET['squad']))
+                    {
                         echo '
 							<td>
 								<input type="checkbox" name="trooper[]" value="' . $db->id . '" />
@@ -3076,19 +3443,23 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 						</td>';
 
                     // If squad set
-                    if (isset($_GET['squad'])) {
+                    if (isset($_GET['squad']))
+                    {
                         // Set up permission variable
                         $permission = "";
 
                         // Which club to get
-                        if (in_array($_GET['squad'], $validSquadIDs)) {
+                        if (in_array($_GET['squad'], $validSquadIDs))
+                        {
                             $permission = $db->p501;
                         }
 
                         // Loop through clubs
-                        foreach ($clubArray as $club => $club_value) {
+                        foreach ($clubArray as $club => $club_value)
+                        {
                             // Match
-                            if ($_GET['squad'] == $club_value['squadID']) {
+                            if ($_GET['squad'] == $club_value['squadID'])
+                            {
                                 // Set permission
                                 $permission = $db->{$club_value['db']};
                             }
@@ -3109,12 +3480,14 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             }
 
             // If data exists
-            if ($i > 0) {
+            if ($i > 0)
+            {
                 echo '
 				</table>
 				</div>';
 
-                if (isset($_GET['squad'])) {
+                if (isset($_GET['squad']))
+                {
                     echo '
 					<input type="submit" name="submitTroopCheckReserve" id="submitTroopCheckReserve" value="Change to Reserve" />
 					<input type="submit" name="submitTroopCheckRetired" id="submitTroopCheckRetired" value="Change to Retired" />';
@@ -3122,7 +3495,9 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 
                 echo '
 				</form>';
-            } else {
+            }
+            else
+            {
                 echo '
 				<p style="text-align: center;">Nothing to display for this squad / club.</p>';
             }
@@ -3130,7 +3505,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 
         /**************************** Notifications *********************************/
 
-        if (isset($_GET['do']) && $_GET['do'] == "notifications") {
+        if (isset($_GET['do']) && $_GET['do'] == "notifications")
+        {
             echo '
 			<h3>Notifications</h3>
 			
@@ -3144,21 +3520,26 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             $results = 100;
 
             // Add to query if in URL
-            if (isset($_GET['s']) && $_GET['s'] == "system") {
+            if (isset($_GET['s']) && $_GET['s'] == "system")
+            {
                 // Get total results - query
                 $statement2 = $conn->prepare("SELECT COUNT(id) AS total FROM notifications WHERE message NOT LIKE '%now has%'");
                 $statement2->execute();
                 $statement2->bind_result($rowPage);
                 $statement2->fetch();
                 $statement2->close();
-            } else if (isset($_GET['s']) && $_GET['s'] == "troopers") {
+            }
+            else if (isset($_GET['s']) && $_GET['s'] == "troopers")
+            {
                 // Get total results - query
                 $statement2 = $conn->prepare("SELECT COUNT(id) AS total FROM notifications WHERE message LIKE '%now has%'");
                 $statement2->execute();
                 $statement2->bind_result($rowPage);
                 $statement2->fetch();
                 $statement2->close();
-            } else {
+            }
+            else
+            {
                 // Get total results - query
                 $statement2 = $conn->prepare("SELECT COUNT(id) AS total FROM notifications");
                 $statement2->execute();
@@ -3171,13 +3552,16 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             $total_pages = ceil($rowPage / $results);
 
             // If page set
-            if (isset($_GET['page'])) {
+            if (isset($_GET['page']))
+            {
                 // Get page
                 $page = $_GET['page'];
 
                 // Start from
                 $startFrom = ($page - 1) * $results;
-            } else {
+            }
+            else
+            {
                 // Default
                 $page = 1;
 
@@ -3186,13 +3570,18 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             }
 
             // Add to query if in URL
-            if (isset($_GET['s']) && $_GET['s'] == "system") {
+            if (isset($_GET['s']) && $_GET['s'] == "system")
+            {
                 // Get data
                 $statement = $conn->prepare("SELECT * FROM notifications WHERE message NOT LIKE '%now has%' ORDER BY id DESC LIMIT " . $startFrom . ", " . $results . "");
-            } else if (isset($_GET['s']) && $_GET['s'] == "troopers") {
+            }
+            else if (isset($_GET['s']) && $_GET['s'] == "troopers")
+            {
                 // Get data
                 $statement = $conn->prepare("SELECT * FROM notifications WHERE message LIKE '%now has%' ORDER BY id DESC LIMIT " . $startFrom . ", " . $results . "");
-            } else {
+            }
+            else
+            {
                 // Get data
                 $statement = $conn->prepare("SELECT * FROM notifications ORDER BY id DESC LIMIT " . $startFrom . ", " . $results . "");
             }
@@ -3202,9 +3591,12 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 
             $statement->execute();
 
-            if ($result = $statement->get_result()) {
-                while ($db = mysqli_fetch_object($result)) {
-                    if ($i == 0) {
+            if ($result = $statement->get_result())
+            {
+                while ($db = mysqli_fetch_object($result))
+                {
+                    if ($i == 0)
+                    {
                         echo '<ul>';
                     }
 
@@ -3215,24 +3607,29 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
                     $json = "";
 
                     // Check JSON value if blank
-                    if ($db->json == "") {
+                    if ($db->json == "")
+                    {
                         // Set up
                         $add = "";
 
                         // Does not contain now has
-                        if (strpos($db->message, "now has") === false && strpos($db->message, "donated") === false) {
+                        if (strpos($db->message, "now has") === false && strpos($db->message, "donated") === false)
+                        {
                             $add = "Staff ";
                         }
 
                         // Nothing to show
                         $json = '<a href="index.php?profile=' . $db->trooperid . '" target="_blank" class="button">View ' . $add . 'Profile</a>';
 
-                        if (preg_match('/\[(\d+)\]/', $db->message, $matches) && strpos($db->message, "event ID") !== false) {
+                        if (preg_match('/\[(\d+)\]/', $db->message, $matches) && strpos($db->message, "event ID") !== false)
+                        {
                             // $matches[1] will contain the event ID
                             $eventId = $matches[1];
                             $json .= ' <a href="index.php?event=' . $eventId . '" target="_blank" class="button">View Troop</a>';
                         }
-                    } else {
+                    }
+                    else
+                    {
                         // Show value
                         $json = '
 						<textarea width="100%" rows="5" disabled>' . $db->json . '</textarea>
@@ -3243,26 +3640,32 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
                         $data = json_decode(htmlspecialchars_decode($db->json, ENT_QUOTES), true);
 
                         // If array or object
-                        if (is_array($data) || is_object($data)) {
+                        if (is_array($data) || is_object($data))
+                        {
                             // Loop through JSON data
-                            foreach ($data as $key => $value) {
+                            foreach ($data as $key => $value)
+                            {
                                 // Troop ID
-                                if ($key == "trooperid") {
+                                if ($key == "trooperid")
+                                {
                                     $json .= ' <a href="index.php?profile=' . $value . '" target="_blank" class="button">View Trooper</a>';
                                 }
 
                                 // Trooper ID as ID
-                                if ($key == "id" && strpos($db->message, "user") !== false && !isset($data->trooperid)) {
+                                if ($key == "id" && strpos($db->message, "user") !== false && !isset($data->trooperid))
+                                {
                                     $json .= ' <a href="index.php?profile=' . $value . '" target="_blank" class="button">View Trooper</a>';
                                 }
 
                                 // Troop ID
-                                if ($key == "troopid") {
+                                if ($key == "troopid")
+                                {
                                     $json .= ' <a href="index.php?event=' . $value . '" target="_blank" class="button">View Troop</a>';
                                 }
 
                                 // Troop ID as ID
-                                if ($key == "id" && strpos($db->message, "event") !== false && strpos($db->message, "updating trooper") === false && strpos($db->message, "added trooper") === false && !isset($data['troopid'])) {
+                                if ($key == "id" && strpos($db->message, "event") !== false && strpos($db->message, "updating trooper") === false && strpos($db->message, "added trooper") === false && !isset($data['troopid']))
+                                {
                                     $json .= ' <a href="index.php?event=' . $value . '" target="_blank" class="button">View Troop</a>';
                                 }
                             }
@@ -3283,29 +3686,38 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             }
 
             // No notifications to display
-            if ($i == 0) {
+            if ($i == 0)
+            {
                 echo '<p>No notifications to display.</p>';
-            } else {
+            }
+            else
+            {
                 // Finish HTML list - notifications exist
                 echo '</ul>';
             }
 
             // If notifications
-            if ($total_pages > 1) {
+            if ($total_pages > 1)
+            {
                 echo '<p>Pages: ';
 
                 // Loop through pages
-                for ($j = 1; $j <= $total_pages; $j++) {
+                for ($j = 1; $j <= $total_pages; $j++)
+                {
                     // If we are on this page...
-                    if ($page == $j) {
+                    if ($page == $j)
+                    {
                         echo '
 						' . $j . '';
-                    } else {
+                    }
+                    else
+                    {
                         // Set up preference
                         $s = "";
 
                         // Add preference to search if set
-                        if (isset($_GET['s'])) {
+                        if (isset($_GET['s']))
+                        {
                             $s = "&s=" . cleanInput($_GET['s']);
                         }
                         echo '
@@ -3313,7 +3725,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
                     }
 
                     // If not that last page, add a comma
-                    if ($j != $total_pages) {
+                    if ($j != $total_pages)
+                    {
                         echo ', ';
                     }
                 }
@@ -3325,7 +3738,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
         /**************************** COSTUMES *********************************/
 
         // Manage costumes - allow command staff to add, edit, and delete costumes
-        if (isset($_GET['do']) && $_GET['do'] == "managecostumes" && (hasPermission(1) || hasSpecialPermission("spCostume"))) {
+        if (isset($_GET['do']) && $_GET['do'] == "managecostumes" && (hasPermission(1) || hasSpecialPermission("spCostume")))
+        {
             echo '
 			<h3>Add Costume</h3>
 			
@@ -3342,13 +3756,15 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 						<option value="0" SELECTED>501st Legion</option>';
 
             // Loop through clubs
-            foreach ($clubArray as $club => $club_value) {
+            foreach ($clubArray as $club => $club_value)
+            {
                 echo '
 							<option value="' . $club_value['costumes'][0] . '">' . $club_value['name'] . '</option>';
             }
 
             // Loop through dual costume labels for dual club options
-            foreach ($dualCostumeLabels as $id => $label) {
+            foreach ($dualCostumeLabels as $id => $label)
+            {
                 echo '<option value="' . htmlspecialchars($id) . '">' . htmlspecialchars($label) . '</option>';
             }
 
@@ -3373,10 +3789,13 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             $statement->execute();
 
             $i = 0;
-            if ($result = $statement->get_result()) {
-                while ($db = mysqli_fetch_object($result)) {
+            if ($result = $statement->get_result())
+            {
+                while ($db = mysqli_fetch_object($result))
+                {
                     // Formatting
-                    if ($i == 0) {
+                    if ($i == 0)
+                    {
                         echo '
 						<form action="process.php?do=managecostumes" method="POST" name="costumeEditForm" id="costumeEditForm">
 
@@ -3394,9 +3813,12 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
                 }
             }
 
-            if ($i == 0) {
+            if ($i == 0)
+            {
                 echo 'No costumes to display.';
-            } else {
+            }
+            else
+            {
                 echo '
 				</select>
 
@@ -3415,13 +3837,15 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 						<option value="0" SELECTED>501st Legion</option>';
 
                 // Loop through clubs
-                foreach ($clubArray as $club => $club_value) {
+                foreach ($clubArray as $club => $club_value)
+                {
                     echo '
 							<option value="' . $club_value['costumes'][0] . '">' . $club_value['name'] . '</option>';
                 }
 
                 // Loop through dual costume labels for dual club options
-                foreach ($dualCostumeLabels as $id => $label) {
+                foreach ($dualCostumeLabels as $id => $label)
+                {
                     echo '<option value="' . htmlspecialchars($id) . '">' . htmlspecialchars($label) . '</option>';
                 }
 
@@ -3447,10 +3871,13 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             $statement->execute();
 
             $i = 0;
-            if ($result = $statement->get_result()) {
-                while ($db = mysqli_fetch_object($result)) {
+            if ($result = $statement->get_result())
+            {
+                while ($db = mysqli_fetch_object($result))
+                {
                     // Formatting
-                    if ($i == 0) {
+                    if ($i == 0)
+                    {
                         echo '
 						<form action="process.php?do=managecostumes" method="POST" name="costumeDeleteForm" id="costumeDeleteForm">
 
@@ -3464,9 +3891,12 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
                 }
             }
 
-            if ($i == 0) {
+            if ($i == 0)
+            {
                 echo 'No costumes to display.';
-            } else {
+            }
+            else
+            {
                 echo '
 				</select>
 
@@ -3481,7 +3911,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
         /**************************** AWARDS *********************************/
 
         // Assign an award to users
-        if (isset($_GET['do']) && $_GET['do'] == "assignawards" && (hasPermission(1) || hasSpecialPermission("spTrooper"))) {
+        if (isset($_GET['do']) && $_GET['do'] == "assignawards" && (hasPermission(1) || hasSpecialPermission("spTrooper")))
+        {
             echo '<h3>Assign Awards</h3>
 			
 			<div name="assignarea" id="assignarea">';
@@ -3494,10 +3925,13 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             $i = 0;
             $getId = 0;
 
-            if ($result = $statement->get_result()) {
-                while ($db = mysqli_fetch_object($result)) {
+            if ($result = $statement->get_result())
+            {
+                while ($db = mysqli_fetch_object($result))
+                {
                     // Formatting
-                    if ($i == 0) {
+                    if ($i == 0)
+                    {
                         $getId = $db->id;
 
                         echo '
@@ -3514,9 +3948,12 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             }
 
             // If no events
-            if ($i == 0) {
+            if ($i == 0)
+            {
                 echo 'There are no troopers to display.';
-            } else {
+            }
+            else
+            {
                 echo '
 				</select>
 
@@ -3529,10 +3966,13 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
                 // Amount of awards
                 $j = 0;
 
-                if ($result2 = $statement->get_result()) {
-                    while ($db = mysqli_fetch_object($result2)) {
+                if ($result2 = $statement->get_result())
+                {
+                    while ($db = mysqli_fetch_object($result2))
+                    {
                         // Formatting
-                        if ($j == 0) {
+                        if ($j == 0)
+                        {
                             $getId2 = $db->id;
 
                             echo '<select id="awardIDAssign" name="awardIDAssign">';
@@ -3546,12 +3986,15 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
                 }
 
                 // If awards exist
-                if ($j > 0) {
+                if ($j > 0)
+                {
                     echo '
 					</select>
 
 					<input type="submit" name="award" id="award" value="Assign" ' . hasAward($getId, $getId2, true) . ' /> <input type="submit" name="awardRemove" id="awardRemove" value="Remove" ' . hasAward($getId, $getId2, true, true) . ' />';
-                } else {
+                }
+                else
+                {
                     echo 'No awards to display.';
                 }
             }
@@ -3583,10 +4026,13 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             $statement->execute();
 
             $i = 0;
-            if ($result = $statement->get_result()) {
-                while ($db = mysqli_fetch_object($result)) {
+            if ($result = $statement->get_result())
+            {
+                while ($db = mysqli_fetch_object($result))
+                {
                     // Formatting
-                    if ($i == 0) {
+                    if ($i == 0)
+                    {
                         echo '
 						<form action="process.php?do=assignawards" method="POST" name="awardEdit" id="awardEdit">
 
@@ -3602,9 +4048,12 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
                 }
             }
 
-            if ($i == 0) {
+            if ($i == 0)
+            {
                 echo 'No awards to display.';
-            } else {
+            }
+            else
+            {
                 echo '
 				</select>
 
@@ -3635,10 +4084,13 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             $statement->execute();
 
             $i = 0;
-            if ($result = $statement->get_result()) {
-                while ($db = mysqli_fetch_object($result)) {
+            if ($result = $statement->get_result())
+            {
+                while ($db = mysqli_fetch_object($result))
+                {
                     // Formatting
-                    if ($i == 0) {
+                    if ($i == 0)
+                    {
                         echo '
 						<form action="process.php?do=assignawards" method="POST" name="awardUserDelete" id="awardUserDelete">
 						<select name="awardID" id="awardID">';
@@ -3651,9 +4103,12 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
                 }
             }
 
-            if ($i == 0) {
+            if ($i == 0)
+            {
                 echo 'No awards to display.';
-            } else {
+            }
+            else
+            {
                 echo '
 				</select>
 
@@ -3668,7 +4123,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
         /************** EVENTS ******************/
 
         // Update an event form
-        if (isset($_GET['do']) && $_GET['do'] == "editevent") {
+        if (isset($_GET['do']) && $_GET['do'] == "editevent")
+        {
             echo '
 			<h3>Edit an Event</h3>';
 
@@ -3678,16 +4134,20 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             $eid = -1;
 
             // If eid set, set eid
-            if (isset($_GET['eid'])) {
+            if (isset($_GET['eid']))
+            {
                 $eid = $_GET['eid'];
             }
 
             // Get data
             // If edid set - this makes sure that old events are shown in the edit screen
-            if ($eid >= 0) {
+            if ($eid >= 0)
+            {
                 $statement = $conn->prepare("(SELECT * FROM events WHERE id = ? LIMIT 1) UNION (SELECT * FROM events ORDER BY dateStart DESC LIMIT 500)");
                 $statement->bind_param("i", $eid);
-            } else {
+            }
+            else
+            {
                 // If eid is not set
                 $statement = $conn->prepare("SELECT * FROM events ORDER BY dateStart DESC LIMIT 500");
             }
@@ -3697,10 +4157,13 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 
             $statement->execute();
 
-            if ($result = $statement->get_result()) {
-                while ($db = mysqli_fetch_object($result)) {
+            if ($result = $statement->get_result())
+            {
+                while ($db = mysqli_fetch_object($result))
+                {
                     // Formatting
-                    if ($i == 0) {
+                    if ($i == 0)
+                    {
                         echo '
 						<form action="process.php?do=editevent" method="POST" name="editEvents" id="editEvents">
 						<select name="eventId" id="eventId">';
@@ -3710,7 +4173,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
                     $add = "";
 
                     // If this a linked event?
-                    if (isLink($db->id) > 0) {
+                    if (isLink($db->id) > 0)
+                    {
                         $add .= "[" . date("l", strtotime($db->dateStart)) . " : " . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "] ";
                     }
 
@@ -3722,15 +4186,19 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             }
 
             // If no events
-            if ($i == 0) {
+            if ($i == 0)
+            {
                 echo 'There are no events to display.';
-            } else {
+            }
+            else
+            {
                 echo '
 				</select>
 
 				<br /><br />';
 
-                if (hasPermission(1)) {
+                if (hasPermission(1))
+                {
                     echo '
 					<input type="submit" name="submitDelete" id="submitDelete" value="Delete" />';
                 }
@@ -3943,7 +4411,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 						<input type="number" name="limit501st" value="500" id="limit501st" class="limitClass" />';
 
                 // Loop through clubs
-                foreach ($clubArray as $club => $club_value) {
+                foreach ($clubArray as $club => $club_value)
+                {
                     echo '
 							<p>Limit of ' . $club_value['name'] . ':</p>
 							<input type="number" name="' . $club_value['dbLimit'] . '" value="500" id="' . $club_value['dbLimit'] . '" class="limitClass" />';
@@ -3996,7 +4465,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 
         /**************************** EVENT LINK MANAGER *********************************/
 
-        if (isset($_GET['do']) && $_GET['do'] == "eventlinkmanager" && hasPermission(1, 2)) {
+        if (isset($_GET['do']) && $_GET['do'] == "eventlinkmanager" && hasPermission(1, 2))
+        {
             echo '<br /><hr /><br /><h3>Create Event Link</h3>
 
 			<form action="process.php?do=eventlink" method="POST" name="addEventLink" id="addEventLink">
@@ -4017,9 +4487,12 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             $statement->execute();
             $i = 0;
 
-            if ($result = $statement->get_result()) {
-                while ($db = mysqli_fetch_object($result)) {
-                    if ($i == 0) {
+            if ($result = $statement->get_result())
+            {
+                while ($db = mysqli_fetch_object($result))
+                {
+                    if ($i == 0)
+                    {
                         echo '
 							<b>Events:</b></br />
 							<select id="multiple_event_select" name="events[]" multiple="multiple">';
@@ -4031,9 +4504,12 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
                 }
             }
 
-            if ($i > 0) {
+            if ($i > 0)
+            {
                 echo '</select>';
-            } else {
+            }
+            else
+            {
                 echo 'No events to display.';
             }
 
@@ -4052,10 +4528,13 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             $statement->execute();
 
             $i = 0;
-            if ($result = $statement->get_result()) {
-                while ($db = mysqli_fetch_object($result)) {
+            if ($result = $statement->get_result())
+            {
+                while ($db = mysqli_fetch_object($result))
+                {
                     // Formatting
-                    if ($i == 0) {
+                    if ($i == 0)
+                    {
                         echo '
 						<form action="process.php?do=eventlink" method="POST" name="eventLinkEdit" id="eventLinkEdit">
 
@@ -4070,9 +4549,12 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
                 }
             }
 
-            if ($i == 0) {
+            if ($i == 0)
+            {
                 echo 'No event links to display.<br />';
-            } else {
+            }
+            else
+            {
                 echo '
 				</select>
 
@@ -4095,9 +4577,12 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
                 $statement->execute();
                 $i = 0;
 
-                if ($result = $statement->get_result()) {
-                    while ($db = mysqli_fetch_object($result)) {
-                        if ($i == 0) {
+                if ($result = $statement->get_result())
+                {
+                    while ($db = mysqli_fetch_object($result))
+                    {
+                        if ($i == 0)
+                        {
                             echo '
 							<b>Events:</b></br />
 							<select id="multiple_event_selectEdit" name="events[]" multiple="multiple">';
@@ -4109,9 +4594,12 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
                     }
                 }
 
-                if ($i > 0) {
+                if ($i > 0)
+                {
                     echo '</select>';
-                } else {
+                }
+                else
+                {
                     echo 'No events to display.';
                 }
 
@@ -4129,10 +4617,13 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             $statement->execute();
 
             $i = 0;
-            if ($result = $statement->get_result()) {
-                while ($db = mysqli_fetch_object($result)) {
+            if ($result = $statement->get_result())
+            {
+                while ($db = mysqli_fetch_object($result))
+                {
                     // Formatting
-                    if ($i == 0) {
+                    if ($i == 0)
+                    {
                         echo '
 						<form action="process.php?do=eventlink" method="POST" name="eventLinkDelete" id="eventLinkDelete">
 						<select name="eventLinkID" id="eventLinkID">
@@ -4146,9 +4637,12 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
                 }
             }
 
-            if ($i == 0) {
+            if ($i == 0)
+            {
                 echo 'No event links to display.';
-            } else {
+            }
+            else
+            {
                 echo '
 				</select>
 
@@ -4163,7 +4657,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
         /*********** APPROVE TROOPERS ***********/
 
         // Approve troopers
-        if (isset($_GET['do']) && $_GET['do'] == "approvetroopers" && hasPermission(1, 2)) {
+        if (isset($_GET['do']) && $_GET['do'] == "approvetroopers" && hasPermission(1, 2))
+        {
             echo '
 			<h3>Approve Trooper Requests</h3>';
 
@@ -4174,10 +4669,13 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             // Amount of users
             $i = 0;
 
-            if ($result = $statement->get_result()) {
-                while ($db = mysqli_fetch_object($result)) {
+            if ($result = $statement->get_result())
+            {
+                while ($db = mysqli_fetch_object($result))
+                {
                     // Formatting
-                    if ($i == 0) {
+                    if ($i == 0)
+                    {
                         echo '
 						<form action="process.php?do=approvetroopers" method="POST" name="approveTroopers" id="approveTroopers">
 
@@ -4193,9 +4691,12 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             }
 
             // If no events
-            if ($i == 0) {
+            if ($i == 0)
+            {
                 echo 'There are no troopers to display.';
-            } else {
+            }
+            else
+            {
                 echo '
 				</select>
 
@@ -4220,14 +4721,16 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
         }
 
         // Manage users
-        if (isset($_GET['do']) && $_GET['do'] == "managetroopers" && (hasPermission(1) || hasSpecialPermission("spTrooper"))) {
+        if (isset($_GET['do']) && $_GET['do'] == "managetroopers" && (hasPermission(1) || hasSpecialPermission("spTrooper")))
+        {
             // If admin is visting this page from the event page
 
             // We use this value to determine which event is selected
             $uid = -1;
 
             // If eid set, set eid
-            if (isset($_GET['uid'])) {
+            if (isset($_GET['uid']))
+            {
                 $uid = $_GET['uid'];
             }
 
@@ -4241,10 +4744,13 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             // Amount of users
             $i = 0;
 
-            if ($result = $statement->get_result()) {
-                while ($db = mysqli_fetch_object($result)) {
+            if ($result = $statement->get_result())
+            {
+                while ($db = mysqli_fetch_object($result))
+                {
                     // Formatting
-                    if ($i == 0) {
+                    if ($i == 0)
+                    {
                         echo '
 						<form action="process.php?do=managetroopers" method="POST" name="editUser" id="editUser">
 
@@ -4259,9 +4765,12 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             }
 
             // If no events
-            if ($i == 0) {
+            if ($i == 0)
+            {
                 echo 'There are no troopers to display.';
-            } else {
+            }
+            else
+            {
                 echo '
 				</select>
 
@@ -4286,7 +4795,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 							' . squadSelectList() . '
 						</select>';
 
-                if (hasPermission(1)) {
+                if (hasPermission(1))
+                {
                     echo '
 							<p>General Permissions:</p>
 							<select name="permissions" id="permissions">
@@ -4303,7 +4813,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
                 echo '
 						<span name="specialPermissions" style="display: none;">';
 
-                if (hasPermission(1)) {
+                if (hasPermission(1))
+                {
                     echo '
 							<p>Special Permissions:</p>
 
@@ -4343,7 +4854,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 						</select>';
 
                 // Loop through clubs
-                foreach ($clubArray as $club => $club_value) {
+                foreach ($clubArray as $club => $club_value)
+                {
                     echo '
 							<p>' . $club_value['name'] . ' Member Status:</p>
 							<select name="' . $club_value['db'] . '" id="' . $club_value['db'] . '" class="clubs">
@@ -4363,9 +4875,11 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 						<input type="text" name="forumid" id="forumid" />';
 
                 // Loop through clubs
-                foreach ($clubArray as $club => $club_value) {
+                foreach ($clubArray as $club => $club_value)
+                {
                     // If DB3 defined
-                    if ($club_value['db3Name'] != "") {
+                    if ($club_value['db3Name'] != "")
+                    {
                         echo '
 								<p>' . $club_value['db3Name'] . ':</p>
 								<input type="text" name="' . $club_value['db3'] . '" id="' . $club_value['db3'] . '" />';
@@ -4393,7 +4907,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
         }
 
         // Create an event form
-        if (isset($_GET['do']) && $_GET['do'] == "createevent") {
+        if (isset($_GET['do']) && $_GET['do'] == "createevent")
+        {
             // Set up eid
             $eid = 0;
 
@@ -4427,7 +4942,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             $allowTentative = "";
 
             // Loop through clubs
-            foreach ($clubArray as $club => $club_value) {
+            foreach ($clubArray as $club => $club_value)
+            {
                 // Add vars
                 ${$club_value['dbLimit']} = "";
             }
@@ -4437,7 +4953,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             $squad = "";
 
             // If edid set - lets load events
-            if (isset($_GET['eid']) && $_GET['eid'] >= 0) {
+            if (isset($_GET['eid']) && $_GET['eid'] >= 0)
+            {
                 // Get data for copy troop
                 $eid = $_GET['eid'];
 
@@ -4448,8 +4965,10 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
                 // Event found
                 $i = 0;
 
-                if ($result = $statement->get_result()) {
-                    while ($db = mysqli_fetch_object($result)) {
+                if ($result = $statement->get_result())
+                {
+                    while ($db = mysqli_fetch_object($result))
+                    {
                         $name = $db->name;
                         $venue = $db->venue;
                         $dateStart = $db->dateStart;
@@ -4479,7 +4998,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
                         $allowTentative = $db->allowTentative;
 
                         // Loop through clubs
-                        foreach ($clubArray as $club => $club_value) {
+                        foreach ($clubArray as $club => $club_value)
+                        {
                             ${$club_value['dbLimit']} = $db->{$club_value['dbLimit']};
                         }
 
@@ -4513,7 +5033,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
             $style = '';
 
             // If armor party
-            if ($label == 10) {
+            if ($label == 10)
+            {
                 $style = 'style="display: none;"';
             }
 
@@ -4680,7 +5201,8 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 				<input type="number" name="limit501st" value="' . copyEvent($eid, $limit501st, 500) . '" id="limit501st" class="limitClass" />';
 
             // Loop through clubs
-            foreach ($clubArray as $club => $club_value) {
+            foreach ($clubArray as $club => $club_value)
+            {
                 echo '
 					<p>Limit of ' . $club_value['name'] . ':</p>
 					<input type="number" name="' . $club_value['dbLimit'] . '" value="' . copyEvent($eid, ${$club_value['dbLimit']}, 500) . '" id="' . $club_value['dbLimit'] . '" class="limitClass" />';
@@ -4730,184 +5252,189 @@ if (isset($_GET['action']) && $_GET['action'] == "commandstaff") {
 				<div id="create_event_area"></div>
 			</form>';
         }
-    } else {
+    }
+    else
+    {
         // If the user is not an admin or logged in
         echo 'You are not command staff. Access denied!';
     }
 }
 
 // Show the map page
-if (isset($_GET['action']) && $_GET['action'] == "mapview" && loggedIn()) {
+if (isset($_GET['action']) && $_GET['action'] == "mapview" && loggedIn())
+{
     echo '
 	<h3>Map View</h3>
 	<iframe src="map/" style="width: 100%; height: 400px; border: none;" frameborder:="0"></iframe>';
 }
 
-// Show the FAQ page
-if (isset($_GET['action']) && $_GET['action'] == "faq") {
-    echo '
-	<h3>Troop Tracker - Overview Video (After Account Setup)</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/vFP6posJt70" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
+//  SCE 2025 OCT - commented out
+// // Show the FAQ page
+// if (isset($_GET['action']) && $_GET['action'] == "faq") {
+//     echo '
+// 	<h3>Troop Tracker - Overview Video (After Account Setup)</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/vFP6posJt70" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>Troop Tracker - How To Video</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/j0Z5SB6TVOg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
+// 	<h3>Troop Tracker - How To Video</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/j0Z5SB6TVOg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>Troop Tracker - For Command Staff</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/ycwFdQQvGoc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
+// 	<h3>Troop Tracker - For Command Staff</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/ycwFdQQvGoc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>How to add an iOS shortcut</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/_UhtyHbL8uY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
+// 	<h3>How to add an iOS shortcut</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/_UhtyHbL8uY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>How to add an Android shortcut</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/S4Xu_N4ByBs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
+// 	<h3>How to add an Android shortcut</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/S4Xu_N4ByBs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>How to upload photos</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/aODHyWMMVUQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
+// 	<h3>How to upload photos</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/aODHyWMMVUQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>How to view milestones and awards</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/W-wcceu6xzI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
+// 	<h3>How to view milestones and awards</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/W-wcceu6xzI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>How to add a friend to a troop</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/C0WCxIRZafQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
-	
-	<h3>How to add someone to a troop without them being a member or having tracker access</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/mDeJaANqLIk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
+// 	<h3>How to add a friend to a troop</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/C0WCxIRZafQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>How to search for troops and troop counts</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/-pXqGZLiVpM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
+// 	<h3>How to add someone to a troop without them being a member or having tracker access</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/mDeJaANqLIk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>How to view past troops</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/17UPK4AoKxg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
+// 	<h3>How to search for troops and troop counts</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/-pXqGZLiVpM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>How to sort by squad</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/H-nnM5jndZA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
+// 	<h3>How to view past troops</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/17UPK4AoKxg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>How to show troops your signed up for</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/Rn3EnhudHyc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
+// 	<h3>How to sort by squad</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/H-nnM5jndZA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>How to use calendar view</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/02ERoFw7XlY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
+// 	<h3>How to show troops your signed up for</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/Rn3EnhudHyc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>How to search troops on the homepage</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/y_I8ssRjek8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
+// 	<h3>How to use calendar view</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/02ERoFw7XlY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>How to subscribe to events</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/5pp7_FKg7cI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
+// 	<h3>How to search troops on the homepage</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/y_I8ssRjek8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>How to add an event to your calendar</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/cefnojYUy-Y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
+// 	<h3>How to subscribe to events</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/5pp7_FKg7cI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>How to add discussion to a troop</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/tS-bCXbCzs4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
+// 	<h3>How to add an event to your calendar</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/cefnojYUy-Y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>How to change the theme</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/IPykBoeDGcg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
+// 	<h3>How to add discussion to a troop</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/tS-bCXbCzs4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>How to search costumes</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/YLjiVGgqe-Y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
+// 	<h3>How to change the theme</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/IPykBoeDGcg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>Command Staff - Create an Event</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/MFdLu9aWwlI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
+// 	<h3>How to search costumes</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/YLjiVGgqe-Y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>Command Staff - Edit an Event</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/WADjtDcmeJo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
+// 	<h3>Command Staff - Create an Event</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/MFdLu9aWwlI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>Command Staff - Edit Roster</h3>
-	<p>
-		<iframe width="100%" height="315" src="https://www.youtube.com/embed/c8IT_s0qSxc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-	</p>
+// 	<h3>Command Staff - Edit an Event</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/WADjtDcmeJo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>Troop Tracker Manual</h3>
-	<p>
-		<a href="https://github.com/MattDrennan/501-troop-tracker/blob/master/manual/troop_tracker_manual.pdf" target="_blank">Click here to view PDF manual.</a>
-	</p>
-	
-	<h3>I cannot login / I forgot my password</h3>
-	<p>
-		The Troop Tracker has been integrated with the boards. You must use your ' . garrison . ' boards username and password to login to Troop Tracker. To recover your password, use password recovery on the ' . garrison . ' forum. If you continue to have issues logging into your account, your ' . garrison . ' forum username, may not match the Troop Tracker records. Contact the ' . garrison . ' Webmaster or post a help thread on the forums to get this corrected.
-	</p>
+// 	<h3>Command Staff - Edit Roster</h3>
+// 	<p>
+// 		<iframe width="100%" height="315" src="https://www.youtube.com/embed/c8IT_s0qSxc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+// 	</p>
 
-	<h3>I am missing troop data / My troop data is incorrect</h3>
-	<p>
-		Please refer to your squad leader to get this corrected.
-	</p>
-	
-	<h3>I am now a member of another club and need access to their costumes.</h3>
-	<p>
-		Please refer to your squad / club leader to get added to the roster.
-	</p>
+// 	<h3>Troop Tracker Manual</h3>
+// 	<p>
+// 		<a href="https://github.com/MattDrennan/501-troop-tracker/blob/master/manual/troop_tracker_manual.pdf" target="_blank">Click here to view PDF manual.</a>
+// 	</p>
 
-	<h3>My costumes are not showing on my profile / I am missing a costume on my profile</h3>
-	<p>
-		The troop tracker automatically scrapes several different club databases for your costume data. If your costume data is not showing, make sure your ID numbers and forum username\'s are accurate. If the aforementioned information is correct, than refer to your squad / club leadership, as this data is missing on their end.
-	</p>
+// 	<h3>I cannot login / I forgot my password</h3>
+// 	<p>
+// 		The Troop Tracker has been integrated with the boards. You must use your ' . garrison . ' boards username and password to login to Troop Tracker. To recover your password, use password recovery on the ' . garrison . ' forum. If you continue to have issues logging into your account, your ' . garrison . ' forum username, may not match the Troop Tracker records. Contact the ' . garrison . ' Webmaster or post a help thread on the forums to get this corrected.
+// 	</p>
 
-	<h3>How do I know I confirmed a troop?</h3>
-	<p>
-		The troop will be listed on your troop tracker profile, or under your stats on the troop tracker page. When you confirm a troop, your status will change from "Going" to "Attended".
-	</p>
+// 	<h3>I am missing troop data / My troop data is incorrect</h3>
+// 	<p>
+// 		Please refer to your squad leader to get this corrected.
+// 	</p>
 
-	<h3>I need a costume added to the troop tracker.</h3>
-	<p>
-		Please notify your squad leader, or e-mail the Garrison Web Master directly. See below for e-mail.
-	</p>
+// 	<h3>I am now a member of another club and need access to their costumes.</h3>
+// 	<p>
+// 		Please refer to your squad / club leader to get added to the roster.
+// 	</p>
 
-	<h3>I need information on joining the 501st Legion.</h3>
-	<p>
-		<a href="https://databank.501st.com/databank/Join_Us" target="_blank">Click here to learn how to join.</a>
-	</p>
+// 	<h3>My costumes are not showing on my profile / I am missing a costume on my profile</h3>
+// 	<p>
+// 		The troop tracker automatically scrapes several different club databases for your costume data. If your costume data is not showing, make sure your ID numbers and forum username\'s are accurate. If the aforementioned information is correct, than refer to your squad / club leadership, as this data is missing on their end.
+// 	</p>
 
-	<h3>Contact Garrison Web Master</h3>
-	<p>If you have read and reviewed all the material above and are still experiencing issues, or have noticed a bug on the website, please <a href="mailto: ' . $webmasterEmail . '">send an e-mail here</a>.</p>';
-}
+// 	<h3>How do I know I confirmed a troop?</h3>
+// 	<p>
+// 		The troop will be listed on your troop tracker profile, or under your stats on the troop tracker page. When you confirm a troop, your status will change from "Going" to "Attended".
+// 	</p>
+
+// 	<h3>I need a costume added to the troop tracker.</h3>
+// 	<p>
+// 		Please notify your squad leader, or e-mail the Garrison Web Master directly. See below for e-mail.
+// 	</p>
+
+// 	<h3>I need information on joining the 501st Legion.</h3>
+// 	<p>
+// 		<a href="https://databank.501st.com/databank/Join_Us" target="_blank">Click here to learn how to join.</a>
+// 	</p>
+
+// 	<h3>Contact Garrison Web Master</h3>
+// 	<p>If you have read and reviewed all the material above and are still experiencing issues, or have noticed a bug on the website, please <a href="mailto: ' . $webmasterEmail . '">send an e-mail here</a>.</p>';
+// }
 
 /**************************** Edit Photo *********************************/
 
-if (isset($_GET['action']) && $_GET['action'] == "editphoto" && loggedIn()) {
+if (isset($_GET['action']) && $_GET['action'] == "editphoto" && loggedIn())
+{
     $photoid = $_GET['id'];
 
     // Fetch photo details in one query
@@ -4916,7 +5443,8 @@ if (isset($_GET['action']) && $_GET['action'] == "editphoto" && loggedIn()) {
     $statement->execute();
     $result = $statement->get_result();
 
-    if ($db = $result->fetch_object()) {
+    if ($db = $result->fetch_object())
+    {
         echo '
 		<h3>Edit Photo: ' . $db->filename . '</h3>
 		
@@ -4943,7 +5471,8 @@ if (isset($_GET['action']) && $_GET['action'] == "editphoto" && loggedIn()) {
 		<p style="text-align: center">';
 
         // If admin or uploader
-        if (isAdmin() || $db->trooperid == $_SESSION['id']) {
+        if (isAdmin() || $db->trooperid == $_SESSION['id'])
+        {
             $buttonText = $db->admin == 0 ? "Make Troop Instruction Photo" : "Make Regular Photo";
             echo '
 			<a href="#/" photoid="' . $db->id . '" class="button" name="adminphoto">' . $buttonText . '</a>
@@ -4955,175 +5484,205 @@ if (isset($_GET['action']) && $_GET['action'] == "editphoto" && loggedIn()) {
 }
 
 // Show the login page
-if (isset($_GET['action']) && $_GET['action'] == "login" && !loggedIn()) {
-    echo '
-	<h2 class="tm-section-header">Login</h2>';
+// if (isset($_GET['action']) && $_GET['action'] == "login" && !loggedIn())
+// {
+//     echo '
+// 	<h2 class="tm-section-header">Login</h2>';
 
-    // Display submission for register account, otherwise show the form
-    if (isset($_POST['loginWithTK'])) {
-        // Login with forum
-        $forumLogin = loginWithForum($_POST['tkid'], $_POST['password']);
+//     // Display submission for register account, otherwise show the form
+//     if (isset($_POST['loginWithTK']))
+//     {
+//         // Login with forum
+//         $forumLogin = loginWithForum($_POST['tkid'], $_POST['password']);
 
-        // Check credentials
-        if (isset($forumLogin['success']) && $forumLogin['success'] == 1) {
-            // Update username if changed
-            $statement = $conn->prepare("UPDATE troopers SET forum_id = ? WHERE user_id = ?");
-            $statement->bind_param("si", $forumLogin['user']['username'], $forumLogin['user']['user_id']);
-            $statement->execute();
-        }
+//         // Check credentials
+//         if (isset($forumLogin['success']) && $forumLogin['success'] == 1)
+//         {
+//             // Update username if changed
+//             $statement = $conn->prepare("UPDATE troopers SET forum_id = ? WHERE user_id = ?");
+//             $statement->bind_param("si", $forumLogin['user']['username'], $forumLogin['user']['user_id']);
+//             $statement->execute();
+//         }
 
-        // Get data
-        $statement = $conn->prepare("SELECT * FROM troopers WHERE forum_id = ? LIMIT 1");
-        $statement->bind_param("s", $_POST['tkid']);
-        $statement->execute();
+//         // Get data
+//         $statement = $conn->prepare("SELECT * FROM troopers WHERE forum_id = ? LIMIT 1");
+//         $statement->bind_param("s", $_POST['tkid']);
+//         $statement->execute();
 
-        // Trooper count
-        $i = 0;
+//         // Trooper count
+//         $i = 0;
 
-        if ($result = $statement->get_result()) {
-            while ($db = mysqli_fetch_object($result)) {
-                // Increment trooper count
-                $i++;
+//         if ($result = $statement->get_result())
+//         {
+//             while ($db = mysqli_fetch_object($result))
+//             {
+//                 // Increment trooper count
+//                 $i++;
 
-                // Check if banned
-                if (isset($forumLogin['success']) && $forumLogin['user']['is_banned'] == 1) {
-                    echo '
-					<p>
-						You are currently banned. Please refer to command staff for additional information.
-					</p>';
+//                 // Check if banned
+//                 if (isset($forumLogin['success']) && $forumLogin['user']['is_banned'] == 1)
+//                 {
+//                     echo '
+// 					<p>
+// 						You are currently banned. Please refer to command staff for additional information.
+// 					</p>';
 
-                    break;
-                }
+//                     break;
+//                 }
 
-                // Check if RIP trooper
-                if ($db->permissions == 3) {
-                    echo '
-					<p>
-						You cannot access this account.
-					</p>';
+//                 // Check if RIP trooper
+//                 if ($db->permissions == 3)
+//                 {
+//                     echo '
+// 					<p>
+// 						You cannot access this account.
+// 					</p>';
 
-                    break;
-                }
+//                     break;
+//                 }
 
-                // Check credentials
-                if (isset($forumLogin['success']) && $forumLogin['success'] == 1 || (password_verify($_POST['password'], $db->password) && $db->permissions == 1)) {
-                    if ($db->approved != 0) {
-                        if (canAccess($db->id)) {
-                            // Set session
-                            $_SESSION['id'] = $db->id;
-                            $_SESSION['tkid'] = $db->tkid;
+//                 // Check credentials
+//                 if (isset($forumLogin['success']) && $forumLogin['success'] == 1 || (password_verify($_POST['password'], $db->password) && $db->permissions == 1))
+//                 {
+//                     if ($db->approved != 0)
+//                     {
+//                         if (canAccess($db->id))
+//                         {
+//                             // Set session
+//                             $_SESSION['id'] = $db->id;
+//                             $_SESSION['tkid'] = $db->tkid;
 
-                            // If logged in with forum details, and password does not match
-                            if (isset($forumLogin['success']) && $forumLogin['success'] == 1) {
-                                // Update password, e-mail, and user ID
-                                $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+//                             // If logged in with forum details, and password does not match
+//                             if (isset($forumLogin['success']) && $forumLogin['success'] == 1)
+//                             {
+//                                 // Update password, e-mail, and user ID
+//                                 $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-                                $statement = $conn->prepare("UPDATE troopers SET password = ?, email = ?, user_id = ? WHERE id = ?");
-                                $statement->bind_param("ssii", $password, $forumLogin['user']['email'], $forumLogin['user']['user_id'], $db->id);
-                                $statement->execute();
-                            }
+//                                 $statement = $conn->prepare("UPDATE troopers SET password = ?, email = ?, user_id = ? WHERE id = ?");
+//                                 $statement->bind_param("ssii", $password, $forumLogin['user']['email'], $forumLogin['user']['user_id'], $db->id);
+//                                 $statement->execute();
+//                             }
 
-                            // Set log in cookie, if set to keep logged in
-                            if (isset($_POST['keepLog']) && $_POST['keepLog'] == 1) {
-                                // Set cookies
-                                setcookie("TroopTrackerUsername", $db->forum_id, time() + (10 * 365 * 24 * 60 * 60));
-                                setcookie("TroopTrackerPassword", $_POST['password'], time() + (10 * 365 * 24 * 60 * 60));
-                            }
+//                             // Set log in cookie, if set to keep logged in
+//                             if (isset($_POST['keepLog']) && $_POST['keepLog'] == 1)
+//                             {
+//                                 // Set cookies
+//                                 setcookie("TroopTrackerUsername", $db->forum_id, time() + (10 * 365 * 24 * 60 * 60));
+//                                 setcookie("TroopTrackerPassword", $_POST['password'], time() + (10 * 365 * 24 * 60 * 60));
+//                             }
 
-                            // Cookie set
-                            if (isset($_COOKIE["TroopTrackerLastEvent"])) {
-                                echo '
-								<meta http-equiv="refresh" content="5; URL=index.php?event=' . cleanInput($_COOKIE["TroopTrackerLastEvent"]) . '" />
+//                             // Cookie set
+//                             if (isset($_COOKIE["TroopTrackerLastEvent"]))
+//                             {
+//                                 echo '
+// 								<meta http-equiv="refresh" content="5; URL=index.php?event=' . cleanInput($_COOKIE["TroopTrackerLastEvent"]) . '" />
 
-								<div style="margin-top: 25px; color: green; text-align: center; font-weight: bold;">
-								You have now logged in!
-								<br /><br />
-								<a href="index.php?event=' . cleanInput($_COOKIE["TroopTrackerLastEvent"]) . '">Click here to view the event</a> or you will be redirected shortly.
-								</div>';
+// 								<div style="margin-top: 25px; color: green; text-align: center; font-weight: bold;">
+// 								You have now logged in!
+// 								<br /><br />
+// 								<a href="index.php?event=' . cleanInput($_COOKIE["TroopTrackerLastEvent"]) . '">Click here to view the event</a> or you will be redirected shortly.
+// 								</div>';
 
-                                // Clear cookie
-                                setcookie("TroopTrackerLastEvent", "", time() - 3600);
-                            } else {
-                                // Cookie not set
-                                echo '
-								<div style="margin-top: 25px; color: green; text-align: center; font-weight: bold;">
-								You have now logged in!
-								<br /><br />
-								<a href="index.php">Click here to go home.</a>
-								</div>';
-                            }
-                        } else {
-                            echo '
-							Your account is retired. Please contact your squad / club leader for further instructions on how to get re-approved.';
-                        }
-                    } else {
-                        echo '
-						Your access has not been approved yet.';
-                    }
-                } else {
-                    echo '
-					<p>
-						Incorrect username or password. <a href="index.php?action=login">Try again?</a>
-					</p>
+//                                 // Clear cookie
+//                                 setcookie("TroopTrackerLastEvent", "", time() - 3600);
+//                             }
+//                             else
+//                             {
+//                                 // Cookie not set
+//                                 echo '
+// 								<div style="margin-top: 25px; color: green; text-align: center; font-weight: bold;">
+// 								You have now logged in!
+// 								<br /><br />
+// 								<a href="index.php">Click here to go home.</a>
+// 								</div>';
+//                             }
+//                         }
+//                         else
+//                         {
+//                             echo '
+// 							Your account is retired. Please contact your squad / club leader for further instructions on how to get re-approved.';
+//                         }
+//                     }
+//                     else
+//                     {
+//                         echo '
+// 						Your access has not been approved yet.';
+//                     }
+//                 }
+//                 else
+//                 {
+//                     echo '
+// 					<p>
+// 						Incorrect username or password. <a href="login">Try again?</a>
+// 					</p>
 
-					<p>
-						If you are unable to access your account, please contact the ' . garrison . ' Webmaster, or post a help request on the forums. Your FL Garrison boards name may not match the Troop Tracker records.
-					</p>';
-                }
-            }
-        }
+// 					<p>
+// 						If you are unable to access your account, please contact the ' . garrison . ' Webmaster, or post a help request on the forums. Your FL Garrison boards name may not match the Troop Tracker records.
+// 					</p>';
+//                 }
+//             }
+//         }
 
-        // An account does not exist
-        if ($i == 0) {
-            echo '
-			<p>Account not found. <a href="index.php?action=login">Try again?</a></p>
-			
-			<p>Please contact the Garrison Webmaster or post a help request on the forums, if you continue to have issues. Your FL Garrison boards name may not match the Troop Tracker records.</p>';
-        }
-    } else {
-        echo '
-		<form action="index.php?action=login" method="POST" name="loginForm" id="loginForm">
-			<p>Board Name:</p>
-			<input type="text" name="tkid" id="tkid" />
+//         // An account does not exist
+//         if ($i == 0)
+//         {
+//             echo '
+// 			<p>Account not found. <a href="login">Try again?</a></p>
 
-			<p>Password:</p>
-			<input type="password" name="password" id="password" />
-			
-			<br /><br />
-			
-			<input type="checkbox" name="keepLog" value="1" /> Keep me logged in
+// 			<p>Please contact the Garrison Webmaster or post a help request on the forums, if you continue to have issues. Your FL Garrison boards name may not match the Troop Tracker records.</p>';
+//         }
+//     }
+//     else
+//     {
+//         echo '
+// 		<form action="login" method="POST" name="loginForm" id="loginForm">
+// 			<p>Board Name:</p>
+// 			<input type="text" name="tkid" id="tkid" />
 
-			<br /><br />
+// 			<p>Password:</p>
+// 			<input type="password" name="password" id="password" />
 
-			<input type="submit" value="Login!" name="loginWithTK" />
-		</form>
-		
-		<p>
-			<small>
-				<b>Remember:</b><br />Login with your ' . garrison . ' board username and password.
-			</small>
-		</p>';
-    }
-}
+// 			<br /><br />
+
+// 			<input type="checkbox" name="keepLog" value="1" /> Keep me logged in
+
+// 			<br /><br />
+
+// 			<input type="submit" value="Login!" name="loginWithTK" />
+// 		</form>
+
+// 		<p>
+// 			<small>
+// 				<b>Remember:</b><br />Login with your ' . garrison . ' board username and password.
+// 			</small>
+// 		</p>';
+//     }
+// }
 
 // Show the setup page
-if (isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed() && !loggedIn()) {
+if (isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed() && !loggedIn())
+{
     echo '
 	<h2 class="tm-section-header">Set Up Your Account</h2>';
 
     // Display submission for register account, otherwise show the form
-    if (isset($_POST['registerAccount'])) {
+    if (isset($_POST['registerAccount']))
+    {
         // Does this TK ID exist?
-        if (doesTKExist($_POST['tkid'], $_POST['squad'])) {
+        if (doesTKExist($_POST['tkid'], $_POST['squad']))
+        {
             // Is this TK ID registered?
-            if (!isTKRegistered($_POST['tkid'], $_POST['squad'])) {
+            if (!isTKRegistered($_POST['tkid'], $_POST['squad']))
+            {
                 // Login with forum
                 $forumLogin = loginWithForum($_POST['forum_id'], $_POST['password']);
 
                 // Verify forum login
-                if (isset($forumLogin['success']) && $forumLogin['success'] == 1) {
+                if (isset($forumLogin['success']) && $forumLogin['success'] == 1)
+                {
                     // If 501st
-                    if (in_array($_POST['squad'], $validSquadIDs)) {
+                    if (in_array($_POST['squad'], $validSquadIDs))
+                    {
                         // Query the database
                         $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
                         $forum_id = filter_var($_POST['forum_id'], FILTER_SANITIZE_ADD_SLASHES);
@@ -5133,8 +5692,10 @@ if (isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed() &&
                         $statement->execute();
 
                         // Display output
-                        echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';
-                    } else {
+                        echo 'Your account has been registered. Please <a href="login">login</a>.';
+                    }
+                    else
+                    {
                         // If a club
                         // Query the database
                         $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
@@ -5145,18 +5706,26 @@ if (isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed() &&
                         $statement->execute();
 
                         // Display output
-                        echo 'Your account has been registered. Please <a href="index.php?action=login">login</a>.';
+                        echo 'Your account has been registered. Please <a href="login">login</a>.';
                     }
-                } else {
+                }
+                else
+                {
                     echo 'Incorrect username or password.';
                 }
-            } else {
+            }
+            else
+            {
                 echo 'This TK ID or Rebel Legion user is already registered, or there is an issue with your input! Please contact an admin if this issue persists.';
             }
-        } else {
+        }
+        else
+        {
             echo 'This TK ID or Rebel Legion user does not exist! Please contact an admin if this issue persists.';
         }
-    } else {
+    }
+    else
+    {
         // Display form to register an account
         echo '
 		<p style="text-align: center; border: dashed white;">Were you already using the old trooper tracker? Set up your account by using the form below.</p>
@@ -5182,19 +5751,24 @@ if (isset($_GET['action']) && $_GET['action'] == "setup" && !isSignUpClosed() &&
 			<input type="submit" value="Set Up!" name="registerAccount" />
 		</form>';
     }
-} else {
-    if (isset($_GET['action']) && $_GET['action'] == "setup") {
+}
+else
+{
+    if (isset($_GET['action']) && $_GET['action'] == "setup")
+    {
         echo '<p style="text-align: center;"><b>You are already logged in.</b></p>';
     }
 }
 
 // Show the logout page
-if (isset($_GET['action']) && $_GET['action'] == "logout") {
+if (isset($_GET['action']) && $_GET['action'] == "logout")
+{
     // Destroy session
     session_destroy();
 
     // Make sure cookies are set before destroying
-    if (isset($_COOKIE['TroopTrackerUsername']) && isset($_COOKIE['TroopTrackerPassword'])) {
+    if (isset($_COOKIE['TroopTrackerUsername']) && isset($_COOKIE['TroopTrackerPassword']))
+    {
         // Destroy cookies
         setcookie("TroopTrackerUsername", "", time() - 3600);
         setcookie("TroopTrackerPassword", "", time() - 3600);
@@ -5210,9 +5784,11 @@ if (isset($_GET['action']) && $_GET['action'] == "logout") {
 }
 
 // If we are viewing an event, hide all other info
-if (isset($_GET['event']) && loggedIn()) {
+if (isset($_GET['event']) && loggedIn())
+{
     // Delete Comment
-    if (isset($_POST['deleteComment']) && isAdmin()) {
+    if (isset($_POST['deleteComment']) && isAdmin())
+    {
         // Delete from thread forum
         deletePost(getCommentPostID(cleanInput($_POST['comment'])), true);
 
@@ -5240,8 +5816,10 @@ if (isset($_GET['event']) && loggedIn()) {
     $statement->bind_param("i", $_GET['event']);
     $statement->execute();
 
-    if ($result = $statement->get_result()) {
-        while ($db = mysqli_fetch_object($result)) {
+    if ($result = $statement->get_result())
+    {
+        while ($db = mysqli_fetch_object($result))
+        {
             // Update globals
             $eventClosed = $db->closed;
             $limitedEvent = $db->limitedEvent;
@@ -5253,13 +5831,15 @@ if (isset($_GET['event']) && loggedIn()) {
             $limitTotal = $db->limit501st;
 
             // Loop through clubs
-            foreach ($clubArray as $club => $club_value) {
+            foreach ($clubArray as $club => $club_value)
+            {
                 // Add
                 $limitTotal += $db->{$club_value['dbLimit']};
             }
 
             // Check for total limit set, if it is, replace limit with it
-            if ($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500) {
+            if ($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+            {
                 $limitTotal = $db->limitTotalTroopers;
             }
 
@@ -5267,7 +5847,8 @@ if (isset($_GET['event']) && loggedIn()) {
             $eventExist = true;
 
             // Admin Area
-            if (isAdmin()) {
+            if (isAdmin())
+            {
                 echo '
 				<div class="section-card">
 					<h2 class="tm-section-header">Admin Controls</h2>
@@ -5286,7 +5867,8 @@ if (isset($_GET['event']) && loggedIn()) {
             echo '<input type="hidden" name="troopid" id="troopid" value="' . cleanInput($_GET['event']) . '" />';
 
             // Is this merged data?
-            if ($db->venue == NULL && $db->numberOfAttend == NULL && $db->requestedCharacter == NULL && $db->secureChanging == NULL && $db->lightsabers == NULL && $db->parking == NULL && $db->mobility == NULL && $db->amenities == NULL && $db->referred == NULL) {
+            if ($db->venue == NULL && $db->numberOfAttend == NULL && $db->requestedCharacter == NULL && $db->secureChanging == NULL && $db->lightsabers == NULL && $db->parking == NULL && $db->mobility == NULL && $db->amenities == NULL && $db->referred == NULL)
+            {
                 echo '
 				<div class="section-card">
 					<h2 class="tm-section-header">' . $db->name . '</h2>
@@ -5300,9 +5882,12 @@ if (isset($_GET['event']) && loggedIn()) {
 
                 // Set is merged
                 $isMerged = true;
-            } else {
+            }
+            else
+            {
                 // If this event is over, don't show it
-                if (strtotime($db->dateEnd) >= strtotime("-1 day") && $db->closed != 1) {
+                if (strtotime($db->dateEnd) >= strtotime("-1 day") && $db->closed != 1)
+                {
                     // Subscribe button
                     echo '
 					<div class="section-card">
@@ -5321,14 +5906,16 @@ if (isset($_GET['event']) && loggedIn()) {
                 }
 
                 // If canceled, show trooper
-                if ($db->closed == 2) {
+                if ($db->closed == 2)
+                {
                     echo '
 					<div class="alert-box">
 						<b>This event was CANCELED by Command Staff.</b>
 					</div>';
                 }
                 // If locked, show trooper
-                else if ($db->closed == 3) {
+                else if ($db->closed == 3)
+                {
                     echo '
 					<div class="alert-box">
 						<b>This event was LOCKED by Command Staff.</b>
@@ -5337,7 +5924,8 @@ if (isset($_GET['event']) && loggedIn()) {
 					</div>';
                 }
                 // If full, show trooper
-                else if ($db->closed == 4) {
+                else if ($db->closed == 4)
+                {
                     echo '
 					<div class="alert-box">
 						<b>This event was marked FULL by Command Staff.</b>
@@ -5349,7 +5937,8 @@ if (isset($_GET['event']) && loggedIn()) {
                 // Set add to title
                 $add = "";
 
-                if (isLink($db->id) > 0) {
+                if (isLink($db->id) > 0)
+                {
                     $add = "<b>" . date("l", strtotime($db->dateStart)) . "</b><br />" . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "<br />";
                 }
 
@@ -5359,7 +5948,8 @@ if (isset($_GET['event']) && loggedIn()) {
 				<h2 class="tm-section-header">' . $add . '' . $db->name . '</h2>';
 
                 // If event closed
-                if ($db->closed == 1) {
+                if ($db->closed == 1)
+                {
                     $hours = timeBetweenDates($db->dateStart, $db->dateEnd);
                     $hours += intval($db->charityAddHours);
 
@@ -5371,7 +5961,8 @@ if (isset($_GET['event']) && loggedIn()) {
                 $style = '';
 
                 // If armor party
-                if ($db->label == 10) {
+                if ($db->label == 10)
+                {
                     $style = 'style="display: none;"';
                 }
 
@@ -5396,7 +5987,8 @@ if (isset($_GET['event']) && loggedIn()) {
 				' . (isAdmin() ? '<p><b>Point of Contact:</b> ' . ifEmpty($db->poc, "Not available") . '</p>' : '') . '';
 
                 // If attached to a forum thread
-                if ($db->thread_id > 0) {
+                if ($db->thread_id > 0)
+                {
                     echo '
 					<p><b>View post on forum:</b> <a href="' . $forumURL . 'threads/' . $db->thread_id . '" target="_blank">' . $forumURL . 'threads/' . $db->thread_id . '</a></p>';
                 }
@@ -5412,7 +6004,8 @@ if (isset($_GET['event']) && loggedIn()) {
                 $link = isLink($db->id);
 
                 // If has links to event, or is linked, show shift data
-                if ($link > 0) {
+                if ($link > 0)
+                {
                     echo '
 					<div class="section-card">
 					<h2 class="tm-section-header" id="shifts-link">Shifts</h2>';
@@ -5422,9 +6015,12 @@ if (isset($_GET['event']) && loggedIn()) {
                     $statement->bind_param("ii", $link, $link);
                     $statement->execute();
 
-                    if ($result2 = $statement->get_result()) {
-                        while ($db2 = mysqli_fetch_object($result2)) {
-                            if ($db->id == $db2->id) {
+                    if ($result2 = $statement->get_result())
+                    {
+                        while ($db2 = mysqli_fetch_object($result2))
+                        {
+                            if ($db->id == $db2->id)
+                            {
                                 echo '
 								<div style="border: 1px solid gray; margin-bottom: 10px; text-align: center; color: orange; font-weight: bold;">
 								<u>Currently Viewing:</u>
@@ -5433,7 +6029,9 @@ if (isset($_GET['event']) && loggedIn()) {
 								<br />' .
                                     date('h:i A', strtotime($db2->dateStart)) . ' - ' . date('h:i A', strtotime($db2->dateEnd)) .
                                     '</div>';
-                            } else {
+                            }
+                            else
+                            {
                                 echo '
 								<div style="border: 1px solid gray; margin-bottom: 10px; text-align: center;">
 								<a href="index.php?event=' . $db2->id . '#shifts-link"><b>' . date('l', strtotime($db2->dateStart)) . '</b> - ' . date('M d, Y', strtotime($db2->dateStart)) . '
@@ -5451,7 +6049,8 @@ if (isset($_GET['event']) && loggedIn()) {
                 $link2 = isLink2($db->id);
 
                 // Show linked events
-                if ($link == 0 && $link2 > 0) {
+                if ($link == 0 && $link2 > 0)
+                {
                     echo '
 					<div class="section-card">
 					<h2 class="tm-section-header">Related Troops</h2>';
@@ -5461,14 +6060,16 @@ if (isset($_GET['event']) && loggedIn()) {
                     $statement->bind_param("ii", $link2, $db->id);
                     $statement->execute();
 
-                    if ($result2 = $statement->get_result()) {
-                        while ($db2 = mysqli_fetch_object($result2)) {
+                    if ($result2 = $statement->get_result())
+                    {
+                        while ($db2 = mysqli_fetch_object($result2))
+                        {
                             echo '
 							<div style="border: 1px solid gray; margin-bottom: 10px; text-align: center;">
 							<a href="index.php?event=' . $db2->id . '">' . (isLink($db2->id) > 0 ? '<b>' . date('l', strtotime($db2->dateStart)) . '</b> - ' . date('M d, Y', strtotime($db2->dateStart)) . '
 							<br />' .
-                                    date('h:i A', strtotime($db2->dateStart)) . ' - ' . date('h:i A', strtotime($db2->dateEnd)) .
-                                    '
+                                date('h:i A', strtotime($db2->dateStart)) . ' - ' . date('h:i A', strtotime($db2->dateEnd)) .
+                                '
 							<br />
 							' . $db2->name : date('M d, Y', strtotime($db2->dateStart)) . '<br />' . $db2->name) . '</a>
 							</div>';
@@ -5481,7 +6082,9 @@ if (isset($_GET['event']) && loggedIn()) {
 					<div class="alert-box">
 						<b>This event is connected to other related events; therefore, sign-up limits may apply.</b>
 					</div>';
-                } else if ($link > 0 && $link2 > 0) {
+                }
+                else if ($link > 0 && $link2 > 0)
+                {
                     // Only show the disclaimer text, if the event is already a shift.
                     echo '
 					<div class="alert-box">
@@ -5490,7 +6093,8 @@ if (isset($_GET['event']) && loggedIn()) {
                 }
 
                 // Don't show photos, if merged data
-                if (!$isMerged) {
+                if (!$isMerged)
+                {
                     // Query count
                     $j = 0;
 
@@ -5512,10 +6116,13 @@ if (isset($_GET['event']) && loggedIn()) {
                     $statement->bind_param("iiiii", $_GET['event'], $link, $link2, $link, $link2);
                     $statement->execute();
 
-                    if ($result2 = $statement->get_result()) {
-                        while ($db2 = mysqli_fetch_object($result2)) {
+                    if ($result2 = $statement->get_result())
+                    {
+                        while ($db2 = mysqli_fetch_object($result2))
+                        {
                             // If first result...
-                            if ($j == 0) {
+                            if ($j == 0)
+                            {
                                 echo '
 								<div class="section-card">
 								<h2 class="tm-section-header">Instructional Photos</h2>';
@@ -5528,7 +6135,8 @@ if (isset($_GET['event']) && loggedIn()) {
 								<p class="container-text">';
 
                             // If owned by trooper or admin
-                            if (isAdmin() || $db2->trooperid == $_SESSION['id']) {
+                            if (isAdmin() || $db2->trooperid == $_SESSION['id'])
+                            {
                                 echo '<a href="index.php?action=editphoto&id=' . $db2->id . '">Edit</a>';
                             }
 
@@ -5541,7 +6149,8 @@ if (isset($_GET['event']) && loggedIn()) {
                         }
                     }
 
-                    if ($j > 0) {
+                    if ($j > 0)
+                    {
                         echo '</div>';
                     }
                 }
@@ -5550,48 +6159,58 @@ if (isset($_GET['event']) && loggedIn()) {
                 $isLimited = false;
 
                 // Loop through clubs
-                foreach ($clubArray as $club => $club_value) {
+                foreach ($clubArray as $club => $club_value)
+                {
                     // Check if limited
-                    if ($db->{$club_value['dbLimit']} < 500) {
+                    if ($db->{$club_value['dbLimit']} < 500)
+                    {
                         $isLimited = true;
                     }
                 }
 
                 // Check for total limit set, if it is, set event as limited
-                if ($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500) {
+                if ($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+                {
                     $isLimited = true;
                 }
 
                 // Check for total limit set, if it is, set event as limited
-                if ($db->limitHandlers > 500 || $db->limitHandlers < 500) {
+                if ($db->limitHandlers > 500 || $db->limitHandlers < 500)
+                {
                     $isLimited = true;
                 }
 
                 // If this event is limited in troopers
-                if ($db->limit501st < 500 || $isLimited) {
+                if ($db->limit501st < 500 || $isLimited)
+                {
                     echo '
 					<div class="event-limit-alert" name="troopersRemainingDisplay">
 						<ul class="event-limit-list">
 							<li>This event is limited to ' . $limitTotal . ' troopers. ';
 
                     // Check for total limit set, if it is, add remaining troopers
-                    if ($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500) {
+                    if ($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+                    {
                         echo '
 								' . troopersRemaining($limitTotal, eventClubCount($db->id, "all")) . '</li>';
-                    } else {
+                    }
+                    else
+                    {
                         echo '
 								</li>
 								<li>This event is limited to ' . $db->limit501st . ' 501st troopers. ' . troopersRemaining($db->limit501st, eventClubCount($db->id, 0)) . ' </li>';
 
                         // Loop through clubs
-                        foreach ($clubArray as $club => $club_value) {
+                        foreach ($clubArray as $club => $club_value)
+                        {
                             echo '
 									<li>This event is limited to ' . $db->{$club_value['dbLimit']} . ' ' . $club_value['name'] . ' troopers. ' . troopersRemaining($db->{$club_value['dbLimit']}, eventClubCount($db->id, $club_value['squadID'])) . '</li>';
                         }
                     }
 
                     // Check for total limit set, if it is, set event as limited
-                    if ($db->limitHandlers > 500 || $db->limitHandlers < 500) {
+                    if ($db->limitHandlers > 500 || $db->limitHandlers < 500)
+                    {
                         echo '
 								<li>This event is limited to ' . $db->limitHandlers . ' handlers. <b>' . ($db->limitHandlers - handlerEventCount($db->id)) . ' handlers remaining.</b></li>';
                     }
@@ -5601,7 +6220,8 @@ if (isset($_GET['event']) && loggedIn()) {
                 }
 
                 // If is a admin and a limited event
-                if (isAdmin() && $db->limitedEvent == 1) {
+                if (isAdmin() && $db->limitedEvent == 1)
+                {
                     // All other events show counts of sign ups
                     echo '
 					<div class="section-card">
@@ -5612,7 +6232,8 @@ if (isset($_GET['event']) && loggedIn()) {
 							<li>501st: ' . eventClubCount($db->id, 0) . ' </li>';
 
                     // Loop through clubs
-                    foreach ($clubArray as $club => $club_value) {
+                    foreach ($clubArray as $club => $club_value)
+                    {
                         echo '<li>' . $club_value['name'] . ': ' . eventClubCount($db->id, $club_value['squadID']) . '</li>';
                     }
 
@@ -5622,7 +6243,8 @@ if (isset($_GET['event']) && loggedIn()) {
 					</div>';
                 }
 
-                if ($db->limitedEvent == 1) {
+                if ($db->limitedEvent == 1)
+                {
                     echo '
 					<div class="alert-box">
 						<b>Reminder:</b> This event has been set as a <i>manual selection</i> event. When a trooper needs to make a change to their attending status or costume, troopers must comment below what changes need to be made, and command staff will make the changes. Please note, this only applies to manual selection events.
@@ -5644,46 +6266,60 @@ if (isset($_GET['event']) && loggedIn()) {
 			</div>';
 
             // For rosterTableNoData - If no data, this is for the AJAX of a submitted sign up form
-            if ($i == 0) {
+            if ($i == 0)
+            {
                 echo '</div>';
             }
 
             // If logged in and assigned to event
-            if (!$isMerged) {
+            if (!$isMerged)
+            {
                 // Is the user in the event?
                 $eventCheck = inEvent($_SESSION['id'], strip_tags(addslashes($_GET['event'])));
 
-                if (strtotime($db->dateEnd) < strtotime("NOW")) {
+                if (strtotime($db->dateEnd) < strtotime("NOW"))
+                {
                     echo '
 					<div class="alert-box">
 						<b>This event is closed for editing.</b>
 					</div>';
-                } else {
+                }
+                else
+                {
                     // TROOPER IN TROOP
-                    if ($eventCheck['inTroop'] == 1) {
-                        if ($eventCheck['status'] == 4) {
+                    if ($eventCheck['inTroop'] == 1)
+                    {
+                        if ($eventCheck['status'] == 4)
+                        {
                             echo '
 							<div name="signeduparea" id="signeduparea">
 								<div class="alert-box">
 									<b>You have canceled this troop.</b>
 								</div>
 							</div>';
-                        } else {
+                        }
+                        else
+                        {
                             // If open or locked
-                            if ($db->closed == 0 || $db->closed == 3) {
+                            if ($db->closed == 0 || $db->closed == 3)
+                            {
                                 echo '
 								<div name="signeduparea" id="signeduparea">
 									<div class="alert-box">
 										<b>You are signed up for this troop!</b>
 									</div>
 								</div>';
-                            } else {
+                            }
+                            else
+                            {
                                 // Closed for editing
                                 echo '
 								<div class="alert-box">This event is closed for editing.</div>';
                             }
                         }
-                    } else {
+                    }
+                    else
+                    {
                         // Sign up area - NOT IN TROOP
                         echo '
 						<div name="signuparea" id="signuparea">
@@ -5691,10 +6327,13 @@ if (isset($_GET['event']) && loggedIn()) {
 							<h2 class="tm-section-header">Sign Up</h2>';
 
                         // If event is not closed...
-                        if ($db->closed == 0) {
-                            if (hasPermission(0, 1, 2, 3)) {
+                        if ($db->closed == 0)
+                        {
+                            if (hasPermission(0, 1, 2, 3))
+                            {
                                 // Is this a hand picked event?
-                                if ($db->limitedEvent == 1) {
+                                if ($db->limitedEvent == 1)
+                                {
                                     echo '<div class="alert-box"><b>This is a locked event. When you sign up, you will be placed in a pending status until command staff approves you. Please check for updates.</b></div>';
                                 }
 
@@ -5709,12 +6348,14 @@ if (isset($_GET['event']) && loggedIn()) {
                                 $totalTroopers = $db->limit501st;
 
                                 // Loop through clubs
-                                foreach ($clubArray as $club => $club_value) {
+                                foreach ($clubArray as $club => $club_value)
+                                {
                                     $totalTroopers += $db->{$club_value['dbLimit']};
                                 }
 
                                 // Is the event full?
-                                if ($getNumOfTroopers >= $totalTroopers) {
+                                if ($getNumOfTroopers >= $totalTroopers)
+                                {
                                     echo '
 									<b>This event is full, you will be placed on the stand by list.</b>';
                                 }
@@ -5730,8 +6371,10 @@ if (isset($_GET['event']) && loggedIn()) {
                                 $statement = $conn->prepare("SELECT * FROM costumes WHERE club NOT IN (" . implode(",", $dualCostume) . ") AND " . costume_restrict_query($_SESSION['id'], false, false) . " ORDER BY FIELD(costume, " . $mainCostumes . "" . mainCostumesBuild($_SESSION['id']) . "" . getMyCostumes(getTKNumber($_SESSION['id']), getTrooperSquad($_SESSION['id'])) . ") DESC, costume");
                                 $statement->execute();
 
-                                if ($result3 = $statement->get_result()) {
-                                    while ($db3 = mysqli_fetch_object($result3)) {
+                                if ($result3 = $statement->get_result())
+                                {
+                                    while ($db3 = mysqli_fetch_object($result3))
+                                    {
                                         echo '
 												<option value="' . $db3->id . '"  club="' . $db3->club . '">' . getCostumeAbbreviation($db3->club) . ' ' . $db3->costume . '</option>';
                                     }
@@ -5747,16 +6390,20 @@ if (isset($_GET['event']) && loggedIn()) {
 										<select name="status">
 											<option value="null" SELECTED>Please choose an option...</option>';
 
-                                if ($db->limitedEvent != 1) {
+                                if ($db->limitedEvent != 1)
+                                {
                                     echo '
 												<option value="0">I\'ll be there!</option>';
 
                                     // Check if tentative allowed
-                                    if ($db->allowTentative == 1) {
+                                    if ($db->allowTentative == 1)
+                                    {
                                         echo '
 												<option value="2">Tentative</option>';
                                     }
-                                } else {
+                                }
+                                else
+                                {
                                     echo '
 												<option value="5">Request to attend (Pending)</option>';
                                 }
@@ -5774,9 +6421,12 @@ if (isset($_GET['event']) && loggedIn()) {
 
                                 // Amount of costumes
                                 $c = 0;
-                                if ($result2 = $statement->get_result()) {
-                                    while ($db2 = mysqli_fetch_object($result2)) {
-                                        if ($c == 0) {
+                                if ($result2 = $statement->get_result())
+                                {
+                                    while ($db2 = mysqli_fetch_object($result2))
+                                    {
+                                        if ($c == 0)
+                                        {
                                             echo '<option value="0">Select a costume...</option>';
                                         }
 
@@ -5796,12 +6446,16 @@ if (isset($_GET['event']) && loggedIn()) {
 										<input type="submit" value="Sign Up!" name="submitSignUp" />
 									</form>
 								</div>';
-                            } else {
+                            }
+                            else
+                            {
                                 echo '
 								You do not have permission to sign up for events. Please refer to the boards for assistance.';
                             }
                             echo '</div>';	// Section card
-                        } else {
+                        }
+                        else
+                        {
                             echo '
 							<div class="alert-box">This event is closed for editing.</div>';
                         }
@@ -5811,14 +6465,18 @@ if (isset($_GET['event']) && loggedIn()) {
         }
 
         // If event does not exist
-        if (!$eventExist) {
+        if (!$eventExist)
+        {
             echo '
 			<div class="alert-box">
 				<b>This event does not exist.</b>
 			</div>';
-        } else {
+        }
+        else
+        {
             // Don't show photos, if merged data
-            if (!$isMerged) {
+            if (!$isMerged)
+            {
                 // Set results per page
                 $results = 5;
 
@@ -5847,13 +6505,16 @@ if (isset($_GET['event']) && loggedIn()) {
                 $total_pages = ceil($rowPage / $results);
 
                 // If page set
-                if (isset($_GET['page'])) {
+                if (isset($_GET['page']))
+                {
                     // Get page
                     $page = intval($_GET['page']);
 
                     // Start from
                     $startFrom = ($page - 1) * $results;
-                } else {
+                }
+                else
+                {
                     // Default
                     $page = 1;
 
@@ -5883,10 +6544,13 @@ if (isset($_GET['event']) && loggedIn()) {
                 // Count photos
                 $i = 0;
 
-                if ($result = $statement->get_result()) {
-                    while ($db = mysqli_fetch_object($result)) {
+                if ($result = $statement->get_result())
+                {
+                    while ($db = mysqli_fetch_object($result))
+                    {
                         // If first result
-                        if ($i == 0) {
+                        if ($i == 0)
+                        {
                             echo '
 							<div class="section-card">
 							<h2 class="tm-section-header" id="photo_section">Photos</h2>';
@@ -5907,7 +6571,8 @@ if (isset($_GET['event']) && loggedIn()) {
                     }
 
                     // If photos
-                    if ($i > 0) {
+                    if ($i > 0)
+                    {
                         echo '
 						<p class="center-content">
 							<i>Press photos for full resolution version.</i>
@@ -5916,22 +6581,28 @@ if (isset($_GET['event']) && loggedIn()) {
                 }
 
                 // If photos
-                if ($total_pages > 1) {
+                if ($total_pages > 1)
+                {
                     echo '<p>Pages: ';
 
                     // Loop through pages
-                    for ($j = 1; $j <= $total_pages; $j++) {
+                    for ($j = 1; $j <= $total_pages; $j++)
+                    {
                         // If we are on this page...
-                        if ($page == $j) {
+                        if ($page == $j)
+                        {
                             echo '
 							' . $j . '';
-                        } else {
+                        }
+                        else
+                        {
                             echo '
 							<a href="index.php?event=' . cleanInput($_GET['event']) . '&page=' . $j . '#photo_section">' . $j . '</a>';
                         }
 
                         // If not that last page, add a comma
-                        if ($j != $total_pages) {
+                        if ($j != $total_pages)
+                        {
                             echo ', ';
                         }
                     }
@@ -5940,7 +6611,8 @@ if (isset($_GET['event']) && loggedIn()) {
                 }
 
                 // If photos exist
-                if ($i > 0) {
+                if ($i > 0)
+                {
                     echo '</div>';	// Section card
                 }
 
@@ -6009,7 +6681,8 @@ if (isset($_GET['event']) && loggedIn()) {
 				</div>';
             }
 
-            if (!$isMerged) {
+            if (!$isMerged)
+            {
                 // Check to see if this event is full
                 $statement = $conn->prepare("SELECT id FROM event_sign_up WHERE troopid = ? AND status != '4' AND status != '1'");
                 $statement->bind_param("i", $_GET['event']);
@@ -6017,8 +6690,10 @@ if (isset($_GET['event']) && loggedIn()) {
                 $statement->store_result();
                 $getNumOfTroopers = $statement->num_rows;
 
-                if ($eventClosed == 0) {
-                    if (hasPermission(0, 1, 2, 3)) {
+                if ($eventClosed == 0)
+                {
+                    if (hasPermission(0, 1, 2, 3))
+                    {
                         // Get number of troopers that trooper signed up for event
                         $statement = $conn->prepare("SELECT id FROM event_sign_up WHERE addedby = ? AND troopid = ?");
                         $statement->bind_param("ii", $_SESSION['id'], $_GET['event']);
@@ -6027,16 +6702,20 @@ if (isset($_GET['event']) && loggedIn()) {
                         $numFriends = $statement->num_rows;
 
                         // Only show add a friend if main user is in event
-                        if (inEvent($_SESSION['id'], $_GET['event'])["inTroop"] == 1 && $numFriends < $friendLimit) {
+                        if (inEvent($_SESSION['id'], $_GET['event'])["inTroop"] == 1 && $numFriends < $friendLimit)
+                        {
                             echo '
 							<div class="section-card" id="addfriend" name="addfriend">';
-                        } else {
+                        }
+                        else
+                        {
                             echo '
 							<div class="section-card" id="addfriend" name="addfriend" style="display: none;">';
                         }
 
                         // If event is full
-                        if ($getNumOfTroopers >= $limitTotal) {
+                        if ($getNumOfTroopers >= $limitTotal)
+                        {
                             echo '
 							<div class="alert-box"><b>This event is full. Your friend will be placed on the stand by list.</b></div>';
                         }
@@ -6047,16 +6726,21 @@ if (isset($_GET['event']) && loggedIn()) {
 						<div id="add-friend-form">
 						</div>
 						</div>';
-                    } else {
+                    }
+                    else
+                    {
                         echo '
 						<div class="alert-box">You do not have permission to sign up for events. Please refer to the boards for assistance.</div>';
                     }
-                } else {
+                }
+                else
+                {
                     //echo '
                     //<p>This event is closed for editing.</p>';
                 }
 
-                if ($thread_id > 0) {
+                if ($thread_id > 0)
+                {
                     echo '
 					<div class="section-card">
 					<form aciton="process.php?do=postcomment" name="commentForm" id="commentForm" method="POST">
@@ -6101,7 +6785,9 @@ if (isset($_GET['event']) && loggedIn()) {
 
 					</div>
 					</div>';
-                } else {
+                }
+                else
+                {
                     echo '
 						<br />
 						<b>A corresponding forum thread does not exist for this event.</b>';
@@ -6111,25 +6797,33 @@ if (isset($_GET['event']) && loggedIn()) {
     }
 }
 // If we are viewing an event, hide all other info
-else if (isset($_GET['event']) && !loggedIn()) {
+else if (isset($_GET['event']) && !loggedIn())
+{
     // Set cookie for login
-    if (!loggedIn()) {
+    if (!loggedIn())
+    {
         setcookie("TroopTrackerLastEvent", cleanInput($_GET['event']), time() + 3600);
     }
 
     echo '
 	<p style="text-align: center;"><b>Please login to view this event.</b></p>';
-} else {
+}
+else
+{
     // Only show home page when it is loaded
-    if (!isset($_GET['action']) && !isset($_GET['profile']) && !isset($_GET['tkid']) && !isset($_GET['event'])) {
-        if (!isWebsiteClosed()) {
+    if (!isset($_GET['action']) && !isset($_GET['profile']) && !isset($_GET['tkid']) && !isset($_GET['event']))
+    {
+        if (!isWebsiteClosed())
+        {
             // Show options for squad choice
-            if (!loggedIn()) {
+            if (!loggedIn())
+            {
                 echo '
 				<h2 class="tm-section-header">Welcome to the ' . garrison . ' Troop Tracker!</h2>';
 
                 // If sign ups are not closed
-                if (!isSignUpClosed()) {
+                if (!isSignUpClosed())
+                {
                     echo '
 					<p style="text-align: center; border: dashed white;">
 						<a href="index.php?action=requestaccess">Are you new to the ' . garrison . ' and/or 501st? Or are you solely a member of another club? Click here.</a>
@@ -6138,20 +6832,24 @@ else if (isset($_GET['event']) && !loggedIn()) {
 					<p style="text-align: center; border: dashed white;">
 						<a href="index.php?action=setup">Have you used the old troop tracker and need to set up your account? Click here.</a>
 					</p>';
-                } else {
+                }
+                else
+                {
                     // If sign ups are closed
                     echo '
 					<p style="text-align: center;">Sign ups are currently locked for maintenance and testing. You can view your troops <a href="index.php?action=trooptracker">here</a>.</p>';
                 }
             }
 
-            if (loggedIn()) {
+            if (loggedIn())
+            {
                 echo '
 				<h2 class="tm-section-header">Troops</h2>
 				<div style="text-align: center;" aria-label="Press an image to sort by squad / garrison." data-balloon-pos="down" data-balloon-length="fit">'
                     . showSquadButtons() . '';
 
-                foreach ($specialLinks as $name => $link) {
+                foreach ($specialLinks as $name => $link)
+                {
                     echo $link . "<br />";
                 }
 
@@ -6174,7 +6872,8 @@ else if (isset($_GET['event']) && !loggedIn()) {
                 $numberOfConfirmTroops = $statement->num_rows;
 
                 // Show need to confirm if exist
-                if ($numberOfConfirmTroops > 0) {
+                if ($numberOfConfirmTroops > 0)
+                {
                     echo '
 					<div class="alert-box" id="confirmTroopNotification">
   						<a href="#confirmtroops">⚠️ You have ' . $numberOfConfirmTroops . ' troops to confirm. Click to confirm.</a>
@@ -6185,30 +6884,40 @@ else if (isset($_GET['event']) && !loggedIn()) {
                 $addToQuery = "";
 
                 // Loop through clubs
-                foreach ($clubArray as $club => $club_value) {
+                foreach ($clubArray as $club => $club_value)
+                {
                     // Add
                     $addToQuery .= "events." . $club_value['dbLimit'] . ", ";
                 }
 
                 // Was a squad defined? (Prevents displays div when not needed)
-                if (isset($_GET['squad']) && $_GET['squad'] == "mytroops") {
+                if (isset($_GET['squad']) && $_GET['squad'] == "mytroops")
+                {
                     // Query
                     $statement = $conn->prepare("SELECT events.id AS id, events.name, events.location, events.dateStart, events.dateEnd, events.squad, event_sign_up.id AS signupId, event_sign_up.troopid, event_sign_up.trooperid, events.link, events.limit501st, " . $addToQuery . "events.limitTotalTroopers, events.limitHandlers, events.closed FROM events LEFT JOIN event_sign_up ON event_sign_up.troopid = events.id WHERE event_sign_up.trooperid = ? AND events.dateEnd > NOW() - INTERVAL 1 DAY AND (event_sign_up.status < 3 OR event_sign_up.status = 5) AND (events.closed = 0 OR events.closed = 3 OR events.closed = 4) ORDER BY events.dateStart");
                     $statement->bind_param("i", $_SESSION['id']);
-                } else if (isset($_GET['special'])) {
+                }
+                else if (isset($_GET['special']))
+                {
                     // Query
                     $special = '%' . cleanInput($_GET['special']) . '%';
 
                     $statement = $conn->prepare("SELECT * FROM events WHERE dateStart >= CURDATE() AND name LIKE ? AND (closed = '0' OR closed = '3' OR closed = '4') ORDER BY dateStart");
                     $statement->bind_param("s", $special);
-                } else if (isset($_GET['squad']) && $_GET['squad'] == "canceledtroops") {
+                }
+                else if (isset($_GET['squad']) && $_GET['squad'] == "canceledtroops")
+                {
                     // Query
                     $statement = $conn->prepare("SELECT * FROM events WHERE dateStart >= CURDATE() AND (closed = '2') ORDER BY dateStart");
-                } else if (isset($_GET['squad'])) {
+                }
+                else if (isset($_GET['squad']))
+                {
                     // Query
                     $statement = $conn->prepare("SELECT * FROM events WHERE dateStart >= CURDATE() AND squad = ? AND (closed = '0' OR closed = '3' OR closed = '4') ORDER BY dateStart");
                     $statement->bind_param("i", $_GET['squad']);
-                } else {
+                }
+                else
+                {
                     // Query
                     $statement = $conn->prepare("SELECT * FROM events WHERE dateStart >= CURDATE() AND (closed = '0' OR closed = '3' OR closed = '4') ORDER BY dateStart");
                 }
@@ -6224,10 +6933,13 @@ else if (isset($_GET['event']) && !loggedIn()) {
                 $statement2->execute();
 
                 // Load events that are today or in the future
-                if ($result = $statement2->get_result()) {
-                    while ($db = mysqli_fetch_object($result)) {
+                if ($result = $statement2->get_result())
+                {
+                    while ($db = mysqli_fetch_object($result))
+                    {
                         // If first result
-                        if ($j == 0) {
+                        if ($j == 0)
+                        {
                             // Show message
                             echo '
 							<p>
@@ -6246,7 +6958,8 @@ else if (isset($_GET['event']) && !loggedIn()) {
                 }
 
                 // If canceled event results
-                if ($j > 0) {
+                if ($j > 0)
+                {
                     echo '
 					</ul>';
                 }
@@ -6267,8 +6980,10 @@ else if (isset($_GET['event']) && !loggedIn()) {
                 $statement->execute();
 
                 // Load events that are today or in the future
-                if ($result = $statement->get_result()) {
-                    while ($db = mysqli_fetch_object($result)) {
+                if ($result = $statement->get_result())
+                {
+                    while ($db = mysqli_fetch_object($result))
+                    {
                         // Get number of troopers at event
                         $statement2 = $conn->prepare("SELECT id FROM event_sign_up WHERE troopid = ? AND (status = '0' OR status = '2')");
                         $statement2->bind_param("i", $db->id);
@@ -6291,7 +7006,8 @@ else if (isset($_GET['event']) && !loggedIn()) {
 						<a href="index.php?event=' . $db->id . '">' . date('M d, Y', strtotime($db->dateStart)) . '' . '<br />';
 
                         // If has links to event, or is linked, show shift data
-                        if ($getNumOfLinks > 0 || $db->link != 0) {
+                        if ($getNumOfLinks > 0 || $db->link != 0)
+                        {
                             echo '
 							<b>' . date('l', strtotime($db->dateStart)) . '</b> - ' . date('h:i A', strtotime($db->dateStart)) . ' - ' . date('h:i A', strtotime($db->dateEnd)) .
                                 '<br />';
@@ -6303,47 +7019,57 @@ else if (isset($_GET['event']) && !loggedIn()) {
 						<span style="font-size: 11px;"><a href="https://www.google.com/maps/search/?api=1&query=' . $db->location . '" target="_blank">' . $db->location . '</a></span>';
 
                         // Prevent on canceled events
-                        if ($db->closed != 2) {
+                        if ($db->closed != 2)
+                        {
                             // Set total
                             $limitTotal = $db->limit501st;
 
                             // Loop through clubs
-                            foreach ($clubArray as $club => $club_value) {
+                            foreach ($clubArray as $club => $club_value)
+                            {
                                 // Add
                                 $limitTotal += $db->{$club_value['dbLimit']};
                             }
 
                             // Check for total limit set, if it is, replace limit with it
-                            if ($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500) {
+                            if ($db->limitTotalTroopers > 500 || $db->limitTotalTroopers < 500)
+                            {
                                 $limitTotal = $db->limitTotalTroopers;
                             }
 
                             // Troop set to full
-                            if ($db->closed == 4) {
+                            if ($db->closed == 4)
+                            {
                                 echo '
 								<br />
 								<span style="color:green;"><b>THIS TROOP IS FULL!</b></span>';
                             }
                             // If not enough troopers
-                            else if ($getNumOfTroopers <= 1) {
+                            else if ($getNumOfTroopers <= 1)
+                            {
                                 echo '
 								<br />
 								<span style="color:red;"><b>NOT ENOUGH TROOPERS FOR THIS EVENT!</b></span>';
                             }
                             // If full (w/ handlers)
-                            else if (($getNumOfTroopers - handlerEventCount($db->id)) >= $limitTotal && ($db->limitHandlers > 500 || $db->limitHandlers < 500) && (handlerEventCount($db->id) >= $db->limitHandlers)) {
+                            else if (($getNumOfTroopers - handlerEventCount($db->id)) >= $limitTotal && ($db->limitHandlers > 500 || $db->limitHandlers < 500) && (handlerEventCount($db->id) >= $db->limitHandlers))
+                            {
                                 echo '
 								<br />
 								<span style="color:green;"><b>THIS TROOP IS FULL!</b></span>';
                             }
                             // If full
-                            else if (($getNumOfTroopers - handlerEventCount($db->id)) >= $limitTotal && $db->limitHandlers == 500) {
+                            else if (($getNumOfTroopers - handlerEventCount($db->id)) >= $limitTotal && $db->limitHandlers == 500)
+                            {
                                 // Check handler count
-                                if ($db->limitHandlers == 500) {
+                                if ($db->limitHandlers == 500)
+                                {
                                     echo '
 									<br />
 									<span style="color:green;"><b>THIS TROOP IS FULL!</b></span>';
-                                } else {
+                                }
+                                else
+                                {
                                     $statement2 = $conn->prepare("SELECT id FROM event_sign_up WHERE (status = '0' OR status = '2') AND troopid = ? AND (SELECT costume FROM costumes WHERE id = event_sign_up.costume) LIKE '%handler%'");
                                     $statement2->bind_param("i", $db->id);
                                     $statement2->execute();
@@ -6351,11 +7077,14 @@ else if (isset($_GET['event']) && !loggedIn()) {
                                     $getNumOfHandlers = $statement2->num_rows;
 
                                     // Check if handlers full
-                                    if ($getNumOfHandlers >= $db->limitHandlers) {
+                                    if ($getNumOfHandlers >= $db->limitHandlers)
+                                    {
                                         echo '
 										<br />
 										<span style="color:green;"><b>THIS TROOP IS FULL!</b></span>';
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         // Show troopers attending
                                         echo '
 										<br />
@@ -6364,7 +7093,8 @@ else if (isset($_GET['event']) && !loggedIn()) {
                                 }
                             }
                             // Everything else
-                            else {
+                            else
+                            {
                                 echo '
 								<br />
 								<span>' . $getNumOfTroopers . ' Troopers Attending</span>';
@@ -6378,7 +7108,8 @@ else if (isset($_GET['event']) && !loggedIn()) {
                         $add = "";
 
                         // If this a linked event?
-                        if (isLink($db->id) > 0) {
+                        if (isLink($db->id) > 0)
+                        {
                             $add .= "[" . date("h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "] ";
                         }
 
@@ -6417,7 +7148,8 @@ else if (isset($_GET['event']) && !loggedIn()) {
                     . '</div>';
 
                 // Home page, no events
-                if ($i == 0) {
+                if ($i == 0)
+                {
                     echo 'There are no events to display.';
                 }
 
@@ -6425,9 +7157,11 @@ else if (isset($_GET['event']) && !loggedIn()) {
 				</div>';
             }
 
-            if (loggedIn()) {
+            if (loggedIn())
+            {
                 // Hide canceled troops button if we are on the page
-                if ((isset($_GET['squad']) && $_GET['squad'] != "canceledtroops") || !isset($_GET['squad'])) {
+                if ((isset($_GET['squad']) && $_GET['squad'] != "canceledtroops") || !isset($_GET['squad']))
+                {
                     echo '
 					<p style="text-align: center;">
 						<a href="index.php?squad=canceledtroops" class="button">Canceled Troop Noticeboard</a>
@@ -6439,12 +7173,14 @@ else if (isset($_GET['event']) && !loggedIn()) {
 					<ul class="event-grid">';
 
                     // If on my troops
-                    if (isset($_GET['squad']) && $_GET['squad'] == "mytroops") {
+                    if (isset($_GET['squad']) && $_GET['squad'] == "mytroops")
+                    {
                         // Set up add to query
                         $addToQuery = "";
 
                         // Loop through clubs
-                        foreach ($clubArray as $club => $club_value) {
+                        foreach ($clubArray as $club => $club_value)
+                        {
                             // Add
                             $addToQuery .= "events." . $club_value['dbLimit'] . ", ";
                         }
@@ -6454,13 +7190,15 @@ else if (isset($_GET['event']) && !loggedIn()) {
                         $statement->bind_param("i", $_SESSION['id']);
                     }
                     // If on squad
-                    else if (isset($_GET['squad'])) {
+                    else if (isset($_GET['squad']))
+                    {
                         // Get recently closed troops by squad
                         $statement = $conn->prepare("SELECT * FROM events WHERE closed = '1' AND squad = ? ORDER BY dateEnd DESC LIMIT 20");
                         $statement->bind_param("i", $_GET['squad']);
                     }
                     // If on default
-                    else {
+                    else
+                    {
                         // Get recently closed troops
                         $statement = $conn->prepare("SELECT * FROM events WHERE closed = '1' ORDER BY dateEnd DESC LIMIT 20");
                     }
@@ -6468,8 +7206,10 @@ else if (isset($_GET['event']) && !loggedIn()) {
                     $statement->execute();
 
                     // Load events that are today or in the future
-                    if ($result = $statement->get_result()) {
-                        while ($db = mysqli_fetch_object($result)) {
+                    if ($result = $statement->get_result())
+                    {
+                        while ($db = mysqli_fetch_object($result))
+                        {
                             echo '
 							<li class="event-item">' . (!isset($_GET['squad']) || (isset($_GET['squad']) && $_GET['squad'] == "mytroops") || (isset($_GET['squad']) && $_GET['squad'] == "canceledtroops") ? getSquadLogo($db->squad) : '') . ' <a href="index.php?event=' . $db->id . '" ' . (isset($db->status) && $db->status == 2 ? 'class = "tenative-troop"' : '') . (isset($db->status) && $db->status == 4 ? 'class = "canceled-troop"' : '') . '>' . (isLink($db->id) > 0 ? '[<b>' . date("l", strtotime($db->dateStart)) . '</b> : <i>' . date("m/d - h:i A", strtotime($db->dateStart)) . ' - ' . date("h:i A", strtotime($db->dateEnd)) . '</i>] ' : '') . '' . $db->name . '</a></li>';
                         }
@@ -6484,13 +7224,16 @@ else if (isset($_GET['event']) && !loggedIn()) {
                 $statement->bind_param("i", $_SESSION['id']);
                 $statement->execute();
 
-                if ($result = $statement->get_result()) {
+                if ($result = $statement->get_result())
+                {
                     // Number of results total
                     $i = 0;
 
-                    while ($db = mysqli_fetch_object($result)) {
+                    while ($db = mysqli_fetch_object($result))
+                    {
                         // If data
-                        if ($i == 0) {
+                        if ($i == 0)
+                        {
                             echo '
 							<br />
 							<hr />
@@ -6511,7 +7254,8 @@ else if (isset($_GET['event']) && !loggedIn()) {
                 }
 
                 // If data
-                if ($i > 0) {
+                if ($i > 0)
+                {
                     echo '
 						</div>
 						<input type="submit" name="submitConfirmList" id="submitConfirmList" value="I attended these troops" />
@@ -6523,9 +7267,12 @@ else if (isset($_GET['event']) && !loggedIn()) {
                     $statement->execute();
 
                     $l = 0;
-                    if ($result3 = $statement->get_result()) {
-                        while ($db3 = mysqli_fetch_object($result3)) {
-                            if ($l == 0) {
+                    if ($result3 = $statement->get_result())
+                    {
+                        while ($db3 = mysqli_fetch_object($result3))
+                        {
+                            if ($l == 0)
+                            {
                                 echo '
 									<option value="">Please choose an option...</option>';
                             }
@@ -6549,13 +7296,16 @@ else if (isset($_GET['event']) && !loggedIn()) {
                 $statement->bind_param("i", $_SESSION['id']);
                 $statement->execute();
 
-                if ($result = $statement->get_result()) {
+                if ($result = $statement->get_result())
+                {
                     // Number of results total
                     $i = 0;
 
-                    while ($db = mysqli_fetch_object($result)) {
+                    while ($db = mysqli_fetch_object($result))
+                    {
                         // If data
-                        if ($i == 0) {
+                        if ($i == 0)
+                        {
                             echo '
 							<br />
 							<div name="confirmArea3" id="confirmArea3">
@@ -6567,11 +7317,13 @@ else if (isset($_GET['event']) && !loggedIn()) {
                         $add = "";
 
                         // If added by friend, add name
-                        if ($db->addedby != 0) {
+                        if ($db->addedby != 0)
+                        {
                             $add .= '<a href="#/" trooperid="' . $db->trooperid . '" troopid="' . $db->eventId . '" signid="' . $db->signupId . '" class="button" name="attendFriend">Attended</a> <a href="#/" trooperid="' . $db->trooperid . '" troopid="' . $db->eventId . '" signid="' . $db->signupId . '" class="button" name="didNotFriend">Did Not Attend</a>';
 
                             // If note left, add note
-                            if ($db->note != "") {
+                            if ($db->note != "")
+                            {
                                 $add .= '<b>[' . $db->note . ']</b> ';
                             }
 
@@ -6579,7 +7331,8 @@ else if (isset($_GET['event']) && !loggedIn()) {
                         }
 
                         // If this a linked event?
-                        if (isLink($db->eventId) > 0) {
+                        if (isLink($db->eventId) > 0)
+                        {
                             $add .= "[<b>" . date("l", strtotime($db->dateStart)) . "</b> : <i>" . date("m/d - h:i A", strtotime($db->dateStart)) . " - " . date("h:i A", strtotime($db->dateEnd)) . "</i>] ";
                         }
 
@@ -6594,7 +7347,8 @@ else if (isset($_GET['event']) && !loggedIn()) {
                 }
 
                 // If data
-                if ($i > 0) {
+                if ($i > 0)
+                {
                     echo '
 					</div>
 					<p>If confirming for another trooper, you cannot set a new attended costume. Refer to a squad leader to change costume set.</p>
@@ -6613,8 +7367,10 @@ else if (isset($_GET['event']) && !loggedIn()) {
             $i = 0;
 
             // Loop through photos
-            if ($result = $statement->get_result()) {
-                while ($db = mysqli_fetch_object($result)) {
+            if ($result = $statement->get_result())
+            {
+                while ($db = mysqli_fetch_object($result))
+                {
                     echo '
 					<a href="images/uploads/' . $db->filename . '" data-lightbox="photo" data-title="Uploaded by ' . getName($db->trooperid) . ' on ' . getEventTitle($db->troopid, true) . '."><img src="images/uploads/resize/' . getFileName($db->filename) . '.jpg" width="200px" height="200px" /></a>';
 
@@ -6624,12 +7380,15 @@ else if (isset($_GET['event']) && !loggedIn()) {
             }
 
             // If no photos
-            if ($i == 0) {
+            if ($i == 0)
+            {
                 echo '
 				<p style="text-align: center;">
 					No photos to display.
 				</p>';
-            } else {
+            }
+            else
+            {
                 echo '
 				<p style="text-align: center;">
 					<i>Press photos for full resolution version.</i>
@@ -6637,7 +7396,9 @@ else if (isset($_GET['event']) && !loggedIn()) {
 					<a href="index.php?action=photos" class="button">Recent events with photos</a>
 				</p>';
             }
-        } else {
+        }
+        else
+        {
             echo '
 			<h2 class="tm-section-header">Sorry...</h2>
 			
@@ -6652,8 +7413,10 @@ else if (isset($_GET['event']) && !loggedIn()) {
 echo '
 </section>';
 
-if (!isWebsiteClosed()) {
-    if (loggedIn()) {
+if (!isWebsiteClosed())
+{
+    if (loggedIn())
+    {
         echo '
 		<section class="users-online-box">
 		  <h2 class="box-section-header">👥 Users Online</h2>
@@ -6662,10 +7425,13 @@ if (!isWebsiteClosed()) {
         $statement = $conn->prepare("SELECT * FROM troopers WHERE last_active >= NOW() - INTERVAL 5 MINUTE ORDER BY tkid");
         $statement->execute();
 
-        if ($result = $statement->get_result()) {
+        if ($result = $statement->get_result())
+        {
             $i = 0;
-            while ($db = mysqli_fetch_object($result)) {
-                if ($i > 0) {
+            while ($db = mysqli_fetch_object($result))
+            {
+                if ($i > 0)
+                {
                     echo ', ';
                 }
 
@@ -6678,7 +7444,8 @@ if (!isWebsiteClosed()) {
             }
         }
 
-        if ($i == 0) {
+        if ($i == 0)
+        {
             echo 'No users online!';
         }
 
@@ -6699,7 +7466,8 @@ If you are missing troops or notice incorrect data, please refer to your squad l
 <p class="footer-icons">
 	<a href="https://github.com/MattDrennan/501-troop-tracker" target="_blank"><img src="images/github.png" alt="GitHub" title="Help contribute to the Troop Tracker project!" /></a> ';
 // Discord
-if (loggedIn() && discordInviteLink != '') {
+if (loggedIn() && discordInviteLink != '')
+{
     echo '
 		<a href="' . discordInviteLink . '" target="_blank"><img src="images/discord.png" alt="Discord" title="Get event notifications and more on Discord!" /></a>';
 }
@@ -6712,12 +7480,14 @@ $(document).ready(function()
 {';
 
 // Loop through clubs - add rules for validation
-foreach ($clubArray as $club => $club_value) {
+foreach ($clubArray as $club => $club_value)
+{
     // Get array
     $getArray = explode(",", $club_value['db3Require']);
 
     // If squad set
-    if ($getArray[2] != "0") {
+    if ($getArray[2] != "0")
+    {
         // Get squad
         $getSquad = explode(":", $getArray[2])[1];
 
@@ -6728,22 +7498,28 @@ foreach ($clubArray as $club => $club_value) {
 	        $(this).rules(\'add\',
 	        {';
         // If digits
-        if ($getArray[1] == "digits") {
+        if ($getArray[1] == "digits")
+        {
             echo '
 					digits: true,';
-        } else {
+        }
+        else
+        {
             echo '
 					digits: false,';
         }
 
         // If squad
-        if ($getArray[2] != "0") {
+        if ($getArray[2] != "0")
+        {
             echo '
 					required: function()
 					{
 						return $(\'#squad\').val() == ' . $getSquad . ';
 					}';
-        } else {
+        }
+        else
+        {
             echo '
 					required: false';
         }
@@ -6751,9 +7527,12 @@ foreach ($clubArray as $club => $club_value) {
         echo '
 	        })
 	    });';
-    } else {
+    }
+    else
+    {
         // If value set
-        if ($club_value['db3'] != "") {
+        if ($club_value['db3'] != "")
+        {
             // Squad not set
             echo '
 		    // Add rules to clubs - IDs
@@ -6762,10 +7541,13 @@ foreach ($clubArray as $club => $club_value) {
 		        $(this).rules(\'add\',
 		        {';
             // If digits
-            if ($getArray[1] == "digits") {
+            if ($getArray[1] == "digits")
+            {
                 echo '
 						digits: true,';
-            } else {
+            }
+            else
+            {
                 echo '
 						digits: false,';
             }
