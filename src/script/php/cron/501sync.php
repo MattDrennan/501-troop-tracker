@@ -99,6 +99,7 @@ $trooperCounts = [
     "Parjai" => $conn->query("SELECT COUNT(*) AS count FROM 501st_troopers WHERE squad = '3'")->fetch_object()->count,
     "Squad 7" => $conn->query("SELECT COUNT(*) AS count FROM 501st_troopers WHERE squad = '4'")->fetch_object()->count,
     "Tampa" => $conn->query("SELECT COUNT(*) AS count FROM 501st_troopers WHERE squad = '5'")->fetch_object()->count,
+    "Blurrg" => $conn->query("SELECT COUNT(*) AS count FROM 501st_troopers WHERE squad = '15'")->fetch_object()->count,
 ];
 
 // Display statistics
@@ -153,7 +154,8 @@ function convertSquadId($value) {
         136 => 4,  // Squad 7
         126 => 3,  // Parjai Squad
         124 => 2,  // Makaze Squad
-        113 => 1   // Everglades Squad
+        113 => 1,  // Everglades Squad
+        317 => 15   // 332nd Blurrg Squad
     ];
     return $squads[$value] ?? 0;
 }

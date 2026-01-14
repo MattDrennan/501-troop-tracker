@@ -58,10 +58,10 @@ if ($result = mysqli_query($conn, $query))
 		// Get user info
 		$userInfo = getUserForumID($db->user_id);
 
-		if(!isset($userInfo['errors']))
+		if(!isset($userInfo['errors']) && !empty($userInfo))
 		{
 			// Set group array
-			$groupArray = $userInfo['user']['secondary_group_ids'];
+			$groupArray = $userInfo['user']['secondary_group_ids'] ?? array();
 
 			// Add Troop Tracker user group
 			array_push($groupArray, $troopTrackerUserGroup);

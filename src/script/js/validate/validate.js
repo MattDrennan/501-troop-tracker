@@ -23,7 +23,7 @@ $(function()
             squadm:
             {
                 required: true,
-                range: [0, 5]
+                range: [0, 15]
             },
             secure:
             {
@@ -237,7 +237,7 @@ $(function()
             squadm:
             {
                 required: true,
-                range: [0, 5]
+                range: [0, 15]
             },
             secure:
             {

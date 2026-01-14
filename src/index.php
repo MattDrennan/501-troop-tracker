@@ -256,8 +256,11 @@ echo drawSupportGraph();
 if (loggedIn()) {
     $userID = getUserID($_SESSION['id']);
 
-    $alerts = @getAlerts($userID)['alerts'];
-    $conversations = @getConversations($userID)['conversations'];
+    $alertsData = @getAlerts($userID);
+	$conversationsData = @getConversations($userID);
+
+	$alerts = (isset($alertsData['alerts']) && is_array($alertsData['alerts'])) ? $alertsData['alerts'] : [];
+	$conversations = (isset($conversationsData['conversations']) && is_array($conversationsData['conversations'])) ? $conversationsData['conversations'] : [];
 
     // Don't show on logout page
     if (@$_GET['action'] != "logout") {
@@ -276,10 +279,12 @@ if (loggedIn()) {
 
     $threads = getThreadsFromForum($userID);
 
-    // Check if threads has data
-    if (!isset($threads['errors'])) {
-        echo '<div class="container-announce">';
-        foreach ($threads['sticky'] as $thread => $thread_value) {
+   // Check if threads has data and is properly formatted
+	if($threads && is_array($threads) && !isset($threads['errors'])) {
+		echo '<div class="container-announce">';
+
+		// Check if sticky threads exist and is an array
+		if(isset($threads['sticky']) && is_array($threads['sticky'])) {
             echo '
 			<div class="box">
 				<div class="user">

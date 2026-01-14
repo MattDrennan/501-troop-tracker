@@ -3253,7 +3253,7 @@ $(document).ready(function () {
 					$("#datepicker").val("");
 
 					// Add to message
-					error += "-Date Start is invalid\n";
+					error += "-Date Start is invalid (format, hours in military: MM/DD/YYYY HH:mm)\n";
 				}
 			}
 
@@ -3267,7 +3267,7 @@ $(document).ready(function () {
 					$("#datepicker2").val("");
 
 					// Add to message
-					error += "-Date End is invalid\n";
+					error += "-Date End is invalid (format, hours in military: MM/DD/YYYY HH:mm)\n";
 				}
 			}
 

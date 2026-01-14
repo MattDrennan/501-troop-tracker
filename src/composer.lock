@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "38e6be53d50875084ef8b3adb4a98f1a",
+    "content-hash": "ca6f451df9c5e55b0318d5c8788f0d84",
     "packages": [
         {
             "name": "benhall14/php-calendar",
@@ -432,16 +432,16 @@
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.416.0",
+            "version": "v0.417.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-api-php-client-services.git",
-                "reference": "a7b96415b22d85cee12ab730089f1d1b66bc191f"
+                "reference": "d09f54168a8886ed758b5973e5231abefb5d5667"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/a7b96415b22d85cee12ab730089f1d1b66bc191f",
-                "reference": "a7b96415b22d85cee12ab730089f1d1b66bc191f",
+                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/d09f54168a8886ed758b5973e5231abefb5d5667",
+                "reference": "d09f54168a8886ed758b5973e5231abefb5d5667",
                 "shasum": ""
             },
             "require": {
@@ -470,9 +470,9 @@
             ],
             "support": {
                 "issues": "https://github.com/googleapis/google-api-php-client-services/issues",
-                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.416.0"
+                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.417.0"
             },
-            "time": "2025-10-13T01:08:26+00:00"
+            "time": "2025-10-20T00:54:22+00:00"
         },
         {
             "name": "google/auth",
@@ -1811,16 +1811,16 @@
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v6.11.1",
+            "version": "v6.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "d9e3b36b47f04b497a0164c5a20f92acb4593284"
+                "reference": "d1ac35d784bf9f5e61b424901d5a014967f15b12"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/d9e3b36b47f04b497a0164c5a20f92acb4593284",
-                "reference": "d9e3b36b47f04b497a0164c5a20f92acb4593284",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/d1ac35d784bf9f5e61b424901d5a014967f15b12",
+                "reference": "d1ac35d784bf9f5e61b424901d5a014967f15b12",
                 "shasum": ""
             },
             "require": {
@@ -1841,7 +1841,6 @@
             },
             "suggest": {
                 "decomplexity/SendOauth2": "Adapter for using XOAUTH2 authentication",
-                "ext-imap": "Needed to support advanced email address parsing according to RFC822",
                 "ext-mbstring": "Needed to send email in multibyte encoding charset or decode encoded addresses",
                 "ext-openssl": "Needed for secure SMTP sending and DKIM signing",
                 "greew/oauth2-azure-provider": "Needed for Microsoft Azure XOAUTH2 authentication",
@@ -1881,7 +1880,7 @@
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
             "support": {
                 "issues": "https://github.com/PHPMailer/PHPMailer/issues",
-                "source": "https://github.com/PHPMailer/PHPMailer/tree/v6.11.1"
+                "source": "https://github.com/PHPMailer/PHPMailer/tree/v6.12.0"
             },
             "funding": [
                 {
@@ -1889,7 +1888,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-09-30T11:54:53+00:00"
+            "time": "2025-10-15T16:49:08+00:00"
         },
         {
             "name": "phpseclib/phpseclib",
@@ -2915,6 +2914,88 @@
             "time": "2024-11-27T12:13:42+00:00"
         },
         {
+            "name": "slim/psr7",
+            "version": "1.7.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/slimphp/Slim-Psr7.git",
+                "reference": "fe98653e7983010aa85c1d137c9b9ad5a1cd187d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/slimphp/Slim-Psr7/zipball/fe98653e7983010aa85c1d137c9b9ad5a1cd187d",
+                "reference": "fe98653e7983010aa85c1d137c9b9ad5a1cd187d",
+                "shasum": ""
+            },
+            "require": {
+                "fig/http-message-util": "^1.1.5",
+                "php": "^8.0",
+                "psr/http-factory": "^1.1",
+                "psr/http-message": "^1.0 || ^2.0",
+                "ralouphie/getallheaders": "^3.0",
+                "symfony/polyfill-php80": "^1.29"
+            },
+            "provide": {
+                "psr/http-factory-implementation": "^1.0",
+                "psr/http-message-implementation": "^1.0 || ^2.0"
+            },
+            "require-dev": {
+                "adriansuter/php-autoload-override": "^1.4",
+                "ext-json": "*",
+                "http-interop/http-factory-tests": "^1.0 || ^2.0",
+                "php-http/psr7-integration-tests": "^1.4",
+                "phpspec/prophecy": "^1.19",
+                "phpspec/prophecy-phpunit": "^2.2",
+                "phpstan/phpstan": "^2.1",
+                "phpunit/phpunit": "^9.6 || ^10",
+                "squizlabs/php_codesniffer": "^3.10"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Slim\\Psr7\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Josh Lockhart",
+                    "email": "hello@joshlockhart.com",
+                    "homepage": "https://joshlockhart.com"
+                },
+                {
+                    "name": "Andrew Smith",
+                    "email": "a.smith@silentworks.co.uk",
+                    "homepage": "https://silentworks.co.uk"
+                },
+                {
+                    "name": "Rob Allen",
+                    "email": "rob@akrabat.com",
+                    "homepage": "https://akrabat.com"
+                },
+                {
+                    "name": "Pierre Berube",
+                    "email": "pierre@lgse.com",
+                    "homepage": "https://www.lgse.com"
+                }
+            ],
+            "description": "Strict PSR-7 implementation",
+            "homepage": "https://www.slimframework.com",
+            "keywords": [
+                "http",
+                "psr-7",
+                "psr7"
+            ],
+            "support": {
+                "issues": "https://github.com/slimphp/Slim-Psr7/issues",
+                "source": "https://github.com/slimphp/Slim-Psr7/tree/1.7.1"
+            },
+            "time": "2025-05-13T14:24:12+00:00"
+        },
+        {
             "name": "slim/slim",
             "version": "4.15.0",
             "source": {
@@ -3743,16 +3824,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v5.6.1",
+            "version": "v5.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "f103601b29efebd7ff4a1ca7b3eeea9e3336a2a2"
+                "reference": "3a454ca033b9e06b63282ce19562e892747449bb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/f103601b29efebd7ff4a1ca7b3eeea9e3336a2a2",
-                "reference": "f103601b29efebd7ff4a1ca7b3eeea9e3336a2a2",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/3a454ca033b9e06b63282ce19562e892747449bb",
+                "reference": "3a454ca033b9e06b63282ce19562e892747449bb",
                 "shasum": ""
             },
             "require": {
@@ -3795,9 +3876,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v5.6.1"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v5.6.2"
             },
-            "time": "2025-08-13T20:13:15+00:00"
+            "time": "2025-10-21T19:32:17+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -5252,88 +5333,6 @@
                 }
             ],
             "time": "2025-02-07T05:00:38+00:00"
-        },
-        {
-            "name": "slim/psr7",
-            "version": "1.7.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/slimphp/Slim-Psr7.git",
-                "reference": "fe98653e7983010aa85c1d137c9b9ad5a1cd187d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/slimphp/Slim-Psr7/zipball/fe98653e7983010aa85c1d137c9b9ad5a1cd187d",
-                "reference": "fe98653e7983010aa85c1d137c9b9ad5a1cd187d",
-                "shasum": ""
-            },
-            "require": {
-                "fig/http-message-util": "^1.1.5",
-                "php": "^8.0",
-                "psr/http-factory": "^1.1",
-                "psr/http-message": "^1.0 || ^2.0",
-                "ralouphie/getallheaders": "^3.0",
-                "symfony/polyfill-php80": "^1.29"
-            },
-            "provide": {
-                "psr/http-factory-implementation": "^1.0",
-                "psr/http-message-implementation": "^1.0 || ^2.0"
-            },
-            "require-dev": {
-                "adriansuter/php-autoload-override": "^1.4",
-                "ext-json": "*",
-                "http-interop/http-factory-tests": "^1.0 || ^2.0",
-                "php-http/psr7-integration-tests": "^1.4",
-                "phpspec/prophecy": "^1.19",
-                "phpspec/prophecy-phpunit": "^2.2",
-                "phpstan/phpstan": "^2.1",
-                "phpunit/phpunit": "^9.6 || ^10",
-                "squizlabs/php_codesniffer": "^3.10"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Slim\\Psr7\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Josh Lockhart",
-                    "email": "hello@joshlockhart.com",
-                    "homepage": "https://joshlockhart.com"
-                },
-                {
-                    "name": "Andrew Smith",
-                    "email": "a.smith@silentworks.co.uk",
-                    "homepage": "https://silentworks.co.uk"
-                },
-                {
-                    "name": "Rob Allen",
-                    "email": "rob@akrabat.com",
-                    "homepage": "https://akrabat.com"
-                },
-                {
-                    "name": "Pierre Berube",
-                    "email": "pierre@lgse.com",
-                    "homepage": "https://www.lgse.com"
-                }
-            ],
-            "description": "Strict PSR-7 implementation",
-            "homepage": "https://www.slimframework.com",
-            "keywords": [
-                "http",
-                "psr-7",
-                "psr7"
-            ],
-            "support": {
-                "issues": "https://github.com/slimphp/Slim-Psr7/issues",
-                "source": "https://github.com/slimphp/Slim-Psr7/tree/1.7.1"
-            },
-            "time": "2025-05-13T14:24:12+00:00"
         },
         {
             "name": "staabm/side-effects-detector",
