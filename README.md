@@ -17,14 +17,14 @@ You are free to download, modify, and use freely for non-commerical purposes.
 
 <ol>
 <li>Upload all the files to your web server, execute "other/SQL.sql" on your database, and create a "cred.php" file in the root directory. Cred.php should look like this:</li>
- 
+
 ```
 <?php
 
 /**
- * 
+ *
  * This is the main MySQL database information.
- * 
+ *
  * dbServer: The MySQL server address
  * dbUser: The user for MySQL server
  * dbPassword: The password for MySQL server
@@ -37,7 +37,7 @@ define('dbPassword', 'DB_PASSWORD_HERE');
 define('dbName', 'DB_NAME_HERE');
 
 /**
- * 
+ *
  * This is used for merging old troop tracker data with the new tracker. This is not needed to run Troop Tracker.
  * See auto.php in the archive folder for more information.
  *
@@ -81,6 +81,12 @@ $garrisonIdAPI = 9;
 */
 
 $forumAnnounceID = 18;
+
+/**
+ * showLegacyAccountSetup: Whether to enable migrating from the old troop tracker
+ */
+
+$showLegacyAccountSetup = true;
 
 /**
  * placeholder: This variable is used for assigning a user account to be a placeholder account. A placeholder account can be signed up multiple times for the same event, and is used to sign up non-members.
@@ -513,7 +519,7 @@ Add:
 			</dd>
 		</dl>
 	</div>
-	
+
 	<div class="memberHeader-blurb">
 		<dl class="pairs pairs--inline">
 			<dt>Name</dt>

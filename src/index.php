@@ -220,7 +220,7 @@ if (!loggedIn()) {
         if (!isSignUpClosed()) {
             echo '
 			<a href="index.php?action=requestaccess" ' . isPageActive("requestaccess") . '>Request Access</a>
-			<a href="index.php?action=setup" ' . isPageActive("setup") . '>Account Setup</a>
+			' . ($showLegacyAccountSetup ? '<a href="index.php?action=setup" ' . isPageActive("setup") . '>Account Setup</a>' : '') . '
 			<a href="faq" ' . isPageActive("faq") . '>FAQ</a>';
         }
     }
@@ -6133,11 +6133,13 @@ else if (isset($_GET['event']) && !loggedIn()) {
                     echo '
 					<p style="text-align: center; border: dashed white;">
 						<a href="index.php?action=requestaccess">Are you new to the ' . garrison . ' and/or 501st? Or are you solely a member of another club? Click here.</a>
-					</p>
-
-					<p style="text-align: center; border: dashed white;">
-						<a href="index.php?action=setup">Have you used the old troop tracker and need to set up your account? Click here.</a>
 					</p>';
+
+                    if ($showLegacyAccountSetup) {
+                        echo '<p style="text-align: center; border: dashed white;">
+                            <a href="index.php?action=setup">Have you used the old troop tracker and need to set up your account? Click here.</a>
+                        </p>';
+                    }
                 } else {
                     // If sign ups are closed
                     echo '
